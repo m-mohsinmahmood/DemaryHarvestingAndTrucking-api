@@ -1,5 +1,5 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
-// import * as addComment from "./post";
+import * as addCrop from "./post";
 // import * as editComment from "./put";
 // import * as deleteComment from "./delete";
 import * as getCrops from "./get";
@@ -15,7 +15,7 @@ const httpTrigger: AzureFunction = async function (
       break;
 
     case "POST":
-      // await addComment.default(context, req);
+      await addCrop.default(context, req);
       break;
 
     case "PUT":
