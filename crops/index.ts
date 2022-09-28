@@ -1,6 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as addCrop from "./post";
-// import * as editComment from "./put";
+import * as updateCrop from "./put";
 // import * as deleteComment from "./delete";
 import * as getCrops from "./get";
 import * as getCropById from "./getById";
@@ -23,8 +23,7 @@ const httpTrigger: AzureFunction = async function (
       break;
 
     case "PUT":
-      // if (req.query.delete) await deleteComment.default(context, req);
-      // else await editComment.default(context, req);
+        await updateCrop.default(context, req);
       break;
 
     case "DELETE":
