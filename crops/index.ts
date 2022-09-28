@@ -3,6 +3,7 @@ import * as addCrop from "./post";
 // import * as editComment from "./put";
 // import * as deleteComment from "./delete";
 import * as getCrops from "./get";
+import * as getCropById from "./getById";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -11,7 +12,10 @@ const httpTrigger: AzureFunction = async function (
   switch (req.method) {
     
     case "GET":
-      await getCrops.default(context, req);
+      if(req.query.id)
+        await getCropById.default(context,req);
+      else
+        await getCrops.default(context, req);
       break;
 
     case "POST":

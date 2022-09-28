@@ -28,7 +28,7 @@ const httpTrigger: AzureFunction = async function (
     //   whereQuery = whereQuery.replace(/!/g, " AND ");
     // }
 
-    let crops_information_query = `
+    let crops_info_query = `
         SELECT 
             c."id",
             c."name",
@@ -47,7 +47,7 @@ const httpTrigger: AzureFunction = async function (
             "Crops" c
         `;
     
-    let query = `${crops_information_query} ${crops_count_query};`;
+    let query = `${crops_info_query} ${crops_count_query};`;
         // ${whereQuery ? "WHERE " + whereQuery : ""}
     db.connect();
 
