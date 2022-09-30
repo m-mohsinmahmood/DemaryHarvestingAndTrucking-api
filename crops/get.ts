@@ -10,53 +10,32 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     const search: string = req.query.search;
+    let whereClause: string = ``;
 
-    // let whereClause: string[] = [];
-    // let whereQuery: string = "";
-
-    // if (search) {
-    //   whereClause.push(`LOWER(c.name) LIKE LOWER('%${search}%')`);
-    // }
-
-    // for (let w of whereClause) {
-    //   whereQuery += w;
-    //   whereQuery += "!";
-    // }
-
-    // if (whereQuery) {
-    //   whereQuery = whereQuery.slice(0, -1);
-    //   whereQuery = whereQuery.replace(/!/g, " AND ");
-    // }
+    if (search) whereClause = `WHERE LOWER(c.name) LIKE LOWER('%${search}%')`;
 
     let crops_info_query = `
-        SELECT 
-            c."id",
-            c."name",
-            c."category",
-            c."bushel_weight"
-
-        FROM 
-            "Crops" c
-        ;`;
-        // ${whereQuery ? "WHERE " + whereQuery : ""}
+        SELECT c."id", c."name", c."category",c."bushel_weight"
+        FROM "Crops" c
+        ${whereClause};
+      `;
 
     let crops_count_query = `
-        SELECT 
-            COUNT(c."id")
-        FROM 
-            "Crops" c
-        `;
-    
-    let query = `${crops_info_query} ${crops_count_query};`;
-        // ${whereQuery ? "WHERE " + whereQuery : ""}
+        SELECT COUNT(c."id")
+        FROM "Crops" c
+        ${whereClause};
+      `;
+
+    let query = `${crops_info_query} ${crops_count_query}`;
+
     db.connect();
 
     let result = await db.query(query);
 
     let resp = {
       crops: result[0].rows,
-      count: +result[1].rows[0].count
-    }
+      count: +result[1].rows[0].count,
+    };
 
     db.end();
 
