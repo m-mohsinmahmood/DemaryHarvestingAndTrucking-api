@@ -13,14 +13,14 @@ const httpTrigger: AzureFunction = async function (
   try {    
     //#region Validation
     const crop: crop = req.body;
-    const validation = cropValidator(crop);
-    let error = [];
-    let errorMessage = ``;
-    validation.details.forEach((err) => {
-      error.push(err.message);
-    });
-    errorMessage = error.join(", ");
-    if (error.length > 0) throw { message: errorMessage };
+    // const validation = cropValidator(crop);
+    // let error = [];
+    // let errorMessage = ``;
+    // validation.details.forEach((err) => {
+    //   error.push(err.message);
+    // });
+    // errorMessage = error.join(", ");
+    // if (error.length > 0) throw { message: errorMessage };
     //#endregion
     //#region Query Execution
     let query = `
