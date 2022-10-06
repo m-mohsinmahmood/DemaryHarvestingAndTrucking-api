@@ -51,6 +51,7 @@ const httpTrigger: AzureFunction = async function (
         message: error.message,
       },
     };
+    context.done();
     return;
     //#endregion
   }
