@@ -11,7 +11,7 @@
         "put",
         "delete"
       ],
-      "route": "crops"
+      "route": "newCrop"
     },
     {
       "type": "http",
@@ -19,5 +19,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/crops/index.js"
+  "scriptFile": "../dist/newCrop/index.js"
 }
