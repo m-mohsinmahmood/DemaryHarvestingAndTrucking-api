@@ -11,26 +11,29 @@ const httpTrigger: AzureFunction = async function (
   try {
     const search: string = req.query.search;
     const page: number = +req.query.page ? +req.query.page : 1;
-    const limit: number = +req.query.limit ? +req.query.limit: 10;
+    const limit: number = +req.query.limit ? +req.query.limit : 10;
+    const sort: string = req.query.sort ? req.query.sort : `name` ;
+    const order: string = req.query.order ? req.query.order : `asc`;
     let whereClause: string = ``;
 
     if (search) whereClause = `WHERE LOWER(c.name) LIKE LOWER('%${search}%')`;
 
-    let crops_info_query = `
-        SELECT c."id", c."name", c."category", c."bushel_weight"
-        FROM "Crops" c
+    let customer_info_query = `
+        SELECT c."company_name", c."main_contact", c."position", c."phone_number", c."state", c."country", c."email", c."customer_type", c."status"
+        FROM "Customers" c
         ${whereClause}
+        ORDER BY ${sort} ${order}
         OFFSET ${((page - 1) * limit) + 1}
         LIMIT ${limit};
       `;
 
-    let crops_count_query = `
+    let customer_count_query = `
         SELECT COUNT(c."id")
-        FROM "Crops" c
+        FROM "Customers" c
         ${whereClause};
       `;
 
-    let query = `${crops_info_query} ${crops_count_query}`;
+    let query = `${customer_info_query} ${customer_count_query}`;
 
     db.connect();
 

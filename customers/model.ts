@@ -1,6 +1,12 @@
-export interface crop{
+export interface customer{
     id?: string;
-    name: string;
-    category: string;
-    bushel_weight: number;
+    company_name: string;
+    main_contact: string;
+    position: string;
+    phone_number: string;
+    state: string, 
+    country: string, 
+    email: string, 
+    customer_type: string, 
+    status: boolean
 }

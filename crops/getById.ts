@@ -16,7 +16,7 @@ const httpTrigger: AzureFunction = async function (
         SELECT 
             c."id",
             c."name",
-            c."category",
+            c."variety",
             c."bushel_weight" 
         
         FROM 

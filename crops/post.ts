@@ -13,8 +13,8 @@ const httpTrigger: AzureFunction = async function (
     const crop: crop = req.body;
 
     let query = `
-        INSERT INTO "Crops" ("name", "category", "bushel_weight")
-        VALUES ('${crop.name}', '${crop.category}', '${crop.bushel_weight}');
+        INSERT INTO "Crops" ("name", "variety", "bushel_weight")
+        VALUES ('${crop.name}', '${crop.variety}', '${crop.bushel_weight}');
     `;
 
     db.connect();

@@ -13,7 +13,7 @@ const httpTrigger: AzureFunction = async function (
     const crop: crop = req.body;
     let query = `
         UPDATE "Crops" 
-        SET "name" = '${crop.name}', "category" = '${crop.category}', "bushel_weight" = '${crop.bushel_weight}', "modified_at" = 'now()'
+        SET "name" = '${crop.name}', "variety" = '${crop.variety}', "bushel_weight" = '${crop.bushel_weight}', "modified_at" = 'now()'
         WHERE "id" = '${crop.id}';
         `;
 

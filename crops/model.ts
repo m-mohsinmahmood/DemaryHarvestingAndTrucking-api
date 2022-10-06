@@ -1,6 +1,6 @@
 export interface crop{
     id?: string;
     name: string;
-    category: string;
+    variety: string;
     bushel_weight: number;
 }

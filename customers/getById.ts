@@ -10,31 +10,23 @@ const httpTrigger: AzureFunction = async function (
 
   try {
 
-    const crop_id: string = req.query.id;
+    const customer_id: string = req.query.id;
 
-    let crop_info_query = `
-        SELECT 
-            c."id",
-            c."name",
-            c."category",
-            c."bushel_weight" 
-        
-        FROM 
-            "Crops" c
-        
-        WHERE 
-            c."id" = '${crop_id}';
-        `;
+    let customer_info_query = `
+        SELECT c."company_name", c."first_name", c."last_name", c."state", c."country", c."phone_number", c."email", c."customer_type", c."status"
+        FROM "Customers" c
+        WHERE c."id" = '${customer_id}';
+      `;
 
     db.connect();
 
-    let result = await db.query(crop_info_query);
+    let result = await db.query(customer_info_query);
     let resp;
     if(result.rows.length > 0)
       resp = result.rows[0];
     else 
       resp = {
-        message: "No crops exists with this id."
+        message: "No customer exists with this id."
       };
 
     db.end();

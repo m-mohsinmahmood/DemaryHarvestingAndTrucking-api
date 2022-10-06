@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { crop } from "./model";
+import { customer } from "./model";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -10,12 +10,12 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const crop: crop = req.body;
+    const customer: customer = req.body;
     let query = `
-        UPDATE "Crops" 
-        SET "name" = '${crop.name}', "category" = '${crop.category}', "bushel_weight" = '${crop.bushel_weight}', "modified_at" = 'now()'
-        WHERE "id" = '${crop.id}';
-        `;
+        UPDATE "Customers"
+        SET "company_name" = '${customer.company_name}', "main_contact" = '${customer.main_contact}', "position" = '${customer.position}', "phone_number" = '${customer.phone_number}', "state" = '${customer.state}', "country" = '${customer.country}',
+            "email" = '${customer.email}', "customer_type" = '${customer.customer_type}', "status" = '${customer.status}');
+        WHERE "id" = '${customer.id}';`
 
     db.connect();
     let result = await db.query(query);
@@ -24,7 +24,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        message: "Crop has been updated successfully.",
+        message: "Customer has been updated successfully.",
       },
     };
     context.done();

@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { crop } from "./model";
+import { customer } from "./model";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -10,11 +10,12 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const crop: crop = req.body;
+    const customer: customer = req.body;
 
     let query = `
-        INSERT INTO "Crops" ("name", "category", "bushel_weight")
-        VALUES ('${crop.name}', '${crop.category}', '${crop.bushel_weight}');
+      INSERT INTO "Customers" ("company_name", "main_contact", "position", "phone_number", "state", "country", "email", "customer_type", "status")
+      VALUES ('${customer.company_name}', '${customer.main_contact}', '${customer.position}', '${customer.phone_number}', '${customer.state}', '${customer.country}', '${customer.email}', 
+              '${customer.customer_type}', ${customer.status});
     `;
 
     db.connect();
@@ -24,7 +25,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        message: "Crop has been created successfully",
+        message: "Customer has been created successfully",
       },
     };
 
