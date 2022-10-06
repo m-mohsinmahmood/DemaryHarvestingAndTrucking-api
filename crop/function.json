@@ -7,10 +7,11 @@
       "name": "req",
       "methods": [
         "get",
+        "post",
         "put",
         "delete"
       ],
-      "route": "newCrop"
+      "route": "crop"
     },
     {
       "type": "http",
@@ -18,5 +19,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/newCrop/index.js"
+  "scriptFile": "../dist/crop/index.js"
 }
