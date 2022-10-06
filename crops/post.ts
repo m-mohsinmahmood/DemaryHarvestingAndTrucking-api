@@ -44,6 +44,7 @@ const httpTrigger: AzureFunction = async function (
     //#endregion
   } catch (error) {
     //#region Error Response
+    db.end();
     context.res = {
       status: 500,
       body: {
