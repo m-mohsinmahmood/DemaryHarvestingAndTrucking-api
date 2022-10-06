@@ -10,7 +10,9 @@
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
-    "joi": "^17.6.2",
+    "ajv": "^8.11.0",
+    "ajv-errors": "^3.0.0",
+    "ajv-formats": "^2.1.1",
     "n": "^9.0.0",
     "pg": "^8.8.0"
   },

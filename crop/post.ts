@@ -16,8 +16,8 @@ const httpTrigger: AzureFunction = async function (
     const validation = cropValidator(crop);
     let error = [];
     let errorMessage = ``;
-    validation.details.forEach((err) => {
-      error.push(err.message);
+    validation.forEach((err) => {
+      error.push(`${err.instancePath ? `${err.instancePath} ` : ``}${err.message}`.replace(/[^\w ]/g, ''));
     });
     errorMessage = error.join(", ");
     if (error.length > 0) throw { message: errorMessage };
@@ -36,7 +36,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        message: "Crop has been created successfully",
+        message: validation,
       },
     };
     context.done();
