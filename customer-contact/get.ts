@@ -16,11 +16,12 @@ const httpTrigger: AzureFunction = async function (
     const order: string = req.query.order ? req.query.order : `desc`;
     let whereClause: string = ``;
 
-    if (search) whereClause = `WHERE LOWER(c.name) LIKE LOWER('%${search}%')`;
+    if (search) whereClause = `WHERE LOWER(last_name) LIKE LOWER('%${search}%')`;
 
     let customer_contact_info_query = `
-        SELECT c."id", c."company_name", c."main_contact", c."position", c."phone_number", c."state", c."country", c."email", c."customer_type", c."status"
-        FROM "Customers" c
+        SELECT "customer_id", "company_name", "first_name", "last_name", "position", "website", "address", "cell_number", "city", "office_number",
+        "state", "email", "zip_code", "fax", "linkedin", "note_1", "note_2", "avatar"
+        FROM "Customer_Contacts"
         ${whereClause}
         ORDER BY ${sort} ${order}
         OFFSET ${((page - 1) * limit)}
@@ -28,12 +29,12 @@ const httpTrigger: AzureFunction = async function (
       `;
 
     let customer_contact_count_query = `
-        SELECT COUNT(c."id")
-        FROM "Customers" c
+        SELECT COUNT("id")
+        FROM "Customer_Contacts"
         ${whereClause};
       `;
 
-    let query = `${customer_contact_info_query} ${customer_contact_info_query}`;
+    let query = `${customer_contact_info_query} ${customer_contact_count_query}`;
 
     db.connect();
 

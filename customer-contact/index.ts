@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as addCustomerContact from "./post";
 // import * as updateCustomer from "./put";
-// import * as getCustomers from "./get";
+import * as getCustomerContacts from "./get";
 // import * as getCustomerById from "./getById";
 
 const httpTrigger: AzureFunction = async function (
@@ -11,7 +11,8 @@ const httpTrigger: AzureFunction = async function (
   switch (req.method) {
     case "GET":
       // if (req.query.id) await getCustomerById.default(context, req);
-      // else await getCustomers.default(context, req);
+      // else 
+      await getCustomerContacts.default(context, req);
       break;
 
     case "POST":
