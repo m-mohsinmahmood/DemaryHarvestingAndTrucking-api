@@ -30,6 +30,7 @@ const httpTrigger: AzureFunction = async function (
     context.done();
     return;
   } catch (error) {
+    db.end();
     context.res = {
       status: 500,
       body: {

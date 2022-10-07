@@ -12,8 +12,8 @@ const httpTrigger: AzureFunction = async function (
     const search: string = req.query.search;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 10;
-    const sort: string = req.query.sort ? req.query.sort : `name` ;
-    const order: string = req.query.order ? req.query.order : `asc`;
+    const sort: string = req.query.sort ? req.query.sort : `created_at` ;
+    const order: string = req.query.order ? req.query.order : `desc`;
     let whereClause: string = ``;
 
     if (search) whereClause = `WHERE LOWER(c.name) LIKE LOWER('%${search}%')`;
@@ -23,7 +23,7 @@ const httpTrigger: AzureFunction = async function (
         FROM "Customers" c
         ${whereClause}
         ORDER BY ${sort} ${order}
-        OFFSET ${((page - 1) * limit) + 1}
+        OFFSET ${((page - 1) * limit)}
         LIMIT ${limit};
       `;
 
