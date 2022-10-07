@@ -13,7 +13,7 @@ const httpTrigger: AzureFunction = async function (
     const customer_id: string = req.query.id;
 
     let customer_info_query = `
-        SELECT c."company_name", c."first_name", c."last_name", c."state", c."country", c."phone_number", c."email", c."customer_type", c."status"
+        SELECT c."id", c."company_name", c."first_name", c."last_name", c."state", c."country", c."phone_number", c."email", c."customer_type", c."status"
         FROM "Customers" c
         WHERE c."id" = '${customer_id}';
       `;
