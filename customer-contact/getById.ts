@@ -9,22 +9,23 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const customer_id: string = req.query.id;
+    const customer_contact_id: string = req.query.id;
 
-    let customer_info_query = `
-        SELECT c."id", c."company_name", c."main_contact", c."position", c."phone_number", c."state", c."country", c."email", c."customer_type", c."status"
-        FROM "Customers" c
-        WHERE c."id" = '${customer_id}';
+    let customer_contact_info_query = `
+      SELECT "customer_id", "company_name", "first_name", "last_name", "position", "website", "address", "cell_number", "city", "office_number",
+             "state", "email", "zip_code", "fax", "linkedin", "note_1", "note_2", "avatar"
+      FROM   "Customer_Contacts"
+      WHERE  "id" = '${customer_contact_id}';
       `;
 
     db.connect();
 
-    let result = await db.query(customer_info_query);
+    let result = await db.query(customer_contact_info_query);
     let resp;
     if (result.rows.length > 0) resp = result.rows[0];
     else
       resp = {
-        message: "No customer exists with this id.",
+        message: "No customer contact exists with this id.",
       };
 
     db.end();

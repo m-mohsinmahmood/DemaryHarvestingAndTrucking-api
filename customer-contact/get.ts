@@ -10,27 +10,29 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     const search: string = req.query.search;
+    const customer_id: string = req.query.customerId;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 10;
-    const sort: string = req.query.sort ? req.query.sort : `created_at` ;
+    const sort: string = req.query.sort ? req.query.sort : `created_at`;
     const order: string = req.query.order ? req.query.order : `desc`;
-    let whereClause: string = ``;
+    let whereClause: string = `WHERE customer_id = '${customer_id}'`;
 
-    if (search) whereClause = `WHERE LOWER(last_name) LIKE LOWER('%${search}%')`;
+    if (search)
+      whereClause = ` AND LOWER(last_name) LIKE LOWER('%${search}%')`;
 
     let customer_contact_info_query = `
         SELECT "customer_id", "company_name", "first_name", "last_name", "position", "website", "address", "cell_number", "city", "office_number",
-        "state", "email", "zip_code", "fax", "linkedin", "note_1", "note_2", "avatar"
-        FROM "Customer_Contacts"
+               "state", "email", "zip_code", "fax", "linkedin", "note_1", "note_2", "avatar"
+        FROM   "Customer_Contacts"
         ${whereClause}
         ORDER BY ${sort} ${order}
-        OFFSET ${((page - 1) * limit)}
+        OFFSET ${(page - 1) * limit}
         LIMIT ${limit};
       `;
 
     let customer_contact_count_query = `
         SELECT COUNT("id")
-        FROM "Customer_Contacts"
+        FROM   "Customer_Contacts"
         ${whereClause};
       `;
 
