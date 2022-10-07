@@ -13,21 +13,14 @@ const httpTrigger: AzureFunction = async function (
   try {    
     //#region Validation
     const crop: crop = req.body;
-    const validation = cropValidator(crop);
-    let error = [];
-    let errorMessage = ``;
-    validation.forEach((err) => {
-      error.push(`${err.instancePath ? `${err.instancePath} ` : ``}${err.message}`.replace(/[^\w ]/g, ''));
-    });
-    errorMessage = error.join(", ");
-    if (error.length > 0) throw { message: errorMessage };
+    const error = cropValidator(crop);
+    if (error.length > 0) throw { message: error };
     //#endregion
     //#region Query Execution
     let query = `
         INSERT INTO "Crops" ("name", "variety", "bushel_weight")
         VALUES ('${crop.name}', '${crop.variety}', '${crop.bushel_weight}');
     `;
-
     db.connect();
     await db.query(query);
     db.end();
@@ -36,7 +29,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        message: validation,
+        message: "Crop has been successfully created",
       },
     };
     context.done();

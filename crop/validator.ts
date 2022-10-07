@@ -1,11 +1,5 @@
-import Ajv from "ajv"
-import addFormats from 'ajv-formats'
-import ajvErrors from 'ajv-errors';
 import { crop } from "./model";
-
-const ajv = new Ajv({allErrors: true});
-addFormats(ajv);
-ajvErrors(ajv);
+import { ajv } from "../utilities/validator_intance";
 
 const schema = {
   type: "object",
@@ -16,22 +10,31 @@ const schema = {
     bushel_weight: { type: "number" },
   },
   errorMessage: {
-    // Change from errorMessage to errorMessages
-    type: 'should be an object',
+    type: "should be an object",
     required: {
-      name: 'name is missing',
-      variety: 'variety is missing',
-      bushel_weight: 'bushel weight is missing',
+      name: "name is missing",
+      variety: "variety is missing",
+      bushel_weight: "bushel weight is missing",
     },
   },
   additionalProperties: false,
 };
 
-
-
 export function cropValidator(crop: crop) {
   const validate = ajv.compile(schema);
   const valid = validate(crop);
   if (!valid) console.log(validate.errors);
-  return validate.errors;
+  const validation = validate.errors;
+  let error = [];
+  let errorMessage = ``;
+  validation.forEach((err) => {
+    error.push(
+      `${err.instancePath ? `${err.instancePath} ` : ``}${err.message}`.replace(
+        /[^\w ]/g,
+        ""
+      )
+    );
+  });
+  errorMessage = error.join(", ");
+  return errorMessage;
 }
