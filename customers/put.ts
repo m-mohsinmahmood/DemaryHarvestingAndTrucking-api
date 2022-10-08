@@ -12,10 +12,20 @@ const httpTrigger: AzureFunction = async function (
   try {
     const customer: customer = req.body;
     let query = `
-        UPDATE "Customers"
-        SET "company_name" = '${customer.company_name}', "main_contact" = '${customer.main_contact}', "position" = '${customer.position}', "phone_number" = '${customer.phone_number}', "state" = '${customer.state}', "country" = '${customer.country}',
-            "email" = '${customer.email}', "customer_type" = '${customer.customer_type}', "status" = ${customer.status}
-        WHERE "id" = '${customer.id}';`
+        UPDATE 
+              "Customers"
+        SET 
+              "company_name"  = '${customer.company_name}', 
+              "main_contact"  = '${customer.main_contact}', 
+              "position"      = '${customer.position}', 
+              "phone_number"  = '${customer.phone_number}', 
+              "state"         = '${customer.state}', 
+              "country"       = '${customer.country}',
+              "email"         = '${customer.email}',
+              "customer_type" = '${customer.customer_type}', 
+              "status"        = ${customer.status}
+        WHERE 
+              "id" = '${customer.id}';`
 
     db.connect();
     let result = await db.query(query);

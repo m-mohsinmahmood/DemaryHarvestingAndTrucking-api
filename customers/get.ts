@@ -19,17 +19,33 @@ const httpTrigger: AzureFunction = async function (
     if (search) whereClause = `WHERE LOWER(c.name) LIKE LOWER('%${search}%')`;
 
     let customer_info_query = `
-        SELECT c."id", c."company_name", c."main_contact", c."position", c."phone_number", c."state", c."country", c."email", c."customer_type", c."status"
-        FROM "Customers" c
+        SELECT 
+              "id", 
+              "company_name", 
+              "main_contact", 
+              "position", 
+              "phone_number", 
+              "state", 
+              "country", 
+              "email", 
+              "customer_type", 
+              "status"
+        FROM 
+              "Customers"
         ${whereClause}
-        ORDER BY ${sort} ${order}
-        OFFSET ${((page - 1) * limit)}
-        LIMIT ${limit};
+        ORDER BY 
+              ${sort} ${order}
+        OFFSET 
+              ${((page - 1) * limit)}
+        LIMIT 
+              ${limit};
       `;
 
     let customer_count_query = `
-        SELECT COUNT(c."id")
-        FROM "Customers" c
+        SELECT 
+              COUNT("id")
+        FROM 
+              "Customers"
         ${whereClause};
       `;
 

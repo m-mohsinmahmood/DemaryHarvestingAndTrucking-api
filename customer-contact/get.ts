@@ -21,18 +21,41 @@ const httpTrigger: AzureFunction = async function (
       whereClause = ` AND LOWER(last_name) LIKE LOWER('%${search}%')`;
 
     let customer_contact_info_query = `
-        SELECT "customer_id", "company_name", "first_name", "last_name", "position", "website", "address", "cell_number", "city", "office_number",
-               "state", "email", "zip_code", "fax", "linkedin", "note_1", "note_2", "avatar"
-        FROM   "Customer_Contacts"
+        SELECT 
+              "customer_id", 
+              "company_name", 
+              "first_name", 
+              "last_name", 
+              "position", 
+              "website", 
+              "address", 
+              "cell_number", 
+              "city", 
+              "office_number",
+              "state", 
+              "email", 
+              "zip_code", 
+              "fax", 
+              "linkedin", 
+              "note_1", 
+              "note_2", 
+              "avatar"
+        FROM   
+              "Customer_Contacts"
         ${whereClause}
-        ORDER BY ${sort} ${order}
-        OFFSET ${(page - 1) * limit}
-        LIMIT ${limit};
+        ORDER BY 
+              ${sort} ${order}
+        OFFSET 
+              ${(page - 1) * limit}
+        LIMIT 
+              ${limit};
       `;
 
     let customer_contact_count_query = `
-        SELECT COUNT("id")
-        FROM   "Customer_Contacts"
+        SELECT 
+              COUNT("id")
+        FROM   
+              "Customer_Contacts"
         ${whereClause};
       `;
 

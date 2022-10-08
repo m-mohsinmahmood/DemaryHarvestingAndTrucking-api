@@ -12,10 +12,29 @@ const httpTrigger: AzureFunction = async function (
     const customer_contact_id: string = req.query.id;
 
     let customer_contact_info_query = `
-      SELECT "customer_id", "company_name", "first_name", "last_name", "position", "website", "address", "cell_number", "city", "office_number",
-             "state", "email", "zip_code", "fax", "linkedin", "note_1", "note_2", "avatar"
-      FROM   "Customer_Contacts"
-      WHERE  "id" = '${customer_contact_id}';
+      SELECT 
+            "customer_id", 
+            "company_name", 
+            "first_name", 
+            "last_name", 
+            "position", 
+            "website", 
+            "address", 
+            "cell_number", 
+            "city", 
+            "office_number",
+            "state",          
+            "email", 
+            "zip_code", 
+            "fax", 
+            "linkedin", 
+            "note_1",
+            "note_2", 
+            "avatar"
+      FROM  
+            "Customer_Contacts"
+      WHERE  
+            "id" = '${customer_contact_id}';
       `;
 
     db.connect();

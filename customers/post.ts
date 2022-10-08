@@ -13,9 +13,26 @@ const httpTrigger: AzureFunction = async function (
     const customer: customer = req.body;
 
     let query = `
-      INSERT INTO "Customers" ("company_name", "main_contact", "position", "phone_number", "state", "country", "email", "customer_type", "status")
-      VALUES ('${customer.company_name}', '${customer.main_contact}', '${customer.position}', '${customer.phone_number}', '${customer.state}', '${customer.country}', '${customer.email}', 
-              '${customer.customer_type}', ${customer.status});
+      INSERT INTO 
+                  "Customers" 
+                  ("company_name", 
+                  "main_contact", 
+                  "position", 
+                  "phone_number", 
+                  "state", 
+                  "country", 
+                  "email", 
+                  "customer_type", 
+                  "status")
+      VALUES      ('${customer.company_name}', 
+                  '${customer.main_contact}', 
+                  '${customer.position}', 
+                  '${customer.phone_number}', 
+                  '${customer.state}', 
+                  '${customer.country}', 
+                  '${customer.email}', 
+                  '${customer.customer_type}', 
+                  '${customer.status});
     `;
 
     db.connect();

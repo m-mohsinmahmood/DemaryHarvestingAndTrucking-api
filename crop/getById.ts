@@ -14,16 +14,14 @@ const httpTrigger: AzureFunction = async function (
 
     let crop_info_query = `
         SELECT 
-            c."id",
-            c."name",
-            c."variety",
-            c."bushel_weight" 
-        
+              "id",
+              "name",
+              "variety",
+              "bushel_weight" 
         FROM 
-            "Crops" c
-        
+            "Crops"
         WHERE 
-            c."id" = '${crop_id}';
+            "id" = '${crop_id}';
         `;
 
     db.connect();

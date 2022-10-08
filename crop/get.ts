@@ -19,12 +19,20 @@ const httpTrigger: AzureFunction = async function (
     if (search) whereClause = `WHERE LOWER(c.name) LIKE LOWER('%${search}%')`;
 
     let crops_info_query = `
-        SELECT c."id", c."name", c."variety", c."bushel_weight"
-        FROM "Crops" c
+        SELECT 
+              "id", 
+              "name", 
+              "variety", 
+              "bushel_weight"
+        FROM 
+              "Crops" 
         ${whereClause}
-        ORDER BY ${sort} ${order}
-        OFFSET ${((page - 1) * limit)}
-        LIMIT ${limit};
+        ORDER BY 
+              ${sort} ${order}
+        OFFSET 
+              ${((page - 1) * limit)}
+        LIMIT 
+              ${limit};
       `;
 
     let crops_count_query = `
