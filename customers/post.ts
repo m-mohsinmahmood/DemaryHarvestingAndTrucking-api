@@ -32,7 +32,7 @@ const httpTrigger: AzureFunction = async function (
                   '${customer.country}', 
                   '${customer.email}', 
                   '${customer.customer_type}', 
-                  '${customer.status});
+                  '${customer.status}');
     `;
 
     db.connect();

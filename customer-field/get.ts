@@ -10,44 +10,56 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     const search: string = req.query.search;
+    const customer_id: string = req.query.customerId;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 10;
-    const sort: string = req.query.sort ? req.query.sort : `created_at` ;
+    const sort: string = req.query.sort ? req.query.sort : `fi."created_at"`;
     const order: string = req.query.order ? req.query.order : `desc`;
-    const customer_id: string = req.query.customerId;
-    let whereClause: string = `WHERE customer_id = '${customer_id}' `;
+    let whereClause: string = `WHERE f."customer_id" = '${customer_id}' `;
 
-    if (search) whereClause = `AND LOWER(name) LIKE LOWER('%${search}%')`;
+    if (search)
+      whereClause = `AND LOWER(last_name) LIKE LOWER('%${search}%')`;
 
-    let customer_farm_query = `
+    let customer_field_query = `
         SELECT 
-              "id",
-              "name"
+                f."id" AS "farm_id", 
+                f."name" AS "farm_name", 
+                fi."id" AS "field_id", 
+                fi."name" AS "field_name", 
+                fi."acres", 
+                fi."calendar_year"
         FROM 
-              "Customer_Farm" 
+                "Customer_Farm" f
+                INNER JOIN "Customer_Field" fi 
+                ON f."id" = fi."farm_id" AND f."customer_id" = '${customer_id}'    
+
         ${whereClause}
         ORDER BY 
               ${sort} ${order}
         OFFSET 
-              ${((page - 1) * limit)}
+              ${(page - 1) * limit}
         LIMIT 
               ${limit};
       `;
 
-    let customer_farm_count_query = `
-        SELECT COUNT("id")
-        FROM "Customer_Farm"
+    let customer_field_count_query = `
+        SELECT 
+                COUNT(f."id")
+        FROM   
+                "Customer_Farm" f
+                INNER JOIN "Customer_Field" fi 
+                ON f."id" = fi."farm_id" AND f."customer_id" = '${customer_id}'
         ${whereClause};
       `;
 
-    let query = `${customer_farm_query} ${customer_farm_count_query}`;
+    let query = `${customer_field_query} ${customer_field_count_query}`;
 
     db.connect();
 
     let result = await db.query(query);
 
     let resp = {
-      customer_farms: result[0].rows,
+      customer_fields: result[0].rows,
       count: +result[1].rows[0].count,
     };
 
