@@ -23,7 +23,15 @@ const httpTrigger: AzureFunction = async function (
                   "country", 
                   "email", 
                   "customer_type", 
-                  "status")
+                  "status",
+                  "customer_name",
+                  "fax",
+                  "address",
+                  "billing_address",
+                  "city",
+                  "zip_code",
+                  "website",
+                  "linkedin")
       VALUES      ('${customer.company_name}', 
                   '${customer.main_contact}', 
                   '${customer.position}', 
@@ -32,7 +40,15 @@ const httpTrigger: AzureFunction = async function (
                   '${customer.country}', 
                   '${customer.email}', 
                   '${customer.customer_type}', 
-                  '${customer.status}');
+                  '${customer.status}',
+                  '${customer.customer_name}',
+                  '${customer.fax}',
+                  '${customer.address}',
+                  '${customer.billing_address}',
+                  '${customer.city}',
+                  '${customer.zip_code}',
+                  '${customer.website}',
+                  '${customer.linkedin}');
     `;
 
     db.connect();

@@ -8,5 +8,13 @@ export interface customer{
     country: string, 
     email: string, 
     customer_type: string, 
-    status: boolean
+    status: boolean,
+    customer_name: string,
+    fax: string,
+    address: string,
+    billing_address: string,
+    city: string,
+    zip_code: string,
+    website: string,
+    linkedin: string
 }

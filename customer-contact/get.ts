@@ -13,8 +13,8 @@ const httpTrigger: AzureFunction = async function (
     const customer_id: string = req.query.customerId;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 10;
-    const sort: string = req.query.sort ? req.query.sort : `"created_at"`;
-    const order: string = req.query.order ? req.query.order : `desc`;
+    const sort: string = req.query.sort ? req.query.sort : ` "created_at"`;
+    const order: string = req.query.order ? req.query.order : ` desc`;
     let whereClause: string = ` WHERE "customer_id" = '${customer_id}'`;
 
     if (search)
@@ -22,6 +22,7 @@ const httpTrigger: AzureFunction = async function (
 
     let customer_contact_info_query = `
         SELECT 
+              "id",
               "customer_id", 
               "company_name", 
               "first_name", 

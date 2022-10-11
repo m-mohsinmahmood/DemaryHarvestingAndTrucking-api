@@ -22,7 +22,15 @@ const httpTrigger: AzureFunction = async function (
               "country", 
               "email", 
               "customer_type", 
-              "status"
+              "status",
+              "customer_name",
+              "fax",
+              "address",
+              "billing_address",
+              "city",
+              "zip_code",
+              "website",
+              "linkedin"
         FROM 
               "Customers"
         WHERE 
