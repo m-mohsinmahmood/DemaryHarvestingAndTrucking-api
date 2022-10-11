@@ -16,7 +16,7 @@ const httpTrigger: AzureFunction = async function (
     const order: string = req.query.order ? req.query.order : `desc`;
     let whereClause: string = ``;
 
-    if (search) whereClause = ` WHERE LOWER("name") LIKE LOWER('%${search}%')`;
+    if (search) whereClause = ` WHERE LOWER("customer_name") LIKE LOWER('%${search}%')`;
 
     let customer_info_query = `
         SELECT 
