@@ -6,7 +6,9 @@
       "direction": "in",
       "name": "req",
       "methods": [
-        "post"
+        "get",
+        "post",
+        "put"
       ]
     },
     {
@@ -15,5 +17,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/customer-farm-field/index.js"
+  "scriptFile": "../dist/customer-farm/index.js"
 }
