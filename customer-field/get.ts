@@ -15,10 +15,10 @@ const httpTrigger: AzureFunction = async function (
     const limit: number = +req.query.limit ? +req.query.limit : 10;
     const sort: string = req.query.sort ? req.query.sort : `fi."created_at"`;
     const order: string = req.query.order ? req.query.order : `desc`;
-    let whereClause: string = `WHERE f."customer_id" = '${customer_id}' `;
+    let whereClause: string = `WHERE f."customer_id" = '${customer_id}'`;
 
     if (search)
-      whereClause = `AND LOWER(fi."name") LIKE LOWER('%${search}%')`;
+      whereClause = whereClause + ` AND LOWER(fi."name") LIKE LOWER('%${search}%')`;
 
     let customer_field_query = `
         SELECT 
