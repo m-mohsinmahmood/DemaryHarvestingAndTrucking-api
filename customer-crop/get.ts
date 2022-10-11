@@ -13,35 +13,24 @@ const httpTrigger: AzureFunction = async function (
     const customer_id: string = req.query.customerId;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 10;
-    const sort: string = req.query.sort ? req.query.sort : `"created_at"`;
+    const sort: string = req.query.sort ? req.query.sort : `cc."created_at"`;
     const order: string = req.query.order ? req.query.order : `desc`;
-    let whereClause: string = ` WHERE "customer_id" = '${customer_id}'`;
+    let whereClause: string = `WHERE cc."customer_id" = '${customer_id}' `;
 
     if (search)
-      whereClause = ` AND LOWER("last_name") LIKE LOWER('%${search}%')`;
+      whereClause = `AND LOWER(c."name") LIKE LOWER('%${search}%')`;
 
-    let customer_contact_info_query = `
+    let customer_crop_query = `
         SELECT 
-              "customer_id", 
-              "company_name", 
-              "first_name", 
-              "last_name", 
-              "position", 
-              "website", 
-              "address", 
-              "cell_number", 
-              "city", 
-              "office_number",
-              "state", 
-              "email", 
-              "zip_code", 
-              "fax", 
-              "linkedin", 
-              "note_1", 
-              "note_2", 
-              "avatar"
-        FROM   
-              "Customer_Contacts"
+                
+                c."name" as "crop_name", 
+                cc."id" as "customer_crop_id", 
+                cc."calendar_year"
+        FROM 
+                "Crops" c
+                INNER JOIN "Customer_Crop" cc 
+                ON c."id" = cc."crop_id" AND cc."customer_id" = '${customer_id}'    
+
         ${whereClause}
         ORDER BY 
               ${sort} ${order}
@@ -51,22 +40,24 @@ const httpTrigger: AzureFunction = async function (
               ${limit};
       `;
 
-    let customer_contact_count_query = `
+    let customer_crop_count_query = `
         SELECT 
-              COUNT("id")
+                COUNT(cc."id")
         FROM   
-              "Customer_Contacts"
+                "Crops" c
+                INNER JOIN "Customer_Crop" cc 
+                ON c."id" = cc."crop_id" AND cc."customer_id" = '${customer_id}'
         ${whereClause};
       `;
 
-    let query = `${customer_contact_info_query} ${customer_contact_count_query}`;
+    let query = `${customer_crop_query} ${customer_crop_count_query}`;
 
     db.connect();
 
     let result = await db.query(query);
 
     let resp = {
-      customer_contacts: result[0].rows,
+      customer_crops: result[0].rows,
       count: +result[1].rows[0].count,
     };
 

@@ -18,7 +18,7 @@ const httpTrigger: AzureFunction = async function (
     let whereClause: string = `WHERE f."customer_id" = '${customer_id}' `;
 
     if (search)
-      whereClause = `AND LOWER(last_name) LIKE LOWER('%${search}%')`;
+      whereClause = `AND LOWER(d."name") LIKE LOWER('%${search}%')`;
 
     let customer_destination_query = `
         SELECT 

@@ -15,7 +15,7 @@ const httpTrigger: AzureFunction = async function (
     const sort: string = req.query.sort ? req.query.sort : `created_at` ;
     const order: string = req.query.order ? req.query.order : `desc`;
     const customer_id: string = req.query.customerId;
-    let whereClause: string = `WHERE customer_id = '${customer_id}' `;
+    let whereClause: string = ` WHERE "customer_id" = '${customer_id}' `;
 
     if (search) whereClause = `AND LOWER(name) LIKE LOWER('%${search}%')`;
 
