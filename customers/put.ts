@@ -23,15 +23,15 @@ const httpTrigger: AzureFunction = async function (
               "country"         = '${customer.country}',
               "email"           = '${customer.email}',
               "customer_type"   = '${customer.customer_type}', 
-              "status"          = ${customer.status},
-              "customer_name"   = '${customer.customer_name}
-              "fax"             = '${customer.fax},
-              "address"         = '${customer.address},
-              "billing_address" = '${customer.billing_address},
-              "city"            = '${customer.city},
-              "zip_code"        = '${customer.zip_code},
-              "website"         = '${customer.website},
-              "linkedin"        = '${customer.linkedin},
+              "status"          = '${customer.status}',
+              "customer_name"   = '${customer.customer_name}',
+              "fax"             = '${customer.fax}',
+              "address"         = '${customer.address}',
+              "billing_address" = '${customer.billing_address}',
+              "city"            = '${customer.city}',
+              "zip_code"        = '${customer.zip_code}',
+              "website"         = '${customer.website}',
+              "linkedin"        = '${customer.linkedin}'
         WHERE 
               "id" = '${customer.id}';`
 
