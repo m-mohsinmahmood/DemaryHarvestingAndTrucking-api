@@ -26,8 +26,8 @@ const httpTrigger: AzureFunction = async function (
                   '${destination.customer_id}', 
                   '${destination.farm_id}',
                   '${destination.name}',
-                  TO_DATE('${destination.calendar_year}', 'YYYY/MM/DD'),
-                  '${destination.status}'
+                   TO_DATE('${destination.calendar_year}', 'YYYY/MM/DD'),
+                   ${destination.status}
                   );
       `;
 
