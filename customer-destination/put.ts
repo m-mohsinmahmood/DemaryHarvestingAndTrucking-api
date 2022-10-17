@@ -16,7 +16,8 @@ const httpTrigger: AzureFunction = async function (
         SET     "customer_id"   = '${destination.customer_id}', 
                 "farm_id"       = '${destination.farm_id}', 
                 "name"          = '${destination.name}',
-                "calendar_year" = '${destination.calendar_year}' 
+                "calendar_year" = '${destination.calendar_year}',
+                "status"        = '${destination.status}',
         WHERE   "id"            = '${destination.id}';`
 
     db.connect();

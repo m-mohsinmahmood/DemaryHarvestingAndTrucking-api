@@ -4,4 +4,5 @@ export interface destination{
     farm_id: string;
     name: string;
     calendar_year: string;
+    status: boolean;
 }

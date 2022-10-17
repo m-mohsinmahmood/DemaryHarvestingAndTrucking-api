@@ -18,14 +18,16 @@ const httpTrigger: AzureFunction = async function (
                   ("customer_id", 
                   "farm_id",
                   "name", 
-                  "calendar_year") 
+                  "calendar_year",
+                  "status") 
        
       VALUES 
                   (
                   '${destination.customer_id}', 
                   '${destination.farm_id}',
                   '${destination.name}',
-                  TO_DATE('${destination.calendar_year}', 'YYYY/MM/DD')
+                  TO_DATE('${destination.calendar_year}', 'YYYY/MM/DD'),
+                  '${destination.status}'
                   );
       `;
 
