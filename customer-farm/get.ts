@@ -22,7 +22,8 @@ const httpTrigger: AzureFunction = async function (
     let customer_farm_query = `
         SELECT 
               "id",
-              "name"
+              "name",
+              "status"
         FROM 
               "Customer_Farm" 
         ${whereClause}
