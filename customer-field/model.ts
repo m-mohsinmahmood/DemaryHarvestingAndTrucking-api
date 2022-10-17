@@ -5,4 +5,5 @@ export interface field{
     name: string;
     acres: number;
     calendar_year: string;
+    status: boolean;
 }
