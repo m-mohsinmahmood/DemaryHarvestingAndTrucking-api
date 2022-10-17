@@ -4,4 +4,5 @@ export interface crop{
     farm_id: string;
     crop_id: string;
     calendar_year: string;
+    status: boolean;
 }

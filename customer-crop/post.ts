@@ -16,15 +16,15 @@ const httpTrigger: AzureFunction = async function (
       INSERT INTO 
                   "Customer_Crop" 
                   ("customer_id", 
-                  "farm_id",
-                  "crop_id", 
-                  "calendar_year") 
+                  "crop_id",
+                  "calendar_year",
+                  "status") 
        
       VALUES 
                   ('${crop.customer_id}', 
-                  '${crop.farm_id}',
                   '${crop.crop_id}',
-                  TO_DATE('${crop.calendar_year}', 'YYYY/MM/DD')
+                  TO_DATE('${crop.calendar_year}', 'YYYY/MM/DD'),
+                  '${crop.status}'
                   );
       `;
 

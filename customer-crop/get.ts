@@ -25,7 +25,8 @@ const httpTrigger: AzureFunction = async function (
                 
                 c."name" as "crop_name", 
                 cc."id" as "customer_crop_id", 
-                cc."calendar_year"
+                cc."calendar_year",
+                cc."status"
         FROM 
                 "Crops" c
                 INNER JOIN "Customer_Crop" cc 
