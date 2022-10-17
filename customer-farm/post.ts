@@ -21,10 +21,12 @@ const httpTrigger: AzureFunction = async function (
         INSERT INTO 
                   "Customer_Farm" 
                   ("customer_id", 
-                  "name")
+                  "name",
+                  "status")
         VALUES 
                   ('${farm.customer_id}', 
-                  '${farm.name}');
+                  '${farm.name}',
+                  '${farm.status});
     `;
     db.connect();
     await db.query(query);

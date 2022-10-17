@@ -15,7 +15,8 @@ const httpTrigger: AzureFunction = async function (
     let crop_info_query = `
         SELECT 
               "id",
-              "name"
+              "name",
+              "status"
         FROM 
             "Customer_Farm"
         WHERE 

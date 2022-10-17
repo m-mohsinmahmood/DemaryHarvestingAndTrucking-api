@@ -15,6 +15,7 @@ const httpTrigger: AzureFunction = async function (
         UPDATE "Customer_Farm" 
         SET "customer_id" = '${farm.customer_id}', 
             "name"        = '${farm.name}', 
+            "status"      = '${farm.status}',
             "modified_at" = 'now()'
         WHERE 
             "id" = '${farm.id}';
