@@ -27,9 +27,9 @@ const httpTrigger: AzureFunction = async function (
                   '${field.customer_id}', 
                   '${field.farm_id}',
                   '${field.name}',
-                  '${field.acres},
-                  '${field.status},
-                  TO_DATE('${field.calendar_year}', 'YYYY/MM/DD')
+                  '${field.acres}',
+                  TO_DATE('${field.calendar_year}', 'YYYY/MM/DD'),
+                  ${field.status}
                   );
       `;
 
