@@ -26,7 +26,7 @@ const httpTrigger: AzureFunction = async function (
         VALUES 
                   ('${farm.customer_id}', 
                   '${farm.name}',
-                  '${farm.status});
+                   ${farm.status});
     `;
     db.connect();
     await db.query(query);
