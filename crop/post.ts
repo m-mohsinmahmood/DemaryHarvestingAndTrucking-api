@@ -13,8 +13,8 @@ const httpTrigger: AzureFunction = async function (
   try {    
     //#region Validation
     const crop: crop = req.body;
-    const error = cropValidator(crop);
-    if (error.length > 0) throw { message: error };
+    // const error = cropValidator(crop);
+    // if (error.length > 0) throw { message: error };
     //#endregion
     //#region Query Execution
     let query = `
