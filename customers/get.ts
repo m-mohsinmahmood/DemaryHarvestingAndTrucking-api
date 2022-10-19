@@ -21,7 +21,7 @@ const httpTrigger: AzureFunction = async function (
     let customer_info_query = `
         SELECT 
               "id", 
-              "company_name",
+              "customer_name",
               "main_contact", 
               "position", 
               "phone_number", 

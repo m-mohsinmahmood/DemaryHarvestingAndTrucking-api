@@ -15,8 +15,7 @@ const httpTrigger: AzureFunction = async function (
     let query = `
       INSERT INTO 
                   "Customers" 
-                  ("company_name", 
-                  "main_contact", 
+                  ("main_contact", 
                   "position", 
                   "phone_number", 
                   "state", 
@@ -32,8 +31,7 @@ const httpTrigger: AzureFunction = async function (
                   "zip_code",
                   "website",
                   "linkedin")
-      VALUES      ('${customer.company_name}', 
-                  '${customer.main_contact}', 
+      VALUES      ('${customer.main_contact}', 
                   '${customer.position}', 
                   '${customer.phone_number}', 
                   '${customer.state}', 

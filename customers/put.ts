@@ -15,7 +15,6 @@ const httpTrigger: AzureFunction = async function (
         UPDATE 
               "Customers"
         SET 
-              "company_name"    = '${customer.company_name}', 
               "main_contact"    = '${customer.main_contact}', 
               "position"        = '${customer.position}', 
               "phone_number"    = '${customer.phone_number}', 
