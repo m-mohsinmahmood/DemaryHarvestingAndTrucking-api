@@ -3,6 +3,7 @@ export interface field{
     customer_id: string;
     crop_id: string;
     rate_type: string;
-    base_rate: string;
-    premium_rate: string;
+    rate: number;
+    base_rate: number;
+    premium_rate: number;
 }

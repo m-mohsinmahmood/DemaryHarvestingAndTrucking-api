@@ -10,24 +10,26 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const field: field = req.body;
+    const hauling_rate: field = req.body;
     
     let query = `
       INSERT INTO 
                   "Hauling_Rates" 
                   ("customer_id", 
                   "crop_id",
-                  "rate_type", 
+                  "rate_type",
+                  "rate",
                   "base_rate",
                   "premium_rate") 
        
       VALUES 
                   (
-                  '${field.customer_id}', 
-                  '${field.crop_id}',
-                  '${field.rate_type}',
-                  '${field.base_rate}',
-                  '${field.premium_rate}'
+                  '${hauling_rate.customer_id}', 
+                  '${hauling_rate.crop_id}',
+                  '${hauling_rate.rate_type}',
+                   ${hauling_rate.rate ? hauling_rate.rate : 0 },
+                   ${hauling_rate.base_rate ? hauling_rate.base_rate : 0},
+                   ${hauling_rate.premium_rate ? hauling_rate.premium_rate : 0}
                   );
       `;
 

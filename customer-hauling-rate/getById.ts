@@ -9,31 +9,32 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const customer_field_id: string = req.query.id;
+    const haudling_rate_id: string = req.query.id;
 
-    let customer_contact_info_query = `
+    let hualing_rates_query = `
         SELECT 
-                f."id" AS "farm_id", 
-                f."name" as "farm_name", 
-                fi."id" as "field_id", 
-                fi."name" as "field_name", 
-                fi."acres", 
-                fi."calendar_year",
-                fi."status"
+                "customer_id", 
+                "crop_id",
+                "rate_type",
+                 rate,
+                 base_rate,
+                 premium_rate
         FROM 
-                "Customer_Farm" f
-                INNER JOIN "Customer_Field" fi 
-                ON f."id" = fi."farm_id" AND fi."id" = '${customer_field_id}';
+                "Hauling_Rates"
+
+        WHERE
+                "id" = '${haudling_rate_id}';
+
       `;
 
     db.connect();
 
-    let result = await db.query(customer_contact_info_query);
+    let result = await db.query(hualing_rates_query);
     let resp;
     if (result.rows.length > 0) resp = result.rows[0];
     else
       resp = {
-        message: "No customer field exists with this id.",
+        message: "No hauling rate exists with this id.",
       };
 
     db.end();

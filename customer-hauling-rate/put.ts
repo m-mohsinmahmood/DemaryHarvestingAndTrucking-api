@@ -10,16 +10,17 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const field: field = req.body;
+    const hauling_rate: field = req.body;
     let query = `
-        UPDATE  "Customer_Field"
-        SET     "customer_id"  = '${field.customer_id}', 
-                "crop_id"      = '${field.crop_id}', 
-                "rate_type"    = '${field.rate_type}',
-                "base_rate"    = '${field.base_rate}', 
-                "premium_rate" = '${field.premium_rate}'
+        UPDATE  "Hauling_Rates"
+        SET     "customer_id"  = '${hauling_rate.customer_id}', 
+                "crop_id"      = '${hauling_rate.crop_id}', 
+                "rate_type"    = '${hauling_rate.rate_type}',
+                "rate"         =  ${hauling_rate.rate ? hauling_rate.rate : 0 },
+                "base_rate"    =  ${hauling_rate.base_rate ? hauling_rate.base_rate : 0}, 
+                "premium_rate" =  ${hauling_rate.premium_rate ? hauling_rate.premium_rate : 0}
                 
-        WHERE   "id"           = '${field.id}';`
+        WHERE   "id"           = '${hauling_rate.id}';`
 
     db.connect();
     let result = await db.query(query);
@@ -28,7 +29,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        message: "Customer field has been updated successfully.",
+        message: "Hauling Rate has been updated successfully.",
       },
     };
     context.done();
