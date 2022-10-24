@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { hauling_rate } from "./model";
+import { combining_rate } from "./model";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -10,26 +10,26 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const hauling_rate: hauling_rate = req.body;
-    
+    const combining_rate: combining_rate = req.body;
+
     let query = `
       INSERT INTO 
-                  "Hauling_Rates" 
-                  ("customer_id", 
+                  "Combining_Rates" 
+                  (
+                  "customer_id", 
                   "crop_id",
-                  "rate_type",
-                  "rate",
-                  "base_rate",
-                  "premium_rate") 
+                  "combining_rate",
+                  "base_bushels",
+                  "premium_rate"
+                  ) 
        
       VALUES 
                   (
-                  '${hauling_rate.customer_id}', 
-                  '${hauling_rate.crop_id}',
-                  '${hauling_rate.rate_type}',
-                   ${hauling_rate.rate ? hauling_rate.rate : 0 },
-                   ${hauling_rate.base_rate ? hauling_rate.base_rate : 0},
-                   ${hauling_rate.premium_rate ? hauling_rate.premium_rate : 0}
+                  '${combining_rate.customer_id}', 
+                  '${combining_rate.crop_id}',
+                  '${combining_rate.combining_rate}',
+                   ${combining_rate.base_bushels},
+                   ${combining_rate.premium_rate ? combining_rate.premium_rate : 0}
                   );
       `;
 
@@ -40,7 +40,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        message: "Hauling Rate has been created successfully",
+        message: "Combining Rate has been created successfully",
       },
     };
 

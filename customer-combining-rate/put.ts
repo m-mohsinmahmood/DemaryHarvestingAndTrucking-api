@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { hauling_rate } from "./model";
+import { combining_rate } from "./model";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -10,17 +10,16 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const hauling_rate: hauling_rate = req.body;
+    const combining_rate: combining_rate = req.body;
     let query = `
-        UPDATE  "Hauling_Rates"
-        SET     "customer_id"  = '${hauling_rate.customer_id}', 
-                "crop_id"      = '${hauling_rate.crop_id}', 
-                "rate_type"    = '${hauling_rate.rate_type}',
-                "rate"         =  ${hauling_rate.rate ? hauling_rate.rate : 0 },
-                "base_rate"    =  ${hauling_rate.base_rate ? hauling_rate.base_rate : 0}, 
-                "premium_rate" =  ${hauling_rate.premium_rate ? hauling_rate.premium_rate : 0}
+        UPDATE  "Combining_Rates"
+        SET     "customer_id"    = '${combining_rate.customer_id}', 
+                "crop_id"        = '${combining_rate.crop_id}',
+                "combining_rate" =  ${combining_rate.combining_rate},
+                "base_bushels"   =  ${combining_rate.base_bushels},
+                "premium_rate"   =  ${combining_rate.premium_rate ? combining_rate.premium_rate : 0}
                 
-        WHERE   "id"           = '${hauling_rate.id}';`
+        WHERE   "id"             = '${combining_rate.id}';`
 
     db.connect();
     let result = await db.query(query);
@@ -29,7 +28,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        message: "Hauling Rate has been updated successfully.",
+        message: "Combining Rate has been updated successfully.",
       },
     };
     context.done();

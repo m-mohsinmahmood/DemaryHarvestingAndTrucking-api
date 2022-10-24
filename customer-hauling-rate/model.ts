@@ -1,4 +1,4 @@
-export interface field{
+export interface hauling_rate{
     id?: string;
     customer_id: string;
     crop_id: string;
