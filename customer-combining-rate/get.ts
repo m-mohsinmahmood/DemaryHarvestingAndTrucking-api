@@ -19,8 +19,8 @@ const httpTrigger: AzureFunction = async function (
     let combining_rates_query = `
         SELECT 
                 cr."id", 
-                c."crop_id",
-                c."crop_name",
+                c."id" as "crop_id",
+                c."name" as "crop_name",
                 c."bushel_weight", 
                 cr."customer_id", 
                 cr."combining_rate", 
