@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { hauling_rate } from "./model";
+import { trucking_rate } from "./model";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -10,24 +10,23 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const hauling_rate: hauling_rate = req.body;
+    const trucking_rate: trucking_rate = req.body;
     
     let query = `
       INSERT INTO 
-                  "Hauling_Rates" 
-                  ("customer_id", 
+                  "Trucking_Rates" 
+                  (
+                  "id",
+                  "customer_id", 
                   "rate_type",
-                  "rate",
-                  "base_rate",
-                  "premium_rate") 
+                  "rate"
+                  ) 
        
       VALUES 
                   (
-                  '${hauling_rate.customer_id}', 
-                  '${hauling_rate.rate_type}',
-                   ${hauling_rate.rate ? hauling_rate.rate : 0 },
-                   ${hauling_rate.base_rate ? hauling_rate.base_rate : 0},
-                   ${hauling_rate.premium_rate ? hauling_rate.premium_rate : 0}
+                  '${trucking_rate.customer_id}', 
+                  '${trucking_rate.rate_type}',
+                   ${trucking_rate.rate }
                   );
       `;
 
@@ -38,7 +37,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        message: "Hauling Rate has been created successfully",
+        message: "Trucking Rate has been created successfully",
       },
     };
 

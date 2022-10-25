@@ -16,17 +16,15 @@ const httpTrigger: AzureFunction = async function (
     const order: string = req.query.order ? req.query.order : `desc`;
     let whereClause: string = `WHERE "customer_id" = '${customer_id}'`;
 
-    let hauling_rates_query = `
+    let trucking_rates_query = `
         SELECT 
                 "id",
+                "customer_id",
                 "rate_type", 
                 "rate",
-                "base_rate", 
-                "premium_rate", 
-                "customer_id", 
                 "created_at"
         FROM
-                "Hauling_Rates"
+                "Trucking_Rates"
         ${whereClause}
         ORDER BY 
               ${sort} ${order}
@@ -36,22 +34,22 @@ const httpTrigger: AzureFunction = async function (
               ${limit};
       `;
 
-    let hauling_rates_count_query = `
+    let trucking_rates_count_query = `
         SELECT 
                 COUNT("id")
         FROM   
-                "Hauling_Rates"
+                "Trucking_Rates"
         ${whereClause};
       `;
 
-    let query = `${hauling_rates_query} ${hauling_rates_count_query}`;
+    let query = `${trucking_rates_query} ${trucking_rates_count_query}`;
 
     db.connect();
 
     let result = await db.query(query);
 
     let resp = {
-      hauling_rates: result[0].rows,
+      trucking_rates: result[0].rows,
       count: +result[1].rows[0].count,
     };
 

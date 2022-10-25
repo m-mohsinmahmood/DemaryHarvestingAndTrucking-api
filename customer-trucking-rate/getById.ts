@@ -9,31 +9,29 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const haudling_rate_id: string = req.query.id;
+    const trucking_rate_id: string = req.query.id;
 
-    let hualing_rates_query = `
+    let trucking_rates_query = `
         SELECT 
                 "customer_id", 
                 "rate_type",
-                "rate",
-                "base_rate",
-                "premium_rate"
+                "rate"
         FROM 
-                "Hauling_Rates"
+                "Trucking_Rates"
 
         WHERE
-                "id" = '${haudling_rate_id}';
+                "id" = '${trucking_rate_id}';
 
       `;
 
     db.connect();
 
-    let result = await db.query(hualing_rates_query);
+    let result = await db.query(trucking_rates_query);
     let resp;
     if (result.rows.length > 0) resp = result.rows[0];
     else
       resp = {
-        message: "No hauling rate exists with this id.",
+        message: "No trucking rate exists with this id.",
       };
 
     db.end();
