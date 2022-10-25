@@ -16,7 +16,6 @@ const httpTrigger: AzureFunction = async function (
       INSERT INTO 
                   "Trucking_Rates" 
                   (
-                  "id",
                   "customer_id", 
                   "rate_type",
                   "rate"
