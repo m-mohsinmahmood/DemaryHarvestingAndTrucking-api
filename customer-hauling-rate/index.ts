@@ -3,6 +3,7 @@ import * as addCustomerHaulingRate from "./post";
 import * as updateCustomerHaulingRate from "./put";
 import * as getCustomerHaulingRate from "./get";
 import * as getCustomerHaulingRateById from "./getById";
+import * as deleteCustomerHaulingRate from "./delete";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -20,6 +21,10 @@ const httpTrigger: AzureFunction = async function (
 
     case "PUT":
       await updateCustomerHaulingRate.default(context, req);
+      break;
+
+    case "DELETE":
+      await deleteCustomerHaulingRate.default(context, req);
       break;
 
     default:

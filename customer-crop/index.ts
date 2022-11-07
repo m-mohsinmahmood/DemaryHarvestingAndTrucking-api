@@ -3,8 +3,7 @@ import * as getCustomerCrop from "./get";
 import * as getCustomerCropById from "./getById";
 import * as addCustomerCrop from "./post";
 import * as updateCustomerCrop from "./put";
-
-
+import * as deleteCustomerCrop from "./delete";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -22,6 +21,10 @@ const httpTrigger: AzureFunction = async function (
 
     case "PUT":
       await updateCustomerCrop.default(context, req);
+      break;
+
+    case "DELETE":
+      await deleteCustomerCrop.default(context, req);
       break;
 
     default:

@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as addFarm from "./post";
 import * as updateFarm from "./put";
-// import * as deleteComment from "./delete";
+import * as deleteFarm from "./delete";
 import * as getFarm from "./get";
 import * as getFarmById from "./getById";
 
@@ -23,6 +23,10 @@ const httpTrigger: AzureFunction = async function (
       case "PUT":
         await updateFarm.default(context, req);
         break;
+
+      case "DELETE":
+          await deleteFarm.default(context, req);
+          break;
 
       default:
         context.res = {

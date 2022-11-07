@@ -30,7 +30,7 @@ const httpTrigger: AzureFunction = async function (
         FROM 
                 "Crops" c
                 INNER JOIN "Customer_Crop" cc 
-                ON c."id" = cc."crop_id" AND cc."customer_id" = '${customer_id}'    
+                ON c."id" = cc."crop_id" AND cc."customer_id" = '${customer_id}' AND cc."is_deleted" = FALSE    
 
         ${whereClause}
         ORDER BY 
@@ -47,7 +47,7 @@ const httpTrigger: AzureFunction = async function (
         FROM   
                 "Crops" c
                 INNER JOIN "Customer_Crop" cc 
-                ON c."id" = cc."crop_id" AND cc."customer_id" = '${customer_id}'
+                ON c."id" = cc."crop_id" AND cc."customer_id" = '${customer_id}' AND cc."is_deleted" = FALSE
         ${whereClause};
       `;
 
