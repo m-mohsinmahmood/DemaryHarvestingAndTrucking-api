@@ -27,7 +27,7 @@ const httpTrigger: AzureFunction = async function (
         FROM 
                 "Combining_Rates" cr 
                 INNER JOIN "Crops" c 
-                ON cr."crop_id" = c."id" AND c."is_deleted" = false
+                ON cr."crop_id" = c."id" AND cr."is_deleted" = false
 
         ${whereClause}
         ORDER BY 
