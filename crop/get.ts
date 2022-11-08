@@ -16,7 +16,7 @@ const httpTrigger: AzureFunction = async function (
     const order: string = req.query.order ? req.query.order : `desc`;
     let whereClause: string = ` WHERE "is_deleted" = false`;
 
-    if (search) whereClause = ` AND LOWER(name) LIKE LOWER('%${search}%')`;
+    if (search) whereClause = ` ${whereClause} AND LOWER(name) LIKE LOWER('%${search}%')`;
 
     let crops_info_query = `
         SELECT 
