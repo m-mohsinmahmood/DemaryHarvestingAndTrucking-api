@@ -24,10 +24,11 @@ const httpTrigger: AzureFunction = async function (
       let types = customer_type.split(",");
       types.forEach((type, index) => {
         if(index === 0)
-          whereClause = ` ${whereClause} AND "customer_type" LIKE '%' || '${type}' || '%'`;
+          whereClause = ` ${whereClause} AND ( "customer_type" LIKE '%' || '${type}' || '%'`;
         else if (index > 0)  
           whereClause = ` ${whereClause} OR "customer_type" LIKE '%' || '${type}' || '%'`;
       });
+      whereClause = ` ${whereClause} )`
     }
 
     let customer_info_query = `
