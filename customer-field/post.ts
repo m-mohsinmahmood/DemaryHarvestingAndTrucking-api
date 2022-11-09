@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { field } from "./model";
+import { field, multipleFields } from "./model";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -10,28 +10,30 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const field: field = req.body;
-    
-    let query = `
-      INSERT INTO 
-                  "Customer_Field" 
-                  ("customer_id", 
-                  "farm_id",
-                  "name", 
-                  "acres",
-                  "calendar_year",
-                  "status") 
+    const fields: multipleFields = req.body;
+    let query:string = ``;
+    fields.fields.forEach(field => {
+      query = query + `
+                      INSERT INTO 
+                                  "Customer_Field" 
+                                  ("customer_id", 
+                                  "farm_id",
+                                  "name", 
+                                  "acres",
+                                  "calendar_year",
+                                  "status") 
        
-      VALUES 
-                  (
-                  '${field.customer_id}', 
-                  '${field.farm_id}',
-                  '${field.name}',
-                  '${field.acres}',
-                  TO_DATE('${field.calendar_year}', 'YYYY/MM/DD'),
-                  ${field.status}
-                  );
-      `;
+                      VALUES 
+                                  (
+                                  '${fields.customer_id}', 
+                                  '${fields.farm_id}',
+                                  '${field.name}',
+                                  '${field.acres}',
+                                  TO_DATE('${field.calendar_year}', 'YYYY/MM/DD'),
+                                  ${field.status}
+                                  );
+                      `;
+                    });
 
     db.connect();
     await db.query(query);
@@ -40,7 +42,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        message: "Customer field has been created successfully",
+        message: "Customer field/fields has been created successfully",
       },
     };
 
