@@ -10,6 +10,8 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     const search: string = req.query.search;
+    const status: string = req.query.status;
+    const customer_type: string = req.query.type;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 10;
     const sort: string = req.query.sort ? req.query.sort : `created_at` ;
@@ -17,6 +19,16 @@ const httpTrigger: AzureFunction = async function (
     let whereClause: string = ` WHERE "is_deleted" = FALSE`;
 
     if (search) whereClause = ` ${whereClause} AND LOWER("customer_name") LIKE LOWER('%${search}%')`;
+    if (status) whereClause = ` ${whereClause} AND "status" = ${(status === 'true')}`;
+    if (customer_type) {
+      let types = customer_type.split(",");
+      types.forEach((type, index) => {
+        if(index === 0)
+          whereClause = ` ${whereClause} AND "customer_type" LIKE '%' || '${type}' || '%'`;
+        else if (index > 0)  
+          whereClause = ` ${whereClause} OR "customer_type" LIKE '%' || '${type}' || '%'`;
+      });
+    }
 
     let customer_info_query = `
         SELECT 
