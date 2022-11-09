@@ -14,6 +14,7 @@ export interface field{
     status: boolean;
 }
 export interface multipleFields{
+    id?:string;
     customer_id: string;
     farm_id: string;
     fields: field_attributes[]
