@@ -23,7 +23,7 @@ const httpTrigger: AzureFunction = async function (
     let customer_crop_query = `
         SELECT 
                 c."id"   as "crop_id",
-                c."name" as "crop_name",
+                CONCAT (c."name", ' (', c."variety", ')') as "crop_name",
                 cc."id"  as "customer_crop_id", 
                 cc."calendar_year",
                 cc."status"

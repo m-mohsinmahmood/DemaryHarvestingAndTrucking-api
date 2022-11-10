@@ -25,7 +25,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        message: "Custoemr destination has been deleted successfully.",
+        message: "Customer destination has been deleted successfully.",
       },
     };
     context.done();

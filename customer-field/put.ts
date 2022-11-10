@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { field } from "./model";
+import { multipleFields } from "./model";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -10,15 +10,16 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const field: field = req.body;
+    const field: multipleFields = req.body;
+
     let query = `
         UPDATE  "Customer_Field"
         SET     "customer_id"   = '${field.customer_id}', 
                 "farm_id"       = '${field.farm_id}', 
-                "name"          = '${field.name}',
-                "acres"         = '${field.acres}', 
-                "calendar_year" = '${field.calendar_year}',
-                "status"        = ${field.status}
+                "name"          = '${field.fields[0].name}',
+                "acres"         = '${field.fields[0].acres}', 
+                "calendar_year" = '${field.fields[0].calendar_year}',
+                "status"        = ${field.fields[0].status}
         WHERE   "id"            = '${field.id}';`
 
     db.connect();

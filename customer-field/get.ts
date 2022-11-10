@@ -11,14 +11,18 @@ const httpTrigger: AzureFunction = async function (
   try {
     const search: string = req.query.search;
     const customer_id: string = req.query.customerId;
+    const farm_id: string = req.query.farmId;
+    const status: string = req.query.status;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 10;
     const sort: string = req.query.sort ? req.query.sort : `fi."created_at"`;
     const order: string = req.query.order ? req.query.order : `desc`;
     let whereClause: string = `WHERE f."customer_id" = '${customer_id}'`;
 
-    if (search)
-      whereClause = whereClause + ` AND LOWER(fi."name") LIKE LOWER('%${search}%')`;
+    if (search)  whereClause  = ` ${whereClause} AND LOWER(fi."name") LIKE LOWER('%${search}%')`;
+    if (farm_id) whereClause  = ` ${whereClause} AND fi."farm_id" = '${farm_id}'`;
+    if (status)  whereClause  = ` ${whereClause} AND fi."status" = ${(status === 'true')}`;
+    
 
     let customer_field_query = `
         SELECT 
@@ -32,7 +36,7 @@ const httpTrigger: AzureFunction = async function (
         FROM 
                 "Customer_Farm" f
                 INNER JOIN "Customer_Field" fi 
-                ON f."id" = fi."farm_id" AND f."customer_id" = '${customer_id}' AND fi."is_deleted" = false   
+                ON f."id" = fi."farm_id" AND f."customer_id" = '${customer_id}' AND fi."is_deleted" = false AND f."is_deleted" = FALSE
 
         ${whereClause}
         ORDER BY 
@@ -49,7 +53,7 @@ const httpTrigger: AzureFunction = async function (
         FROM   
                 "Customer_Farm" f
                 INNER JOIN "Customer_Field" fi 
-                ON f."id" = fi."farm_id" AND f."customer_id" = '${customer_id}' AND fi."is_deleted" = false
+                ON f."id" = fi."farm_id" AND f."customer_id" = '${customer_id}' AND fi."is_deleted" = false AND f."is_deleted" = FALSE
         ${whereClause};
       `;
 

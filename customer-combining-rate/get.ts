@@ -18,7 +18,7 @@ const httpTrigger: AzureFunction = async function (
         SELECT 
                 cr."id", 
                 c."id" as "crop_id",
-                c."name" as "crop_name",
+                CONCAT (c."name", ' (', c."variety", ')') AS "crop_name",
                 c."bushel_weight", 
                 cr."customer_id", 
                 cr."combining_rate", 
@@ -27,7 +27,7 @@ const httpTrigger: AzureFunction = async function (
         FROM 
                 "Combining_Rates" cr 
                 INNER JOIN "Crops" c 
-                ON cr."crop_id" = c."id" AND c."is_deleted" = false
+                ON cr."crop_id" = c."id" AND cr."is_deleted" = false
 
         ${whereClause}
         ORDER BY 

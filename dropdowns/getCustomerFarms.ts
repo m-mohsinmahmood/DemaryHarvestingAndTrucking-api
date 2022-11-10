@@ -10,46 +10,31 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     const search: string = req.query.search;
-    const page: number = +req.query.page ? +req.query.page : 1;
-    const limit: number = +req.query.limit ? +req.query.limit : 10;
-    const sort: string = req.query.sort ? req.query.sort : `created_at` ;
-    const order: string = req.query.order ? req.query.order : `desc`;
     const customer_id: string = req.query.customerId;
-    let whereClause: string = ` WHERE "customer_id" = '${customer_id}' AND "is_deleted" = false`;
+    
+    let whereClause: string = ` WHERE "is_deleted" = FALSE AND "status" = TRUE AND "customer_id" = '${customer_id}'`;
 
     if (search) whereClause = ` ${whereClause} AND LOWER(name) LIKE LOWER('%${search}%')`;
 
     let customer_farm_query = `
         SELECT 
               "id",
-              "name",
-              "status"
+              "name"
         FROM 
               "Customer_Farm" 
         ${whereClause}
         ORDER BY 
-              ${sort} ${order}
-        OFFSET 
-              ${((page - 1) * limit)}
-        LIMIT 
-              ${limit};
+              "name" ASC
       `;
 
-    let customer_farm_count_query = `
-        SELECT COUNT("id")
-        FROM "Customer_Farm"
-        ${whereClause};
-      `;
-
-    let query = `${customer_farm_query} ${customer_farm_count_query}`;
+    let query = `${customer_farm_query}`;
 
     db.connect();
 
     let result = await db.query(query);
 
     let resp = {
-      customer_farms: result[0].rows,
-      count: +result[1].rows[0].count,
+      customer_farms: result.rows
     };
 
     db.end();
