@@ -92,7 +92,7 @@ const httpTrigger: AzureFunction = async function (
     let result = await db.query(query);
 
     let resp = {
-      customers: result[0].rows,
+      applicants: result[0].rows,
       count: +result[1].rows[0].count,
     };
 
