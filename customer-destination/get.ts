@@ -11,14 +11,19 @@ const httpTrigger: AzureFunction = async function (
   try {
     const search: string = req.query.search;
     const customer_id: string = req.query.customerId;
+    const farm_id: string = req.query.farmId;
+    const status: string = req.query.status;
+    const year: string = req.query.year;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 10;
     const sort: string = req.query.sort ? req.query.sort : `d."created_at"`;
     const order: string = req.query.order ? req.query.order : `desc`;
     let whereClause: string = `WHERE f."customer_id" = '${customer_id}'`;
 
-    if (search)
-      whereClause = whereClause + ` AND LOWER(d."name") LIKE LOWER('%${search}%')`;
+    if (search) whereClause = ` ${whereClause} AND LOWER(d."name") LIKE LOWER('%${search}%')`;
+    if (farm_id) whereClause = ` ${whereClause} AND f."id" = '${farm_id}'`;
+    if (status) whereClause = ` ${whereClause} AND d."status" = ${status === "true"}`;
+    if (year) whereClause = ` ${whereClause} AND EXTRACT(YEAR FROM d."calendar_year") = '${year}'`;
 
     let customer_destination_query = `
         SELECT 
