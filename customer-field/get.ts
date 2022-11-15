@@ -13,6 +13,7 @@ const httpTrigger: AzureFunction = async function (
     const customer_id: string = req.query.customerId;
     const farm_id: string = req.query.farmId;
     const status: string = req.query.status;
+    const year: string = req.query.year;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 10;
     const sort: string = req.query.sort ? req.query.sort : `fi."created_at"`;
@@ -22,7 +23,7 @@ const httpTrigger: AzureFunction = async function (
     if (search)  whereClause  = ` ${whereClause} AND LOWER(fi."name") LIKE LOWER('%${search}%')`;
     if (farm_id) whereClause  = ` ${whereClause} AND fi."farm_id" = '${farm_id}'`;
     if (status)  whereClause  = ` ${whereClause} AND fi."status" = ${(status === 'true')}`;
-    
+    if (year) whereClause  = ` ${whereClause} AND EXTRACT(YEAR FROM fi."calendar_year") = '${year}'`;
 
     let customer_field_query = `
         SELECT 

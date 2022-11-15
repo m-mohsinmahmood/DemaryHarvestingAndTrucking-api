@@ -1,4 +1,5 @@
 export interface applicant{
+    id?: string,
     first_name: string;
     last_name: string;
     email: string;
@@ -25,7 +26,6 @@ export interface applicant{
     question_3: string; 
     question_4: string; 
     question_5: string;
-    question_6: string;
     work_experience_description: string;
     recent_job: string;
     supervisor: string;

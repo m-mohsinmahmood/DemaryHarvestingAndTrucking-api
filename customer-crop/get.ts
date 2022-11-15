@@ -11,14 +11,17 @@ const httpTrigger: AzureFunction = async function (
   try {
     const search: string = req.query.search;
     const customer_id: string = req.query.customerId;
+    const status: string = req.query.status;
+    const year: string = req.query.year;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 10;
     const sort: string = req.query.sort ? req.query.sort : `cc."created_at"`;
     const order: string = req.query.order ? req.query.order : `desc`;
     let whereClause: string = `WHERE cc."customer_id" = '${customer_id}'`;
 
-    if (search)
-      whereClause = whereClause + ` AND LOWER(c."name") LIKE LOWER('%${search}%')`;
+    if (search) whereClause = whereClause + ` AND LOWER(c."name") LIKE LOWER('%${search}%')`;
+    if (status) whereClause = ` ${whereClause} AND cc."status" = ${status === "true"}`;
+    if (year) whereClause  = ` ${whereClause} AND EXTRACT(YEAR FROM cc."calendar_year") = '${year}'`;
 
     let customer_crop_query = `
         SELECT 
