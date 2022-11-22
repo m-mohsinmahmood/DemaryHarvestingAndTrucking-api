@@ -47,7 +47,13 @@ const httpTrigger: AzureFunction = async function (
             name: "Craig Reinhart",
             calendly: "https://calendly.com/craig_dht-usa/"
         }
-    ]
+    ];
+
+    if (search) {
+        recruiters = recruiters.filter((recruiter) =>{
+            recruiter.name.includes(search);
+        });
+    }
 
     let resp = {
       recruiters: recruiters
