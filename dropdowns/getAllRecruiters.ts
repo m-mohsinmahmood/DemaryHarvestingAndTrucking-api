@@ -1,0 +1,76 @@
+import { AzureFunction, Context, HttpRequest } from "@azure/functions";
+import { Client } from "pg";
+import { config } from "../services/database/database.config";
+
+const httpTrigger: AzureFunction = async function (
+  context: Context,
+  req: HttpRequest
+): Promise<void> {
+  const db = new Client(config);
+
+  try {
+    const search: string = req.query.search;
+    // let whereClause: string = `WHERE "is_deleted" = false`;
+
+    // if (search) whereClause = whereClause + ` AND LOWER(name) LIKE LOWER('%${search}%')`;
+
+    // let crops_dropdown_query = `
+    //     SELECT 
+    //           "id", 
+    //           CONCAT ("name", ' (', "variety", ')') AS "name"
+    //     FROM 
+    //           "Crops" 
+    //     ${whereClause}
+    //     ORDER BY 
+    //           "name" ASC
+    //   `;
+
+    // let query = `${crops_dropdown_query}`;
+
+    // db.connect();
+
+    // let result = await db.query(query);
+
+    let recruiters = [
+        {
+            id: "84df662a-8687-47ff-8f6f-1a2b27f9a95d",
+            name: "Bill Demaray",
+            calendly: "https://calendly.com/matt_dht-usa/"
+        },
+        {
+            id: "8d0414fa-fbe6-417c-b7d5-3ab1bf1aaffd",
+            name: "Matt Demaray",
+            calendly: "https://calendly.com/bill-usa/"
+        },
+        {
+            id: "524c9a3c-af1c-4159-95fd-ddf72eab357f",
+            name: "Craig Reinhart",
+            calendly: "https://calendly.com/craig_dht-usa/"
+        }
+    ]
+
+    let resp = {
+      recruiters: recruiters
+    };
+
+    db.end();
+
+    context.res = {
+      status: 200,
+      body: resp,
+    };
+
+    context.done();
+    return;
+  } catch (err) {
+    db.end();
+    context.res = {
+      status: 500,
+      body: err,
+    };
+    context.done();
+    return;
+  }
+};
+
+export default httpTrigger;
