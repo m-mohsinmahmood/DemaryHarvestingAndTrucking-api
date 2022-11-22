@@ -50,9 +50,7 @@ const httpTrigger: AzureFunction = async function (
     ];
 
     if (search) {
-        recruiters = recruiters.filter((recruiter) =>{
-            recruiter.name.includes(search);
-        });
+        recruiters = recruiters.filter(recruiter => recruiter.name.toLowerCase().includes(search.toLowerCase()));
     }
 
     let resp = {
