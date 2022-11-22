@@ -12,13 +12,12 @@ const httpTrigger: AzureFunction = async function (
     const applicant_id: string = req.query.id;
     let applicant_query = `
     SELECT 
-            "id", 
+            "id",
             "first_name",
             "last_name",
             "email",
             "cell_phone_number",
             "home_phone_number",
-            "status",
             "calendar_year",
             "languages",
             "date_of_birth",
@@ -34,6 +33,7 @@ const httpTrigger: AzureFunction = async function (
             "tractor_license",
             "passport",
             "avatar",
+            "resume",
             "question_1",
             "question_2",
             "question_3",
@@ -48,18 +48,37 @@ const httpTrigger: AzureFunction = async function (
             "education",
             "blood_group",
             "reason_for_applying",
-            "first_phone_call",
             "first_call_remarks",
-            "reference_phone_call",
-            "reference_call_remarks",
-            "second_phone_call",
+            "first_call_ranking",
+            "first_interviewer_id",
             "second_call_remarks",
-            "third_phone_call",
-            "third_call_remarks"
+            "second_call_ranking",
+            "second_interviewer_id",
+            "third_call_remarks",
+            "third_call_ranking",
+            "third_interviewer_id",
+            "reference_call_remarks",
+            "reference_call_ranking",
+            "reference_interviewer_id",
+            "status_step",
+            "status_message",
+            "stepOneStatusDate",
+            "stepTwoStatusDate",
+            "stepThreeStatusDate",
+            "stepFourStatusDate",
+            "stepFiveStatusDate",
+            "stepSixStatusDate",
+            "stepSevenStatusDate",
+            "stepEightStatusDate",
+            "stepNineStatusDate",
+            "stepTenStatusDate",
+            "stepElevenStatusDate",
+            "stepTwelveStatusDate",
+            "stepThirteenStatusDate"
     FROM 
             "Applicants"
     WHERE 
-              "id" = '${applicant_id}';
+            "id" = '${applicant_id}';
       `;
 
     db.connect();
