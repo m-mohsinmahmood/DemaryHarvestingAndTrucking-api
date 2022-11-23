@@ -34,12 +34,12 @@ const httpTrigger: AzureFunction = async function (
     let recruiters = [
         {
             id: "84df662a-8687-47ff-8f6f-1a2b27f9a95d",
-            name: "Bill Demaray",
+            name: "Matt Demaray",
             calendly: "https://calendly.com/matt_dht-usa/"
         },
         {
             id: "8d0414fa-fbe6-417c-b7d5-3ab1bf1aaffd",
-            name: "Matt Demaray",
+            name: "Bill Demaray",
             calendly: "https://calendly.com/bill-usa/"
         },
         {
