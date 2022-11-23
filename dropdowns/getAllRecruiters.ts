@@ -35,17 +35,30 @@ const httpTrigger: AzureFunction = async function (
         {
             id: "84df662a-8687-47ff-8f6f-1a2b27f9a95d",
             name: "Matt Demaray",
-            calendly: "https://calendly.com/matt_dht-usa/"
+            calendly: [
+              "Click here to schedule an interview using Microsoft TEAMS:  https://calendly.com/matt_dht-usa/interview-teams",
+              "Click here to schedule an interview using Zoom:  https://calendly.com/matt_dht-usa/interview-zoom",
+              "Click here to schedule an interview using Phone:  https://calendly.com/matt_dht-usa/interview-phone-1"
+            ]
+            
         },
         {
             id: "8d0414fa-fbe6-417c-b7d5-3ab1bf1aaffd",
             name: "Bill Demaray",
-            calendly: "https://calendly.com/bill-usa/"
+            calendly: [
+              "Click here to schedule an interview using Microsoft TEAMS:  https://calendly.com/bill_dht-usa/interview-teams",
+              "Click here to schedule an interview using Zoom:  https://calendly.com/bill_dht-usa/interview-zoom",
+              "Click here to schedule an interview using Phone:  https://calendly.com/bill_dht-usa/interview-phone-1"
+            ]
         },
         {
             id: "524c9a3c-af1c-4159-95fd-ddf72eab357f",
             name: "Craig Reinhart",
-            calendly: "https://calendly.com/craig_dht-usa/"
+            calendly: [
+              "Click here to schedule an interview using Microsoft TEAMS:  https://calendly.com/craig_dht-usa/interview-teams",
+              "Click here to schedule an interview using Zoom:  https://calendly.com/craig_dht-usa/interview-zoom",
+              "Click here to schedule an interview using Phone:  https://calendly.com/craig_dht-usa/interview-phone-1"
+            ]
         }
     ];
 
