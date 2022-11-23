@@ -41,6 +41,8 @@ const httpTrigger: AzureFunction = async function (
                 "self_rating",
                 "us_citizen",
                 "tractor_license",
+                "lorry_license",
+                "cdl_license",
                 "passport",
                 "avatar",
                 "resume",
