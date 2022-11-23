@@ -62,19 +62,19 @@ const httpTrigger: AzureFunction = async function (
             "reference_interviewer_id",
             "status_step",
             "status_message",
-            "stepOneStatusDate",
-            "stepTwoStatusDate",
-            "stepThreeStatusDate",
-            "stepFourStatusDate",
-            "stepFiveStatusDate",
-            "stepSixStatusDate",
-            "stepSevenStatusDate",
-            "stepEightStatusDate",
-            "stepNineStatusDate",
-            "stepTenStatusDate",
-            "stepElevenStatusDate",
-            "stepTwelveStatusDate",
-            "stepThirteenStatusDate"
+            "step_one_status_date",
+            "step_two_status_date",
+            "step_three_status_date",
+            "step_four_status_date",
+            "step_five_status_date",
+            "step_six_status_date",
+            "step_seven_status_date",
+            "step_eight_status_date",
+            "step_nine_status_date",
+            "step_ten_status_date",
+            "step_eleven_status_date",
+            "step_twelve_status_date",
+            "step_thirteen_status_date"
     FROM 
             "Applicants"
     WHERE 
