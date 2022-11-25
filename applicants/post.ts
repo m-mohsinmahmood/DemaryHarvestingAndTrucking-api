@@ -119,11 +119,12 @@ const httpTrigger: AzureFunction = async function (
       to: `${applicant.email}`, 
       from: 'momin4073@gmail.com',
       subject: 'DHT Employment Application Received!',
-      html: `Dear ${applicant.first_name} ${applicant.last_name} ,</br> Thank you for your completing DHT’s online application.  We are currently reviewing your application and will be reaching out soon with further instructions on next steps. 
-            </br>Thanks
-            "</br>Click here to schedule an interview using Microsoft TEAMS:  https://calendly.com/matt_dht-usa/interview-teams",
-            "</br>Click here to schedule an interview using Zoom:  https://calendly.com/matt_dht-usa/interview-zoom",
-            "</br>Click here to schedule an interview using Phone:  https://calendly.com/matt_dht-usa/interview-phone-1"`
+      html: `
+            Dear ${applicant.first_name} ${applicant.last_name},
+            <br> <br>Thank you for completing DHT’s online application. We are currently reviewing your application and will be reaching out soon with further instructions on next steps. 
+            <br> <br>Thanks
+            `
+
     }
     sgMail
       .send(msg)
