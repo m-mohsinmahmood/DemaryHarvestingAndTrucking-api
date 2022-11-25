@@ -90,36 +90,41 @@ const httpTrigger: AzureFunction = async function (
 
     let result = await db.query(applicant_query);
     let resp;
+    let status_bar;
     if (result.rows.length > 0) {
       resp = result.rows[0];
-      
-      this.items = [
-        { content: 'Applicant Completed', date: null, status: true },
-        { content: 'Advance Preliminary review', date: null, status: false },
-        { content: 'First interview completed', date: null, status: false },
-        { content: 'Second interview completed', date: null, status: false },
-        { content: 'Third interview completed', date: null,status: false },
-        { content: 'Reference call completed', date: null, status: false },
-        { content: 'Recruiter decision made', date: null, status: false },
-        { content: 'Offer made', date: null, status: false },
-        { content: 'Offer Accepted', date: null, status: false },
-        { content: 'Advance to pre-employment Process', date: null, status: false },
-        { content: 'Results', date: null, status: false},
-        { content: 'Hired', date: null, status: false },
-        { content: 'Waitlisted', date: null, status: false },
-        { content: 'Qualifications dont match current openings', date: null, status: false }
-    ];
+
+      status_bar = [
+        { step_one: 'Applicant Completed', date: resp.created_at, status: true, show: "true" },
+        { step_two: 'Advance Preliminary review', date: resp.step_two_status_date, status: +resp.status_step > 2 ? true : false, show: "true" },
+        { step_three: 'First interview completed', date: resp.step_three_status_date, status: +resp.status_step > 3 ? true : false, show: "true" },
+        { step_four: 'Second interview completed', date: resp.step_four_status_date, status: +resp.status_step > 4 ? true : false, show: +resp.status_step > 4 && resp.step_four_status_date ? "true" : false },
+        { step_five: 'Third interview completed', date: resp.step_five_status_date, status: +resp.status_step > 5 ? true : false, show: +resp.status_step > 5 && resp.step_four_status_date ? "true" : false },
+        { step_six: 'Reference call completed', date: resp.step_six_status_date, status: +resp.status_step > 6 ? true : false, show: "true" },
+        { step_seven: 'Recruiter decision made', date: resp.step_seven_status_date, status: +resp.status_step > 7 ? true : false, show: "true" },
+        { step_eight: 'Offer made', date: resp.step_eight_status_date, status: +resp.status_step > 8 ? true : false, show: "true" },
+        { step_nine: 'Offer Accepted', date: resp.step_nine_status_date, status: +resp.status_step > 9 ? true : false, show: "true" },
+        { step_ten: 'Advance to pre-employment Process', date: resp.step_ten_status_date, status: +resp.status_step > 10 ? true : false, show: "true" },
+        { step_eleven: 'Results', date: resp.step_eleven_status_date, status: +resp.status_step > 10 ? true : false, show: "true" },
+        { step_twelve: 'Hired', date: resp.step_twelve_status_date, status: +resp.status_step > 11 ? true : false, show: "true" },
+        { step_thirteen: 'Waitlisted', date: resp.step_thirteen_status_date, status: +resp.status_step > 12 ? true : false, show: "true" },
+        { step_fourteen: 'Qualifications dont match current openings', date: resp.step_thirteen_status_date, status: +resp.status_step > 13 ? true : false, show: "true" }
+      ];
     }
-    else
+    else {
       resp = {
         message: "No applicant exists with this id.",
       };
+    }
 
     db.end();
 
     context.res = {
       status: 200,
-      body: resp,
+      body: {
+        applicant_info: resp,
+        applicant_status_bar: status_bar
+      }
     };
 
     context.done();
