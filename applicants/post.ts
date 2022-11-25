@@ -57,21 +57,9 @@ const httpTrigger: AzureFunction = async function (
                   "blood_type",
                   "emergency_contact_name",
                   "emergency_contact_phone",
-                  "first_call_remarks",
-                  "first_call_ranking",
-                  "first_interviewer_id",
-                  "reference_phone_call",
-                  "reference_call_remarks",
-                  "reference_call_ranking",
-                  "reference_interviewer_id",
-                  "second_call_remarks",
-                  "second_call_ranking",
-                  "second_interviewer_id",
-                  "third_call_remarks",
-                  "third_call_ranking",
-                  "third_interviewer_id",
                   "status_step",
-                  "status_message"
+                  "status_message",
+                  "created_at"
                 )
       VALUES      
                 (
@@ -115,23 +103,9 @@ const httpTrigger: AzureFunction = async function (
                   '${applicant.blood_type}',
                   '${applicant.emergency_contact_name}',
                   '${applicant.emergency_contact_phone}',
-                  '${applicant.first_call_remarks}',
-                  '${applicant.first_call_ranking}',
-                  '${applicant.first_interviewer_id}',
-                  '${applicant.reference_phone_call}',
-                  '${applicant.reference_call_remarks}',
-                  '${applicant.reference_call_ranking}',
-                  '${applicant.reference_interviewer_id}',
-                  '${applicant.second_call_remarks}',
-                  '${applicant.second_call_ranking}',
-                  '${applicant.second_interviewer_id}',
-                  '${applicant.third_call_remarks}',
-                  '${applicant.third_call_ranking}',
-                  '${applicant.third_interviewer_id}',
-                  '${applicant.status_step}',
-                  '${applicant.status_message}',
                   '1',
-                  'Applicant Completed'
+                  'Applicant Completed',
+                  'now()'
                 );
     `;
 
@@ -140,22 +114,22 @@ const httpTrigger: AzureFunction = async function (
     db.end();
 
     
-    sgMail.setApiKey('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');
-    const msg = {
-      to: 'momin4073@gmail.com', // Change to your recipient
-      from: 'momin4073@gmail.com', // Change to your verified sender
-      subject: 'Sending with SendGrid is Fun',
-      text: 'and easy to do anywhere, even with Node.js',
-      html: '<strong>and easy to do anywhere, even with Node.js</strong>',
-    }
-    sgMail
-      .send(msg)
-      .then(() => {
-        console.log('Email sent')
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+    // sgMail.setApiKey('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');
+    // const msg = {
+    //   to: 'momin4073@gmail.com', // Change to your recipient
+    //   from: 'momin4073@gmail.com', // Change to your verified sender
+    //   subject: 'Sending with SendGrid is Fun',
+    //   text: 'and easy to do anywhere, even with Node.js',
+    //   html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+    // }
+    // sgMail
+    //   .send(msg)
+    //   .then(() => {
+    //     console.log('Email sent')
+    //   })
+    //   .catch((error) => {
+    //     console.error(error)
+    //   })
 
     context.res = {
       status: 200,

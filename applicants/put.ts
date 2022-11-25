@@ -58,7 +58,6 @@ const httpTrigger: AzureFunction = async function (
                 "first_call_remarks"            = '${applicant.first_call_remarks},
                 "first_call_ranking"            = '${applicant.first_call_ranking},
                 "first_interviewer_id"          = '${applicant.first_interviewer_id},
-                "reference_phone_call"          = '${applicant.reference_phone_call},
                 "reference_call_remarks"        = '${applicant.reference_call_remarks},
                 "reference_call_ranking"        = '${applicant.reference_call_ranking},
                 "reference_interviewer_id"      = '${applicant.reference_interviewer_id},

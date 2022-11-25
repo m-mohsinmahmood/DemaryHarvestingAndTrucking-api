@@ -56,7 +56,6 @@ const httpTrigger: AzureFunction = async function (
             "first_call_remarks",
             "first_call_ranking",
             "first_interviewer_id",
-            "reference_phone_call",
             "reference_call_remarks",
             "reference_call_ranking",
             "reference_interviewer_id",
@@ -91,7 +90,26 @@ const httpTrigger: AzureFunction = async function (
 
     let result = await db.query(applicant_query);
     let resp;
-    if (result.rows.length > 0) resp = result.rows[0];
+    if (result.rows.length > 0) {
+      resp = result.rows[0];
+      
+      this.items = [
+        { content: 'Applicant Completed', date: null, status: true },
+        { content: 'Advance Preliminary review', date: null, status: false },
+        { content: 'First interview completed', date: null, status: false },
+        { content: 'Second interview completed', date: null, status: false },
+        { content: 'Third interview completed', date: null,status: false },
+        { content: 'Reference call completed', date: null, status: false },
+        { content: 'Recruiter decision made', date: null, status: false },
+        { content: 'Offer made', date: null, status: false },
+        { content: 'Offer Accepted', date: null, status: false },
+        { content: 'Advance to pre-employment Process', date: null, status: false },
+        { content: 'Results', date: null, status: false},
+        { content: 'Hired', date: null, status: false },
+        { content: 'Waitlisted', date: null, status: false },
+        { content: 'Qualifications dont match current openings', date: null, status: false }
+    ];
+    }
     else
       resp = {
         message: "No applicant exists with this id.",

@@ -43,7 +43,6 @@ export interface applicant {
   first_call_remarks : string,
   first_call_ranking : string,
   first_interviewer_id : string,
-  reference_phone_call : boolean,
   reference_call_remarks : string,
   reference_call_ranking : string,
   reference_interviewer_id : string,
