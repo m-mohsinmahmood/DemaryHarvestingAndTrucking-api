@@ -96,7 +96,7 @@ const httpTrigger: AzureFunction = async function (
 
       status_bar = [
         { step: 'Applicant Completed', date: resp.created_at, status: true, show: "true" },
-        { step: 'Advance Preliminary review', date: resp.step_two_status_date, status: +resp.status_step > 2 ? true : false, show: "true" },
+        { step: 'Advance Preliminary review', date: resp.step_two_status_date, status: true , show: "true" },
         { step: 'First interview completed', date: resp.step_three_status_date, status: +resp.status_step > 3 ? true : false, show: "true" },
         { step: 'Second interview completed', date: resp.step_four_status_date, status: +resp.status_step > 4 ? true : false, show: +resp.status_step > 4 && resp.step_four_status_date ? true : false },
         { step: 'Third interview completed', date: resp.step_five_status_date, status: +resp.status_step > 5 ? true : false, show: +resp.status_step > 5 && resp.step_five_status_date ? true : false },
