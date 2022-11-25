@@ -32,13 +32,21 @@ const httpTrigger: AzureFunction = async function (
       "Qualifications don't match current openings" : "step_fourteen_status_date"
     };
 
+    let interview_step = {
+      "First Interview Completed"  : "first_interviewer_id",
+      "Second Interview Completed" : "second_interviewer_id",
+      "Third Interview Completed"  : "third_interviewer_id",
+      "Reference Call Completed"   : "reference_interviewer_id"
+    };
+
     let query = `
         UPDATE 
                 "Applicants"
         SET 
-                "status_step"                             = '${applicant.status_step}',
-                "status_message"                          = '${applicant.status_message}',
-                "${status_bar[applicant.status_message]}" = 'now()',
+                "status_step"                                 = '${applicant.status_step}',
+                "status_message"                              = '${applicant.status_message}',
+                "${interview_step[applicant.status_message]}" = '${applicant.recruiter_id}',
+                "${status_bar[applicant.status_message]}"    = 'now()'
 
         WHERE 
                 "id" = '${applicant.id}';`
