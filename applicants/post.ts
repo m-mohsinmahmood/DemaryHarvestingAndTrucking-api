@@ -114,22 +114,25 @@ const httpTrigger: AzureFunction = async function (
     db.end();
 
     
-    // sgMail.setApiKey('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');
-    // const msg = {
-    //   to: 'momin4073@gmail.com', // Change to your recipient
-    //   from: 'momin4073@gmail.com', // Change to your verified sender
-    //   subject: 'Sending with SendGrid is Fun',
-    //   text: 'and easy to do anywhere, even with Node.js',
-    //   html: '<strong>and easy to do anywhere, even with Node.js</strong>',
-    // }
-    // sgMail
-    //   .send(msg)
-    //   .then(() => {
-    //     console.log('Email sent')
-    //   })
-    //   .catch((error) => {
-    //     console.error(error)
-    //   })
+    sgMail.setApiKey('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');
+    const msg = {
+      to: `${applicant.email}`, 
+      from: 'momin4073@gmail.com',
+      subject: 'DHT Employment Application Received!',
+      html: `Dear ${applicant.first_name} ${applicant.last_name} ,</br> Thank you for your completing DHT’s online application.  We are currently reviewing your application and will be reaching out soon with further instructions on next steps. 
+            </br>Thanks
+            "</br>Click here to schedule an interview using Microsoft TEAMS:  https://calendly.com/matt_dht-usa/interview-teams",
+            "</br>Click here to schedule an interview using Zoom:  https://calendly.com/matt_dht-usa/interview-zoom",
+            "</br>Click here to schedule an interview using Phone:  https://calendly.com/matt_dht-usa/interview-phone-1"`
+    }
+    sgMail
+      .send(msg)
+      .then(() => {
+        console.log('Email sent')
+      })
+      .catch((error) => {
+        console.error(error)
+      })
 
     context.res = {
       status: 200,
