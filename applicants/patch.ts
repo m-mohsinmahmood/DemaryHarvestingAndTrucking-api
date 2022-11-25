@@ -45,8 +45,8 @@ const httpTrigger: AzureFunction = async function (
         SET 
                 "status_step"                                 = '${applicant.status_step}',
                 "status_message"                              = '${applicant.status_message}',
-                "${interview_step[applicant.status_message]}" = '${applicant.recruiter_id}',
-                "${status_bar[applicant.status_message]}"    = 'now()'
+                "${interview_step[applicant.status_message]}" = '${email.recruiter_id}',
+                "${status_bar[applicant.status_message]}"     = 'now()'
 
         WHERE 
                 "id" = '${applicant.id}';`
