@@ -12,21 +12,34 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const applicant: applicant = req.body;
-    let update_attributes = _.omit(applicant, ["id"]); 
-    let set_statement: string = "SET ";
+    const applicant: applicant = req.body.applicant_data;
+    const email: any = req.body.email_data;
 
-    Object.keys(update_attributes).forEach((attribute, index) => {
-        if(index < Object.keys(update_attributes).length - 1)
-            set_statement = ` ${set_statement} "${attribute}" = '${applicant[attribute]}',` ;
-        else 
-            set_statement = ` ${set_statement} "${attribute}" = '${applicant[attribute]}'` ;
-    });
+    let status_bar = {
+      "Applicant Completed"                         : "step_one_status_date",
+      "Advance Preliminary Review"                  : "step_two_status_date",
+      "First Interview Completed"                   : "step_three_status_date",
+      "Second Interview Completed"                  : "step_four_status_date",
+      "Third Interview Completed"                   : "step_five_status_date",
+      "Reference Call Completed"                    : "step_six_status_date",
+      "Recruiter Decision Made"                     : "step_seven_status_date",
+      "Offer Made"                                  : "step_eight_status_date",
+      "Offer Accepted"                              : "step_nine_status_date",
+      "Advance to Pre-Employment Process"           : "step_ten_status_date",
+      "Results"                                     : "step_eleven_status_date",
+      "Hired"                                       : "step_twelve_status_date",
+      "Waitlisted"                                  : "step_thirteen_status_date",
+      "Qualifications don't match current openings" : "step_fourteen_status_date"
+    };
 
     let query = `
         UPDATE 
                 "Applicants"
-        ${set_statement}
+        SET 
+                "status_step"                             = '${applicant.status_step}',
+                "status_message"                          = '${applicant.status_message}',
+                "${status_bar[applicant.status_message]}" = 'now()',
+
         WHERE 
                 "id" = '${applicant.id}';`
 
