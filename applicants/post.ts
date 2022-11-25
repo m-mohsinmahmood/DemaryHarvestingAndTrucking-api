@@ -103,8 +103,8 @@ const httpTrigger: AzureFunction = async function (
                   '${applicant.blood_type}',
                   '${applicant.emergency_contact_name}',
                   '${applicant.emergency_contact_phone}',
-                  '1',
-                  'Applicant Completed',
+                  '2',
+                  'Advance Preliminary Review',
                   'now()'
                 );
     `;
