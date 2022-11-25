@@ -95,20 +95,20 @@ const httpTrigger: AzureFunction = async function (
       resp = result.rows[0];
 
       status_bar = [
-        { step_one: 'Applicant Completed', date: resp.created_at, status: true, show: "true" },
-        { step_two: 'Advance Preliminary review', date: resp.step_two_status_date, status: +resp.status_step > 2 ? true : false, show: "true" },
-        { step_three: 'First interview completed', date: resp.step_three_status_date, status: +resp.status_step > 3 ? true : false, show: "true" },
-        { step_four: 'Second interview completed', date: resp.step_four_status_date, status: +resp.status_step > 4 ? true : false, show: +resp.status_step > 4 && resp.step_four_status_date ? true : false },
-        { step_five: 'Third interview completed', date: resp.step_five_status_date, status: +resp.status_step > 5 ? true : false, show: +resp.status_step > 5 && resp.step_five_status_date ? true : false },
-        { step_six: 'Reference call completed', date: resp.step_six_status_date, status: +resp.status_step > 6 ? true : false, show: "true" },
-        { step_seven: 'Recruiter decision made', date: resp.step_seven_status_date, status: +resp.status_step > 7 ? true : false, show: "true" },
-        { step_eight: 'Offer made', date: resp.step_eight_status_date, status: +resp.status_step > 8 ? true : false, show: "true" },
-        { step_nine: 'Offer Accepted', date: resp.step_nine_status_date, status: +resp.status_step > 9 ? true : false, show: "true" },
-        { step_ten: 'Advance to pre-employment Process', date: resp.step_ten_status_date, status: +resp.status_step > 10 ? true : false, show: "true" },
-        { step_eleven: 'Results', date: resp.step_eleven_status_date, status: +resp.status_step > 10 ? true : false, show: "true" },
-        { step_twelve: 'Hired', date: resp.step_twelve_status_date, status: +resp.status_step > 11 ? true : false, show: "true" },
-        { step_thirteen: 'Waitlisted', date: resp.step_thirteen_status_date, status: +resp.status_step > 12 ? true : false, show: "true" },
-        { step_fourteen: 'Qualifications dont match current openings', date: resp.step_thirteen_status_date, status: +resp.status_step > 13 ? true : false, show: "true" }
+        { step: 'Applicant Completed', date: resp.created_at, status: true, show: "true" },
+        { step: 'Advance Preliminary review', date: resp.step_two_status_date, status: +resp.status_step > 2 ? true : false, show: "true" },
+        { step: 'First interview completed', date: resp.step_three_status_date, status: +resp.status_step > 3 ? true : false, show: "true" },
+        { step: 'Second interview completed', date: resp.step_four_status_date, status: +resp.status_step > 4 ? true : false, show: +resp.status_step > 4 && resp.step_four_status_date ? true : false },
+        { step: 'Third interview completed', date: resp.step_five_status_date, status: +resp.status_step > 5 ? true : false, show: +resp.status_step > 5 && resp.step_five_status_date ? true : false },
+        { step: 'Reference call completed', date: resp.step_six_status_date, status: +resp.status_step > 6 ? true : false, show: "true" },
+        { step: 'Recruiter decision made', date: resp.step_seven_status_date, status: +resp.status_step > 7 ? true : false, show: "true" },
+        { step: 'Offer made', date: resp.step_eight_status_date, status: +resp.status_step > 8 ? true : false, show: "true" },
+        { step: 'Offer Accepted', date: resp.step_nine_status_date, status: +resp.status_step > 9 ? true : false, show: "true" },
+        { step: 'Advance to pre-employment Process', date: resp.step_ten_status_date, status: +resp.status_step > 10 ? true : false, show: "true" },
+        { step: 'Results', date: resp.step_eleven_status_date, status: +resp.status_step > 10 ? true : false, show: "true" },
+        { step: 'Hired', date: resp.step_twelve_status_date, status: +resp.status_step > 11 ? true : false, show: "true" },
+        { step: 'Waitlisted', date: resp.step_thirteen_status_date, status: +resp.status_step > 12 ? true : false, show: "true" },
+        { step: 'Qualifications dont match current openings', date: resp.step_thirteen_status_date, status: +resp.status_step > 13 ? true : false, show: "true" }
       ];
     }
     else {
