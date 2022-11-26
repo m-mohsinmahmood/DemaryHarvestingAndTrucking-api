@@ -97,18 +97,18 @@ const httpTrigger: AzureFunction = async function (
       status_bar = [
         { step: `Applicant Completed`, date: resp.created_at, status: true, show: true },
         { step: `Advance Preliminary Review`, date: resp.step_two_status_date, status: true , show: true },
-        { step: `First Interview Completed`, date: resp.step_three_status_date, status: +resp.status_step > 3 ? true : false, show: true },
-        { step: `Second Interview Completed`, date: resp.step_four_status_date, status: +resp.status_step > 4 ? true : false, show: +resp.status_step > 4 && resp.step_four_status_date ? true : false },
-        { step: `Third Interview Completed`, date: resp.step_five_status_date, status: +resp.status_step > 5 ? true : false, show: +resp.status_step > 5 && resp.step_five_status_date ? true : false },
-        { step: `Reference Call Completed`, date: resp.step_six_status_date, status: +resp.status_step > 6 ? true : false, show: true },
-        { step: `Recruiter Decision Made`, date: resp.step_seven_status_date, status: +resp.status_step > 7 ? true : false, show: true },
-        { step: `Offer Made`, date: resp.step_eight_status_date, status: +resp.status_step > 8 ? true : false, show: true },
-        { step: `Offer Accepted`, date: resp.step_nine_status_date, status: +resp.status_step > 9 ? true : false, show: true },
-        { step: `Advance to Pre-Employment Process`, date: resp.step_ten_status_date, status: +resp.status_step > 10 ? true : false, show: true },
-        { step: `Results`, date: resp.step_eleven_status_date, status: +resp.status_step > 10 ? true : false, show: true },
-        { step: `Hired`, date: resp.step_twelve_status_date, status: +resp.status_step > 11 ? true : false, show: +resp.status_step > 11 && resp.step_four_status_date ? true : false  },
-        { step: `Waitlisted`, date: resp.step_thirteen_status_date, status: +resp.status_step > 12 ? true : false, show: +resp.status_step > 12 && resp.step_four_status_date ? true : false },
-        { step: `Qualifications don't match current openings`, date: resp.step_thirteen_status_date, status: +resp.status_step > 13 ? true : false, show: +resp.status_step > 13 && resp.step_four_status_date ? true : false }
+        { step: `First Interview Completed`, date: resp.step_three_status_date, status: +resp.status_step >= 3 ? true : false, show: true },
+        { step: `Second Interview Completed`, date: resp.step_four_status_date, status: +resp.status_step >= 4 ? true : false, show: +resp.status_step > 4 && resp.step_four_status_date ? true : false },
+        { step: `Third Interview Completed`, date: resp.step_five_status_date, status: +resp.status_step >= 5 ? true : false, show: +resp.status_step >= 5 && resp.step_five_status_date ? true : false },
+        { step: `Reference Call Completed`, date: resp.step_six_status_date, status: +resp.status_step >= 6 ? true : false, show: true },
+        { step: `Recruiter Decision Made`, date: resp.step_seven_status_date, status: +resp.status_step >= 7 ? true : false, show: true },
+        { step: `Offer Made`, date: resp.step_eight_status_date, status: +resp.status_step >= 8 ? true : false, show: true },
+        { step: `Offer Accepted`, date: resp.step_nine_status_date, status: +resp.status_step >= 9 ? true : false, show: true },
+        { step: `Advance to Pre-Employment Process`, date: resp.step_ten_status_date, status: +resp.status_step >= 10 ? true : false, show: true },
+        { step: `Results`, date: resp.step_eleven_status_date, status: +resp.status_step >= 10 ? true : false, show: true },
+        { step: `Hired`, date: resp.step_twelve_status_date, status: +resp.status_step >= 11 ? true : false, show: +resp.status_step >= 11 && resp.step_four_status_date ? true : false  },
+        { step: `Waitlisted`, date: resp.step_thirteen_status_date, status: +resp.status_step >= 12 ? true : false, show: +resp.status_step >= 12 && resp.step_four_status_date ? true : false },
+        { step: `Qualifications dont match current openings`, date: resp.step_thirteen_status_date, status: +resp.status_step >= 13 ? true : false, show: +resp.status_step >= 13 && resp.step_four_status_date ? true : false }
       ];
     }
     else {

@@ -29,7 +29,7 @@ const httpTrigger: AzureFunction = async function (
       "Results"                                     : "step_eleven_status_date",
       "Hired"                                       : "step_twelve_status_date",
       "Waitlisted"                                  : "step_thirteen_status_date",
-      "Qualifications don't match current openings" : "step_fourteen_status_date"
+      "Qualifications dont match current openings"  : "step_fourteen_status_date"
     };
 
     let interview_steps = {
@@ -40,7 +40,7 @@ const httpTrigger: AzureFunction = async function (
     };
 
     let interview_step = ``;
-    if(email.recruiter_id)
+    if(email.recruiter_id && interview_steps[applicant.status_message])
       interview_step = `"${interview_steps[applicant.status_message]}" = '${email.recruiter_id}',`;
 
     let query = `
