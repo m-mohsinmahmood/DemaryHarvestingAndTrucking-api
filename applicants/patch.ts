@@ -41,7 +41,7 @@ const httpTrigger: AzureFunction = async function (
 
     let interview_step = ``;
     if(email.recruiter_id)
-      interview_step = `${interview_steps[applicant.status_message]}" = '${email.recruiter_id}',`;
+      interview_step = `"${interview_steps[applicant.status_message]}" = '${email.recruiter_id}',`;
 
     let query = `
         UPDATE 
