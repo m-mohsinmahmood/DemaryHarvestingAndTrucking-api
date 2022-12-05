@@ -8,5 +8,9 @@
     "PG_PASSWORD": "jtAMkp^h7NE!nJqD",
     "PG_PORT": "5432",
     "PG_DATABASE": "postgres"
+  },
+  "Host": {
+    "LocalHttpPort": 7071,
+    "CORS": "*"
   }
 }

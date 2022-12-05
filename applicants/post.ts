@@ -124,7 +124,6 @@ const httpTrigger: AzureFunction = async function (
             <br> <br>Thank you for completing DHT’s online application. We are currently reviewing your application and will be reaching out soon with further instructions on next steps. 
             <br> <br>Thanks
             `
-
     }
     sgMail
       .send(msg)

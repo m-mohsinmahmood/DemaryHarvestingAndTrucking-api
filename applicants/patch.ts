@@ -12,48 +12,71 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const applicant: applicant = req.body.applicant_data;
+    const applicant: any = req.body.applicant_data;
     const email: any = req.body.email_data;
+    const type = req.query.type;
 
     let status_bar = {
-      "Applicant Completed"                         : "step_one_status_date",
-      "Advance Preliminary Review"                  : "step_two_status_date",
-      "First Interview Completed"                   : "step_three_status_date",
-      "Second Interview Completed"                  : "step_four_status_date",
-      "Third Interview Completed"                   : "step_five_status_date",
-      "Reference Call Completed"                    : "step_six_status_date",
-      "Recruiter Decision Made"                     : "step_seven_status_date",
-      "Offer Made"                                  : "step_eight_status_date",
-      "Offer Accepted"                              : "step_nine_status_date",
-      "Advance to Pre-Employment Process"           : "step_ten_status_date",
-      "Results"                                     : "step_eleven_status_date",
-      "Hired"                                       : "step_twelve_status_date",
-      "Waitlisted"                                  : "step_thirteen_status_date",
-      "Qualifications dont match current openings"  : "step_fourteen_status_date"
+      "Application Submitted": "step_one_status_date",
+      "Advance Preliminary Review": "step_two_status_date",
+      "First Interview Completed": "step_three_status_date",
+      "Second Interview Completed": "step_four_status_date",
+      "Third Interview Completed": "step_five_status_date",
+      "Reference Call Completed": "step_six_status_date",
+      "Recruiter Decision Made": "step_seven_status_date",
+      "Offer Made": "step_eight_status_date",
+      "Offer Accepted": "step_nine_status_date",
+      "Advance to Pre-Employment Process": "step_ten_status_date",
+      "Results": "step_eleven_status_date",
+      "Hired": "step_twelve_status_date",
+      "Waitlisted": "step_thirteen_status_date",
+      "Qualifications dont match current openings": "step_fourteen_status_date"
     };
 
     let interview_steps = {
-      "First Interview Completed"  : "first_interviewer_id",
-      "Second Interview Completed" : "second_interviewer_id",
-      "Third Interview Completed"  : "third_interviewer_id",
-      "Reference Call Completed"   : "reference_interviewer_id"
+      "First Interview Completed": "first_interviewer_id",
+      "Second Interview Completed": "second_interviewer_id",
+      "Third Interview Completed": "third_interviewer_id",
+      "Reference Call Completed": "reference_interviewer_id"
     };
 
     let interview_step = ``;
-    if(email.recruiter_id && interview_steps[applicant.status_message])
+    if (email?.recruiter_id && interview_steps[applicant.status_message])
       interview_step = `"${interview_steps[applicant.status_message]}" = '${email.recruiter_id}',`;
 
-    let query = `
+    let query = ``;
+    if (type === "status_bar") {
+      query = `
+      UPDATE 
+              "Applicants"
+      SET 
+              "status_step"                                  = '${applicant.status_step}',
+              "status_message"                               = '${applicant.status_message}',
+              ${interview_step}
+              "${status_bar[applicant.prev_status_message]}" = now()
+
+      WHERE 
+              "id" = '${applicant.id}';`
+    }
+    else if (type === "recruiter")
+    {
+      let update_attributes = _.omit(applicant, ["id"]);
+      let set_statement: string = "SET ";
+
+      Object.keys(update_attributes).forEach((attribute, index) => {
+        if (index < Object.keys(update_attributes).length - 1)
+          set_statement = ` ${set_statement} "${attribute}" = '${applicant[attribute]}',`;
+        else
+          set_statement = ` ${set_statement} "${attribute}" = '${applicant[attribute]}'`;
+      });
+
+      query = `
         UPDATE 
                 "Applicants"
-        SET 
-                "status_step"                                 = '${applicant.status_step}',
-                "status_message"                              = '${applicant.status_message}',
-                ${interview_step}
-                "${status_bar[applicant.status_message]}"     = now()
-
+        ${set_statement}
         WHERE 
                 "id" = '${applicant.id}';`
+    }
 
     db.connect();
     let result = await db.query(query);
