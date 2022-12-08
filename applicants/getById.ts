@@ -155,7 +155,7 @@ const httpTrigger: AzureFunction = async function (
           click: +resp.status_step == 8 ? true : false,
         },
         {
-          step: `Results ${results_status[resp.status_step] ? '( ' + results_status[resp.status_step] + ' )' : ''}`, date: resp.step_eleven_status_date, status: +resp.status_step >= 10 ? true : false,
+          step: `Results ${results_status[resp.status_step] ? '(' + results_status[resp.status_step] + ')' : ''}`, date: resp.step_eleven_status_date, status: +resp.status_step >= 10 ? true : false,
           show: +resp.status_step >= 10 ? true : false,
           active: +resp.status_step >= 10 ? true : false
         }
