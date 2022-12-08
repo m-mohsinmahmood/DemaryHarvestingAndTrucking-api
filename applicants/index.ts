@@ -3,6 +3,7 @@ import * as addApplicant from "./post";
 import * as getApplicants from "./get";
 import * as getApplicantById from "./getById";
 import * as updateApplicant from "./put";
+import * as patchApplicant from "./patch";
 
 
 const httpTrigger: AzureFunction = async function (
@@ -21,6 +22,10 @@ const httpTrigger: AzureFunction = async function (
 
     case "PUT":
       await updateApplicant.default(context, req);
+      break;
+
+    case "PATCH":
+      await patchApplicant.default(context, req);
       break;
 
     default:
