@@ -82,7 +82,7 @@ export function updateQuery(applicant, email, type) {
     else if (type === "status_bar") {
         let interview_step = ``;
         if (email?.recruiter_id && interview_steps[applicant.status_message])
-        interview_step = `"${interview_steps[applicant.status_message]}" = '${email.recruiter_id}'`;
+        interview_step = `, "${interview_steps[applicant.status_message]}" = '${email.recruiter_id}'`;
         
         switch (applicant.prev_status_message) {
 
@@ -90,7 +90,7 @@ export function updateQuery(applicant, email, type) {
                 query = query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
-                        "${status_bar[applicant.prev_status_message]}" = now(),
+                        "${status_bar[applicant.prev_status_message]}" = now()
                         ${interview_step}
                 `;
             break;
@@ -98,7 +98,7 @@ export function updateQuery(applicant, email, type) {
             case "First Interview Completed":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
-                        "status_message" = '${applicant.status_message}',
+                        "status_message" = '${applicant.status_message}'
                         ${interview_step}
                 `;
             break;
@@ -106,7 +106,7 @@ export function updateQuery(applicant, email, type) {
             case "Second Interview Completed":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
-                        "status_message" = '${applicant.status_message}',
+                        "status_message" = '${applicant.status_message}'
                         ${interview_step}
                 `;
             break;
@@ -114,7 +114,7 @@ export function updateQuery(applicant, email, type) {
             case "Third Interview Completed":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
-                        "status_message" = '${applicant.status_message}',
+                        "status_message" = '${applicant.status_message}'
                         ${interview_step}
                 `;
             break;
@@ -122,7 +122,7 @@ export function updateQuery(applicant, email, type) {
             case "Reference Interview Completed":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
-                        "status_message" = '${applicant.status_message}',
+                        "status_message" = '${applicant.status_message}'
                         ${interview_step}
                 `;
             break;
@@ -151,11 +151,12 @@ export function updateQuery(applicant, email, type) {
                 `;
             break;
 
-            case "Result":
+            case "Results":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
-                        "${status_bar[applicant.prev_status_message]}" = now()
+                        "${status_bar["Offer Accepted"]}" = now(),
+                        "${status_bar["Results"]}" = now()
                 `;
             break;
 
