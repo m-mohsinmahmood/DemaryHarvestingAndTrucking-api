@@ -104,7 +104,7 @@ const httpTrigger: AzureFunction = async function (
       status_bar = [
         { step: `Application Submitted`, date: resp.created_at, status: true, show: true, active: true },
         {
-          step: `Advance Preliminary Review`, date: resp.step_two_status_date, status: true,
+          step: `Preliminary Review`, date: resp.step_two_status_date, status: true,
           show: true, active: true,
           click: +resp.status_step == 2 ? true : false
         },
