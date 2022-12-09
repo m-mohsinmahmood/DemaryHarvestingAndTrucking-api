@@ -1,4 +1,5 @@
 export interface machinery {
+    id?: string;
     type: string;
     vin_number: string;
     company_id: string;

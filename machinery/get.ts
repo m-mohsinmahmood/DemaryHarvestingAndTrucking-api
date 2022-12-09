@@ -44,7 +44,13 @@ const httpTrigger: AzureFunction = async function (
               "status"
         FROM 
               "Machinery"
-      ;
+              ${whereClause}
+        ORDER BY 
+              ${sort} ${order}
+        OFFSET 
+              ${((page - 1) * limit)}
+        LIMIT 
+              ${limit};
       `;
 
     let machinery_count_query = `
