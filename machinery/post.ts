@@ -75,6 +75,7 @@ const httpTrigger: AzureFunction = async function (
     db.connect();
     await db.query(query);
     db.end();
+    console.log(query);
 
     context.res = {
       status: 200,
