@@ -1,10 +1,11 @@
 export interface workOrder {
     id?: string;
-    dispatcher_id: string;
-    customer_id: string;
-    farm_id: string;
-    field_id: string;
-    tractor_driver: string,
-    field_address: string,
-    customer_phone: string,
+    dispatcherId: string;
+    customerId: string;
+    farmId: string;
+    fieldId: string;
+    service: string,
+    tractorDriver: string,
+    fieldAddress: string,
+    phone: string,
 }

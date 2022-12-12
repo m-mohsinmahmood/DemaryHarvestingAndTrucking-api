@@ -18,17 +18,19 @@ const httpTrigger: AzureFunction = async function (
                   ("dispatcher_id", 
                   "customer_id", 
                   "farm_id", 
-                  "field_id", 
+                  "field_id",
+                  "service", 
                   "tractor_driver", 
                   "field_address", 
                   "customer_phone")
-      VALUES      ('${order.dispatcher_id}', 
-                  '${order.customer_id}', 
-                  '${order.farm_id}', 
-                  '${order.field_id}', 
-                  '${order.tractor_driver}', 
-                  '${order.field_address}', 
-                  '${order.customer_phone}');
+      VALUES      ('${order.dispatcherId}', 
+                  '${order.customerId}', 
+                  '${order.farmId}', 
+                  '${order.fieldId}', 
+                  '${order.service}', 
+                  '${order.tractorDriver}', 
+                  '${order.fieldAddress}', 
+                  '${order.phone}');
     `;
 
         db.connect();
