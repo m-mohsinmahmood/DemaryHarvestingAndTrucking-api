@@ -59,6 +59,7 @@ const httpTrigger: AzureFunction = async function (
                   "emergency_contact_phone",
                   "status_step",
                   "status_message",
+                  "unique_fact",
                   "created_at"
                 )
       VALUES      

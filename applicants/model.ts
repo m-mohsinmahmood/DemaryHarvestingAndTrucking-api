@@ -66,5 +66,6 @@ export interface applicant {
   step_ten_status_date : string,
   step_eleven_status_date : string,
   step_twelve_status_date : string,
-  step_thirteen_status_date : string
+  step_thirteen_status_date : string,
+  unique_fact: string
 }
