@@ -55,6 +55,7 @@ const httpTrigger: AzureFunction = async function (
                 "blood_type"                    = '${applicant.blood_type}',
                 "emergency_contact_name"        = '${applicant.emergency_contact_name}',
                 "emergency_contact_phone"       = '${applicant.emergency_contact_phone}',
+                "unique_fact"                   = '${applicant.unique_fact}',
                 "first_call_remarks"            = '${applicant.first_call_remarks}',
                 "first_call_ranking"            = '${applicant.first_call_ranking}',
                 "first_interviewer_id"          = '${applicant.first_interviewer_id}',

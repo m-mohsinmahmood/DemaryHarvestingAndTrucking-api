@@ -2,7 +2,7 @@ import * as _ from "lodash";
 
 let status_bar = {
     "Application Submitted": "step_one_status_date",
-    "Advance Preliminary Review": "step_two_status_date",
+    "Preliminary Review": "step_two_status_date",
     "First Interview Completed": "step_three_status_date",
     "Second Interview Completed": "step_four_status_date",
     "Third Interview Completed": "step_five_status_date",
@@ -86,7 +86,7 @@ export function updateQuery(applicant, email, type) {
         
         switch (applicant.prev_status_message) {
 
-            case "Advance Preliminary Review":
+            case "Preliminary Review":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
@@ -119,7 +119,7 @@ export function updateQuery(applicant, email, type) {
                 `;
             break;
             
-            case "Reference Interview Completed":
+            case "Reference Call Completed":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}'
