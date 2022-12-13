@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { machinery } from "./model";
+import { NonMotorized } from "./model";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -10,7 +10,7 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const machinery: machinery = req.body;
+    const non_motorized: NonMotorized = req.body;
     let query = ``;
 
     db.connect();
@@ -20,7 +20,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        message: "Machinery has been updated successfully.",
+        message: "Non Motorized Vehicle has been updated successfully.",
       },
     };
     context.done();

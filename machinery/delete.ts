@@ -9,13 +9,13 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const customer_id: string = req.query.id;
+    const machinery_id: string = req.query.id;
     let query = `
-        UPDATE "Customers" 
+        UPDATE "Machinery" 
         SET "is_deleted"  = TRUE, 
             "modified_at" = 'now()'
         WHERE 
-            "id" = '${customer_id}';
+            "id" = '${machinery_id}';
         `;
 
     db.connect();
@@ -25,7 +25,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        message: "Customer has been deleted successfully.",
+        message: "Machinery has been deleted successfully.",
       },
     };
     context.done();
