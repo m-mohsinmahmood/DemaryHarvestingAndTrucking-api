@@ -38,7 +38,7 @@ const httpTrigger: AzureFunction = async function (
                     "estimated_market_value", 
                     "source_of_market_value", 
                     "date_of_market_value",  
-                    "vin_number"
+                    "vin_number",
                     "name",
                     "license_plate",
                     "pictures",
@@ -53,6 +53,8 @@ const httpTrigger: AzureFunction = async function (
                   '${motorized.make}', 
                   '${motorized.model}', 
                   '${motorized.title}', 
+                  '${motorized.odometer}', 
+                  '${motorized.odometer_reading}', 
                   '${motorized.license}',
                   '${motorized.registration}',
                   '${motorized.insurance_status}',
@@ -61,7 +63,7 @@ const httpTrigger: AzureFunction = async function (
                   '${motorized.comprehensive}',
                   '${motorized.purchase_price}',
                   '${motorized.date_of_purchase}',
-                  '${motorized.sales_price}'
+                  '${motorized.sales_price}',
                   '${motorized.date_of_sales}',
                   '${motorized.estimated_market_value}',
                   '${motorized.source_of_market_value}',

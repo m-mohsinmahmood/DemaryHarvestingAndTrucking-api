@@ -24,5 +24,5 @@ export interface machinery {
     name:string;
     license_plate:string;
     pictures: string;
-    status:string;
+    status:boolean;
 }

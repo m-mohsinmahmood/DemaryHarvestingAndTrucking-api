@@ -18,18 +18,8 @@ const httpTrigger: AzureFunction = async function (
     const order: string = req.query.order ? req.query.order : `desc`;
     let whereClause: string = ` WHERE "is_deleted" = FALSE`;
 
-    // if (search) whereClause = ` ${whereClause} AND LOWER("customer_name") LIKE LOWER('%${search}%')`;
-    // if (status) whereClause = ` ${whereClause} AND "status" = ${(status === 'true')}`;
-    // if (customer_type) {
-    //   let types = customer_type.split(",");
-    //   types.forEach((type, index) => {
-    //     if(index === 0)
-    //       whereClause = ` ${whereClause} AND ( "customer_type" LIKE '%' || '${type}' || '%'`;
-    //     else if (index > 0)  
-    //       whereClause = ` ${whereClause} OR "customer_type" LIKE '%' || '${type}' || '%'`;
-    //   });
-    //   whereClause = ` ${whereClause} )`
-    // }
+    if (search) whereClause = ` ${whereClause} AND LOWER(name) LIKE LOWER('%${search}%')`;
+
 
     let non_motorized_info_query = `
         SELECT 

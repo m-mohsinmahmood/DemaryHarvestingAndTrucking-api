@@ -36,7 +36,7 @@ const httpTrigger: AzureFunction = async function (
                     "estimated_market_value", 
                     "source_of_market_value", 
                     "date_of_market_value",  
-                    "vin_number"
+                    "vin_number",
                     "name",
                     "license_plate",
                     "pictures",
@@ -59,7 +59,7 @@ const httpTrigger: AzureFunction = async function (
                   '${machinery.comprehensive}',
                   '${machinery.purchase_price}',
                   '${machinery.date_of_purchase}',
-                  '${machinery.sales_price}'
+                  '${machinery.sales_price}',
                   '${machinery.date_of_sales}',
                   '${machinery.estimated_market_value}',
                   '${machinery.source_of_market_value}',

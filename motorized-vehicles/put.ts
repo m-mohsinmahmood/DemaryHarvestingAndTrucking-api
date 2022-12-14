@@ -11,8 +11,41 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     const motorized: Motorized = req.body;
-    let query = ``;
+    let query = `
+    UPDATE 
+          "Motorized_Vehicles"
+    SET 
+    "id"                      = '${motorized.id}', 
+    "type"                    = '${motorized.type}', 
+    "color"                   = '${motorized.color}', 
+    "year"                    = '${motorized.year}', 
+    "make"                    = '${motorized.make}', 
+    "odometer"                = '${motorized.odometer}',
+    "odometer_reading"        = '${motorized.odometer_reading}',
+    "model"                   = '${motorized.model}', 
+    "title"                   = '${motorized.title}', 
+    "license"                 = '${motorized.license}', 
+    "registration"            = '${motorized.registration}', 
+    "insurance_status"        = '${motorized.insurance_status}', 
+    "liability"               = '${motorized.liability}', 
+    "collision"               = '${motorized.collision}', 
+    "comprehensive"           = '${motorized.comprehensive}', 
+    "purchase_price"          = '${motorized.purchase_price}', 
+    "date_of_purchase"        = '${motorized.date_of_purchase}', 
+    "sales_price"             = '${motorized.sales_price}', 
+    "date_of_sales"           = '${motorized.date_of_sales}', 
+    "estimated_market_value"  = '${motorized.estimated_market_value}', 
+    "source_of_market_value"  = '${motorized.source_of_market_value}', 
+    "date_of_market_value"    = '${motorized.date_of_market_value}',  
+    "vin_number"              = '${motorized.vin_number}',
+    "company_id"              = '${motorized.company_id}',
+    "name"                    = '${motorized.name}',
+    "license_plate"           = '${motorized.license_plate}',
+    "pictures"                = '${motorized.pictures}',
+    "status"                  = '${motorized.status}'
 
+    WHERE 
+          "id" = '${motorized.id}';`
     db.connect();
     let result = await db.query(query);
     db.end();
