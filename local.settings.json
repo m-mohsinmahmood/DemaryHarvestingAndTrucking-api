@@ -7,7 +7,8 @@
     "PG_USER": "dht",
     "PG_PASSWORD": "jtAMkp^h7NE!nJqD",
     "PG_PORT": "5432",
-    "PG_DATABASE": "postgres"
+    "PG_DATABASE": "postgres",
+    "AzureWebJobs.customer_job_setup.Disabled": "true"
   },
   "Host": {
     "LocalHttpPort": 7071,
