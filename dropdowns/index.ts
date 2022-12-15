@@ -3,6 +3,11 @@ import * as getAllCrops from "./getAllCrops";
 import * as getCustomerCrops from "./getCustomerCrops";
 import * as getCustomerFarms from "./getCustomerFarms";
 import * as getAllRecruiters from "./getAllRecruiters";
+import * as getAllEmployees from "./getAllEmployees";
+import * as getAllCustomers from "./getAllCustomers";
+import * as getCustomerFields from "./getCustomerFields";
+import * as getCustomerServices from "./getCustomerService";
+
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -19,6 +24,14 @@ const httpTrigger: AzureFunction = async function (
           await getCustomerFarms.default(context, req);
         else if (req.query.entity === "allRecruiters")
           await getAllRecruiters.default(context, req);
+        else if (req.query.entity === "allEmployees")
+          await getAllEmployees.default(context, req);
+        else if (req.query.entity === "allCustomers")
+          await getAllCustomers.default(context, req);
+        else if (req.query.entity === "customerFields")
+          await getCustomerFields.default(context, req);
+          else if (req.query.entity === "customerServices")
+          await getCustomerServices.default(context, req);
         break;
 
       default:

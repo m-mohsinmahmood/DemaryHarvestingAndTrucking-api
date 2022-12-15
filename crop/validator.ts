@@ -1,5 +1,5 @@
-// import { crop } from "./model";
-// // import { ajv } from "../utilities/validator_intance";
+import { crop } from "./model";
+//import { ajv } from "../utilities/validator_intance";
 
 // const schema = {
 //   type: "object",
@@ -20,21 +20,21 @@
 //   additionalProperties: false,
 // };
 
-// export function cropValidator(crop: crop) {
-//   // const validate = ajv.compile(schema);
-//   // const valid = validate(crop);
-//   // if (!valid) console.log(validate.errors);
-//   // const validation = validate.errors;
-//   let error = [];
-//   let errorMessage = ``;
-//   // validation.forEach((err) => {
-//   //   error.push(
-//   //     `${err.instancePath ? `${err.instancePath} ` : ``}${err.message}`.replace(
-//   //       /[^\w ]/g,
-//   //       ""
-//   //     )
-//   //   );
-//   // });
-//   errorMessage = error.join(", ");
-//   return errorMessage;
-// }
+export function cropValidator(crop: crop) {
+  //const validate = ajv.compile(schema);
+  // const valid = validate(crop);
+  // if (!valid) console.log(validate.errors);
+  // const validation = validate.errors;
+  let error = [];
+  let errorMessage = ``;
+  // validation.forEach((err) => {
+  //   error.push(
+  //     `${err.instancePath ? `${err.instancePath} ` : ``}${err.message}`.replace(
+  //       /[^\w ]/g,
+  //       ""
+  //     )
+  //   );
+  // });
+  errorMessage = error.join(", ");
+  return errorMessage;
+}
