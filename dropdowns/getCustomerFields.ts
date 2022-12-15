@@ -32,7 +32,7 @@ const httpTrigger: AzureFunction = async function (
                     INNER JOIN "Customer_Field" fi 
                     ON f."id" = fi."farm_id" AND f."customer_id" = '${customer_id}' AND fi."is_deleted" = false AND f."is_deleted" = FALSE
     
-            ${whereClause}
+            ${whereClause};
           `;
 
         let customer_field_count_query = `
