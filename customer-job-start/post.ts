@@ -8,26 +8,68 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest
 ): Promise<void> {
   const db = new Client(config);
+  console.log("Req:", req.body);
 
+  let query = ``;
   try {
     const job_start: job_start = req.body;
 
-    let query = `
+    if (job_start.role === "truck-driver") {
+      query = `
       INSERT INTO 
                   "Customer_Job_Start" 
                   (
+                  "role",
+                  "truck_id",
+                  "crew_chief",
+                  "truck_company",
+                  "begining_miles"
+                  )
+                  
+      VALUES      (
+                 '${job_start.role}', 
+                 '${job_start.truck_id}', 
+                 '${job_start.crew_chief}',
+                 '${job_start.truck_company}',
+                  ${job_start.begining_miles}
+                 );
+    `;
+    } else if (job_start.role === "kart-operator") {
+      query = `
+      INSERT INTO 
+                  "Customer_Job_Start" 
+                  (
+                  "role",
+                  "machine_id",
+                  "engine_hours"
+                  )
+                  
+      VALUES      (
+                 '${job_start.role}', 
+                 '${job_start.machine_id}', 
+                  ${job_start.engine_hours}
+                 );
+    `;
+    } else {
+      query = `
+      INSERT INTO 
+                  "Customer_Job_Start" 
+                  (
+                  "role",
                   "machine_id",
                   "separator_hours", 
                   "engine_hours", 
                   "confirm_field")
                   
       VALUES      (
+                 '${job_start.role}', 
                  '${job_start.machine_id}', 
                   ${job_start.separator_hours}, 
                   ${job_start.engine_hours}, 
                   '${job_start.confirm_field}'
                  );
     `;
+    }
 
     db.connect();
     await db.query(query);

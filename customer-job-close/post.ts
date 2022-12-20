@@ -8,22 +8,55 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest
 ): Promise<void> {
   const db = new Client(config);
+let query =``;
 
   try {
     const job_close: job_close = req.body;
-
-    let query = `
+    if(job_close.role === 'kart-operator'){
+       query = `
       INSERT INTO 
                   "Customer_Job_Close" 
                   (
-                  "separator_hours", 
-                  "engine_hours"
+                  "engine_hours",
+                  "role"
                   )
                   
       VALUES      (
-                  '${job_close.separator_hours}', 
-                  '${job_close.engine_hours}'
+                  ${job_close.engine_hours},
+                  '${job_close.role}'
     );`;
+    }
+    else if(job_close.role === 'truck-driver'){
+       query = `
+      INSERT INTO 
+                  "Customer_Job_Close" 
+                  (
+                  "ending_miles",
+                  "role"
+                  )
+                  
+      VALUES      (
+                  ${job_close.ending_miles},
+                  '${job_close.role}'
+    );`;
+    }
+    else{
+       query = `
+        INSERT INTO 
+                    "Customer_Job_Close" 
+                    (
+                    "separator_hours", 
+                    "engine_hours",
+                    "role"
+                    )
+                    
+        VALUES      (
+                    ${job_close.separator_hours}, 
+                    ${job_close.engine_hours},
+                    '${job_close.role}'
+      );`;
+    }
+
 
     db.connect();
     await db.query(query);
@@ -32,7 +65,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        message: "Job has been closed successfully",
+        message: "Job has been completed successfully",
         status: 200,
       },
     };
