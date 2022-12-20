@@ -8,6 +8,8 @@ export interface NonMotorized {
     make: string;
     model: string;
     title: string;
+    odometer:string;
+    odometer_reading:string;
     license: string;
     registration: string;
     insurance_status: string;

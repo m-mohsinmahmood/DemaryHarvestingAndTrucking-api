@@ -30,7 +30,7 @@ const httpTrigger: AzureFunction = async function (
               "model", 
               "make", 
               "year", 
-              "license_plate", 
+              "serial_number", 
               "status"
         FROM 
               "Machinery"

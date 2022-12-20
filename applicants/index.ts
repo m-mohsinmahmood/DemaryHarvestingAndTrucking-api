@@ -4,6 +4,7 @@ import * as getApplicants from "./get";
 import * as getApplicantById from "./getById";
 import * as updateApplicant from "./put";
 import * as patchApplicant from "./patch";
+import * as deleteApplicant from "./delete";
 
 
 const httpTrigger: AzureFunction = async function (
@@ -26,6 +27,10 @@ const httpTrigger: AzureFunction = async function (
 
     case "PATCH":
       await patchApplicant.default(context, req);
+      break;
+
+    case "DELETE":
+      await deleteApplicant.default(context, req);
       break;
 
     default:

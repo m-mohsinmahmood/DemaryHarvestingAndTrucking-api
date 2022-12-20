@@ -10,15 +10,17 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     const search: string = req.query.search;
-    const status: string = req.query.status;
-    const customer_type: string = req.query.type;
+    const state: string = req.query.state;
+    const created_at: string = req.query.created_at;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 10;
-    const sort: string = req.query.sort ? req.query.sort : `created_at` ;
+    const sort: string = req.query.sort ? req.query.sort : `first_name` ;
     const order: string = req.query.order ? req.query.order : `desc`;
     let whereClause: string = ` WHERE "is_deleted" = FALSE`;
 
     if (search) whereClause = ` ${whereClause} AND LOWER("last_name") LIKE LOWER('%${search}%')`;
+    if (state) whereClause = ` ${whereClause} AND "state" = '${state}'`;
+    if (created_at) whereClause = ` ${whereClause} AND  extract(year from "created_at") = '${created_at}'`;
 
     let applicant_query = `
         SELECT 

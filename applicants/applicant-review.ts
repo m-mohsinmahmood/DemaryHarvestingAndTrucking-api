@@ -123,7 +123,7 @@ export function updateQuery(applicant, email, type) {
                 `;
             break;
             
-            case "Reference Interview Completed":
+            case "Reference Call Completed":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}'
