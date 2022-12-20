@@ -17,16 +17,16 @@ const httpTrigger: AzureFunction = async function (
 
         if (search) whereClause = ` ${whereClause} AND LOWER(name) LIKE LOWER('%${search}%')`;
 
-        if (customer_type) {
-            let types = customer_type.split(",");
-            types.forEach((customer_type, index) => {
-                if (index === 0)
-                    whereClause = ` ${whereClause} AND ( "customer_type" LIKE '%' || '${customer_type}' || '%'`;
-                else if (index > 0)
-                    whereClause = ` ${whereClause} OR "customer_type" LIKE '%' || '${customer_type}' || '%'`;
-            });
-            whereClause = ` ${whereClause} )`
-        }
+        // if (customer_type) {
+        //     let types = customer_type.split(",");
+        //     types.forEach((customer_type, index) => {
+        //         if (index === 0)
+        //             whereClause = ` ${whereClause} AND ( "customer_type" LIKE '%' || '${customer_type}' || '%'`;
+        //         else if (index > 0)
+        //             whereClause = ` ${whereClause} OR "customer_type" LIKE '%' || '${customer_type}' || '%'`;
+        //     });
+        //     whereClause = ` ${whereClause} )`
+        // }
 
         let customer_farm_query = `
         SELECT 
@@ -43,9 +43,14 @@ const httpTrigger: AzureFunction = async function (
         db.connect();
 
         let result = await db.query(query);
+        console.log(result.rows);
+        
+        const arr = result.rows[0].customer_type.split(',');
+
+        console.log(arr);
 
         let resp = {
-            customer_farms: result.rows
+            customer_farms: arr
         };
 
         db.end();

@@ -1,16 +1,26 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as addWorkOrder from "./post";
+// import * as getWorkOrderById from "./getById";
+import * as getWorkOrder from "./get";
+import * as updateWorkOrder from "./put";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
     req: HttpRequest
 ): Promise<void> {
     switch (req.method) {
+        case "GET":
+            // if (req.query.id) await getWorkOrderById.default(context, req);
+            // else await getWorkOrder.default(context, req);
+            getWorkOrder.default(context, req);
+            break;
 
         case "POST":
             await addWorkOrder.default(context, req);
             break;
-
+        case "PUT":
+            await updateWorkOrder.default(context, req);
+            break;
         default:
             context.res = {
                 status: 404,
