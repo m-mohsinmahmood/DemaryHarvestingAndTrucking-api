@@ -1,15 +1,19 @@
 export interface machinery {
     id?: string;
     type: string;
-    vin_number: string;
+
     company_id: string;
     color: string;
     year: string;
     make: string;
     model: string;
-    title: string;
-    license: string;
-    registration: string;
+
+    serial_number:string;
+    engine_hours: string;
+    eh_reading: string;
+    separator_hours: string;
+    sh_reading: string;
+
     insurance_status: string;
     liability: string;
     collision: string;
@@ -22,7 +26,6 @@ export interface machinery {
     source_of_market_value: string;
     date_of_market_value: string;
     name:string;
-    license_plate:string;
     pictures: string;
     status:boolean;
 }
