@@ -10,7 +10,10 @@
     "PG_DATABASE": "postgres"
   },
   "Host": {
+
     "LocalHttpPort": 7071,
+
     "CORS": "*"
+
   }
 }
