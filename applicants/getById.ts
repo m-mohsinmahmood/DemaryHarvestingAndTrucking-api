@@ -80,6 +80,9 @@ const httpTrigger: AzureFunction = async function (
             "step_eleven_status_date",
             "step_twelve_status_date",
             "step_thirteen_status_date",
+            "unique_fact",
+            "reason_for_rejection",
+            "ranking",
             "created_at"
     FROM 
             "Applicants"
@@ -104,7 +107,7 @@ const httpTrigger: AzureFunction = async function (
       status_bar = [
         { step: `Application Submitted`, date: resp.created_at, status: true, show: true, active: true },
         {
-          step: `Advance Preliminary Review`, date: resp.step_two_status_date, status: true,
+          step: `Preliminary Review`, date: resp.step_two_status_date, status: true,
           show: true, active: true,
           click: +resp.status_step == 2 ? true : false
         },

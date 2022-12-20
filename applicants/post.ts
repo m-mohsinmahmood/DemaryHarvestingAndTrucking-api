@@ -104,7 +104,7 @@ const httpTrigger: AzureFunction = async function (
                   '${applicant.emergency_contact_name}',
                   '${applicant.emergency_contact_phone}',
                   '2',
-                  'Advance Preliminary Review',
+                  'Preliminary Review',
                   'now()'
                 );
     `;
