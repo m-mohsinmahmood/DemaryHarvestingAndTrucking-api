@@ -11,27 +11,58 @@ const httpTrigger: AzureFunction = async function (
 
     try {
         const order: workOrder = req.body;
+        console.log(order);
+
+        let optionalReq: string = ``;
+        let optionalValues: string = ``;
+
+        if (order.workOrderIsCompleted != null) {
+            optionalReq = `${optionalReq},"work_order_is_completed"`;
+            optionalValues = `${optionalValues},${order.workOrderIsCompleted}`
+        }
+
+        if (order.workOrderStatus != null) {
+            optionalReq = `${optionalReq},"work_order_status"`;
+            optionalValues = `${optionalValues},${order.workOrderStatus}`
+        }
+
+        if (order.workOrderCloseOut != null) {
+            console.log("testing");
+
+            optionalReq = `${optionalReq},"work_order_close_out"`;
+            optionalValues = `${optionalValues},${order.workOrderCloseOut}`
+        }
+
 
         let query = `
       INSERT INTO 
                   "Farming_Work_Order" 
                   ("dispatcher_id", 
+                  "beginning_engine_hours",
                   "customer_id", 
                   "farm_id", 
                   "field_id",
                   "service", 
-                  "tractor_driver", 
+                  "tractor_driver_id", 
                   "field_address", 
-                  "customer_phone")
+                  "customer_phone",
+                  "machinery_id"
+                  ${optionalReq})
+
       VALUES      ('${order.dispatcherId}', 
+                  '${order.cBeginningEngineHours}',
                   '${order.customerId}', 
                   '${order.farmId}', 
                   '${order.fieldId}', 
                   '${order.service}', 
-                  '${order.tractorDriver}', 
+                  '${order.tractorDriverId}', 
                   '${order.fieldAddress}', 
-                  '${order.phone}');
+                  '${order.phone}',
+                  '${order.machineryID}'
+                  ${optionalValues});
     `;
+
+        console.log(query);
 
         db.connect();
         await db.query(query);
