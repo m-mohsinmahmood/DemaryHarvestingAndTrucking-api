@@ -81,6 +81,9 @@ const httpTrigger: AzureFunction = async function (
             "step_eleven_status_date",
             "step_twelve_status_date",
             "step_thirteen_status_date",
+            "unique_fact",
+            "reason_for_rejection",
+            "ranking",
             "created_at"
     FROM 
             "Applicants"

@@ -40,6 +40,7 @@ export function updateQuery(applicant, email, type) {
                         "first_call_remarks" = '${applicant.first_call_remarks}',
                         "status_message" = '${applicant.status_message}',
                         "status_step" = '${applicant.status_step}',
+                        "ranking" = '${applicant.ranking}',
                         "step_three_status_date" = now()
                 `;
             break;
@@ -50,6 +51,7 @@ export function updateQuery(applicant, email, type) {
                         "second_call_remarks" = '${applicant.second_call_remarks}',
                         "status_message" = '${applicant.status_message}',
                         "status_step" = '${applicant.status_step}',
+                        "ranking" = '${applicant.ranking}',
                         "step_four_status_date" = now()
                 `;
             break;
@@ -60,6 +62,7 @@ export function updateQuery(applicant, email, type) {
                         "third_call_remarks" = '${applicant.third_call_remarks}',
                         "status_message" = '${applicant.status_message}',
                         "status_step" = '${applicant.status_step}',
+                        "ranking" = '${applicant.ranking}',
                         "step_five_status_date" = now()
                 `;
             break;
@@ -70,6 +73,7 @@ export function updateQuery(applicant, email, type) {
                         "reference_call_remarks" = '${applicant.reference_call_remarks}',
                         "status_message" = '${applicant.status_message}',
                         "status_step" = '${applicant.status_step}',
+                        "ranking" = '${applicant.ranking}',
                         "step_six_status_date" = now()
                 `;
             break;
@@ -155,8 +159,8 @@ export function updateQuery(applicant, email, type) {
                 query = query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
-                        "${status_bar["Offer Accepted"]}" = now(),
-                        "${status_bar["Results"]}" = now()
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}',
+                        "${status_bar[applicant.prev_status_message]}" = now()
                 `;
             break;
 
