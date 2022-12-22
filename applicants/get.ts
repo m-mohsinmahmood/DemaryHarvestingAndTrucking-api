@@ -1,6 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
+import * as moment from 'moment';
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -17,7 +18,7 @@ const httpTrigger: AzureFunction = async function (
     const created_at: string = req.query.created_at;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 10;
-    const sort: string = req.query.sort ? req.query.sort : `first_name` ;
+    const sort: string = req.query.sort ? req.query.sort : `created_at` ;
     const order: string = req.query.order ? req.query.order : `desc`;
     let whereClause: string = ` WHERE "is_deleted" = FALSE`;
 
@@ -29,6 +30,10 @@ const httpTrigger: AzureFunction = async function (
       if (ranking == "first_ranking") whereClause = ` ${whereClause} AND ranking  < CAST(30 AS VARCHAR)`;
       else if (ranking == "second_ranking") whereClause = ` ${whereClause} AND ranking > CAST(30 AS VARCHAR) AND ranking < CAST(70 AS VARCHAR)`; 
       else if (ranking == "third_ranking") whereClause = ` ${whereClause} AND ranking  > CAST(70 AS VARCHAR)`;
+    }
+    if (date){
+      let moment_date = moment(date).format('DD-MM-YYYY'); 
+      whereClause = ` ${whereClause} AND to_char(created_at,'DD-MM-YYYY') = '${moment_date}' `;
     }
     
     let applicant_query = `
