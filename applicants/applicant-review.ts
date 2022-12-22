@@ -94,6 +94,7 @@ export function updateQuery(applicant, email, type) {
                 query = query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}',
                         "${status_bar[applicant.prev_status_message]}" = now()
                         ${interview_step}
                 `;
@@ -102,7 +103,8 @@ export function updateQuery(applicant, email, type) {
             case "First Interview Completed":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
-                        "status_message" = '${applicant.status_message}'
+                        "status_message" = '${applicant.status_message}',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}'
                         ${interview_step}
                 `;
             break;
@@ -110,7 +112,8 @@ export function updateQuery(applicant, email, type) {
             case "Second Interview Completed":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
-                        "status_message" = '${applicant.status_message}'
+                        "status_message" = '${applicant.status_message}',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}'
                         ${interview_step}
                 `;
             break;
@@ -118,7 +121,8 @@ export function updateQuery(applicant, email, type) {
             case "Third Interview Completed":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
-                        "status_message" = '${applicant.status_message}'
+                        "status_message" = '${applicant.status_message}',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}'
                         ${interview_step}
                 `;
             break;
@@ -126,7 +130,8 @@ export function updateQuery(applicant, email, type) {
             case "Reference Call Completed":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
-                        "status_message" = '${applicant.status_message}'
+                        "status_message" = '${applicant.status_message}',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}'
                         ${interview_step}
                 `;
             break;
@@ -135,6 +140,7 @@ export function updateQuery(applicant, email, type) {
                 query = query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}',
                         "${status_bar[applicant.prev_status_message]}" = now()
                 `;
             break;
@@ -143,6 +149,7 @@ export function updateQuery(applicant, email, type) {
                 query = query + `
                         "status_step" = '8',
                         "status_message" = 'Offer Accepted',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}',
                         "${status_bar[applicant.prev_status_message]}" = now()
                 `;
             break;
@@ -151,6 +158,7 @@ export function updateQuery(applicant, email, type) {
                 query = query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}',
                         "${status_bar[applicant.prev_status_message]}" = now()
                 `;
             break;
