@@ -8,40 +8,20 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
   const db = new Client(config);
 
-  try {
-    let job_setup_query = `
-    SELECT 
-    customer."id" as "customer_id", 
-    customer."state" as "state", 
-    customer."customer_name" as "customer_name",
-		 farm."name" as "farm_name",
-		 crop."name" as "crop_name",
-		 field."name" as "field_name"
-    FROM 
-    
-		"Customer_Job_Setup" wo
-		
-    INNER JOIN "Customers" customer 
-    ON wo."customer_id" = customer."id"
 
-    INNER JOIN "Customer_Farm" farm 
-    ON wo."farm_id" = farm."id"
-		
-		INNER JOIN "Crops" crop 
-    ON wo."crop_id" = crop."id"
-		
-		INNER JOIN "Customer_Field" field 
-    ON wo."field_id" = field."id"
+  try {
+    let get_ticket_query = `
+    SELECT * FROM "Harvesting_Ticket"
       `;
 
-    let query = `${job_setup_query}`;
+    let query = `${get_ticket_query}`;
 
     db.connect();
 
     let result = await db.query(query);
 
     let resp = {
-      customer_job: result.rows
+      generated_tickets: result.rows
     };
 
     db.end();

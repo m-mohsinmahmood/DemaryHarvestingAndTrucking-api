@@ -1,6 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import * as createJob from "./post";
 import * as getCreateJob from "./get";
+import * as updateJob from "./patch";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     switch (req.method) {    
@@ -14,7 +15,11 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
           case "PUT":
       await createJob.default(context, req);
-      break;   
+      break;  
+      
+      case "PATCH":
+        await updateJob.default(context, req);
+        break;  
     
         default:
           context.res = {
