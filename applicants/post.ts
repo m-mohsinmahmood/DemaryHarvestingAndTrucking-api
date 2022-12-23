@@ -11,13 +11,20 @@ const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
 ): Promise<void> {
+  //#region Variables
   const db = new Client(config);
-
+  let result;
+  let query;
+  let applicant_id;
+  let file_name;
+  const multiPartConfig = {
+    limits: { fields: 1 },
+  };
+  const { fields, files } = await parseMultipartFormData(req, multiPartConfig);
+  //#endregion
+  //#region Create Applicant
   try {
-    const config = {
-      limits: { fields: 1 },
-    };
-    const { fields, files } = await parseMultipartFormData(req, config);
+    
     const applicant: applicant = (JSON.parse(fields[0].value));
     applicant.avatar = '';
 
@@ -119,85 +126,119 @@ const httpTrigger: AzureFunction = async function (
                 )
                 RETURNING id as applicant_id
     `;
-
     db.connect();
-    let result = await db.query(query);
-    let applicant_id = result.rows[0].applicant_id
-    const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/applicants?sp=racw&st=2022-12-23T16:39:56Z&se=2025-01-01T00:39:56Z&spr=https&sv=2021-06-08&sr=c&sig=Jsxo862%2FCE8ooBBhlzWEJrZ7hRkFRpqDWCY4PFYQH9U%3D");
-    const container = blob.getContainerClient("applicants");
-    const file_name = "image" + applicant_id;
-    const blockBlob = container.getBlockBlobClient(file_name);
-    try {
-      const uploadFileResp = await blockBlob.uploadData(files[0].bufferFile, {
-        blobHTTPHeaders: { blobContentType: files[0].mimeType },
-      });
-      let update_query = `
-      UPDATE "Applicants"
-      SET 
-      "avatar" = '${"https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/" + file_name}'
-      WHERE 
-      "id" = '${applicant_id}';`
-      db.connect();
-      await db.query(update_query);
-      context.res = {
-        status: 200,
-        body: {
-          message: "",
-        },
-      };
-    }
-    catch (error) {
-      db.end();
-      context.res = {
-        status: 200,
-        body: {
-          message: error,
-        },
-      };
-      return;
-    }
-
-
-    db.end();
-    sgMail.setApiKey('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');
-    const msg = {
-      to: `${applicant.email}`,
-      from: 'momin4073@gmail.com',
-      subject: 'DHT Employment Application Received!',
-      html: `
-            Dear ${applicant.first_name} ${applicant.last_name},
-            <br> <br>Thank you for completing DHT’s online application. We are currently reviewing your application and will be reaching out soon with further instructions on next steps. 
-            <br> <br>Thanks
-            `
-    }
-    sgMail
-      .send(msg)
-      .then(() => {
-        console.log('Email sent')
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-
-    context.res = {
-      status: 200,
-      body: {
-        message: "Your form has been submitted successfully.",
-      },
-    };
-
-    context.done();
-    return;
+    result = await db.query(query);
   } catch (error) {
     db.end();
     context.res = {
-      status: 500,
+      status: 400,
       body: {
         message: error.message,
       },
     };
+    context.done();
     return;
   }
+  
+  //#endregion
+  //#region Upload Applicant Avatar
+try {
+    applicant_id = result.rows[0].applicant_id
+    const blob = new BlobServiceClient(process.env['BLOB_CREDENTIALS']);
+    const container = blob.getContainerClient(process.env["CONTAINER_NAME"]);
+    file_name = "image" + applicant_id;
+    const blockBlob = container.getBlockBlobClient(file_name);
+      const uploadFileResp = await blockBlob.uploadData(files[0].bufferFile, {
+        blobHTTPHeaders: { blobContentType: files[0].mimeType },
+      });
+    }
+    catch(error){
+        context.res = {
+          status: 400,
+          body: {
+            message: error,
+          },
+        };
+        context.done();
+        return;
+    }
+  //#endregion
+  //#region Update Applicant
+  try {
+    let update_query = `
+    UPDATE "Applicants"
+    SET 
+    "avatar" = '${process.env["BLOB_IMAGE_BASE_URL"] + file_name}'
+    WHERE 
+    "id" = '${applicant_id}';`
+    db.connect();
+    await db.query(update_query);
+    db.end();  
+  } catch (error) {
+    db.end();
+    context.res = {
+      status: 400,
+      body: {
+        message: error,
+      },
+    };
+    context.done();
+    return;
+  }
+  //#endregion
+  
+  //#region Success Return
+  context.res = {
+    status: 200,
+    body: {
+      message: "Your form has been submitted successfully.",
+    },
+  };
+  context.done();
+  return;
+  //#endregion
+
+  //   db.end();
+  //   sgMail.setApiKey('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');
+  //   const msg = {
+  //     to: `${applicant.email}`,
+  //     from: 'momin4073@gmail.com',
+  //     subject: 'DHT Employment Application Received!',
+  //     html: `
+  //           Dear ${applicant.first_name} ${applicant.last_name},
+  //           <br> <br>Thank you for completing DHT’s online application. We are currently reviewing your application and will be reaching out soon with further instructions on next steps. 
+  //           <br> <br>Thanks
+  //           `
+  //   }
+  //   sgMail
+  //     .send(msg)
+  //     .then(() => {
+  //       console.log('Email sent')
+  //     })
+  //     .catch((error) => {
+  //       console.error(error)
+  //     })
+
+  //   context.res = {
+  //     status: 200,
+  //     body: {
+  //       message: "Your form has been submitted successfully.",
+  //     },
+  //   };
+
+  //   context.done();
+  //   return;
+  // } catch (error) {
+  //   db.end();
+  //   context.res = {
+  //     status: 500,
+  //     body: {
+  //       message: error.message,
+  //     },
+  //   };
+  //   context.done();
+  //   return;
+  // }
 };
 
 export default httpTrigger;

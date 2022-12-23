@@ -8,7 +8,7 @@
     "PG_PASSWORD": "jtAMkp^h7NE!nJqD",
     "PG_PORT": "5432",
     "PG_DATABASE": "postgres",
-    "BLOB_CREDENTIALS": "https://dhtstorageaccountdev.blob.core.windows.net/applicants?sp=rawl&st=2022-12-22T19:56:22Z&se=2022-12-23T03:56:22Z&spr=https&sv=2021-06-08&sr=c&sig=x1zQQfxZEShOh9f7My416YWo7s8mHbwNeALGHoRzIFc%3D",
+    "BLOB_CREDENTIALS": "https://dhtstorageaccountdev.blob.core.windows.net/applicants?sp=racw&st=2022-12-23T16:39:56Z&se=2025-01-01T00:39:56Z&spr=https&sv=2021-06-08&sr=c&sig=Jsxo862%2FCE8ooBBhlzWEJrZ7hRkFRpqDWCY4PFYQH9U%3D",
     "CONTAINER_NAME": "applicants",
     "BLOB_IMAGE_BASE_URL": "https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/"
   },
