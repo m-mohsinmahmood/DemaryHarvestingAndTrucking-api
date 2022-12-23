@@ -13,6 +13,7 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
   //#region Variables
   const db = new Client(config);
+  const db1 = new Client(config);
   let result;
   let query;
   let applicant_id;
@@ -173,11 +174,11 @@ try {
     "avatar" = 'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/ + ${file_name}}'
     WHERE 
     "id" = '${applicant_id}';`
-    db.connect();
+    db1.connect();
     await db.query(update_query);
-    db.end();  
+    db1.end();  
   } catch (error) {
-    db.end();
+    db1.end();
     context.res = {
       status: 400,
       body: {
