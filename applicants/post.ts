@@ -123,8 +123,7 @@ const httpTrigger: AzureFunction = async function (
     db.connect();
     let result = await db.query(query);
     let applicant_id = result.rows[0].applicant_id
-
-    const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/applicants?sp=racw&st=2022-12-23T07:11:10Z&se=2025-01-01T15:11:10Z&spr=https&sv=2021-06-08&sr=c&sig=0HKrE%2FSK9fQdIfSFi120lMdFdvj%2FAgUydlaepxZ3A0Y%3D");
+    const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/applicants?sp=racw&st=2022-12-23T16:39:56Z&se=2025-01-01T00:39:56Z&spr=https&sv=2021-06-08&sr=c&sig=Jsxo862%2FCE8ooBBhlzWEJrZ7hRkFRpqDWCY4PFYQH9U%3D");
     const container = blob.getContainerClient("applicants");
     const file_name = "image" + applicant_id;
     const blockBlob = container.getBlockBlobClient(file_name);
