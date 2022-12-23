@@ -17,7 +17,6 @@ const httpTrigger: AzureFunction = async function (
         SET 
                 "first_name"                    = '${employee.first_name}',
                 "last_name"                     = '${employee.last_name}',
-                "role"                          = '${employee.role}',
                 "email"                         = '${employee.email}',
                 "cell_phone_number"             = '${employee.cell_phone_number}',
                 "home_phone_number"             = '${employee.home_phone_number}',

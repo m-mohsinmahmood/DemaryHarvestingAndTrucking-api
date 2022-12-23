@@ -2,7 +2,10 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
 import { applicant } from "./model";
+import { BlobServiceClient } from '@azure/storage-blob';
+import parseMultipartFormData from "@anzp/azure-function-multipart";
 const sgMail = require('@sendgrid/mail')
+
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -11,7 +14,12 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const applicant: applicant = req.body;
+    const config = {
+      limits: { fields: 1 },
+    };
+    const { fields, files } = await parseMultipartFormData(req, config);
+    const applicant: applicant = (JSON.parse(fields[0].value));
+    applicant.avatar = '';
 
     let query = `
     INSERT INTO 
@@ -108,17 +116,53 @@ const httpTrigger: AzureFunction = async function (
                   'Preliminary Review',
                   '${applicant.unique_fact}',
                   'now()'
-                );
+                )
+                RETURNING id as applicant_id
     `;
 
     db.connect();
-    await db.query(query);
-    db.end();
+    let result = await db.query(query);
+    let applicant_id = result.rows[0].applicant_id
 
-    
+    const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/applicants?sp=racw&st=2022-12-23T07:11:10Z&se=2025-01-01T15:11:10Z&spr=https&sv=2021-06-08&sr=c&sig=0HKrE%2FSK9fQdIfSFi120lMdFdvj%2FAgUydlaepxZ3A0Y%3D");
+    const container = blob.getContainerClient("applicants");
+    const file_name = "image" + applicant_id;
+    const blockBlob = container.getBlockBlobClient(file_name);
+    try {
+      const uploadFileResp = await blockBlob.uploadData(files[0].bufferFile, {
+        blobHTTPHeaders: { blobContentType: files[0].mimeType },
+      });
+      let update_query = `
+      UPDATE "Applicants"
+      SET 
+      "avatar" = '${"https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/" + file_name}'
+      WHERE 
+      "id" = '${applicant_id}';`
+      db.connect();
+      await db.query(update_query);
+      context.res = {
+        status: 200,
+        body: {
+          message: "",
+        },
+      };
+    }
+    catch (error) {
+      db.end();
+      context.res = {
+        status: 500,
+        body: {
+          message: error.message,
+        },
+      };
+      return;
+    }
+
+
+    db.end();
     sgMail.setApiKey('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');
     const msg = {
-      to: `${applicant.email}`, 
+      to: `${applicant.email}`,
       from: 'momin4073@gmail.com',
       subject: 'DHT Employment Application Received!',
       html: `
