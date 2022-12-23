@@ -171,7 +171,7 @@ try {
     let update_query = `
     UPDATE "Applicants"
     SET 
-    "avatar" = 'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/ + ${file_name}}'
+    "avatar" = 'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/ + ${file_name}'
     WHERE 
     "id" = '${applicant_id}';`
     db1.connect();
