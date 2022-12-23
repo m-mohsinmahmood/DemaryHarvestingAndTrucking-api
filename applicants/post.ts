@@ -149,9 +149,9 @@ const httpTrigger: AzureFunction = async function (
     catch (error) {
       db.end();
       context.res = {
-        status: 500,
+        status: 200,
         body: {
-          message: error.message,
+          message: error,
         },
       };
       return;
