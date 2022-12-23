@@ -134,6 +134,7 @@ const httpTrigger: AzureFunction = async function (
       status: 400,
       body: {
         message: error.message,
+        issue: "Daddy Issue"
       },
     };
     context.done();
@@ -157,6 +158,7 @@ try {
           status: 400,
           body: {
             message: error,
+            issue: "Mommy Issue"
           },
         };
         context.done();
@@ -180,6 +182,7 @@ try {
       status: 400,
       body: {
         message: error,
+        issue: "Step Issue"
       },
     };
     context.done();
