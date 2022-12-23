@@ -123,8 +123,8 @@ const httpTrigger: AzureFunction = async function (
     db.connect();
     let result = await db.query(query);
     let applicant_id = result.rows[0].applicant_id
-    const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/applicants?sp=racw&st=2022-12-23T16:39:56Z&se=2025-01-01T00:39:56Z&spr=https&sv=2021-06-08&sr=c&sig=Jsxo862%2FCE8ooBBhlzWEJrZ7hRkFRpqDWCY4PFYQH9U%3D");
-    const container = blob.getContainerClient("applicants");
+    const blob = new BlobServiceClient(process.env['BLOB_CREDENTIALS']);
+    const container = blob.getContainerClient(process.env["CONTAINER_NAME"]);
     const file_name = "image" + applicant_id;
     const blockBlob = container.getBlockBlobClient(file_name);
     try {
@@ -134,7 +134,7 @@ const httpTrigger: AzureFunction = async function (
       let update_query = `
       UPDATE "Applicants"
       SET 
-      "avatar" = '${"https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/" + file_name}'
+      "avatar" = '${process.env["BLOB_IMAGE_BASE_URL"] + file_name}'
       WHERE 
       "id" = '${applicant_id}';`
       db.connect();
@@ -196,6 +196,7 @@ const httpTrigger: AzureFunction = async function (
         message: error.message,
       },
     };
+    context.done();
     return;
   }
 };
