@@ -49,6 +49,8 @@ if (req.body.is_close) {
       status: 200,
       body: {
         message: "Field has been updated successfully.",
+        status: 200,
+
       },
     };
     context.done();

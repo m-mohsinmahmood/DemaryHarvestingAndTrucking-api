@@ -7,7 +7,6 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest
 ): Promise<void> {
   const db = new Client(config);
-
   try {
     const ticket_status: string = req.query.status;
 

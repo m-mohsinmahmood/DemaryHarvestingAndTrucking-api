@@ -7,21 +7,22 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest
 ): Promise<void> {
   const db = new Client(config);
-console.log('Get Sent Called');
   try {
     const ticket_status: string = req.query.status;
 
     let ticket_status_query = `
-        
-        SELECT * FROM "Harvesting_Ticket"
-		WHERE 
-            "status" = '${ticket_status}';
+    SELECT * FROM "Harvesting_Ticket" ht
+ 
+    INNER JOIN "Employees" emp
+    
+    ON ht."truck_driver_id"=emp."id"
+    
+    AND ht."status"='${ticket_status}';
         `;
 
     db.connect();
 
     let result = await db.query(ticket_status_query);
-    console.log('Result',result);
     let resp;
     if (result.rows.length > 0) resp = result.rows;
     else

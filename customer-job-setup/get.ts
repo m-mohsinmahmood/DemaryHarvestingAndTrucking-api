@@ -15,8 +15,11 @@ const httpTrigger: AzureFunction = async function (
     customer."state" as "state", 
     customer."customer_name" as "customer_name",
 		 farm."name" as "farm_name",
+		 farm."id" as "farm_id",
 		 crop."name" as "crop_name",
-		 field."name" as "field_name"
+		 crop."id" as "crop_id",
+		 field."name" as "field_name",
+		 field."id" as "field_id"
     FROM 
     
 		"Customer_Job_Setup" wo

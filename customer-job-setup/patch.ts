@@ -51,6 +51,7 @@ const httpTrigger: AzureFunction = async function (
                   status: 200,
                   body: {
                     message: "Job has been updated successfully.",
+                    status: 200,
                   },
                 };
                 context.done();
