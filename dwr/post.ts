@@ -30,10 +30,14 @@ const httpTrigger: AzureFunction = async function (
         query = `
             INSERT INTO 
                         "DWR" 
-                        ("employee_id"
+                        ("employee_id",
+                        work_order_id,
+                        dwr_type
                         ${optionalReq})
       
-            VALUES      ('${order.employeeId}'
+            VALUES      ('${order.employeeId}',
+                        '${order.workOrderId}',
+                        '${order.dwr_type}'
                         ${optionalValues});
           `;
 
