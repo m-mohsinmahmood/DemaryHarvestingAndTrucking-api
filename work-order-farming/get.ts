@@ -9,63 +9,253 @@ const httpTrigger: AzureFunction = async function (
     const db = new Client(config);
 
     const search: string = req.query.search;
-    const sort: string = req.query.sort ? req.query.sort : `created_at`;
-    const order: string = req.query.order ? req.query.order : `desc`;
-    let whereClause: string = ` WHERE "is_deleted" = FALSE`;
+    const searchClause: string = req.query.searchClause;
+    let whereClause: string = `wo."is_deleted" = FALSE`;
 
-    if (search) whereClause = ` ${whereClause} AND LOWER("last_name") LIKE LOWER('%${search}%')`;
+    if (search) whereClause = ` ${whereClause}  AND LOWER(c."customer_name") LIKE LOWER('%${search}%')`;
     try {
         // const customer_field_id: string = req.query.id;
+        let queryGetCustomers = ``;
+        let count_query = ``;
 
-        //     let queryGetCustomers = `
-        //     SELECT 
-        //             wo."id" AS "work_order__id", 
-        //             c."id" as "customer_id", 
-        //             c."customer_name" as "customer_first_name"
-        //     FROM 
-        //             "Farming_Work_Order" wo
-        //             INNER JOIN "Customers" c 
-        //             ON wo."customer_id" = c."id"
+        //////////////////////////////////////////////////////
+        // If we make a call from Beginning of Day Work Order
+        if (searchClause === 'beginningOfDay') {
+            queryGetCustomers = `
+            SELECT * FROM "Farming_Work_Order" where work_order_status = null Or work_order_status = 'sent' AND is_active=false;`;
 
-        // 			Where wo.work_order_close_out = false;
-        //   `;
 
-        let queryGetCustomers = `
+            count_query = `
+            SELECT  COUNT("id") FROM "Farming_Work_Order" where work_order_status = null Or work_order_status = 'sent' AND is_active=false;`;
+        }
+
+
+        //////////////////////////////////////////////////////
+        // If we make a call from Farming (Dispatcher) Verify Work Orders Work Order
+        if (searchClause === 'pending_work_order') {
+            queryGetCustomers = `
+            SELECT 
+            wo."id" AS "work_order_id", 
+            wo."created_at" AS "date", 
+            wo."service" AS "service", 
+            c."id" AS "customer_id", 
+            wo."total_service_acres" AS "acres_completed", 
+            wo."ending_engine_hours" AS "ending_engine_hours", 
+            c."customer_name" AS "customer_name",
+            c."phone_number" AS "customer_phone",
+            wo."field_address" AS "address",
+            wo."dispatcher_id" AS "dispatcher_id",
+            wo."tractor_driver_id" AS "tractor_driver_id",
+            wo."total_gps-service-acres" AS "gps_acres", 
+            "emp".first_name AS "dispatcher_name",
+            "farm".name AS "farm_name",
+            "field".name AS "field_name"
+                     
+            FROM 
+            "Farming_Work_Order" wo
+            INNER JOIN "Customers" c 
+            ON wo."customer_id" = c."id" 
+                
+            INNER JOIN "Employees" emp
+            ON "emp".id = wo.dispatcher_id 
+                                     
+            INNER JOIN "Customer_Farm" farm
+            ON "farm".id = wo.farm_id 
+                    
+            INNER JOIN "Customer_Field" field
+            ON "field".id = wo.field_id 
+    
+            Where wo.work_order_is_completed = True  AND 
+            "work_order_status" = 'pending' And "work_order_close_out"=True And
+
+            ${whereClause}
+            ORDER BY 
+            c."customer_name" ASC;
+          `;
+
+
+            count_query = `
+            SELECT 
+            COUNT(wo."id")   
+   
+            FROM 
+            "Farming_Work_Order" wo
+            INNER JOIN "Customers" c 
+            ON wo."customer_id" = c."id" 
+                
+                 INNER JOIN "Employees" emp
+                 ON "emp".id = wo.tractor_driver_id 
+    
+                 Where wo.work_order_is_completed = True  AND 
+                 "work_order_status" = 'pending' And "work_order_close_out"=True AND
+                    ${whereClause};`;
+        }
+
+        //////////////////////////////////////////////////////
+        // If we make a call from Farming (Dispatcher) Verify Work Orders Work Order
+        if (searchClause === 'verified_work_order') {
+            queryGetCustomers = `
+            SELECT 
+            wo."id" AS "work_order_id", 
+            wo."created_at" AS "date", 
+            wo."service" AS "service", 
+            c."id" AS "customer_id", 
+            wo."total_service_acres" AS "acres_completed", 
+            wo."ending_engine_hours" AS "ending_engine_hours", 
+            c."customer_name" AS "customer_name",
+            c."phone_number" AS "customer_phone",
+            wo."field_address" AS "address",
+            wo."dispatcher_id" AS "dispatcher_id",
+            wo."tractor_driver_id" AS "tractor_driver_id",
+            wo."total_gps-service-acres" AS "gps_acres", 
+            "emp".first_name AS "dispatcher_name",
+            "farm".name AS "farm_name",
+            "field".name AS "field_name"
+                     
+            FROM 
+            "Farming_Work_Order" wo
+            INNER JOIN "Customers" c 
+            ON wo."customer_id" = c."id" 
+                
+            INNER JOIN "Employees" emp
+            ON "emp".id = wo.dispatcher_id 
+                                     
+            INNER JOIN "Customer_Farm" farm
+            ON "farm".id = wo.farm_id 
+                    
+            INNER JOIN "Customer_Field" field
+            ON "field".id = wo.field_id 
+    
+            Where wo.work_order_is_completed = True  AND 
+            "work_order_status" = 'verified' And "work_order_close_out"=True And
+
+            ${whereClause}
+            ORDER BY 
+            c."customer_name" ASC;
+          `;
+
+
+            count_query = `
+            SELECT 
+            COUNT(wo."id")   
+   
+            FROM 
+            "Farming_Work_Order" wo
+            INNER JOIN "Customers" c 
+            ON wo."customer_id" = c."id" 
+                
+                 INNER JOIN "Employees" emp
+                 ON "emp".id = wo.tractor_driver_id 
+    
+                 Where wo.work_order_is_completed = True  AND 
+                 "work_order_status" = 'pending' And "work_order_close_out"=True AND
+                    ${whereClause};`;
+        }
+
+        //////////////////////////////////////////////////////
+        // If we make a call from Farming (Dispatcher) Verify Work Orders Work Order
+        if (searchClause === 'sent_work_order') {
+            queryGetCustomers = `
+            SELECT 
+            wo."id" AS "work_order_id", 
+            wo."created_at" AS "date", 
+            wo."service" AS "service", 
+            wo."farm_id" AS "farm_id", 
+            wo."field_id" AS "field_id", 
+            c."id" AS "customer_id", 
+            wo."total_service_acres" AS "acres_completed", 
+            wo."ending_engine_hours" AS "ending_engine_hours", 
+            c."customer_name" AS "customer_first_name",
+            c."phone_number" AS "customer_phone",
+            wo."field_address" AS "address",
+            wo."dispatcher_id" AS "dispatcher_id",
+            wo."tractor_driver_id" AS "tractor_driver_id",
+            wo."total_gps-service-acres" AS "gps_acres", 
+            "emp".first_name AS "dispatcher_name",
+            "farm".name AS "farm_name",
+            "field".name AS "field_name"
+                     
+            FROM 
+            "Farming_Work_Order" wo
+            INNER JOIN "Customers" c 
+            ON wo."customer_id" = c."id" 
+                
+            INNER JOIN "Employees" emp
+            ON "emp".id = wo.dispatcher_id 
+                                     
+            INNER JOIN "Customer_Farm" farm
+            ON "farm".id = wo.farm_id 
+                    
+            INNER JOIN "Customer_Field" field
+            ON "field".id = wo.field_id
+
+      Where wo.work_order_is_completed = FALSE AND 
+      "work_order_status" = 'sent' AND
+
+                    ${whereClause}
+                    ORDER BY 
+                            c."customer_name" ASC;
+          `;
+
+
+            count_query = `
+            SELECT 
+            COUNT(wo."id")   
+   
+            FROM 
+            "Farming_Work_Order" wo
+            INNER JOIN "Customers" c 
+            ON wo."customer_id" = c."id" 
+                
+            INNER JOIN "Employees" emp
+            ON "emp".id = wo.tractor_driver_id 
+    
+            Where wo.work_order_is_completed = FALSE AND 
+            "work_order_status" = 'sent' AND
+                    ${whereClause};`;
+        }
+
+        //////////////////////////////////////////////////////
+        // If we make a call from Farming Close Out Work Order
+        if (searchClause === 'close_out_work_order') {
+            queryGetCustomers = `
         SELECT 
-                "id",
-                "first_name",
-                "last_name",
-                "role",
-                "email",  
-                "cell_phone_number",
-                "us_phone_number",
-                "status",
-                "created_at"
+        wo."id" AS "work_order_id", 
+        c."id" as "customer_id", 
+        c."customer_name" as "customer_first_name"
         FROM 
-                "Employees"
-        ${whereClause}
-        ORDER BY 
-              ${sort} ${order}
-      `;
+        "Farming_Work_Order" wo
+        INNER JOIN "Customers" c 
+        ON wo."customer_id" = c."id"
 
-        let count_query = `
+        Where wo.work_order_close_out = false AND
+                    ${whereClause}
+                    ORDER BY 
+                            c."customer_name" ASC;
+          `;
+
+
+            count_query = `
       SELECT 
-              COUNT(wo."id")   FROM 
-              "Farming_Work_Order" wo
-              INNER JOIN "Customers" c 
-              ON wo."customer_id" = c."id"
-                              
-              Where wo.work_order_close_out = false;`;
+              COUNT(wo."id")   
+              FROM 
+        "Farming_Work_Order" wo
+        INNER JOIN "Customers" c 
+        ON wo."customer_id" = c."id"
 
-        let query = `${queryGetCustomers}`;
+        Where wo.work_order_close_out = false AND
+                    ${whereClause};`;
+        }
+
+        let query = `${queryGetCustomers} ${count_query}`;
 
         db.connect();
 
         let result = await db.query(query);
 
         let resp = {
-            customer_fields: result.rows
-            // count: +result[1].rows[0].count,
+            workOrders: result[0].rows,
+            count: +result[1].rows[0].count,
         };
 
         db.end();
@@ -77,6 +267,7 @@ const httpTrigger: AzureFunction = async function (
 
         context.done();
         return;
+
     } catch (err) {
         db.end();
         context.res = {

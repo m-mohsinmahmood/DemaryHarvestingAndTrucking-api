@@ -6,7 +6,6 @@
       "direction": "in",
       "name": "req",
       "methods": [
-        "get",
         "post",
         "patch"
       ]
@@ -17,5 +16,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/work-order-farming/index.js"
+  "scriptFile": "../dist/dwr/index.js"
 }
