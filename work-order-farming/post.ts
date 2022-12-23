@@ -23,44 +23,72 @@ const httpTrigger: AzureFunction = async function (
 
         if (order.workOrderStatus != null) {
             optionalReq = `${optionalReq},"work_order_status"`;
-            optionalValues = `${optionalValues},${order.workOrderStatus}`
+            optionalValues = `${optionalValues},'${order.workOrderStatus}'`
         }
 
         if (order.workOrderCloseOut != null) {
-            console.log("testing");
-
             optionalReq = `${optionalReq},"work_order_close_out"`;
-            optionalValues = `${optionalValues},${order.workOrderCloseOut}`
+            optionalValues = `${optionalValues},'${order.workOrderCloseOut}'`
         }
 
+        let query = ``;
 
-        let query = `
-      INSERT INTO 
-                  "Farming_Work_Order" 
-                  ("dispatcher_id", 
-                  "beginning_engine_hours",
-                  "customer_id", 
-                  "farm_id", 
-                  "field_id",
-                  "service", 
-                  "tractor_driver_id", 
-                  "field_address", 
-                  "customer_phone",
-                  "machinery_id"
-                  ${optionalReq})
-
-      VALUES      ('${order.dispatcherId}', 
-                  '${order.cBeginningEngineHours}',
-                  '${order.customerId}', 
-                  '${order.farmId}', 
-                  '${order.fieldId}', 
-                  '${order.service}', 
-                  '${order.tractorDriverId}', 
-                  '${order.fieldAddress}', 
-                  '${order.phone}',
-                  '${order.machineryID}'
-                  ${optionalValues});
-    `;
+        // If Tractor Driver will create a work Order then below given query will be executed.
+        if (order.role === 'dispatcher') {
+            query = `
+            INSERT INTO 
+                        "Farming_Work_Order" 
+                        ("dispatcher_id", 
+                        "customer_id", 
+                        "farm_id", 
+                        "field_id",
+                        "service", 
+                        "tractor_driver_id", 
+                        "field_address", 
+                        "customer_phone"
+                        ${optionalReq})
+      
+            VALUES      ('${order.dispatcherId}', 
+                        '${order.customerId}', 
+                        '${order.farmId}', 
+                        '${order.fieldId}', 
+                        '${order.service}', 
+                        '${order.tractorDriverId}', 
+                        '${order.fieldAddress}', 
+                        '${order.phone}'
+                        ${optionalValues});
+          `;
+        }
+        else {
+            // If Dispatcher will create a work Order then below given query will be executed.
+            query = `
+            INSERT INTO 
+                        "Farming_Work_Order" 
+                        ("dispatcher_id", 
+                        "beginning_engine_hours",
+                        "customer_id", 
+                        "farm_id", 
+                        "field_id",
+                        "service", 
+                        "tractor_driver_id", 
+                        "field_address", 
+                        "customer_phone",
+                        "machinery_id"
+                        ${optionalReq})
+      
+            VALUES      ('${order.dispatcherId}', 
+                        '${order.cBeginningEngineHours}',
+                        '${order.customerId}', 
+                        '${order.farmId}', 
+                        '${order.fieldId}', 
+                        '${order.service}', 
+                        '${order.tractorDriverId}', 
+                        '${order.fieldAddress}', 
+                        '${order.phone}',
+                        '${order.machineryID}'
+                        ${optionalValues});
+          `;
+        }
 
         console.log(query);
 
@@ -71,6 +99,7 @@ const httpTrigger: AzureFunction = async function (
         context.res = {
             status: 200,
             body: {
+                status: 200,
                 message: "Farm Work Order has been created successfully",
             },
         };
@@ -82,6 +111,7 @@ const httpTrigger: AzureFunction = async function (
         context.res = {
             status: 500,
             body: {
+                status: 500,
                 message: error.message,
             },
         };
