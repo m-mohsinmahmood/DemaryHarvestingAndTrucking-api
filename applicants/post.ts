@@ -144,7 +144,7 @@ const httpTrigger: AzureFunction = async function (
   //#endregion
   //#region Upload Applicant Avatar
 try {
-    applicant_id = result.rows[0].applicant_id
+    applicant_id = result.rows[0].applicant_id;
     const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/applicants?sp=racw&st=2022-12-23T16:39:56Z&se=2025-01-01T00:39:56Z&spr=https&sv=2021-06-08&sr=c&sig=Jsxo862%2FCE8ooBBhlzWEJrZ7hRkFRpqDWCY4PFYQH9U%3D");
     const container = blob.getContainerClient("applicants");
     file_name = "image" + applicant_id;
@@ -170,7 +170,7 @@ try {
     let update_query = `
     UPDATE "Applicants"
     SET 
-    "avatar" = '${process.env["https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/"] + file_name}'
+    "avatar" = 'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/ + ${file_name}}'
     WHERE 
     "id" = '${applicant_id}';`
     db.connect();
@@ -189,7 +189,6 @@ try {
     return;
   }
   //#endregion
-  
   //#region Success Return
   context.res = {
     status: 200,
@@ -200,48 +199,6 @@ try {
   context.done();
   return;
   //#endregion
-
-  //   db.end();
-  //   sgMail.setApiKey('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');
-  //   const msg = {
-  //     to: `${applicant.email}`,
-  //     from: 'momin4073@gmail.com',
-  //     subject: 'DHT Employment Application Received!',
-  //     html: `
-  //           Dear ${applicant.first_name} ${applicant.last_name},
-  //           <br> <br>Thank you for completing DHT’s online application. We are currently reviewing your application and will be reaching out soon with further instructions on next steps. 
-  //           <br> <br>Thanks
-  //           `
-  //   }
-  //   sgMail
-  //     .send(msg)
-  //     .then(() => {
-  //       console.log('Email sent')
-  //     })
-  //     .catch((error) => {
-  //       console.error(error)
-  //     })
-
-  //   context.res = {
-  //     status: 200,
-  //     body: {
-  //       message: "Your form has been submitted successfully.",
-  //     },
-  //   };
-
-  //   context.done();
-  //   return;
-  // } catch (error) {
-  //   db.end();
-  //   context.res = {
-  //     status: 500,
-  //     body: {
-  //       message: error.message,
-  //     },
-  //   };
-  //   context.done();
-  //   return;
-  // }
 };
 
 export default httpTrigger;
