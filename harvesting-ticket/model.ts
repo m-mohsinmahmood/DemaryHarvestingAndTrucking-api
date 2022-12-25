@@ -2,7 +2,7 @@ export interface create_ticket{
     truck_driver_id: string,
     destination: string,
     loaded_miles:number,
-    field: string,
+    // field: string,
     split_load_check?: boolean,
     kart_scale_weight: number,
     delivery_ticket_number:string,
@@ -24,7 +24,7 @@ export interface create_ticket_split{
     truck_driver_id: string,
     destination: string,
     loaded_miles:number,
-    field: string,
+    // field: string,
     split_load_check?: boolean,
     kart_scale_weight: number,
     delivery_ticket_number:string,
@@ -54,4 +54,8 @@ export interface ticket_update{
 }
 export interface ticket_update_kart{
       status:string,
+}
+export interface ticket_reassign{
+  status:string,
+  truck_driver_id: string
 }

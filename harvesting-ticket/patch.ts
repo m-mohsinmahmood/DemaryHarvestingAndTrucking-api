@@ -2,7 +2,7 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { rawListeners } from "process";
 import { config } from "../services/database/database.config";
-import { ticket_update,ticket_update_kart } from "./model";
+import { ticket_update,ticket_update_kart,ticket_reassign } from "./model";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -13,7 +13,9 @@ const httpTrigger: AzureFunction = async function (
   try {
     const ticket_update: ticket_update = req.body;
     const ticket_update_kart: ticket_update_kart = req.body;
+    const ticket_reassign: ticket_reassign = req.body;
     const ticket_id: any = req.query.ticket_id;
+    console.log('REQ:',req.body);
 
     if (ticket_update.status === 'pending') {
         query = `
@@ -30,7 +32,19 @@ const httpTrigger: AzureFunction = async function (
             WHERE 
                     "delivery_ticket_number" = '${ticket_id}';`
         
-    } else {
+    } 
+    else if(ticket_reassign.status === 'sent') {
+      // for reassigning the ticket to truck driver
+      query = `
+          UPDATE 
+                  "Harvesting_Ticket"
+          SET 
+                  "status"                     = '${ticket_reassign.status}',
+                  "truck_driver_id"       ='${ticket_reassign.truck_driver_id}'
+  
+          WHERE 
+                  "delivery_ticket_number" = '${ticket_id}';`
+  }else {
         query = `
             UPDATE 
                     "Harvesting_Ticket"

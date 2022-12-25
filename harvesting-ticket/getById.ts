@@ -74,7 +74,11 @@ const httpTrigger: AzureFunction = async function (
 		 field."name" as "field_name",
 		 field."id" as "field_id",
 		 emp.first_name as "first_name",
+     emp.id as "truck_driver_id",
 		 emp.last_name as "last_name",
+     emp_kart.id as "kart_operator_id",
+     emp_kart.first_name as "kart_first_name",
+     emp_kart.last_name as "kart_last_name",
 		 wo.destination as "destination",
 		 wo.split_load as "split_load",
 		 wo.truck_driver_company as "truck_driver_company",
@@ -87,7 +91,10 @@ const httpTrigger: AzureFunction = async function (
      wo.scale_ticket_weight as "scale_ticket_weight",
      wo.moisture_content as "moisture_content",
      wo.scale_ticket as "scale_ticket",
-		 cus.customer_name as "customer_name"
+     wo.split_load_check as "split_load_check",
+		 cus.customer_name as "customer_name",
+     cus.id as "customer_id",
+     cus.state as "state"
     FROM 
     
 		"Harvesting_Ticket" wo
@@ -103,6 +110,9 @@ const httpTrigger: AzureFunction = async function (
 		
 		INNER JOIN "Employees" emp 
     ON wo."truck_driver_id" = emp."id"
+
+    INNER JOIN "Employees" emp_kart 
+    ON wo."kart_operator_id" = emp_kart."id"
 		
 		INNER JOIN "Customers" cus 
     ON wo."customer_id" = cus."id"

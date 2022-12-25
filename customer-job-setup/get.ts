@@ -12,7 +12,7 @@ const httpTrigger: AzureFunction = async function (
     let job_setup_query = `
     SELECT 
     customer."id" as "customer_id", 
-    customer."state" as "state", 
+    wo."state" as "state", 
     customer."customer_name" as "customer_name",
 		 farm."name" as "farm_name",
 		 farm."id" as "farm_id",
