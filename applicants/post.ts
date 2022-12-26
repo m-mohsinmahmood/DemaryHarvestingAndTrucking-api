@@ -22,13 +22,11 @@ const httpTrigger: AzureFunction = async function (
     limits: { fields: 1 },
   };
   const { fields, files } = await parseMultipartFormData(req, multiPartConfig);
+  let applicant: applicant = (JSON.parse(fields[0].value));
   //#endregion
   //#region Create Applicant
   try {
-    
-    const applicant: applicant = (JSON.parse(fields[0].value));
     applicant.avatar = '';
-
     let query = `
     INSERT INTO 
                 "Applicants" 
@@ -129,77 +127,107 @@ const httpTrigger: AzureFunction = async function (
     `;
     db.connect();
     result = await db.query(query);
+    db.end();
   } catch (error) {
     db.end();
     context.res = {
       status: 400,
       body: {
         message: error.message,
-        issue: "Daddy Issue"
       },
     };
     context.done();
     return;
   }
-  
   //#endregion
   //#region Upload Applicant Avatar
-try {
+  try {
     applicant_id = result.rows[0].applicant_id;
     const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/applicants?sp=racw&st=2022-12-23T16:39:56Z&se=2025-01-01T00:39:56Z&spr=https&sv=2021-06-08&sr=c&sig=Jsxo862%2FCE8ooBBhlzWEJrZ7hRkFRpqDWCY4PFYQH9U%3D");
     const container = blob.getContainerClient("applicants");
     file_name = "image" + applicant_id;
     const blockBlob = container.getBlockBlobClient(file_name);
-      const uploadFileResp = await blockBlob.uploadData(files[0].bufferFile, {
-        blobHTTPHeaders: { blobContentType: files[0].mimeType },
-      });
-    }
-    catch(error){
-        context.res = {
-          status: 400,
-          body: {
-            message: error,
-            issue: "Mommy Issue"
-          },
-        };
-        context.done();
-        return;
-    }
+    const uploadFileResp = await blockBlob.uploadData(files[0].bufferFile, {
+      blobHTTPHeaders: { blobContentType: files[0].mimeType },
+    });
+  }
+  catch (error) {
+    context.res = {
+      status: 400,
+      body: {
+        message: error,
+      },
+    };
+    context.done();
+    return;
+  }
   //#endregion
   //#region Update Applicant
   try {
     let update_query = `
     UPDATE "Applicants"
     SET 
-    "avatar" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/'+file_name}'
+    "avatar" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + file_name}'
     WHERE 
     "id" = '${applicant_id}';`
     db1.connect();
     await db.query(update_query);
-    db1.end();  
+    db1.end();
   } catch (error) {
     db1.end();
     context.res = {
       status: 400,
       body: {
         message: error,
-        issue: "Step Issue"
       },
     };
     context.done();
     return;
   }
   //#endregion
+  //#region Sending Email to applicant 
+  try {
+    sgMail.setApiKey('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');
+    const msg = {
+      to: `${applicant.email}`,
+      from: 'momin4073@gmail.com',
+      subject: 'DHT Employment Application Received!',
+      html: `
+             Dear ${applicant.first_name} ${applicant.last_name},
+             <br> <br>Thank you for completing DHT’s online application. We are currently reviewing your application and will be reaching out soon with further instructions on next steps. 
+             <br> <br>Thanks
+             `
+    }
+    sgMail
+      .send(msg)
+      .then(() => {
+        console.log('Email sent')
+      })
+      .catch((error) => {
+        console.error(error)
+      });
+  }
+  catch (error) {
+    context.res = {
+      status: 400,
+      body: {
+        message: error,
+      },
+    };
+    context.done();
+    return;
+  }
+
+  //#endregion
   //#region Success Return
   context.res = {
     status: 200,
     body: {
-      message: "Your form has been submitted successfully.",
+      message: "Application form has been submitted successfully.",
     },
   };
   context.done();
   return;
   //#endregion
 };
-
 export default httpTrigger;
