@@ -67,5 +67,7 @@ export interface applicant {
   step_eleven_status_date : string,
   step_twelve_status_date : string,
   step_thirteen_status_date : string,
-  unique_fact: string
+  reason_for_rejection: string,
+  unique_fact: string,
+  ranking: string,
 }
