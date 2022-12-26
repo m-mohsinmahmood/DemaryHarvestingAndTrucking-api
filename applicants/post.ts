@@ -171,7 +171,7 @@ const httpTrigger: AzureFunction = async function (
     WHERE 
     "id" = '${applicant_id}';`
     db1.connect();
-    await db.query(update_query);
+    await db1.query(update_query);
     db1.end();
   } catch (error) {
     db1.end();
