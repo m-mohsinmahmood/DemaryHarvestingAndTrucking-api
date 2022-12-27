@@ -25,6 +25,16 @@ const httpTrigger: AzureFunction = async function (
             optionalValues = `${optionalValues},'${order.beginningEngineHours}'`
         }
 
+        if (order.beginning_separator_hours != null) {
+            optionalReq = `${optionalReq},"beginning_seperators_hours"`;
+            optionalValues = `${optionalValues},'${order.beginning_separator_hours}'`
+        }
+
+        if (order.field_id != null) {
+            optionalReq = `${optionalReq},"beginning_engine_hours"`;
+            optionalValues = `${optionalValues},'${order.field_id}'`
+        }
+
         let query = ``;
 
         query = `
@@ -51,6 +61,7 @@ const httpTrigger: AzureFunction = async function (
             status: 200,
             body: {
                 message: "DWR has been created successfully",
+                status: 200
             },
         };
 

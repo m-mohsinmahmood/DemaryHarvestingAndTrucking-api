@@ -1,6 +1,8 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
+import { workOrder } from './model';
+import { employee } from './../employee/model';
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -10,6 +12,7 @@ const httpTrigger: AzureFunction = async function (
 
     const search: string = req.query.search;
     const searchClause: string = req.query.searchClause;
+    const employeeId: string = req.query.employeeId;
     let whereClause: string = `wo."is_deleted" = FALSE`;
 
     if (search) whereClause = ` ${whereClause}  AND LOWER(c."customer_name") LIKE LOWER('%${search}%')`;
@@ -22,11 +25,10 @@ const httpTrigger: AzureFunction = async function (
         // If we make a call from Beginning of Day Work Order
         if (searchClause === 'beginningOfDay') {
             queryGetCustomers = `
-            SELECT * FROM "Farming_Work_Order" where work_order_status = null Or work_order_status = 'sent' AND is_active=false;`;
-
+            SELECT * FROM "Farming_Work_Order" where work_order_status = null Or work_order_status = 'sent' Or work_order_status IS NULL AND is_active=false;`;
 
             count_query = `
-            SELECT  COUNT("id") FROM "Farming_Work_Order" where work_order_status = null Or work_order_status = 'sent' AND is_active=false;`;
+            SELECT  COUNT("id") FROM "Farming_Work_Order" where work_order_status = null Or work_order_status = 'sent' Or work_order_status IS NULL AND is_active=false;`;
         }
 
 
@@ -219,35 +221,29 @@ const httpTrigger: AzureFunction = async function (
         // If we make a call from Farming Close Out Work Order
         if (searchClause === 'close_out_work_order') {
             queryGetCustomers = `
-        SELECT 
-        wo."id" AS "work_order_id", 
-        c."id" as "customer_id", 
-        c."customer_name" as "customer_first_name"
-        FROM 
-        "Farming_Work_Order" wo
-        INNER JOIN "Customers" c 
-        ON wo."customer_id" = c."id"
-
-        Where wo.work_order_close_out = false AND
-                    ${whereClause}
-                    ORDER BY 
-                            c."customer_name" ASC;
+            SELECT 
+            *
+                  FROM 
+             "Farming_Work_Order"
+     
+             Where is_active = true
+             AND tractor_driver_id='${employeeId}' And work_order_close_out=false;
           `;
-
 
             count_query = `
       SELECT 
-              COUNT(wo."id")   
+              COUNT(id)   
               FROM 
-        "Farming_Work_Order" wo
-        INNER JOIN "Customers" c 
-        ON wo."customer_id" = c."id"
-
-        Where wo.work_order_close_out = false AND
-                    ${whereClause};`;
+             "Farming_Work_Order"
+     
+             Where is_active = true
+             AND tractor_driver_id='${employeeId}' And work_order_close_out=false;
+                   `;
         }
 
         let query = `${queryGetCustomers} ${count_query}`;
+
+        console.log(query);
 
         db.connect();
 

@@ -27,11 +27,14 @@ export interface UpdateWorkOrder {
     fieldAddress?: string,
     phone?: string,
     role: string,
+    machineryID?: string,
     customerId: string;
     acresByService?: string;
     endingEngineHours?: string;
     gpsAcresByService?: string;
     work_order_close_out?: boolean,
     work_order_is_completed?: boolean,
-    work_order_status?: boolean
+    work_order_status?: boolean;
+    searchClause?: string;
+    isActive?: boolean;
 }

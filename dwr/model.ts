@@ -8,6 +8,9 @@ export interface beginningOfDay {
     endingEngineHours?: string;
     hoursWorked?: string;
     notes?: string;
-    workOrderId: number;
+    workOrderId?: number;
     dwr_type: string;
+    beginning_separator_hours?: string;
+    ending_separator_hours?: string;
+    field_id?: string;
 }
