@@ -14,10 +14,12 @@ const httpTrigger: AzureFunction = async function (
 
     let query = ``;
 
-    if (workOrder.workOrderId != null) {
+    if (workOrder.role === 'tractor-driver') {
       // If user make a call from Existing Work Order of Tractor Driver
+      if (workOrder.searchClause === 'existingWorkOrder') {
+        console.log("Updating Existing Work Order");
 
-      query = `
+        query = `
         UPDATE 
                 "Farming_Work_Order"
         SET 
@@ -26,6 +28,7 @@ const httpTrigger: AzureFunction = async function (
                 "farm_id"                         = '${workOrder.farmId}',
                 "field_id"                         = '${workOrder.fieldId}',
                 "service"                         = '${workOrder.service}',
+                "machinery_id"                    = '${workOrder.machineryID}',
                 "tractor_driver_id"                         = '${workOrder.tractorDriverId}',
                 "field_address"                         = '${workOrder.fieldAddress}',
                 "customer_phone"                         = '${workOrder.phone}',
@@ -36,28 +39,24 @@ const httpTrigger: AzureFunction = async function (
               
         WHERE 
                 "id" = '${workOrder.workOrderId}';`
-    }
+      }
 
-    else {
-      if (workOrder.role === 'dispatcher') {
-        // If user make a call from Verify Work Order of Dispatcher
+      // If user make a call from Beginning Of Day of Tractor Driver
+      else if (workOrder.searchClause === 'submitBeginningDay') {
+        console.log("Updating Beginning Of Day");
 
         query = `
         UPDATE 
                 "Farming_Work_Order"
         SET 
-                "work_order_close_out"                         = 'True',
-                "work_order_is_completed"                         = 'True',
-                "work_order_status"                         = 'verified'
-
+                "is_active"                    = 'true'
               
         WHERE 
-                "id" = '${workOrder.customerId}';`
+                "id" = '${workOrder.workOrderId}' ;`
       }
 
-      if (workOrder.role === 'tractor-driver') {
-        // If user make a call from Close Out Work Order  Work Order of Dispatcher
-
+      else if (workOrder.searchClause === 'closeOutWorkOrder') {
+        console.log("Updating Closing Of Order");
         query = `
         UPDATE 
                 "Farming_Work_Order"
@@ -71,8 +70,25 @@ const httpTrigger: AzureFunction = async function (
 
               
         WHERE 
-                "customer_id" = '${workOrder.customerId}' And work_order_close_out = FALSE;`
+                "id" = '${workOrder.workOrderId}' And work_order_close_out = FALSE;`
       }
+    }
+
+    if (workOrder.role === 'dispatcher') {
+      // If user make a call from Verify Work Order of Dispatcher
+      console.log("Updating Verify Work Order");
+
+      query = `
+        UPDATE 
+                "Farming_Work_Order"
+        SET 
+                "work_order_close_out"                         = 'True',
+                "work_order_is_completed"                         = 'True',
+                "work_order_status"                         = 'verified'
+
+              
+        WHERE 
+                "id" = '${workOrder.customerId}';`
     }
 
     db.connect();
@@ -85,6 +101,7 @@ const httpTrigger: AzureFunction = async function (
       status: 200,
       body: {
         message: "Close Out Work Order has been updated successfully.",
+        status: 200
       },
     };
     context.done();

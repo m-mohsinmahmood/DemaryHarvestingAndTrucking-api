@@ -10,7 +10,7 @@ const httpTrigger: AzureFunction = async function (
     const db = new Client(config);
 
     try {
-        const workOrder: beginningOfDay = req.body;
+        const closingOfDay: beginningOfDay = req.body;
 
         let query = ``;
 
@@ -18,33 +18,39 @@ const httpTrigger: AzureFunction = async function (
 
         let optionalReq: string = ``;
 
-        if (workOrder.acresCompleted != null) {
-            optionalReq = `${optionalReq}"acres_completed" = '${workOrder.acresCompleted}'`;
+        if (closingOfDay.acresCompleted != null) {
+            optionalReq = `${optionalReq},"acres_completed" = '${closingOfDay.acresCompleted}'`;
         }
 
-        if (workOrder.gpsAcres != null) {
-            optionalReq = `${optionalReq},"gps_acres" = '${workOrder.gpsAcres}'`;
+        if (closingOfDay.gpsAcres != null) {
+            optionalReq = `${optionalReq},"gps_acres" = '${closingOfDay.gpsAcres}'`;
         }
 
-        if (workOrder.endingEngineHours != null) {
-            optionalReq = `${optionalReq},"ending_engine_hours" = '${workOrder.endingEngineHours}'`;
+        if (closingOfDay.endingEngineHours != null) {
+            optionalReq = `${optionalReq},"ending_engine_hours" = '${closingOfDay.endingEngineHours}'`;
         }
 
-        if (workOrder.hoursWorked != null) {
-            optionalReq = `${optionalReq},"hours_worked" = '${workOrder.hoursWorked}'`;
+        if (closingOfDay.hoursWorked != null) {
+            optionalReq = `${optionalReq},"hours_worked" = '${closingOfDay.hoursWorked}'`;
         }
 
-        if (workOrder.notes != null) {
-            optionalReq = `${optionalReq},"notes" = '${workOrder.notes}'`;
+        if (closingOfDay.notes != null) {
+            optionalReq = `${optionalReq},"notes" = '${closingOfDay.notes}'`;
         }
+
+        if (closingOfDay.ending_separator_hours != null) {
+            optionalReq = `${optionalReq},"ending_seperators_hours" = '${closingOfDay.ending_separator_hours}'`;
+        }
+
 
         query = `
         UPDATE 
                 "DWR"
         SET 
+             "is_day_closed"                         = 'true'
               ${optionalReq}
         WHERE 
-                "employee_id" = '${workOrder.employeeId}';`
+                "employee_id" = '${closingOfDay.employeeId}' AND is_day_closed = 'false' ;`
 
         db.connect();
         console.log(query);
@@ -56,6 +62,7 @@ const httpTrigger: AzureFunction = async function (
             status: 200,
             body: {
                 message: "Close Out Work Order has been updated successfully.",
+                status: 200
             },
         };
         context.done();
