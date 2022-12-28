@@ -102,6 +102,7 @@ const httpTrigger: AzureFunction = async function (
             "previous_contact_supervisor",
             "school_college",
             "graduation_year",
+            "resume",
             "created_at"
     FROM 
             "Applicants"

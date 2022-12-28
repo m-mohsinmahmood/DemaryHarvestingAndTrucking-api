@@ -17,15 +17,17 @@ const httpTrigger: AzureFunction = async function (
   let result;
   let query;
   let applicant_id;
-  let file_name;
+  let image_file;
+  let resume_file = '';
   const multiPartConfig = {
-    limits: { fields: 1 },
+    limits: { fields: 1, files: 2 },
   };
   const { fields, files } = await parseMultipartFormData(req, multiPartConfig);
   let applicant: applicant = (JSON.parse(fields[0].value));
   //#endregion
   //#region Create Applicant
   try {
+    applicant.resume? applicant.resume = '' : '';
     applicant.avatar = '';
     let query = `
     INSERT INTO 
@@ -92,6 +94,7 @@ const httpTrigger: AzureFunction = async function (
                   "previous_contact_supervisor",
                   "school_college",
                   "graduation_year",
+                  "resume",
                   "created_at"
                 )
       VALUES      
@@ -157,6 +160,7 @@ const httpTrigger: AzureFunction = async function (
                   '${applicant.previous_contact_supervisor}',
                   '${applicant.school_college}',
                   '${applicant.graduation_year}',
+                  '${applicant.resume}',
                   'now()'
                 )
                 RETURNING id as applicant_id
@@ -181,8 +185,17 @@ const httpTrigger: AzureFunction = async function (
     applicant_id = result.rows[0].applicant_id;
     const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/applicants?sp=racw&st=2022-12-23T16:39:56Z&se=2025-01-01T00:39:56Z&spr=https&sv=2021-06-08&sr=c&sig=Jsxo862%2FCE8ooBBhlzWEJrZ7hRkFRpqDWCY4PFYQH9U%3D");
     const container = blob.getContainerClient("applicants");
-    file_name = "image" + applicant_id;
-    const blockBlob = container.getBlockBlobClient(file_name);
+   
+    if (files[1]){
+      resume_file = "resume" + applicant_id;
+      const resumeBlockBlob = container.getBlockBlobClient(resume_file);
+      const res = await resumeBlockBlob.uploadData(files[1].bufferFile, {
+        blobHTTPHeaders: { blobContentType: files[1].mimeType },
+      });
+    }
+   
+    image_file = "image" + applicant_id;
+    const blockBlob = container.getBlockBlobClient(image_file);
     const uploadFileResp = await blockBlob.uploadData(files[0].bufferFile, {
       blobHTTPHeaders: { blobContentType: files[0].mimeType },
     });
@@ -203,7 +216,8 @@ const httpTrigger: AzureFunction = async function (
     let update_query = `
     UPDATE "Applicants"
     SET 
-    "avatar" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + file_name}'
+    "avatar" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + image_file}',
+    "resume" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + resume_file}'
     WHERE 
     "id" = '${applicant_id}';`
     db1.connect();

@@ -88,4 +88,5 @@ export interface applicant {
   previous_contact_supervisor: boolean,
   school_college: string,
   graduation_year: string,
+  resume: string
 }
