@@ -16,6 +16,7 @@ const httpTrigger: AzureFunction = async function (
     const applicant: any = req.body.applicant_data;
     const email: any = req.body.email_data;
     const type = req.query.type;
+    const skip_email = req.body.skipEmail
 
     let query = updateQuery(applicant, email, type);
 
@@ -23,7 +24,7 @@ const httpTrigger: AzureFunction = async function (
     let result = await db.query(query);
     db.end();
 
-    if(email && email.subject && email.to && email.body){
+    if(email && email.subject && email.to && email.body && !skip_email){
     sgMail.setApiKey('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');
     const msg = {
       to: `${email.to}`, 
