@@ -32,7 +32,7 @@ const httpTrigger: AzureFunction = async function (
                   "address_1",
                   "address_2",
                   "town_city",
-                  "county_province",
+                  "county_providence",
                   "state",
                   "postal_code",
                   "country",
@@ -49,9 +49,6 @@ const httpTrigger: AzureFunction = async function (
                   "tractor_license",
                   "passport",
                   "work_experience_description",
-                  "employment_period",
-                  "supervisor_name",
-                  "supervisor_contact",
                   "degree_name",
                   "reason_for_applying",
                   "hear_about_dht",
@@ -59,6 +56,28 @@ const httpTrigger: AzureFunction = async function (
                   "blood_type",
                   "emergency_contact_name",
                   "emergency_contact_phone",
+                  "status_step",
+                  "status_message",
+                  "unique_fact",
+                  "current_employer",
+                  "current_position_title",
+                  "current_description_of_role",
+                  "current_employment_period_start", 
+                  "current_employment_period_end",
+                  "current_supervisor_reference",
+                  "current_supervisor_phone_number",
+                  "current_contact_supervisor",
+                  "previous_employer",
+                  "previous_position_title",
+                  "previous_description_of_role",
+                  "previous_employment_period_start",
+                  "previous_employment_period_end",
+                  "previous_supervisor_reference",
+                  "previous_supervisor_phone_number",
+                  "previous_contact_supervisor",
+                  "school_college",
+                  "graduation_year",
+                  "resume",
                   "created_at"
                 )
       VALUES      
@@ -78,7 +97,7 @@ const httpTrigger: AzureFunction = async function (
                   '${employee.address_1}',
                   '${employee.address_2}',
                   '${employee.town_city}',
-                  '${employee.county_province}',
+                  '${employee.county_providence}',
                   '${employee.state}',
                   '${employee.postal_code}',
                   '${employee.country}',
@@ -95,9 +114,6 @@ const httpTrigger: AzureFunction = async function (
                   '${employee.tractor_license}',
                   '${employee.passport}',
                   '${employee.work_experience_description}',
-                  '${employee.employment_period}',
-                  '${employee.supervisor_name}',
-                  '${employee.supervisor_contact}',
                   '${employee.degree_name}',
                   '${employee.reason_for_applying}',
                   '${employee.hear_about_dht}',
@@ -105,6 +121,28 @@ const httpTrigger: AzureFunction = async function (
                   '${employee.blood_type}',
                   '${employee.emergency_contact_name}',
                   '${employee.emergency_contact_phone}',
+                  '2',
+                  'Account activated',
+                  '${employee.unique_fact}',
+                  '${employee.current_employer}',
+                  '${employee.current_position_title}',
+                  '${employee.current_description_of_role}',
+                  '${employee.current_employment_period_start}',
+                  '${employee.current_employment_period_end}',
+                  '${employee.current_supervisor_reference}',
+                  '${employee.current_supervisor_phone_number}',
+                  '${employee.current_contact_supervisor}',
+                  '${employee.previous_employer}',
+                  '${employee.previous_position_title}',
+                  '${employee.previous_description_of_role}',
+                  '${employee.previous_employment_period_start}',
+                  '${employee.previous_employment_period_end}',
+                  '${employee.previous_supervisor_reference}',
+                  '${employee.previous_supervisor_phone_number}',
+                  '${employee.previous_contact_supervisor}',
+                  '${employee.school_college}',
+                  '${employee.graduation_year}',
+                  '${employee.resume}',
                   'now()'
                 );
     `;
@@ -112,28 +150,6 @@ const httpTrigger: AzureFunction = async function (
     db.connect();
     await db.query(query);
     db.end();
-
-    
-    // sgMail.setApiKey('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');
-    // const msg = {
-    //   to: `${applicant.email}`, 
-    //   from: 'momin4073@gmail.com',
-    //   subject: 'DHT Employment Application Received!',
-    //   html: `
-    //         Dear ${applicant.first_name} ${applicant.last_name},
-    //         <br> <br>Thank you for completing DHT’s online application. We are currently reviewing your application and will be reaching out soon with further instructions on next steps. 
-    //         <br> <br>Thanks
-    //         `
-    // }
-    // sgMail
-    //   .send(msg)
-    //   .then(() => {
-    //     console.log('Email sent')
-    //   })
-    //   .catch((error) => {
-    //     console.error(error)
-    //   })
-
     context.res = {
       status: 200,
       body: {
