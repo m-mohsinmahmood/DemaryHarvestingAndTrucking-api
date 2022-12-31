@@ -21,7 +21,6 @@ const httpTrigger: AzureFunction = async function (
          SET 
                 "customer_id"                    = '${job_close.customer_id}', 
                 "is_close"                    = '${job_close.is_close}',
-                 "date"                     = '${job_close.date}',
                  "total_acres"                     = '${job_close.total_acres}',
                  "total_gps_acres"                     = '${job_close.total_gps_acres}'
  

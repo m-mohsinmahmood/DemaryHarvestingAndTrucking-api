@@ -22,7 +22,6 @@ if (req.body.is_close) {
          SET 
                 "customer_id"                    = '${job_close.customer_id}', 
                 "close_job"                    = '${job_close.is_close}',
-                 "date"                     = '${job_close.date}',
                  "total_acres"                     = '${job_close.total_acres}',
                  "total_gps_acres"                     = '${job_close.total_gps_acres}'
  

@@ -13,4 +13,10 @@ export interface beginningOfDay {
     beginning_separator_hours?: string;
     ending_separator_hours?: string;
     field_id?: string;
+    field_acres?: string;
+    truck_id?: string;
+    crew_chief?: string;
+    truck_company?: string;
+    begining_odometer_miles?: string;
+    ending_odometer_miles?: string;
 }

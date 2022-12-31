@@ -16,7 +16,7 @@ const httpTrigger: AzureFunction = async function (
         if (search) whereClause = ` ${whereClause} AND LOWER(name) LIKE LOWER('%${search}%')`;
 
         let machinery_query = `
-        SELECT "id", "type" FROM  "Machinery"  ${whereClause} ORDER BY  "type" ASC;`;
+        SELECT "id", "type","name" FROM  "Machinery"  ${whereClause} ORDER BY  "type" ASC;`;
 
         let machinery_count_query = `SELECT COUNT("id") FROM "Machinery" ${whereClause};`;
 

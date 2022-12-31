@@ -18,7 +18,7 @@ export interface job_update{
 export interface job_close{
     customer_id:string,
     is_close: boolean,
-    date:string,
+    // date:string,
     total_acres: number,
     total_gps_acres: number
 }
