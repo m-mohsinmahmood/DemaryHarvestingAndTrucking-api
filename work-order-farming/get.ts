@@ -150,7 +150,7 @@ const httpTrigger: AzureFunction = async function (
                  ON "emp".id = wo.tractor_driver_id 
     
                  Where wo.work_order_is_completed = True  AND 
-                 "work_order_status" = 'pending' And "work_order_close_out"=True AND
+                 "work_order_status" = 'verified' And "work_order_close_out"=True And
                     ${whereClause};`;
         }
 
