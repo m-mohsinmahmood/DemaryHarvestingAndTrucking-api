@@ -1,3 +1,4 @@
+import { applicant } from './model';
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import * as _ from "lodash";
@@ -12,13 +13,14 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
   const db = new Client(config);
 
-  try {
+  try { 
     const applicant: any = req.body.applicant_data;
+    const applicant_info: any = req.body?.applicantInfo;
     const email: any = req.body.email_data;
     const type = req.query.type;
     const skip_email = req.body.skipEmail
 
-    let query = updateQuery(applicant, email, type);
+    let query = updateQuery(applicant, email, type,applicant_info);
 
     db.connect();
     let result = await db.query(query);

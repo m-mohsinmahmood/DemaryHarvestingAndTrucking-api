@@ -1,3 +1,4 @@
+import { applicant } from './model';
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
@@ -11,100 +12,109 @@ const httpTrigger: AzureFunction = async function (
   try {
     const applicant_id: string = req.query.id;
     let applicant_query = `
-    SELECT 
-            "id",
-            "first_name",
-            "last_name",
-            "email",
-            "cell_phone_number",
-            "home_phone_number",
-            "date_of_birth",
-            "age",
-            "marital_status",
-            "languages",
-            "rank_speaking_english",
-            "address_1",
-            "address_2",
-            "town_city",
-            "county_providence",
-            "state",
-            "postal_code",
-            "country",
-            "avatar",
-            "question_1",
-            "question_2",
-            "question_3",
-            "question_4",
-            "question_5",
-            "authorized_to_work",
-            "us_citizen",
-            "cdl_license",
-            "lorry_license",
-            "tractor_license",
-            "passport",
-            "work_experience_description",
-            "degree_name",
-            "reason_for_applying",
-            "hear_about_dht",
-            "us_phone_number",
-            "blood_type",
-            "emergency_contact_name",
-            "emergency_contact_phone",
-            "unique_fact",
-            "first_call_remarks",
-            "first_call_ranking",
-            "first_interviewer_id",
-            "reference_call_remarks",
-            "reference_call_ranking",
-            "reference_interviewer_id",
-            "second_call_remarks",
-            "second_call_ranking",
-            "second_interviewer_id",
-            "third_call_remarks",
-            "third_call_ranking",
-            "third_interviewer_id",
-            "status_step",
-            "status_message",
-            "step_one_status_date",
-            "step_two_status_date",
-            "step_three_status_date",
-            "step_four_status_date",
-            "step_five_status_date",
-            "step_six_status_date",
-            "step_seven_status_date",
-            "step_eight_status_date",
-            "step_nine_status_date",
-            "step_ten_status_date",
-            "step_eleven_status_date",
-            "step_twelve_status_date",
-            "step_thirteen_status_date",
-            "unique_fact",
-            "reason_for_rejection",
-            "ranking",
-            "current_employer",
-            "current_position_title",
-            "current_description_of_role",
-            "current_employment_period_start", 
-            "current_employment_period_end",
-            "current_supervisor_reference",
-            "current_supervisor_phone_number",
-            "current_contact_supervisor",
-            "previous_employer",
-            "previous_position_title",
-            "previous_description_of_role",
-            "previous_employment_period_start",
-            "previous_employment_period_end",
-            "previous_supervisor_reference",
-            "previous_supervisor_phone_number",
-            "previous_contact_supervisor",
-            "school_college",
-            "graduation_year",
-            "resume",
-            "created_at"
-    FROM 
-            "Applicants"
-    WHERE 
-            "id" = '${applicant_id}';
+        SELECT                   
+              e."id" "first_interviewer_id", CONCAT (e."first_name", ' ', e."last_name", '') as "first_interviewer_name",                   
+              e1."id" as "second_interviewer_id", CONCAT (e1."first_name", ' ', e1."last_name", '')  as "second_interviewer_name", 
+              e2."id" as "third_interviewer_id", CONCAT (e2."first_name", ' ', e2."last_name", '')  as "third_interviewer_name", 
+              e3."id" as "reference_interviewer_id", CONCAT (e3."first_name", ' ', e3."last_name", '')  as "reference_interviewer_name", 
+              a."id",                  
+              a."first_name",                  
+              a."last_name",                  
+              a."email",                  
+              a."cell_phone_number",                  
+              a."home_phone_number",      
+              a."date_of_birth",
+              a."age",
+              a."marital_status",
+              a."languages",
+              a."rank_speaking_english",
+              a."address_1",
+              a."address_2",
+              a."town_city",
+              a."county_providence",
+              a."state",
+              a."postal_code",
+              a."country",
+              a."avatar",
+              a."question_1",
+              a."question_2",
+              a."question_3",
+              a."question_4",
+              a."question_5",
+              a."authorized_to_work",
+              a."us_citizen",
+              a."cdl_license",
+              a."lorry_license",
+              a."tractor_license",
+              a."passport",
+              a."work_experience_description",
+              a."degree_name",
+              a."reason_for_applying",
+              a."hear_about_dht",
+              a."us_phone_number",
+              a."blood_type",
+              a."emergency_contact_name",
+              a."emergency_contact_phone",
+              a."unique_fact",
+              a."first_call_remarks",
+              a."first_call_ranking",
+              a."first_interviewer_id",
+              a."reference_call_remarks",
+              a."reference_call_ranking",
+              a."reference_interviewer_id",
+              a."second_call_remarks",
+              a."second_call_ranking",
+              a."second_interviewer_id",
+              a."third_call_remarks",
+              a."third_call_ranking",
+              a."third_interviewer_id",
+              a."status_step",
+              a."status_message",
+              a."step_one_status_date",
+              a."step_two_status_date",
+              a."step_three_status_date",
+              a."step_four_status_date",
+              a."step_five_status_date",
+              a."step_six_status_date",
+              a."step_seven_status_date",
+              a."step_eight_status_date",
+              a."step_nine_status_date",
+              a."step_ten_status_date",
+              a."step_eleven_status_date",
+              a."step_twelve_status_date",
+              a."step_thirteen_status_date",
+              a."unique_fact",
+              a."reason_for_rejection",
+              a."ranking",
+              a."current_employer",
+              a."current_position_title",
+              a."current_description_of_role",
+              a."current_employment_period_start", 
+              a."current_employment_period_end",
+              a."current_supervisor_reference",
+              a."current_supervisor_phone_number",
+              a."current_contact_supervisor",
+              a."previous_employer",
+              a."previous_position_title",
+              a."previous_description_of_role",
+              a."previous_employment_period_start",
+              a."previous_employment_period_end",
+              a."previous_supervisor_reference",
+              a."previous_supervisor_phone_number",
+              a."previous_contact_supervisor",
+              a."school_college",
+              a."graduation_year",				
+              a."resume",                  
+              a."created_at"        
+        FROM                   
+              "Applicants" a 
+              LEFT JOIN "Employees" e ON e."id" = first_interviewer_id and a."id" = '${applicant_id}' 
+              LEFT JOIN "Employees" e1 ON e1."id" = second_interviewer_id and a."id" = '${applicant_id}' 
+              LEFT JOIN "Employees" e2 ON e2."id" = third_interviewer_id and a."id" = '${applicant_id}' 
+              LEFT JOIN "Employees" e3 ON e3."id" = reference_interviewer_id and a."id" = '${applicant_id}' 
+      
+        WHERE 
+              a."id" = '${applicant_id}';
       `;
 
     db.connect();
@@ -188,45 +198,6 @@ const httpTrigger: AzureFunction = async function (
       };
     }
 
-    // Dummy Employee Name //
-    let recruiters = [
-      {
-        id: "84df662a-8687-47ff-8f6f-1a2b27f9a95d",
-        name: "Matt Demaray",
-        calendly: [
-          "<a>Click here to schedule an interview using Microsoft TEAMS:  https://calendly.com/matt_dht-usa/interview-teams</a>",
-          "</br><a>Click here to schedule an interview using Zoom:  https://calendly.com/matt_dht-usa/interview-zoom</a>",
-          "</br><a>Click here to schedule an interview using Phone:  https://calendly.com/matt_dht-usa/interview-phone-1</a>"
-        ]
-
-      },
-      {
-        id: "8d0414fa-fbe6-417c-b7d5-3ab1bf1aaffd",
-        name: "Bill Demaray",
-        calendly: [
-          "<a>Click here to schedule an interview using Microsoft TEAMS:  https://calendly.com/bill_dht-usa/interview-teams</a>",
-          "</br><a>Click here to schedule an interview using Zoom:  https://calendly.com/bill_dht-usa/interview-zoom</a>",
-          "</br><a>Click here to schedule an interview using Phone:  https://calendly.com/bill_dht-usa/interview-phone-1</a>"
-        ]
-      },
-      {
-        id: "524c9a3c-af1c-4159-95fd-ddf72eab357f",
-        name: "Craig Reinhart",
-        calendly: [
-          "<a>Click here to schedule an interview using Microsoft TEAMS:  https://calendly.com/craig_dht-usa/interview-teams</a>",
-          "</br><a>Click here to schedule an interview using Zoom:  https://calendly.com/craig_dht-usa/interview-zoom</a>",
-          "</br><a>Click here to schedule an interview using Phone:  https://calendly.com/craig_dht-usa/interview-phone-1</a>"
-        ]
-      }
-    ];
-    let newObject = {
-      first_interviewer_name: recruiters.filter(i => i.id == resp.first_interviewer_id)[0]?.name,
-      second_interviewer_name: recruiters.filter(i => i.id == resp.second_interviewer_id)[0]?.name,
-      third_interviewer_name: recruiters.filter(i => i.id == resp.third_interviewer_id)[0]?.name,
-      reference_interviewer_name: recruiters.filter(i => i.id == resp.reference_interviewer_id)[0]?.name
-    };
-    resp = Object.assign(resp, newObject);
-    // Dummy Employee Name //
 
     db.end();
 
@@ -241,7 +212,7 @@ const httpTrigger: AzureFunction = async function (
 
     context.done();
     return;
-  } 
+  }
   catch (err) {
     db.end();
     context.res = {
