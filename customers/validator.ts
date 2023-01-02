@@ -1,5 +1,5 @@
-import { customer } from "./model";
-//import { ajv } from "../utilities/validator_intance";
+// import { customer } from "./model";
+// import { ajv } from "../utilities/validator_intance";
 
 // const schema = {
 //   type: "object",
@@ -42,21 +42,21 @@ import { customer } from "./model";
 //   additionalProperties: false,
 // };
 
-export function customerValidator(customer: customer) {
- // const validate = ajv.compile(schema);
- // const valid = validate(customer);
- // if (!valid) console.log(validate.errors);
- // const validation = validate.errors;
-  let error = [];
-  let errorMessage = ``;
-  // validation.forEach((err) => {
-  //   error.push(
-  //     `${err.instancePath ? `${err.instancePath} ` : ``}${err.message}`.replace(
-  //       /[^\w ]/g,
-  //       ""
-  //     )
-  //   );
-  // });
-  errorMessage = error.join(", ");
-  return errorMessage;
-}
+// export function customerValidator(customer: customer) {
+//   const validate = ajv.compile(schema);
+//   const valid = validate(customer);
+//   if (!valid) console.log(validate.errors);
+//   const validation = validate.errors;
+//   let error = [];
+//   let errorMessage = ``;
+//   validation.forEach((err) => {
+//     error.push(
+//       `${err.instancePath ? `${err.instancePath} ` : ``}${err.message}`.replace(
+//         /[^\w ]/g,
+//         ""
+//       )
+//     );
+//   });
+//   errorMessage = error.join(", ");
+//   return errorMessage;
+// }

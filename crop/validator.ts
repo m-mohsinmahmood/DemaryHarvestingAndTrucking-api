@@ -1,5 +1,5 @@
 import { crop } from "./model";
-//import { ajv } from "../utilities/validator_intance";
+// import { ajv } from "../utilities/validator_intance";
 
 // const schema = {
 //   type: "object",
@@ -21,12 +21,12 @@ import { crop } from "./model";
 // };
 
 export function cropValidator(crop: crop) {
-  //const validate = ajv.compile(schema);
+  // const validate = ajv.compile(schema);
   // const valid = validate(crop);
   // if (!valid) console.log(validate.errors);
   // const validation = validate.errors;
-  let error = [];
-  let errorMessage = ``;
+  // let error = [];
+  // let errorMessage = ``;
   // validation.forEach((err) => {
   //   error.push(
   //     `${err.instancePath ? `${err.instancePath} ` : ``}${err.message}`.replace(
@@ -35,6 +35,6 @@ export function cropValidator(crop: crop) {
   //     )
   //   );
   // });
-  errorMessage = error.join(", ");
-  return errorMessage;
+  // errorMessage = error.join(", ");
+  // return errorMessage;
 }

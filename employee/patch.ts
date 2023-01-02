@@ -1,6 +1,9 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
+import * as _ from "lodash";
 import { config } from "../services/database/database.config";
+import { employee } from "./model";
+
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -9,14 +12,14 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const applicant_id: string = req.query.id;
+    const employee: employee = req.body;
     let query = `
-        UPDATE "Applicants" 
-        SET "is_deleted"  = TRUE, 
-            "modified_at" = 'now()'
+        UPDATE 
+                "Employees"
+        SET 
+                "role"= '${employee.role}'
         WHERE 
-            "id" = '${applicant_id}';
-        `;
+                "id" = '${employee.id}';`
 
     db.connect();
     let result = await db.query(query);
@@ -25,7 +28,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        message: "Applicant has been deleted successfully.",
+        message: "Employee has been updated successfully.",
       },
     };
     context.done();

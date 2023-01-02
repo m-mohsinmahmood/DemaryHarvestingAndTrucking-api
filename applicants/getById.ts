@@ -43,9 +43,6 @@ const httpTrigger: AzureFunction = async function (
             "tractor_license",
             "passport",
             "work_experience_description",
-            "employment_period",
-            "supervisor_name",
-            "supervisor_contact",
             "degree_name",
             "reason_for_applying",
             "hear_about_dht",
@@ -53,6 +50,7 @@ const httpTrigger: AzureFunction = async function (
             "blood_type",
             "emergency_contact_name",
             "emergency_contact_phone",
+            "unique_fact",
             "first_call_remarks",
             "first_call_ranking",
             "first_interviewer_id",
@@ -80,6 +78,28 @@ const httpTrigger: AzureFunction = async function (
             "step_eleven_status_date",
             "step_twelve_status_date",
             "step_thirteen_status_date",
+            "unique_fact",
+            "reason_for_rejection",
+            "ranking",
+            "current_employer",
+            "current_position_title",
+            "current_description_of_role",
+            "current_employment_period_start", 
+            "current_employment_period_end",
+            "current_supervisor_reference",
+            "current_supervisor_phone_number",
+            "current_contact_supervisor",
+            "previous_employer",
+            "previous_position_title",
+            "previous_description_of_role",
+            "previous_employment_period_start",
+            "previous_employment_period_end",
+            "previous_supervisor_reference",
+            "previous_supervisor_phone_number",
+            "previous_contact_supervisor",
+            "school_college",
+            "graduation_year",
+            "resume",
             "created_at"
     FROM 
             "Applicants"
@@ -174,9 +194,9 @@ const httpTrigger: AzureFunction = async function (
         id: "84df662a-8687-47ff-8f6f-1a2b27f9a95d",
         name: "Matt Demaray",
         calendly: [
-          "Click here to schedule an interview using Microsoft TEAMS:  https://calendly.com/matt_dht-usa/interview-teams",
-          "</br>Click here to schedule an interview using Zoom:  https://calendly.com/matt_dht-usa/interview-zoom",
-          "</br>Click here to schedule an interview using Phone:  https://calendly.com/matt_dht-usa/interview-phone-1"
+          "<a>Click here to schedule an interview using Microsoft TEAMS:  https://calendly.com/matt_dht-usa/interview-teams</a>",
+          "</br><a>Click here to schedule an interview using Zoom:  https://calendly.com/matt_dht-usa/interview-zoom</a>",
+          "</br><a>Click here to schedule an interview using Phone:  https://calendly.com/matt_dht-usa/interview-phone-1</a>"
         ]
 
       },
@@ -184,18 +204,18 @@ const httpTrigger: AzureFunction = async function (
         id: "8d0414fa-fbe6-417c-b7d5-3ab1bf1aaffd",
         name: "Bill Demaray",
         calendly: [
-          "Click here to schedule an interview using Microsoft TEAMS:  https://calendly.com/bill_dht-usa/interview-teams",
-          "</br>Click here to schedule an interview using Zoom:  https://calendly.com/bill_dht-usa/interview-zoom",
-          "</br>Click here to schedule an interview using Phone:  https://calendly.com/bill_dht-usa/interview-phone-1"
+          "<a>Click here to schedule an interview using Microsoft TEAMS:  https://calendly.com/bill_dht-usa/interview-teams</a>",
+          "</br><a>Click here to schedule an interview using Zoom:  https://calendly.com/bill_dht-usa/interview-zoom</a>",
+          "</br><a>Click here to schedule an interview using Phone:  https://calendly.com/bill_dht-usa/interview-phone-1</a>"
         ]
       },
       {
         id: "524c9a3c-af1c-4159-95fd-ddf72eab357f",
         name: "Craig Reinhart",
         calendly: [
-          "Click here to schedule an interview using Microsoft TEAMS:  https://calendly.com/craig_dht-usa/interview-teams",
-          "</br>Click here to schedule an interview using Zoom:  https://calendly.com/craig_dht-usa/interview-zoom",
-          "</br>Click here to schedule an interview using Phone:  https://calendly.com/craig_dht-usa/interview-phone-1"
+          "<a>Click here to schedule an interview using Microsoft TEAMS:  https://calendly.com/craig_dht-usa/interview-teams</a>",
+          "</br><a>Click here to schedule an interview using Zoom:  https://calendly.com/craig_dht-usa/interview-zoom</a>",
+          "</br><a>Click here to schedule an interview using Phone:  https://calendly.com/craig_dht-usa/interview-phone-1</a>"
         ]
       }
     ];

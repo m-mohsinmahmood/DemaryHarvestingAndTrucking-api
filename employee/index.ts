@@ -3,6 +3,7 @@ import * as getEmployees from "./get";
 import * as getEmployeesById from "./getById";
 import * as addEmployee from "./post";
 import * as updateEmployee from "./put";
+import * as patchEmployee from "./patch";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -22,9 +23,9 @@ const httpTrigger: AzureFunction = async function (
       await updateEmployee.default(context, req);
       break;
 
-    // case "PATCH":
-    //   await patchApplicant.default(context, req);
-    //   break;
+    case "PATCH":
+      await patchEmployee.default(context, req);
+      break;
 
     default:
       context.res = {
