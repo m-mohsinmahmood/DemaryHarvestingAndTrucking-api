@@ -17,15 +17,17 @@ const httpTrigger: AzureFunction = async function (
   let result;
   let query;
   let applicant_id;
-  let file_name;
+  let image_file;
+  let resume_file = '';
   const multiPartConfig = {
-    limits: { fields: 1 },
+    limits: { fields: 1, files: 2 },
   };
   const { fields, files } = await parseMultipartFormData(req, multiPartConfig);
   let applicant: applicant = (JSON.parse(fields[0].value));
   //#endregion
   //#region Create Applicant
   try {
+    applicant.resume? applicant.resume = '' : '';
     applicant.avatar = '';
     let query = `
     INSERT INTO 
@@ -61,9 +63,6 @@ const httpTrigger: AzureFunction = async function (
                   "tractor_license",
                   "passport",
                   "work_experience_description",
-                  "employment_period",
-                  "supervisor_name",
-                  "supervisor_contact",
                   "degree_name",
                   "reason_for_applying",
                   "hear_about_dht",
@@ -74,6 +73,25 @@ const httpTrigger: AzureFunction = async function (
                   "status_step",
                   "status_message",
                   "unique_fact",
+                  "current_employer",
+                  "current_position_title",
+                  "current_description_of_role",
+                  "current_employment_period_start", 
+                  "current_employment_period_end",
+                  "current_supervisor_reference",
+                  "current_supervisor_phone_number",
+                  "current_contact_supervisor",
+                  "previous_employer",
+                  "previous_position_title",
+                  "previous_description_of_role",
+                  "previous_employment_period_start",
+                  "previous_employment_period_end",
+                  "previous_supervisor_reference",
+                  "previous_supervisor_phone_number",
+                  "previous_contact_supervisor",
+                  "school_college",
+                  "graduation_year",
+                  "resume",
                   "created_at"
                 )
       VALUES      
@@ -108,9 +126,6 @@ const httpTrigger: AzureFunction = async function (
                   '${applicant.tractor_license}',
                   '${applicant.passport}',
                   '${applicant.work_experience_description}',
-                  '${applicant.employment_period}',
-                  '${applicant.supervisor_name}',
-                  '${applicant.supervisor_contact}',
                   '${applicant.degree_name}',
                   '${applicant.reason_for_applying}',
                   '${applicant.hear_about_dht}',
@@ -121,6 +136,25 @@ const httpTrigger: AzureFunction = async function (
                   '2',
                   'Preliminary Review',
                   '${applicant.unique_fact}',
+                  '${applicant.current_employer}',
+                  '${applicant.current_position_title}',
+                  '${applicant.current_description_of_role}',
+                  '${applicant.current_employment_period_start}',
+                  '${applicant.current_employment_period_end}',
+                  '${applicant.current_supervisor_reference}',
+                  '${applicant.current_supervisor_phone_number}',
+                  '${applicant.current_contact_supervisor}',
+                  '${applicant.previous_employer}',
+                  '${applicant.previous_position_title}',
+                  '${applicant.previous_description_of_role}',
+                  '${applicant.previous_employment_period_start}',
+                  '${applicant.previous_employment_period_end}',
+                  '${applicant.previous_supervisor_reference}',
+                  '${applicant.previous_supervisor_phone_number}',
+                  '${applicant.previous_contact_supervisor}',
+                  '${applicant.school_college}',
+                  '${applicant.graduation_year}',
+                  '${applicant.resume}',
                   'now()'
                 )
                 RETURNING id as applicant_id
@@ -145,8 +179,17 @@ const httpTrigger: AzureFunction = async function (
     applicant_id = result.rows[0].applicant_id;
     const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/applicants?sp=racw&st=2022-12-23T16:39:56Z&se=2025-01-01T00:39:56Z&spr=https&sv=2021-06-08&sr=c&sig=Jsxo862%2FCE8ooBBhlzWEJrZ7hRkFRpqDWCY4PFYQH9U%3D");
     const container = blob.getContainerClient("applicants");
-    file_name = "image" + applicant_id;
-    const blockBlob = container.getBlockBlobClient(file_name);
+   
+    if (files[1]){
+      resume_file = "resume" + applicant_id;
+      const resumeBlockBlob = container.getBlockBlobClient(resume_file);
+      const res = await resumeBlockBlob.uploadData(files[1].bufferFile, {
+        blobHTTPHeaders: { blobContentType: files[1].mimeType },
+      });
+    }
+   
+    image_file = "image" + applicant_id;
+    const blockBlob = container.getBlockBlobClient(image_file);
     const uploadFileResp = await blockBlob.uploadData(files[0].bufferFile, {
       blobHTTPHeaders: { blobContentType: files[0].mimeType },
     });
@@ -167,7 +210,8 @@ const httpTrigger: AzureFunction = async function (
     let update_query = `
     UPDATE "Applicants"
     SET 
-    "avatar" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + file_name}'
+    "avatar" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + image_file}',
+    "resume" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + resume_file}'
     WHERE 
     "id" = '${applicant_id}';`
     db1.connect();
