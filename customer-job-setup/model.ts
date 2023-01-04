@@ -7,6 +7,7 @@ export interface job_setup{
     id?: string,
     employee_id?: string,
     field_id_new?: string,
+    total_acres?: string,
     total_gps_acres?: string
     is_field_changed?: boolean,
     has_employee?: boolean

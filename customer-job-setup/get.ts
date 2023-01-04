@@ -19,11 +19,13 @@ const httpTrigger: AzureFunction = async function (
  SELECT 
     customer."id" as "customer_id", 
     wo."state" as "state",
+    wo."employee_id" as "employee_id",
     wo."id" as "job_id",
+    wo."has_employee" as "has_employee", 
 		wo."is_close_crew" as "is_close_crew",
     customer."customer_name" as "customer_name",
-		 farm."name" as "farm_name",
-		 farm."id" as "farm_id",
+		farm."name" as "farm_name",
+		farm."id" as "farm_id",
 		 crop."name" as "crop_name",
 		 crop."id" as "crop_id",
 		 field."name" as "field_name",
@@ -44,7 +46,41 @@ const httpTrigger: AzureFunction = async function (
 		INNER JOIN "Customer_Field" field 
     ON wo."field_id" = field."id"
 		WHERE
-		"is_close_crew" = FALSE
+		employee_id = '${employeeId}' AND "is_field_changed" = FALSE
+`;
+
+      job_setup_query_2 = `
+ SELECT 
+    customer."id" as "customer_id", 
+    wo."state" as "state",
+    wo."employee_id" as "employee_id",
+    wo."id" as "job_id",
+    wo."has_employee" as "has_employee", 
+		wo."is_close_crew" as "is_close_crew",
+    customer."customer_name" as "customer_name",
+		farm."name" as "farm_name",
+		farm."id" as "farm_id",
+		 crop."name" as "crop_name",
+		 crop."id" as "crop_id",
+		 field."name" as "field_name",
+		 field."id" as "field_id"
+    FROM 
+    
+		"Customer_Job_Setup" wo
+		
+    INNER JOIN "Customers" customer 
+    ON wo."customer_id" = customer."id"
+
+    INNER JOIN "Customer_Farm" farm 
+    ON wo."farm_id" = farm."id"
+		
+		INNER JOIN "Crops" crop 
+    ON wo."crop_id" = crop."id"
+		
+		INNER JOIN "Customer_Field" field 
+    ON wo."field_id" = field."id"
+		WHERE
+		 "is_field_changed" = FALSE
 `;
     }
     // to get the opened/not-closed jobs of combine operator
@@ -53,6 +89,7 @@ const httpTrigger: AzureFunction = async function (
       SELECT 
          customer."id" as "customer_id", 
          wo."state" as "state",
+         wo."id" as "job_id",
          wo."is_close_combine" as "is_close_combine",
          customer."customer_name" as "customer_name",
           farm."name" as "farm_name",
@@ -77,7 +114,8 @@ const httpTrigger: AzureFunction = async function (
          INNER JOIN "Customer_Field" field 
          ON wo."field_id" = field."id"
          WHERE
-         "is_close_combine" = FALSE
+         "is_field_changed" = FALSE
+
      `;
     }
     // to get the opened/not-closed jobs of kart operator
@@ -86,6 +124,7 @@ const httpTrigger: AzureFunction = async function (
         SELECT 
          customer."id" as "customer_id", 
          wo."state" as "state",
+         wo."id" as "job_id",
 				 wo."employee_id" as "employee_id",
          wo."has_employee" as "has_employee", 
          wo."is_close_kart" as "is_close_kart",

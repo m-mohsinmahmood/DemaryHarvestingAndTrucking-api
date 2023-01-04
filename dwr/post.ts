@@ -58,6 +58,9 @@ const httpTrigger: AzureFunction = async function (
       if (order.begining_odometer_miles != null) {
         optionalReq = `${optionalReq},"begining_odometer_miles"`;
         optionalValues = `${optionalValues},'${order.begining_odometer_miles}'`;
+      }if (order.job_id != null) {
+        optionalReq = `${optionalReq},"job_id"`;
+        optionalValues = `${optionalValues},'${order.job_id}'`;
       }
 
     let query = ``;

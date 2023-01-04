@@ -3,9 +3,9 @@ export interface beginningOfDay {
     employeeId: string;
     machineryId?: string;
     beginningEngineHours?: string;
+    endingEngineHours?: string;
     acresCompleted?: string;
     gpsAcres?: string;
-    endingEngineHours?: string;
     hoursWorked?: string;
     notes?: string;
     workOrderId?: number;
@@ -19,4 +19,5 @@ export interface beginningOfDay {
     truck_company?: string;
     begining_odometer_miles?: string;
     ending_odometer_miles?: string;
+    job_id?: string;
 }
