@@ -27,12 +27,13 @@ const httpTrigger: AzureFunction = async function (
     db.end();
 
     if(email && email.subject && email.to && email.body && !skip_email){
+    let emailBody = email.body.replace('&#8205','');
     sgMail.setApiKey('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');
     const msg = {
       to: `${email.to}`, 
       from: 'momin4073@gmail.com',
       subject: `${email.subject}`,
-      html: `${email.body}`
+      html: `${emailBody}`
     }
     sgMail
       .send(msg)
