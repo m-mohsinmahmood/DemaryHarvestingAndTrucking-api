@@ -183,6 +183,7 @@ export function updateQuery(applicant, email, type , applicant_info) {
                         WHERE "id" = '${applicant.id}';
     `;
 
+    // Create employee if applicant accepts offer
     if (applicant.status_message == 'Results' && applicant.status_step == '10.1') {
         make_employee_query = `
         INSERT INTO 
@@ -226,7 +227,6 @@ export function updateQuery(applicant, email, type , applicant_info) {
                     "emergency_contact_name",
                     "emergency_contact_phone",
                     "status_step",
-                    "status_message",
                     "unique_fact",
                     "current_employer",
                     "current_position_title",
@@ -288,7 +288,6 @@ export function updateQuery(applicant, email, type , applicant_info) {
                     '${applicant_info.emergency_contact_name}',
                     '${applicant_info.emergency_contact_phone}',
                     '2',
-                    'Account Activated',
                     '${applicant_info.unique_fact}',
                     '${applicant_info.current_employer}',
                     '${applicant_info.current_position_title}',
@@ -311,6 +310,7 @@ export function updateQuery(applicant, email, type , applicant_info) {
                     '${applicant_info.resume}',
                     'now()'
                 )
+                RETURNING id as employee_id
     `;
 
         query = `${update_applicant_query} ${make_employee_query}`;
