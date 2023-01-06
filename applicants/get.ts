@@ -46,6 +46,7 @@ const httpTrigger: AzureFunction = async function (
                 "cell_phone_number",
                 "ranking",
                 "created_at",
+                "status_step",
                 "status_message"
         FROM 
                 "Applicants"
