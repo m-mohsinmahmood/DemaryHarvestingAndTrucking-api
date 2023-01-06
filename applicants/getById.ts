@@ -134,7 +134,8 @@ const httpTrigger: AzureFunction = async function (
       status_bar = [
         { step: `Application Submitted`, date: resp.created_at, status: true, show: true, active: true },
         {
-          step: `Preliminary Review`, date: resp.step_two_status_date, status: true,
+          step: `Preliminary Review`, date: resp.step_two_status_date,
+          status:  +resp.status_step >= 3 ? true : false,
           show: true, active: true,
           click: +resp.status_step == 2 ? true : false
         },
@@ -153,25 +154,25 @@ const httpTrigger: AzureFunction = async function (
           click: +resp.status_step == 4 && resp.second_call_ranking && resp.second_call_remarks ? true : false
         },
         {
-          step: `Third Interview Completed`, date: resp.step_five_status_date,
-          status: resp.third_interviewer_id && resp.third_call_ranking && resp.third_call_remarks ? true : false,
-          show: +resp.status_step >= 5 && resp.third_interviewer_id ? true : false,
+          step: `Reference Call Completed`, date: resp.step_five_status_date,
+          status: resp.reference_interviewer_id && resp.reference_call_ranking && resp.reference_call_remarks ? true : false,
+          show: +resp.status_step >= 5 && resp.reference_interviewer_id ? true : false,
           active: +resp.status_step >= 5 ? true : false,
-          click: +resp.status_step == 5 && resp.third_call_ranking && resp.third_call_remarks ? true : false
+          click: +resp.status_step == 5 && resp.reference_call_ranking && resp.reference_call_remarks ? true : false
         },
         {
-          step: `Reference Call Completed`, date: resp.step_six_status_date,
-          status: resp.reference_interviewer_id && resp.reference_call_ranking && resp.reference_call_remarks ? true : false,
-          show: +resp.status_step >= 6 && resp.reference_interviewer_id ? true : false,
+          step: `Third Interview Completed`, date: resp.step_six_status_date,
+          status: resp.third_interviewer_id && resp.third_call_ranking && resp.third_call_remarks ? true : false,
+          show: +resp.status_step >= 6 && resp.third_interviewer_id ? true : false,
           active: +resp.status_step >= 6 ? true : false,
-          click: +resp.status_step == 6 && resp.reference_call_ranking && resp.reference_call_remarks ? true : false
+          click: +resp.status_step == 6 && resp.third_call_ranking && resp.third_call_remarks ? true : false
         },
         {
           step: `Recruiter Decision Made`, date: resp.step_seven_status_date,
-          status: resp.reference_interviewer_id && resp.reference_call_ranking && resp.reference_call_remarks ? true : false,
-          show: +resp.status_step >= 6 && resp.reference_interviewer_id ? true : false,
+          status: resp.third_interviewer_id && resp.third_call_ranking && resp.third_call_remarks ? true : false,
+          show: +resp.status_step >= 6 && resp.third_interviewer_id ? true : false,
           active: +resp.status_step >= 6 ? true : false,
-          click: +resp.status_step == 6 && resp.reference_call_ranking && resp.reference_call_remarks ? true : false
+          click: +resp.status_step == 6 && resp.third_call_ranking && resp.third_call_remarks ? true : false
         },
         {
           step: `Offer Made`, date: resp.step_eight_status_date, status: +resp.status_step >= 8 ? true : false,

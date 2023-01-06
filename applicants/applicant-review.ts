@@ -5,8 +5,8 @@ let status_bar = {
     "Preliminary Review": "step_two_status_date",
     "First Interview Completed": "step_three_status_date",
     "Second Interview Completed": "step_four_status_date",
-    "Third Interview Completed": "step_five_status_date",
-    "Reference Call Completed": "step_six_status_date",
+    "Reference Call Completed": "step_five_status_date",
+    "Third Interview Completed": "step_six_status_date",
     "Recruiter Decision Made": "step_seven_status_date",
     "Offer Made": "step_eight_status_date",
     "Offer Accepted": "step_nine_status_date",
@@ -20,13 +20,13 @@ let status_bar = {
 let interview_steps = {
     "First Interview Completed": "first_interviewer_id",
     "Second Interview Completed": "second_interviewer_id",
-    "Third Interview Completed": "third_interviewer_id",
-    "Reference Call Completed": "reference_interviewer_id"
+    "Reference Call Completed": "reference_interviewer_id",
+    "Third Interview Completed": "third_interviewer_id"
 };
 let make_employee_query;
 let query;
 
-export function updateQuery(applicant, email, type , applicant_info) {
+export function updateQuery(applicant, email, type, applicant_info) {
 
     let update_applicant_query = `
                 UPDATE "Applicants"
@@ -65,7 +65,7 @@ export function updateQuery(applicant, email, type , applicant_info) {
                         "status_message" = '${applicant.status_message}',
                         "status_step" = '${applicant.status_step}',
                         "ranking" = '${applicant.ranking}',
-                        "step_five_status_date" = now()
+                        "step_six_status_date" = now()
                 `;
                 break;
 
@@ -76,7 +76,8 @@ export function updateQuery(applicant, email, type , applicant_info) {
                         "status_message" = '${applicant.status_message}',
                         "status_step" = '${applicant.status_step}',
                         "ranking" = '${applicant.ranking}',
-                        "step_six_status_date" = now()
+                        "step_five_status_date" = now()
+                        
                 `;
                 break;
 
@@ -88,8 +89,8 @@ export function updateQuery(applicant, email, type , applicant_info) {
     else if (type === "status_bar") {
         let interview_step = ``;
         if (email?.recruiter_id && interview_steps[applicant.status_message])
-        interview_step = `, "${interview_steps[applicant.status_message]}" = '${email.recruiter_id}'`;
-        
+            interview_step = `, "${interview_steps[applicant.status_message]}" = '${email.recruiter_id}'`;
+
         switch (applicant.prev_status_message) {
 
             case "Preliminary Review":
@@ -183,6 +184,7 @@ export function updateQuery(applicant, email, type , applicant_info) {
                         WHERE "id" = '${applicant.id}';
     `;
 
+    // Create employee if applicant accepts offer
     if (applicant.status_message == 'Results' && applicant.status_step == '10.1') {
         make_employee_query = `
         INSERT INTO 
@@ -226,7 +228,6 @@ export function updateQuery(applicant, email, type , applicant_info) {
                     "emergency_contact_name",
                     "emergency_contact_phone",
                     "status_step",
-                    "status_message",
                     "unique_fact",
                     "current_employer",
                     "current_position_title",
@@ -288,7 +289,6 @@ export function updateQuery(applicant, email, type , applicant_info) {
                     '${applicant_info.emergency_contact_name}',
                     '${applicant_info.emergency_contact_phone}',
                     '2',
-                    'Account Activated',
                     '${applicant_info.unique_fact}',
                     '${applicant_info.current_employer}',
                     '${applicant_info.current_position_title}',
@@ -311,6 +311,7 @@ export function updateQuery(applicant, email, type , applicant_info) {
                     '${applicant_info.resume}',
                     'now()'
                 )
+                RETURNING id as employee_id
     `;
 
         query = `${update_applicant_query} ${make_employee_query}`;
