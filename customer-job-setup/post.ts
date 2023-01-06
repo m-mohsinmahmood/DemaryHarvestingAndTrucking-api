@@ -56,39 +56,7 @@ const httpTrigger: AzureFunction = async function (
       WHERE 
               "employee_id" = '${job_setup.employeeId}';`;
 
-      // to add the already selected/rendered field if employee not added
-      // query_2 = `
-      //   INSERT INTO 
-      //               "Customer_Job_Setup" 
-      //               ("customer_id", 
-      //               "farm_id", 
-      //               "crop_id", 
-      //               "state", 
-      //               "field_id",
-      //               "employee_id",
-      //               "total_acres",
-      //               "total_gps_acres",
-      //               "is_field_changed",
-      //               "has_employee"
-      //               )
-                    
-      //   VALUES      ('${job_setup.customer_id}', 
-      //               '${job_setup.farm_id}', 
-      //               '${job_setup.crop_id}', 
-      //               '${job_setup.state}', 
-      //               '${job_setup.field_id}',
-      //               '${job_setup.employeeId}',
-      //               '${
-      //                 job_setup.total_acres === undefined
-      //                   ? ""
-      //                   : job_setup.total_acres
-      //               }',
-      //               '${job_setup.total_gps_acres}',
-      //               '${job_setup.is_field_changed}',
-      //               'true'
-      // );`;
-
-      // inserting all in table to get with  job_id
+      // inserting all in new table to get with  job_id
       query_2 = `
       INSERT INTO 
                   "Customer_Job_Setup_All" 
@@ -146,15 +114,10 @@ const httpTrigger: AzureFunction = async function (
                     'true'
       );`;
       query = `${query_1}${query_2} ${query_3}`;
-      // if (job_setup.has_employee) {
-      //   query = `${query_1} ${query_3}`;
-      // } else {
-      //   query = `${query_2} ${query_3}`;
-      // }
     }
 
     db.connect();
-    console.log("Query:", query);
+    console.log("Query:", query);+
     await db.query(query);
     db.end();
 
