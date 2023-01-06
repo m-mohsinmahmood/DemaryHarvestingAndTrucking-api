@@ -15,10 +15,9 @@ const httpTrigger: AzureFunction = async function (
   const job_setup: job_setup = req.body;
   console.log("Req:", req.body);
 
-  console.log("Req_2:", job_setup.total_acres);
   try {
     // for customer job setup by crew-chief
-    if (!job_setup.employee_id) {
+    if (!job_setup.employeeId) {
       query = `
       INSERT INTO 
                   "Customer_Job_Setup" 
@@ -43,59 +42,83 @@ const httpTrigger: AzureFunction = async function (
       UPDATE 
               "Customer_Job_Setup"
       SET 
-             "customer_id"                    = '${job_setup.customer_id}', 
-             "farm_id"                    = '${job_setup.farm_id}', 
+              "customer_id"                     = '${job_setup.customer_id}',
+              "farm_id"                     = '${job_setup.farm_id}',
               "crop_id"                     = '${job_setup.crop_id}',
               "state"                     = '${job_setup.state}',
               "field_id"                     = '${job_setup.field_id}',
-              "employee_id"                     = '${job_setup.employee_id}',
-              "total_acres"                     = '${
-                job_setup.total_acres === undefined ? "" : job_setup.total_acres
-              }',
-              "total_gps_acres"                     = '${
-                job_setup.total_gps_acres
-              }',
-              "is_field_changed"                     = '${
-                job_setup.is_field_changed
-              }',
+              "employee_id"                     = '${job_setup.employeeId}',
+              "total_acres"                     = '${job_setup.total_acres === undefined ? "" : job_setup.total_acres}',
+              "total_gps_acres"                     = '${job_setup.total_gps_acres}',
+              "is_field_changed"                     = true,
               "has_employee"                     = 'true'
 
       WHERE 
-              "employee_id" = '${
-                job_setup.employee_id
-              }' AND "is_field_changed" = 'false';`;
+              "employee_id" = '${job_setup.employeeId}';`;
 
       // to add the already selected/rendered field if employee not added
-      query_2 = `
-        INSERT INTO 
-                    "Customer_Job_Setup" 
-                    ("customer_id", 
-                    "farm_id", 
-                    "crop_id", 
-                    "state", 
-                    "field_id",
-                    "employee_id",
-                    "total_acres",
-                    "total_gps_acres",
-                    "is_field_changed",
-                    "has_employee"
-                    )
+      // query_2 = `
+      //   INSERT INTO 
+      //               "Customer_Job_Setup" 
+      //               ("customer_id", 
+      //               "farm_id", 
+      //               "crop_id", 
+      //               "state", 
+      //               "field_id",
+      //               "employee_id",
+      //               "total_acres",
+      //               "total_gps_acres",
+      //               "is_field_changed",
+      //               "has_employee"
+      //               )
                     
-        VALUES      ('${job_setup.customer_id}', 
-                    '${job_setup.farm_id}', 
-                    '${job_setup.crop_id}', 
-                    '${job_setup.state}', 
-                    '${job_setup.field_id}',
-                    '${job_setup.employee_id}',
-                    '${
-                      job_setup.total_acres === undefined
-                        ? ""
-                        : job_setup.total_acres
-                    }',
-                    '${job_setup.total_gps_acres}',
-                    '${job_setup.is_field_changed}',
-                    'true'
-      );`;
+      //   VALUES      ('${job_setup.customer_id}', 
+      //               '${job_setup.farm_id}', 
+      //               '${job_setup.crop_id}', 
+      //               '${job_setup.state}', 
+      //               '${job_setup.field_id}',
+      //               '${job_setup.employeeId}',
+      //               '${
+      //                 job_setup.total_acres === undefined
+      //                   ? ""
+      //                   : job_setup.total_acres
+      //               }',
+      //               '${job_setup.total_gps_acres}',
+      //               '${job_setup.is_field_changed}',
+      //               'true'
+      // );`;
+
+      // inserting all in table to get with  job_id
+      query_2 = `
+      INSERT INTO 
+                  "Customer_Job_Setup_All" 
+                  ("customer_id", 
+                  "farm_id", 
+                  "crop_id", 
+                  "state", 
+                  "field_id",
+                  "employee_id",
+                  "total_acres",
+                  "total_gps_acres",
+                  "is_field_changed",
+                  "job_id"
+                  )
+                  
+      VALUES      ('${job_setup.customer_id}', 
+                  '${job_setup.farm_id}', 
+                  '${job_setup.crop_id}', 
+                  '${job_setup.state}', 
+                  '${job_setup.field_id}',
+                  '${job_setup.employeeId}',
+                  '${
+                    job_setup.total_acres === undefined
+                      ? ""
+                      : job_setup.total_acres
+                  }',
+                  '${job_setup.total_gps_acres}',
+                  '${job_setup.is_field_changed}',
+                  '${job_setup.job_id}'
+    );`;
 
       // to add the newly selected field
       query_3 = `
@@ -117,16 +140,17 @@ const httpTrigger: AzureFunction = async function (
                     '${job_setup.crop_id}', 
                     '${job_setup.state}', 
                     '${job_setup.field_id_new}',
-                    '${job_setup.employee_id}',
+                    '${job_setup.employeeId}',
                     '',
                     '',
                     'true'
       );`;
-      if (job_setup.has_employee) {
-        query = `${query_1} ${query_3}`;
-      } else {
-        query = `${query_2} ${query_3}`;
-      }
+      query = `${query_1}${query_2} ${query_3}`;
+      // if (job_setup.has_employee) {
+      //   query = `${query_1} ${query_3}`;
+      // } else {
+      //   query = `${query_2} ${query_3}`;
+      // }
     }
 
     db.connect();

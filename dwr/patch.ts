@@ -44,6 +44,13 @@ const httpTrigger: AzureFunction = async function (
         if (closingOfDay.ending_odometer_miles != null) {
             optionalReq = `${optionalReq},"ending_odometer_miles" = '${closingOfDay.ending_odometer_miles}'`;
         }
+        // if (closingOfDay.total_acres != null) {
+        //     optionalReq = `${optionalReq},"total_acres" = '${closingOfDay.total_acres}'`;
+        // } 
+        // if (closingOfDay.total_gps_acres != null) {
+        //     optionalReq = `${optionalReq},"total_gps_acres" = '${closingOfDay.total_gps_acres}'`;
+        // }
+
 
 
         query = `
@@ -56,7 +63,7 @@ const httpTrigger: AzureFunction = async function (
                 "employee_id" = '${closingOfDay.employeeId}' AND is_day_closed = 'false' ;`
 
         db.connect();
-        console.log(query);
+        console.log('DWR Patch',query);
 
         let result = await db.query(query);
         db.end();

@@ -21,7 +21,7 @@ const httpTrigger: AzureFunction = async function (
                  "Customer_Job_Setup"
          SET 
                 "customer_id"                    = '${job_close.customer_id}', 
-                "employee_id"                    = '${job_close.employee_id}', 
+                "employee_id"                    = '${job_close.employeeId}', 
                 "is_close_crew"                    = '${job_close.is_close_crew}',
                  "total_acres"                     = '${job_close.total_acres}',
                  "total_gps_acres"                     = '${job_close.total_gps_acres}'
@@ -37,7 +37,7 @@ const httpTrigger: AzureFunction = async function (
                  "Customer_Job_Setup"
          SET 
                 "customer_id"                    = '${job_close.customer_id}', 
-                "employee_id"                    = '${job_close.employee_id}', 
+                "employee_id"                    = '${job_close.employeeId}', 
                 "is_close_combine"                    = '${job_close.is_close_combine}',
                  "total_acres"                     = '${job_close.total_acres}',
                  "total_gps_acres"                     = '${job_close.total_gps_acres}'
@@ -52,7 +52,7 @@ const httpTrigger: AzureFunction = async function (
                 "Customer_Job_Setup"
         SET 
                "customer_id"                    = '${job_close.customer_id}', 
-               "employee_id"                    = '${job_close.employee_id}', 
+               "employee_id"                    = '${job_close.employeeId}', 
                "is_close_kart"                    = '${job_close.is_close_kart}',
                 "total_acres"                     = '${job_close.total_acres}',
                 "total_gps_acres"                     = '${job_close.total_gps_acres}'

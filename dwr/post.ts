@@ -58,10 +58,19 @@ const httpTrigger: AzureFunction = async function (
       if (order.begining_odometer_miles != null) {
         optionalReq = `${optionalReq},"begining_odometer_miles"`;
         optionalValues = `${optionalValues},'${order.begining_odometer_miles}'`;
-      }if (order.job_id != null) {
-        optionalReq = `${optionalReq},"job_id"`;
-        optionalValues = `${optionalValues},'${order.job_id}'`;
       }
+      // if (order.job_id != null) {
+      //   optionalReq = `${optionalReq},"job_id"`;
+      //   optionalValues = `${optionalValues},'${order.job_id}'`;
+      // }
+    // if (order.total_acres != null) {
+    //   optionalReq = `${optionalReq},"total_acres"`;
+    //   optionalValues = `${optionalValues},'${order.total_acres}'`;
+    // }
+    // if (order.total_gps_acres != null) {
+    //   optionalReq = `${optionalReq},"total_gps_acres"`;
+    //   optionalValues = `${optionalValues},'${order.total_gps_acres}'`;
+    // }
 
     let query = ``;
 
@@ -77,7 +86,7 @@ const httpTrigger: AzureFunction = async function (
                         ${optionalValues});
           `;
 
-    console.log(query);
+    console.log('DWR Post',query);
 
     db.connect();
     await db.query(query);

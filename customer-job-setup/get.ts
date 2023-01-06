@@ -120,6 +120,7 @@ const httpTrigger: AzureFunction = async function (
     }
     // to get the opened/not-closed jobs of kart operator
     else if (entity === "kart-operator") {
+       // to get the opened/not-closed jobs of kart operator if employee is present
       job_setup_query = `
         SELECT 
          customer."id" as "customer_id", 
@@ -153,10 +154,12 @@ const httpTrigger: AzureFunction = async function (
          WHERE
          employee_id = '${employeeId}' AND "is_field_changed" = FALSE `;
 
+         // to get the opened/not-closed jobs of kart operator if employee is not present
       job_setup_query_2 = `
         SELECT 
          customer."id" as "customer_id", 
          wo."state" as "state",
+         wo."id" as "job_id",
 				 wo."employee_id" as "employee_id",
          wo."has_employee" as "has_employee", 
          wo."is_close_kart" as "is_close_kart",
@@ -184,12 +187,16 @@ const httpTrigger: AzureFunction = async function (
          ON wo."field_id" = field."id"
          WHERE
          "is_field_changed" = FALSE `;
-    }
+    } 
+    // query if employee is present
      query = `${job_setup_query}`;
     db.connect();
 
     let result = await db.query(query);
+    // conditionally checking if rows are zero
     if(result.rowCount === 0){
+
+      // query if employee is not present
        query = `${job_setup_query_2}`;
         result = await db.query(query);
     }

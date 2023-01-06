@@ -5,12 +5,13 @@ export interface job_setup{
     state: string,
     field_id: string,
     id?: string,
-    employee_id?: string,
+    employeeId?: string,
     field_id_new?: string,
     total_acres?: string,
     total_gps_acres?: string
     is_field_changed?: boolean,
-    has_employee?: boolean
+    has_employee?: boolean,
+    job_id?: string,
     // customer_name:string,
     // farm_name:string,
     // field_name:string,
@@ -23,7 +24,7 @@ export interface job_update{
 }
 export interface job_close{
     customer_id:string,
-    employee_id:string,
+    employeeId:string,
     is_close?: boolean,
     is_close_crew?: boolean,
     is_close_combine?: boolean,

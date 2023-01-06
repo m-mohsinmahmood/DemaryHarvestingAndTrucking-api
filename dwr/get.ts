@@ -11,6 +11,7 @@ const httpTrigger: AzureFunction = async function (
     try {
         const employee_id: string = req.query.employeeId;
         const search_clause: string = req.query.searchClause;
+        console.log('Req:',req.query)
 
         let employee_info_query: string = '';
         let count_query: string = '';
