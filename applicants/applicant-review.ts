@@ -40,6 +40,7 @@ export function updateQuery(applicant, email, type) {
                         "first_call_remarks" = '${applicant.first_call_remarks}',
                         "status_message" = '${applicant.status_message}',
                         "status_step" = '${applicant.status_step}',
+                        "ranking" = '${applicant.ranking}',
                         "step_three_status_date" = now()
                 `;
             break;
@@ -50,6 +51,7 @@ export function updateQuery(applicant, email, type) {
                         "second_call_remarks" = '${applicant.second_call_remarks}',
                         "status_message" = '${applicant.status_message}',
                         "status_step" = '${applicant.status_step}',
+                        "ranking" = '${applicant.ranking}',
                         "step_four_status_date" = now()
                 `;
             break;
@@ -60,6 +62,7 @@ export function updateQuery(applicant, email, type) {
                         "third_call_remarks" = '${applicant.third_call_remarks}',
                         "status_message" = '${applicant.status_message}',
                         "status_step" = '${applicant.status_step}',
+                        "ranking" = '${applicant.ranking}',
                         "step_five_status_date" = now()
                 `;
             break;
@@ -70,6 +73,7 @@ export function updateQuery(applicant, email, type) {
                         "reference_call_remarks" = '${applicant.reference_call_remarks}',
                         "status_message" = '${applicant.status_message}',
                         "status_step" = '${applicant.status_step}',
+                        "ranking" = '${applicant.ranking}',
                         "step_six_status_date" = now()
                 `;
             break;
@@ -90,6 +94,7 @@ export function updateQuery(applicant, email, type) {
                 query = query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}',
                         "${status_bar[applicant.prev_status_message]}" = now()
                         ${interview_step}
                 `;
@@ -98,7 +103,8 @@ export function updateQuery(applicant, email, type) {
             case "First Interview Completed":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
-                        "status_message" = '${applicant.status_message}'
+                        "status_message" = '${applicant.status_message}',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}'
                         ${interview_step}
                 `;
             break;
@@ -106,7 +112,8 @@ export function updateQuery(applicant, email, type) {
             case "Second Interview Completed":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
-                        "status_message" = '${applicant.status_message}'
+                        "status_message" = '${applicant.status_message}',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}'
                         ${interview_step}
                 `;
             break;
@@ -114,15 +121,17 @@ export function updateQuery(applicant, email, type) {
             case "Third Interview Completed":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
-                        "status_message" = '${applicant.status_message}'
+                        "status_message" = '${applicant.status_message}',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}'
                         ${interview_step}
                 `;
             break;
             
-            case "Reference Interview Completed":
+            case "Reference Call Completed":
                 query = query + `
                         "status_step" = '${applicant.status_step}',
-                        "status_message" = '${applicant.status_message}'
+                        "status_message" = '${applicant.status_message}',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}'
                         ${interview_step}
                 `;
             break;
@@ -131,6 +140,7 @@ export function updateQuery(applicant, email, type) {
                 query = query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}',
                         "${status_bar[applicant.prev_status_message]}" = now()
                 `;
             break;
@@ -139,6 +149,7 @@ export function updateQuery(applicant, email, type) {
                 query = query + `
                         "status_step" = '8',
                         "status_message" = 'Offer Accepted',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}',
                         "${status_bar[applicant.prev_status_message]}" = now()
                 `;
             break;
@@ -147,6 +158,7 @@ export function updateQuery(applicant, email, type) {
                 query = query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}',
                         "${status_bar[applicant.prev_status_message]}" = now()
                 `;
             break;
@@ -155,8 +167,8 @@ export function updateQuery(applicant, email, type) {
                 query = query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
-                        "${status_bar["Offer Accepted"]}" = now(),
-                        "${status_bar["Results"]}" = now()
+                        "reason_for_rejection" = '${applicant.reason_for_rejection}',
+                        "${status_bar[applicant.prev_status_message]}" = now()
                 `;
             break;
 

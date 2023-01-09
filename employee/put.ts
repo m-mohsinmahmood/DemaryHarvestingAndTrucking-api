@@ -17,7 +17,6 @@ const httpTrigger: AzureFunction = async function (
         SET 
                 "first_name"                    = '${employee.first_name}',
                 "last_name"                     = '${employee.last_name}',
-                "role"                          = '${employee.role}',
                 "email"                         = '${employee.email}',
                 "cell_phone_number"             = '${employee.cell_phone_number}',
                 "home_phone_number"             = '${employee.home_phone_number}',
@@ -29,7 +28,7 @@ const httpTrigger: AzureFunction = async function (
                 "address_1"                     = '${employee.address_1}',
                 "address_2"                     = '${employee.address_2}',
                 "town_city"                     = '${employee.town_city}',
-                "county_province"               = '${employee.county_province}',
+                "county_providence"             = '${employee.county_providence}',
                 "state"                         = '${employee.state}',
                 "postal_code"                   = '${employee.postal_code}',
                 "country"                       = '${employee.country}',

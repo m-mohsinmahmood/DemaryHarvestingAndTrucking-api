@@ -2,6 +2,7 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
 import { UpdateWorkOrder } from "./model";
+import { updateDWR } from "../utilities/dwr_functions";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -11,6 +12,7 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     const workOrder: UpdateWorkOrder = req.body;
+    console.log(workOrder);
 
     let query = ``;
 
@@ -35,7 +37,8 @@ const httpTrigger: AzureFunction = async function (
                 "beginning_engine_hours"                         = '${workOrder.cBeginningEngineHours}',
                 "work_order_is_completed"                         = 'false',
                 "work_order_close_out"                         = 'false',
-                "work_order_status"                         = ''
+                "work_order_status"                         = '',
+                "complete_information" = 'true'
               
         WHERE 
                 "id" = '${workOrder.workOrderId}';`
@@ -55,8 +58,32 @@ const httpTrigger: AzureFunction = async function (
                 "id" = '${workOrder.workOrderId}' ;`
       }
 
+      else if (workOrder.searchClause === 'submitEndingDay') {
+        console.log("Updating Ending Of Day");
+
+        query = `
+        UPDATE 
+                "Farming_Work_Order"
+        SET 
+                "is_active"                    = 'false'
+              
+        WHERE 
+                "id" = '${workOrder.workOrderId}' ;`
+      }
+
       else if (workOrder.searchClause === 'closeOutWorkOrder') {
         console.log("Updating Closing Of Order");
+        let dwr = {
+          workOrderId: workOrder.workOrderId,
+          acresCompleted: workOrder.acresCompleted,
+          gpsAcres: workOrder.gpsAcres,
+          endingEngineHours: workOrder.endingEngineHours,
+          hoursWorked: workOrder.hoursWorked,
+          notes: workOrder.notes
+        }
+
+        let updateDwr = updateDWR(dwr);
+
         query = `
         UPDATE 
                 "Farming_Work_Order"
@@ -67,10 +94,11 @@ const httpTrigger: AzureFunction = async function (
                 "work_order_close_out"                         = 'True',
                 "work_order_is_completed"                         = 'True',
                 "work_order_status"                         = 'pending'
-
               
         WHERE 
-                "id" = '${workOrder.workOrderId}' And work_order_close_out = FALSE;`
+                "id" = '${workOrder.workOrderId}' And work_order_close_out = FALSE;
+                
+                ${updateDwr}`
       }
     }
 
@@ -86,7 +114,6 @@ const httpTrigger: AzureFunction = async function (
                 "work_order_is_completed"                         = 'True',
                 "work_order_status"                         = 'verified'
 
-              
         WHERE 
                 "id" = '${workOrder.customerId}';`
     }

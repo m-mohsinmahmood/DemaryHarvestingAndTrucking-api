@@ -26,16 +26,6 @@ const httpTrigger: AzureFunction = async function (
         SELECT  COUNT("id") from "DWR" where employee_id = '${employee_id}' And is_day_closed='false' `;
         }
 
-    //     if (search_clause === 'closingOfDay') {
-    //         // Closing of Day to check if employee has Opened a day before closing it
-    //         employee_info_query = `
-    //     Select * from "DWR" where employee_id = '${employee_id}' And is_day_closed='false' ;
-    //   `;
-
-    //         count_query = `
-    //     SELECT  COUNT("id") from "DWR" where employee_id = '${employee_id}' And is_day_closed='false' `;
-    //     }
-
         let query = `${employee_info_query} ${count_query}`;
 
         console.log(query);

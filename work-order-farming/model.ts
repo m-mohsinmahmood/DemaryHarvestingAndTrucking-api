@@ -13,7 +13,8 @@ export interface workOrder {
     workOrderIsCompleted?: boolean;
     workOrderStatus?: boolean;
     workOrderCloseOut?: boolean;
-    role?: string
+    role?: string;
+    completeInfo: boolean
 }
 
 export interface UpdateWorkOrder {
@@ -37,4 +38,8 @@ export interface UpdateWorkOrder {
     work_order_status?: boolean;
     searchClause?: string;
     isActive?: boolean;
+    acresCompleted?: string;
+    gpsAcres?: string;
+    hoursWorked?: string;
+    notes?: string
 }
