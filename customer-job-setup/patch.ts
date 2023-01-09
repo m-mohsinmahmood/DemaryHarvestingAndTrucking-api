@@ -25,7 +25,7 @@ const httpTrigger: AzureFunction = async function (
         
          WHERE 
                  "customer_id" = '${job_update.customer_id}';`
-    console.log('Query:',query)
+           console.log('Query:',query)
                 db.connect();
                 let result = await db.query(query);
                 db.end();
