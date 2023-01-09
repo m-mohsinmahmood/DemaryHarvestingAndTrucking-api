@@ -1,8 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { workOrder } from './model';
-import { employee } from './../employee/model';
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -13,6 +11,7 @@ const httpTrigger: AzureFunction = async function (
     const search: string = req.query.search;
     const searchClause: string = req.query.searchClause;
     const employeeId: string = req.query.employeeId;
+    
     let whereClause: string = `wo."is_deleted" = FALSE`;
 
     if (search) whereClause = ` ${whereClause}  AND LOWER(c."customer_name") LIKE LOWER('%${search}%')`;
@@ -25,10 +24,10 @@ const httpTrigger: AzureFunction = async function (
         // If we make a call from Beginning of Day Work Order
         if (searchClause === 'beginningOfDay') {
             queryGetCustomers = `
-            SELECT * FROM "Farming_Work_Order" where work_order_status = null Or work_order_status = 'sent' Or work_order_status IS NULL AND is_active=false;`;
+            SELECT * FROM "Farming_Work_Order" where (work_order_status = '' Or work_order_status = 'sent' Or work_order_status IS NULL ) AND (is_active=false AND complete_information=TRUE);`;
 
             count_query = `
-            SELECT  COUNT("id") FROM "Farming_Work_Order" where work_order_status = null Or work_order_status = 'sent' Or work_order_status IS NULL AND is_active=false;`;
+            SELECT  COUNT("id") FROM "Farming_Work_Order" where (work_order_status = '' Or work_order_status = 'sent' Or work_order_status IS NULL ) AND (is_active=false AND complete_information=TRUE);`;
         }
 
 
@@ -47,25 +46,31 @@ const httpTrigger: AzureFunction = async function (
             c."phone_number" AS "customer_phone",
             wo."field_address" AS "address",
             wo."dispatcher_id" AS "dispatcher_id",
-            wo."tractor_driver_id" AS "tractor_driver_id",
+            tractor."id" AS "tractor_driver_id",
             wo."total_gps-service-acres" AS "gps_acres", 
             "emp".first_name AS "dispatcher_name",
+			tractor."first_name" AS "tractor_driver_name",
             "farm".name AS "farm_name",
             "field".name AS "field_name"
+			
                      
             FROM 
             "Farming_Work_Order" wo
             INNER JOIN "Customers" c 
             ON wo."customer_id" = c."id" 
-                
-            INNER JOIN "Employees" emp
-            ON "emp".id = wo.dispatcher_id 
                                      
             INNER JOIN "Customer_Farm" farm
             ON "farm".id = wo.farm_id 
                     
             INNER JOIN "Customer_Field" field
             ON "field".id = wo.field_id 
+						
+			INNER JOIN "Employees" emp
+            ON "emp".id = wo.dispatcher_id AND emp."role" = 'Dispatcher'
+						
+			INNER JOIN "Employees" tractor
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
+						
     
             Where wo.work_order_is_completed = True  AND 
             "work_order_status" = 'pending' And "work_order_close_out"=True And
@@ -84,12 +89,21 @@ const httpTrigger: AzureFunction = async function (
             "Farming_Work_Order" wo
             INNER JOIN "Customers" c 
             ON wo."customer_id" = c."id" 
-                
-                 INNER JOIN "Employees" emp
-                 ON "emp".id = wo.tractor_driver_id 
+                                     
+            INNER JOIN "Customer_Farm" farm
+            ON "farm".id = wo.farm_id 
+                    
+            INNER JOIN "Customer_Field" field
+            ON "field".id = wo.field_id 
+						
+			INNER JOIN "Employees" emp
+            ON "emp".id = wo.dispatcher_id AND emp."role" = 'Dispatcher'
+						
+			INNER JOIN "Employees" tractor
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
     
-                 Where wo.work_order_is_completed = True  AND 
-                 "work_order_status" = 'pending' And "work_order_close_out"=True AND
+            Where wo.work_order_is_completed = True  AND 
+            "work_order_status" = 'pending' And "work_order_close_out"=True And
                     ${whereClause};`;
         }
 
@@ -108,9 +122,10 @@ const httpTrigger: AzureFunction = async function (
             c."phone_number" AS "customer_phone",
             wo."field_address" AS "address",
             wo."dispatcher_id" AS "dispatcher_id",
-            wo."tractor_driver_id" AS "tractor_driver_id",
+            tractor."id" AS "tractor_driver_id",
             wo."total_gps-service-acres" AS "gps_acres", 
             "emp".first_name AS "dispatcher_name",
+			tractor."first_name" AS "tractor_driver_name",
             "farm".name AS "farm_name",
             "field".name AS "field_name"
                      
@@ -118,15 +133,18 @@ const httpTrigger: AzureFunction = async function (
             "Farming_Work_Order" wo
             INNER JOIN "Customers" c 
             ON wo."customer_id" = c."id" 
-                
-            INNER JOIN "Employees" emp
-            ON "emp".id = wo.dispatcher_id 
                                      
             INNER JOIN "Customer_Farm" farm
             ON "farm".id = wo.farm_id 
                     
             INNER JOIN "Customer_Field" field
             ON "field".id = wo.field_id 
+						
+			INNER JOIN "Employees" emp
+            ON "emp".id = wo.dispatcher_id AND emp."role" = 'Dispatcher'
+						
+			INNER JOIN "Employees" tractor
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
     
             Where wo.work_order_is_completed = True  AND 
             "work_order_status" = 'verified' And "work_order_close_out"=True And
@@ -145,12 +163,21 @@ const httpTrigger: AzureFunction = async function (
             "Farming_Work_Order" wo
             INNER JOIN "Customers" c 
             ON wo."customer_id" = c."id" 
-                
-                 INNER JOIN "Employees" emp
-                 ON "emp".id = wo.tractor_driver_id 
+                                     
+            INNER JOIN "Customer_Farm" farm
+            ON "farm".id = wo.farm_id 
+                    
+            INNER JOIN "Customer_Field" field
+            ON "field".id = wo.field_id 
+						
+			INNER JOIN "Employees" emp
+            ON "emp".id = wo.dispatcher_id AND emp."role" = 'Dispatcher'
+						
+			INNER JOIN "Employees" tractor
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
     
-                 Where wo.work_order_is_completed = True  AND 
-                 "work_order_status" = 'verified' And "work_order_close_out"=True And
+            Where wo.work_order_is_completed = True  AND 
+            "work_order_status" = 'verified' And "work_order_close_out"=True And
                     ${whereClause};`;
         }
 
@@ -168,14 +195,16 @@ const httpTrigger: AzureFunction = async function (
             wo."total_service_acres" AS "acres_completed", 
             wo."ending_engine_hours" AS "ending_engine_hours", 
             c."customer_name" AS "customer_first_name",
-            c."phone_number" AS "customer_phone",
+            wo."customer_phone" AS "customer_phone",
             wo."field_address" AS "address",
             wo."dispatcher_id" AS "dispatcher_id",
             wo."tractor_driver_id" AS "tractor_driver_id",
             wo."total_gps-service-acres" AS "gps_acres", 
             "emp".first_name AS "dispatcher_name",
             "farm".name AS "farm_name",
-            "field".name AS "field_name"
+            "field".name AS "field_name",
+			tractor."id" AS "tractor_driver_id",
+			tractor."first_name" AS "tractor_driver_name"
                      
             FROM 
             "Farming_Work_Order" wo
@@ -191,8 +220,11 @@ const httpTrigger: AzureFunction = async function (
             INNER JOIN "Customer_Field" field
             ON "field".id = wo.field_id
 
-      Where wo.work_order_is_completed = FALSE AND 
-      "work_order_status" = 'sent' AND
+            INNER JOIN "Employees" tractor
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
+						
+            Where wo.work_order_is_completed = FALSE AND 
+            "work_order_status" = 'sent' AND
 
                     ${whereClause}
                     ORDER BY 
@@ -210,8 +242,17 @@ const httpTrigger: AzureFunction = async function (
             ON wo."customer_id" = c."id" 
                 
             INNER JOIN "Employees" emp
-            ON "emp".id = wo.tractor_driver_id 
-    
+            ON "emp".id = wo.dispatcher_id 
+                                     
+            INNER JOIN "Customer_Farm" farm
+            ON "farm".id = wo.farm_id 
+                    
+            INNER JOIN "Customer_Field" field
+            ON "field".id = wo.field_id
+
+            INNER JOIN "Employees" tractor
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
+						
             Where wo.work_order_is_completed = FALSE AND 
             "work_order_status" = 'sent' AND
                     ${whereClause};`;

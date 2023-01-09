@@ -2,6 +2,7 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
 import { beginningOfDay } from "./model";
+import { createDWR } from "../utilities/dwr_functions";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -12,47 +13,7 @@ const httpTrigger: AzureFunction = async function (
     try {
         const order: beginningOfDay = req.body;
 
-        let optionalReq: string = ``;
-        let optionalValues: string = ``;
-
-        if (order.machineryId != null) {
-            optionalReq = `${optionalReq},"machinery_id"`;
-            optionalValues = `${optionalValues},'${order.machineryId}'`
-        }
-
-        if (order.beginningEngineHours != null) {
-            optionalReq = `${optionalReq},"beginning_engine_hours"`;
-            optionalValues = `${optionalValues},'${order.beginningEngineHours}'`
-        }
-
-        if (order.beginning_separator_hours != null) {
-            optionalReq = `${optionalReq},"beginning_seperators_hours"`;
-            optionalValues = `${optionalValues},'${order.beginning_separator_hours}'`
-        }
-
-        if (order.field_id != null) {
-            optionalReq = `${optionalReq},"beginning_engine_hours"`;
-            optionalValues = `${optionalValues},'${order.field_id}'`
-        }
-
-        let query = ``;
-
-        query = `
-            INSERT INTO 
-                        "DWR" 
-                        ("employee_id",
-                        work_order_id,
-                        dwr_type
-                        ${optionalReq})
-      
-            VALUES      ('${order.employeeId}',
-                        '${order.workOrderId}',
-                        '${order.dwr_type}'
-                        ${optionalValues});
-          `;
-
-        console.log(query);
-
+        let query = createDWR(order);
         db.connect();
         await db.query(query);
         db.end();

@@ -11,38 +11,90 @@ const httpTrigger: AzureFunction = async function (
     const role: string = req.query.role;
     const ticketStatus: string = req.query.ticketStatus;
     const employeeId: string = req.query.employeeId;
+    const truckingType: string = req.query.truckingType;
 
-    let whereClause: string = `"is_deleted" = FALSE`;
+    let whereClause: string = `And "td.is_deleted" = FALSE`;
 
     try {
-        let queryGetCustomers = ``;
+        let queryToRun = ``;
         let count_query = ``;
 
-        if (role === 'dispatcher' && ticketStatus === 'sent') {
-            //////////////////////////////////////////////////////
+        if (role === 'dispatcher') {
+            // if (ticketStatus === 'sent') {
             let from = `from "Trucking_Delivery_Ticket"  TD
+           
             INNER JOIN "Employees" EMP
             ON TD.truck_driver_id = EMP.id
+
             INNER JOIN "Customers" CUS
-	        ON CUS."id" = TD.customer_id
+            ON CUS."id" = TD.customer_id
+        
+            INNER JOIN "Employees" disp
+            ON TD.dispatcher_id = disp.id
+            
             where dispatcher_id = '${employeeId}' And ticket_status = '${ticketStatus}'
+            And trucking_type='${truckingType}' 
             `;
 
-            queryGetCustomers = `
-            select 
-	        TD."id" as "id",
-	        EMP.first_name as "truckDriverName",
-	        CUS.customer_name as "customerName"
+            queryToRun = `
+            select
+
+            TD."id" as "id",
+            td.cargo as cargo,
+            td.origin_city as originCity,
+            td.destination_city as destination,
+            td.destination_state as destinationState,
+            td.truck_id as truckNo,
+            td."home_beginning_OMR" as homeOMR,
+            td."origin_beginning_OMR" as originBeginningOMR,
+            td."destination_ending_OMR" as destinationEndingOMR,
+            td.total_trip_miles as totalTripMiles,
+            td.dead_head_miles as deadHeadMiles,
+            td.truck_driver_notes as driverNotes,
+            EMP.first_name as "truckDriverName",
+            CUS.customer_name as "customerName",
+            disp.first_name as "dispatcherName"
             ${from}
             ;`;
 
             count_query = `
             SELECT  COUNT(TD."id") ${from};`;
+            // }
+        }
+        else {
+            let from = `from "Trucking_Delivery_Ticket"  TD
+            INNER JOIN "Employees" EMP
+            ON TD.truck_driver_id = EMP.id
+            INNER JOIN "Customers" CUS
+	        ON CUS."id" = TD.customer_id
+            where truck_driver_id = '${employeeId}' And ticket_status = '${ticketStatus}'
+            And trucking_type='${truckingType}' 
+            `;
 
-            // If we make a call from Beginning of Day Work Order
+            // if (truckingType === 'home') {
+                queryToRun = `
+                select 
+	            TD."id" as "id",
+	            EMP.first_name as "truckDriverName",
+	            CUS.customer_name as "customerName"
+                ${from}
+                ;`;
+            // }
+            // else{
+            //     queryToRun = `
+            //     select 
+	        //     TD."id" as "id",
+	        //     EMP.first_name as "truckDriverName",
+	        //     CUS.customer_name as "customerName"
+            //     ${from}
+            //     ;`;
+            // }
+
+            count_query = `
+            SELECT  COUNT(TD."id") ${from};`;
         }
 
-        let query = `${queryGetCustomers} ${count_query}`;
+        let query = `${queryToRun} ${count_query}`;
 
         console.log(query);
 

@@ -9,32 +9,25 @@ const httpTrigger: AzureFunction = async function (
     const db = new Client(config);
 
     try {
-        const employee_id: string = req.query.employeeId;
-        const search_clause: string = req.query.searchClause;
+        const search: string = req.query.search;
 
-        let employee_info_query: string = '';
-        let count_query: string = '';
+        let whereClause: string = ` WHERE "is_deleted" = FALSE AND "status" = TRUE`;
 
-        if (search_clause === 'beginningOfDay') {
-            // Beginning of Day to check if employee has closed a day before selecting another workorder
-            employee_info_query = `
-        Select * from "DWR" where employee_id = '${employee_id}' And is_day_closed='false' ;
-      `;
+        if (search) whereClause = ` ${whereClause} AND LOWER(type) LIKE LOWER('%${search}%')`;
 
-            count_query = `
-        SELECT  COUNT("id") from "DWR" where employee_id = '${employee_id}' And is_day_closed='false' `;
-        }
+        let machinery_query = `
+        SELECT "id", "type" FROM  "Motorized_Vehicles"  ${whereClause} ORDER BY  "type" ASC;`;
 
-        let query = `${employee_info_query} ${count_query}`;
+        let machinery_count_query = `SELECT COUNT("id") FROM "Motorized_Vehicles" ${whereClause};`;
 
-        console.log(query);
+        let query = `${machinery_query} ${machinery_count_query}`;
 
         db.connect();
 
         let result = await db.query(query);
 
         let resp = {
-            workOrders: result[0].rows,
+            machinery: result[0].rows,
             count: +result[1].rows[0].count,
         };
 
@@ -47,7 +40,6 @@ const httpTrigger: AzureFunction = async function (
 
         context.done();
         return;
-
     } catch (err) {
         db.end();
         context.res = {

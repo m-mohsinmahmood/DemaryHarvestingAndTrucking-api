@@ -41,6 +41,41 @@ const httpTrigger: AzureFunction = async function (
             optionalValues = `${optionalValues},'${order.originBeginingOdometerReading}'`
         }
 
+        if (order.truckNo != null) {
+            optionalReq = `${optionalReq},"truck_id"`;
+            optionalValues = `${optionalValues},'${order.truckNo}'`
+        }
+
+        if (order.deadHeadMiles != null) {
+            optionalReq = `${optionalReq},"dead_head_miles"`;
+            optionalValues = `${optionalValues},'${order.deadHeadMiles}'`
+        }
+
+        if (order.totalJobMiles != null) {
+            optionalReq = `${optionalReq},"total_job_miles"`;
+            optionalValues = `${optionalValues},'${order.totalJobMiles}'`
+        }
+
+        if (order.totalTripMiles != null) {
+            optionalReq = `${optionalReq},"total_trip_miles"`;
+            optionalValues = `${optionalValues},'${order.totalTripMiles}'`
+        }
+       
+        if (order.truckDriverNotes != null) {
+            optionalReq = `${optionalReq},"truck_driver_notes"`;
+            optionalValues = `${optionalValues},'${order.truckDriverNotes}'`
+        }
+
+        if (order.dispatcherNotes != null) {
+            optionalReq = `${optionalReq},"dispatcher_notes"`;
+            optionalValues = `${optionalValues},'${order.dispatcherNotes}'`
+        }
+
+        if (order.rateType != null) {
+            optionalReq = `${optionalReq},"rate_type"`;
+            optionalValues = `${optionalValues},'${order.rateType}'`
+        }
+        
         // If Dispatcher will create a New Delivery Ticket then below given query will be executed.
             query = `
             INSERT INTO 
@@ -51,7 +86,6 @@ const httpTrigger: AzureFunction = async function (
                         "origin_city",
                         "destination_city", 
                         "destination_state", 
-                        "dispatcher_notes", 
 						"customer_id",
 						"trucking_type",
 						"ticket_status"
@@ -63,7 +97,6 @@ const httpTrigger: AzureFunction = async function (
                         '${order.originCity}', 
                         '${order.destinationCity}',
                         '${order.destinationState}', 
-                        '${order.dispatcherNotes}', 
                         '${order.customerId}', 
 						'${order.truckingType}',
                         '${order.ticketStatus}'

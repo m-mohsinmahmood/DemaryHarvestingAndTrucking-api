@@ -2,6 +2,7 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
 import { beginningOfDay } from "./model";
+import { updateDWR } from "../utilities/dwr_functions";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -12,48 +13,8 @@ const httpTrigger: AzureFunction = async function (
     try {
         const closingOfDay: beginningOfDay = req.body;
 
-        let query = ``;
-
-        // If user make a call from Existing Work Order of Tractor Driver
-
-        let optionalReq: string = ``;
-
-        if (closingOfDay.acresCompleted != null) {
-            optionalReq = `${optionalReq},"acres_completed" = '${closingOfDay.acresCompleted}'`;
-        }
-
-        if (closingOfDay.gpsAcres != null) {
-            optionalReq = `${optionalReq},"gps_acres" = '${closingOfDay.gpsAcres}'`;
-        }
-
-        if (closingOfDay.endingEngineHours != null) {
-            optionalReq = `${optionalReq},"ending_engine_hours" = '${closingOfDay.endingEngineHours}'`;
-        }
-
-        if (closingOfDay.hoursWorked != null) {
-            optionalReq = `${optionalReq},"hours_worked" = '${closingOfDay.hoursWorked}'`;
-        }
-
-        if (closingOfDay.notes != null) {
-            optionalReq = `${optionalReq},"notes" = '${closingOfDay.notes}'`;
-        }
-
-        if (closingOfDay.ending_separator_hours != null) {
-            optionalReq = `${optionalReq},"ending_seperators_hours" = '${closingOfDay.ending_separator_hours}'`;
-        }
-
-
-        query = `
-        UPDATE 
-                "DWR"
-        SET 
-             "is_day_closed"                         = 'true'
-              ${optionalReq}
-        WHERE 
-                "employee_id" = '${closingOfDay.employeeId}' AND is_day_closed = 'false' ;`
-
-        db.connect();
-        console.log(query);
+        let query = updateDWR(closingOfDay);
+                db.connect();
 
         let result = await db.query(query);
         db.end();

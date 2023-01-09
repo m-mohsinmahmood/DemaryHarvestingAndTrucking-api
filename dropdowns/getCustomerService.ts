@@ -11,22 +11,12 @@ const httpTrigger: AzureFunction = async function (
     try {
         const search: string = req.query.search;
         const customer_id: string = req.query.customerId;
-        const customer_type: string = req.query.customerType;
 
+        console.log(req.query);
+        
         let whereClause: string = ` WHERE "is_deleted" = FALSE AND "id" = '${customer_id}'`;
 
-        if (search) whereClause = ` ${whereClause} AND LOWER(name) LIKE LOWER('%${search}%')`;
-
-        // if (customer_type) {
-        //     let types = customer_type.split(",");
-        //     types.forEach((customer_type, index) => {
-        //         if (index === 0)
-        //             whereClause = ` ${whereClause} AND ( "customer_type" LIKE '%' || '${customer_type}' || '%'`;
-        //         else if (index > 0)
-        //             whereClause = ` ${whereClause} OR "customer_type" LIKE '%' || '${customer_type}' || '%'`;
-        //     });
-        //     whereClause = ` ${whereClause} )`
-        // }
+        if (search) whereClause = ` ${whereClause} AND LOWER(customer_type) LIKE LOWER('%${search}%')`;
 
         let customer_farm_query = `
         SELECT 

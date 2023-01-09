@@ -10,9 +10,37 @@ export interface DeliveryTicket {
     truckingType: boolean;
     ticketStatus: boolean;
     role: string;
-    load?:string;
-    loadDate?:string;
-    destinationEndingnOdometerReading?:string;
-    homeBeginingOdometerReading?:string;
-    originBeginingOdometerReading:string;
+    load?: string;
+    loadDate?: string;
+    destinationEndingnOdometerReading?: string;
+    homeBeginingOdometerReading?: string;
+    originBeginingOdometerReading: string;
+    truckNo?: string,
+    deadHeadMiles?: string,
+    totalJobMiles?: string,
+    totalTripMiles?: string,
+    truckDriverNotes?: string,
+    rateType?:string
+}
+
+export interface UpdateDeliveryTicket {
+    truckNo?: string,
+    ticketNo?: string,
+    homeBeginingOdometerReading?: string,
+    originBeginingOdometerReading?: string,
+    destinationEndingOdometerReading?: string,
+    deadHeadMiles?: string,
+    totalJobMiles?: string,
+    totalTripMiles?: string,
+    notes?: string,
+    ticketStatus: boolean;
+    truckDriverNotes?: string
+    destinationDeliveryLoad?: string;
+    destinationEmptyWeight?: string;
+    destinationLoadedWeight?: string;
+    originEmptyWeight?: string;
+    originLoadedWeight?: string;
+    originWeightLoad?: string;
+    scaleTicket?: string;
+    weightLoad?: string
 }
