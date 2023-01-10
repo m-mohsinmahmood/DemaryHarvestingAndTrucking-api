@@ -31,7 +31,7 @@ const httpTrigger: AzureFunction = async function (
     sgMail.setApiKey('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');
     const msg = {
       to: `${email.to}`, 
-      from: 'momin4073@gmail.com',
+      from: 'recruiter@dht-usa.com',
       subject: `${email.subject}`,
       html: `${emailBody}`
     }
