@@ -44,6 +44,7 @@ const httpTrigger: AzureFunction = async function (
                 "email",
                 "country",
                 "cell_phone_number",
+                "cell_phone_country_code",
                 "ranking",
                 "created_at",
                 "status_step",
