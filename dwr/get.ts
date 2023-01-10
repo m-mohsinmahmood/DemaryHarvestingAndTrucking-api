@@ -11,6 +11,7 @@ const httpTrigger: AzureFunction = async function (
     try {
         const employee_id: string = req.query.employeeId;
         const search_clause: string = req.query.searchClause;
+        const date: string = req.query.date;
         console.log('Req:',req.query)
 
         let employee_info_query: string = '';
@@ -24,6 +25,16 @@ const httpTrigger: AzureFunction = async function (
 
             count_query = `
         SELECT  COUNT("id") from "DWR" where employee_id = '${employee_id}' And is_day_closed='false' `;
+        }
+        else{
+            console.log('ELSE-CALLED')
+             // Beginning of Day to check if employee has closed a day before selecting another workorder
+             employee_info_query = `
+             Select * from "DWR" where employee_id = '${employee_id}' And is_day_closed='false' AND CAST(created_at AS Date) = '${date}' ;
+           `;
+     
+                 count_query = `
+             SELECT  COUNT("id") from "DWR" where employee_id = '${employee_id}' And is_day_closed='false' AND CAST(created_at AS Date) = '${date}'`;
         }
 
         let query = `${employee_info_query} ${count_query}`;
