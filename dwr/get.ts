@@ -12,6 +12,9 @@ const httpTrigger: AzureFunction = async function (
         const employee_id: string = req.query.employeeId;
         const search_clause: string = req.query.searchClause;
         const date: string = req.query.date;
+        const dateType: string = req.query.dateType;
+        const month: string = req.query.month;
+        const year: string = req.query.year;
         console.log('Req:',req.query)
 
         let employee_info_query: string = '';
@@ -26,9 +29,25 @@ const httpTrigger: AzureFunction = async function (
             count_query = `
         SELECT  COUNT("id") from "DWR" where employee_id = '${employee_id}' And is_day_closed='false' `;
         }
-        else{
+        else if(dateType === 'month'){
+            employee_info_query = `
+            Select * from "DWR" 
+            WHERE employee_id = '${employee_id}' 
+            AND is_day_closed='false' 
+            AND EXTRACT(MONTH FROM created_at) = '${month}'
+            AND EXTRACT(YEAR FROM created_at) = '${year}';
+          `;
+    
+                count_query = `
+            SELECT  COUNT("id") from "DWR" 
+            WHERE employee_id = '${employee_id}' 
+            AND is_day_closed='false' 
+            AND EXTRACT(MONTH FROM created_at) = '${month}'
+            AND EXTRACT(YEAR FROM created_at) = '${year}';
+            `;
+        }
+        else if (dateType === 'day'){
             console.log('ELSE-CALLED')
-             // Beginning of Day to check if employee has closed a day before selecting another workorder
              employee_info_query = `
              Select * from "DWR" where employee_id = '${employee_id}' And is_day_closed='false' AND CAST(created_at AS Date) = '${date}' ;
            `;

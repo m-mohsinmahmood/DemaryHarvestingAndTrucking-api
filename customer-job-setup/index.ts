@@ -2,11 +2,14 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import * as createJob from "./post";
 import * as getCreateJob from "./get";
 import * as updateJob from "./patch";
+import * as getEmployeeById from "./getById";
+
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     switch (req.method) {    
       case "GET":
-          await getCreateJob.default(context, req);
+          if (req.query.job_id) await getEmployeeById.default(context, req);
+            else await getCreateJob.default(context, req);
           break;
 
         case "POST":
