@@ -2,7 +2,7 @@ import { applicant } from './model';
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import * as _ from "lodash";
-const sgMail = require('@sendgrid/mail')
+import { EmailClient, EmailMessage } from "@azure/communication-email";
 import { config } from "../services/database/database.config";
 import { updateQuery } from "./applicant-review";
 
@@ -28,21 +28,27 @@ const httpTrigger: AzureFunction = async function (
 
     if(email && email.subject && email.to && email.body && !skip_email){
     let emailBody = email.body.replace('&#8205','');
-    sgMail.setApiKey('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');
-    const msg = {
-      to: `${email.to}`, 
-      from: 'recruiter@dht-usa.com',
-      subject: `${email.subject}`,
-      html: `${emailBody}`
-    }
-    sgMail
-      .send(msg)
-      .then(() => {
-        console.log('Email sent')
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+    
+    const connectionString = process.env["EMAIL_CONNECTION_STRING"];
+    const client = new EmailClient(connectionString);
+    
+    const emailMessage: EmailMessage = {
+      sender: "recruiter@dht-usa.com",
+      content: {
+        subject: `${email.subject}`,
+        html: `${emailBody}`
+      },
+      recipients: {
+        to: [
+          {
+            email: `${email.to}`,
+          },
+        ],
+      },
+    };
+    
+    const messageId:any = await client.send(emailMessage);
+    console.log(messageId);
     }
 
     context.res = {
