@@ -27,9 +27,9 @@ const httpTrigger: AzureFunction = async function (
     if (created_at) whereClause = ` ${whereClause} AND  extract(year from "created_at") = '${created_at}'`;
     if (status) whereClause = ` ${whereClause} AND status_message = '${status}'`; 
     if (ranking) {
-      if (ranking == "first_ranking") whereClause = ` ${whereClause} AND ranking  < CAST(30 AS VARCHAR)`;
-      else if (ranking == "second_ranking") whereClause = ` ${whereClause} AND ranking > CAST(30 AS VARCHAR) AND ranking < CAST(70 AS VARCHAR)`; 
-      else if (ranking == "third_ranking") whereClause = ` ${whereClause} AND ranking  > CAST(70 AS VARCHAR)`;
+      if (ranking == "first_ranking") whereClause = ` ${whereClause} AND ranking  < 30 `;
+      else if (ranking == "second_ranking") whereClause = ` ${whereClause} AND ranking > 30 AND ranking < 70`; 
+      else if (ranking == "third_ranking") whereClause = ` ${whereClause} AND ranking  > 70`;
     }
     if (date){
       let moment_date = moment(date).format('DD-MM-YYYY'); 
