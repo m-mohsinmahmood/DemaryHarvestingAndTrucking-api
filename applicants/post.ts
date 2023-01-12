@@ -4,7 +4,7 @@ import { config } from "../services/database/database.config";
 import { applicant } from "./model";
 import { BlobServiceClient } from '@azure/storage-blob';
 import parseMultipartFormData from "@anzp/azure-function-multipart";
-const sgMail = require('@sendgrid/mail')
+import { EmailClient, EmailMessage } from "@azure/communication-email";
 
 
 const httpTrigger: AzureFunction = async function (
@@ -239,25 +239,32 @@ const httpTrigger: AzureFunction = async function (
   //#endregion
   //#region Sending Email to applicant 
   try {
-    sgMail.setApiKey('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');
-    const msg = {
-      to: `${applicant.email}`,
-      from: 'recruiter@dht-usa.com',
-      subject: 'DHT Employment Application Received!',
-      html: `
-             Dear ${applicant.first_name} ${applicant.last_name},
-             <br> <br>Thank you for completing DHT’s online application. We are currently reviewing your application and will be reaching out soon with further instructions on next steps. 
-             <br> <br>Thanks
-             `
-    }
-    sgMail
-      .send(msg)
-      .then(() => {
-        console.log('Email sent')
-      })
-      .catch((error) => {
-        console.error(error)
-      });
+    const connectionString = process.env["EMAIL_CONNECTION_STRING"];
+    const client = new EmailClient(connectionString);
+    
+    const emailMessage: EmailMessage = {
+      sender: "recruiter@dht-usa.com",
+      content: {
+        subject: "DHT Employment Application Received!",
+        html: `
+                 Dear ${applicant.first_name} ${applicant.last_name},
+                 <br> <br>Thank you for completing DHT’s online application. We are currently reviewing your application and will be reaching out soon with further instructions on next steps. 
+                 <br> <br>Thanks
+                 `
+      },
+      recipients: {
+        to: [
+          {
+            email: `${applicant.email}`,
+            displayName: `${applicant.first_name} ${applicant.last_name}`,
+          },
+        ],
+      },
+    };
+    
+    const messageId:any = await client.send(emailMessage);
+    console.log(messageId);
+    // const status = await client.getSendStatus(messageId);
   }
   catch (error) {
     context.res = {
