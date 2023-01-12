@@ -14,7 +14,7 @@ const httpTrigger: AzureFunction = async function (
     let query = `
         SELECT *
         FROM "Applicants"
-        WHERE "email" = '${email}'
+        WHERE "email" = '${email}' AND "is_deleted" = FALSE
       `;
 
     db.connect();
