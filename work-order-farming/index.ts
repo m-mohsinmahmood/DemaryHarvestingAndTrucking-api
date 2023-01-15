@@ -3,6 +3,7 @@ import * as addWorkOrder from "./post";
 // import * as getWorkOrderById from "./getById";
 import * as getWorkOrder from "./get";
 import * as updateWorkOrder from "./patch";
+import * as getWorkOrderById from "./getById";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -10,9 +11,9 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
     switch (req.method) {
         case "GET":
-            // if (req.query.id) await getWorkOrderById.default(context, req);
-            // else await getWorkOrder.default(context, req);
-            await getWorkOrder.default(context, req);
+            if (req.query.work_order_id) await getWorkOrderById.default(context, req);
+            else await getWorkOrder.default(context, req);
+            // await getWorkOrder.default(context, req);
             break;
 
         case "POST":

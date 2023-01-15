@@ -48,17 +48,36 @@ export function createDWR(dwr: any) {
         optionalReq = `${optionalReq},"begining_odometer_miles"`;
         optionalValues = `${optionalValues},'${dwr.begining_odometer_miles}'`;
     }
+    if (dwr.state != null) {
+        optionalReq = `${optionalReq},"state"`;
+        optionalValues = `${optionalValues},'${dwr.state}'`;
+    }
+    if (dwr.supervisor_id != null) {
+        optionalReq = `${optionalReq},"supervisor_id"`;
+        optionalValues = `${optionalValues},'${dwr.supervisor_id}'`;
+    }
+    if (dwr.apprTaskId != null) {
+        optionalReq = `${optionalReq},"apprTaskId"`;
+        optionalValues = `${optionalValues},'${dwr.apprTaskId}'`;
+    }
+    if (dwr.notesOther != null) {
+        optionalReq = `${optionalReq},"notesOther"`;
+        optionalValues = `${optionalValues},'${dwr.notesOther}'`;
+    }
+    if (dwr.workOrderId != null) {
+        optionalReq = `${optionalReq},"work_order_id"`;
+        optionalValues = `${optionalValues},'${dwr.workOrderId}'`;
+    }
+    
 
     let query = `
         INSERT INTO 
                     "DWR" 
                     ("employee_id",
-                    work_order_id,
                     dwr_type
                     ${optionalReq})
   
         VALUES      ('${dwr.employeeId}',
-                    '${dwr.workOrderId}',
                     '${dwr.dwr_type}'
                     ${optionalValues});
       `;
