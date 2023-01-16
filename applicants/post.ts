@@ -14,8 +14,8 @@ const httpTrigger: AzureFunction = async function (
   //#region Variables
   const db = new Client(config);
   const db1 = new Client(config);
+  const db2 = new Client(config);
   let result;
-  let query;
   let applicant_id;
   let image_file;
   let resume_file = '';
@@ -24,6 +24,30 @@ const httpTrigger: AzureFunction = async function (
   };
   const { fields, files } = await parseMultipartFormData(req, multiPartConfig);
   let applicant: applicant = (JSON.parse(fields[0].value));
+  //#endregion
+  //#region Check if a user with this email already exists
+  try {
+    let check_email_query = `
+    Select 
+          "id"
+      From 
+          "Applicants"
+    WHERE 
+          "email" = '${applicant.email}';`
+    db.connect();
+    await db.query(check_email_query);
+    db.end();
+  } catch (error) {
+    db.end();
+    context.res = {
+      status: 400,
+      body: {
+        message: "A user with this email already exists.",
+      },
+    };
+    context.done();
+    return;
+  }
   //#endregion
   //#region Create Applicant
   try {
@@ -100,82 +124,82 @@ const httpTrigger: AzureFunction = async function (
                 )
       VALUES      
                 (
-                  '${applicant.first_name}',
-                  '${applicant.last_name}',
-                  '${applicant.email}',
-                  '${applicant.cell_phone_number}',
-                  '${applicant.cell_phone_country_code}',
-                  '${applicant.home_phone_number}',
-                  '${applicant.home_phone_country_code}',
-                  '${applicant.date_of_birth}',
-                  '${applicant.age}',
-                  '${applicant.marital_status}',
-                  '${applicant.languages}',
-                  '${applicant.rank_speaking_english}',
-                  '${applicant.address_1}',
-                  '${applicant.address_2}',
-                  '${applicant.town_city}',
-                  '${applicant.county_providence}',
-                  '${applicant.state}',
-                  '${applicant.postal_code}',
-                  '${applicant.country}',
-                  '${applicant.avatar}',
-                  '${applicant.question_1}',
-                  '${applicant.question_2}',
-                  '${applicant.question_3}',
-                  '${applicant.question_4}',
-                  '${applicant.question_5}',
+                  $$${applicant.first_name}$$,
+                  $$${applicant.last_name}$$,
+                  $$${applicant.email}$$,
+                  $$${applicant.cell_phone_number}$$,
+                  $$${applicant.cell_phone_country_code}$$,
+                  $$${applicant.home_phone_number}$$,
+                  $$${applicant.home_phone_country_code}$$,
+                  $$${applicant.date_of_birth}$$,
+                  $$${applicant.age}$$,
+                  $$${applicant.marital_status}$$,
+                  $$${applicant.languages}$$,
+                  $$${applicant.rank_speaking_english}$$,
+                  $$${applicant.address_1}$$,
+                  $$${applicant.address_2}$$,
+                  $$${applicant.town_city}$$,
+                  $$${applicant.county_providence}$$,
+                  $$${applicant.state}$$,
+                  $$${applicant.postal_code}$$,
+                  $$${applicant.country}$$,
+                  $$${applicant.avatar}$$,
+                  $$${applicant.question_1}$$,
+                  $$${applicant.question_2}$$,
+                  $$${applicant.question_3}$$,
+                  $$${applicant.question_4}$$,
+                  $$${applicant.question_5}$$,
                   '${applicant.authorized_to_work}',
                   '${applicant.us_citizen}',
                   '${applicant.cdl_license}',
                   '${applicant.lorry_license}',
                   '${applicant.tractor_license}',
                   '${applicant.passport}',
-                  '${applicant.work_experience_description}',
-                  '${applicant.degree_name}',
-                  '${applicant.reason_for_applying}',
-                  '${applicant.hear_about_dht}',
-                  '${applicant.us_phone_number}',
-                  '${applicant.blood_type}',
-                  '${applicant.emergency_contact_name}',
-                  '${applicant.emergency_contact_phone}',
+                  $$${applicant.work_experience_description}$$,
+                  $$${applicant.degree_name}$$,
+                  $$${applicant.reason_for_applying}$$,
+                  $$${applicant.hear_about_dht}$$,
+                  $$${applicant.us_phone_number}$$,
+                  $$${applicant.blood_type}$$,
+                  $$${applicant.emergency_contact_name}$$,
+                  $$${applicant.emergency_contact_phone}$$,
                   '2',
                   'Preliminary Review',
-                  '${applicant.unique_fact}',
-                  '${applicant.current_employer}',
-                  '${applicant.current_position_title}',
-                  '${applicant.current_description_of_role}',
-                  '${applicant.current_employment_period_start}',
-                  '${applicant.current_employment_period_end}',
-                  '${applicant.current_supervisor_reference}',
-                  '${applicant.current_supervisor_phone_number}',
-                  '${applicant.current_supervisor_country_code}',
-                  '${applicant.current_contact_supervisor}',
-                  '${applicant.previous_employer}',
-                  '${applicant.previous_position_title}',
-                  '${applicant.previous_description_of_role}',
-                  '${applicant.previous_employment_period_start}',
-                  '${applicant.previous_employment_period_end}',
-                  '${applicant.previous_supervisor_reference}',
-                  '${applicant.previous_supervisor_phone_number}',
-                  '${applicant.previous_supervisor_country_code}',
-                  '${applicant.previous_contact_supervisor}',
-                  '${applicant.school_college}',
-                  '${applicant.graduation_year}',
+                  $$${applicant.unique_fact}$$,
+                  $$${applicant.current_employer}$$,
+                  $$${applicant.current_position_title}$$,
+                  $$${applicant.current_description_of_role}$$,
+                  $$${applicant.current_employment_period_start}$$,
+                  $$${applicant.current_employment_period_end}$$,
+                  $$${applicant.current_supervisor_reference}$$,
+                  $$${applicant.current_supervisor_phone_number}$$,
+                  $$${applicant.current_supervisor_country_code}$$,
+                  $$${applicant.current_contact_supervisor}$$,
+                  $$${applicant.previous_employer}$$,
+                  $$${applicant.previous_position_title}$$,
+                  $$${applicant.previous_description_of_role}$$,
+                  $$${applicant.previous_employment_period_start}$$,
+                  $$${applicant.previous_employment_period_end}$$,
+                  $$${applicant.previous_supervisor_reference}$$,
+                  $$${applicant.previous_supervisor_phone_number}$$,
+                  $$${applicant.previous_supervisor_country_code}$$,
+                  $$${applicant.previous_contact_supervisor}$$,
+                  $$${applicant.school_college}$$,
+                  $$${applicant.graduation_year}$$,
                   '${applicant.resume}',
                   'now()'
                 )
                 RETURNING id as applicant_id
     `;
-    db.connect();
-    result = await db.query(query);
-    db.end();
+    db1.connect();
+    result = await db1.query(query);
+    db1.end();
   } catch (error) {
     db.end();
     context.res = {
       status: 400,
       body: {
-        message: error.message,
+        message: "An error occured while creating the Applicant",
       },
     };
     context.done();
@@ -206,7 +230,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 400,
       body: {
-        message: error,
+        message: "An error occured while creating the Applicant",
       },
     };
     context.done();
@@ -222,15 +246,15 @@ const httpTrigger: AzureFunction = async function (
     "resume" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + resume_file}'
     WHERE 
     "id" = '${applicant_id}';`
-    db1.connect();
-    await db1.query(update_query);
-    db1.end();
+    db2.connect();
+    await db2.query(update_query);
+    db2.end();
   } catch (error) {
-    db1.end();
+    db2.end();
     context.res = {
       status: 400,
       body: {
-        message: error,
+        message: "An error occured while creating the Applicant",
       },
     };
     context.done();
@@ -270,7 +294,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 400,
       body: {
-        message: error,
+        message: "An error occured while creating the Applicant",
       },
     };
     context.done();
