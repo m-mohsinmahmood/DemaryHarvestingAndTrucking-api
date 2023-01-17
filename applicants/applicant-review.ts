@@ -39,7 +39,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
             case "First Interview Completed":
                 update_applicant_query = update_applicant_query + `
                         "first_call_ranking" = '${applicant.first_call_ranking}',
-                        "first_call_remarks" = '${applicant.first_call_remarks}',
+                        "first_call_remarks" = $$${applicant.first_call_remarks}$$,
                         "status_message" = '${applicant.status_message}',
                         "status_step" = '${applicant.status_step}',
                         "ranking" = '${applicant.ranking}',
@@ -50,7 +50,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
             case "Second Interview Completed":
                 update_applicant_query = update_applicant_query + `
                         "second_call_ranking" = '${applicant.second_call_ranking}',
-                        "second_call_remarks" = '${applicant.second_call_remarks}',
+                        "second_call_remarks" = $$${applicant.second_call_remarks}$$,
                         "status_message" = '${applicant.status_message}',
                         "status_step" = '${applicant.status_step}',
                         "ranking" = '${applicant.ranking}',
@@ -61,7 +61,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
             case "Third Interview Completed":
                 update_applicant_query = update_applicant_query + `
                         "third_call_ranking" = '${applicant.third_call_ranking}',
-                        "third_call_remarks" = '${applicant.third_call_remarks}',
+                        "third_call_remarks" = $$${applicant.third_call_remarks}$$,
                         "status_message" = '${applicant.status_message}',
                         "status_step" = '${applicant.status_step}',
                         "ranking" = '${applicant.ranking}',
@@ -72,7 +72,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
             case "Reference Call Completed":
                 update_applicant_query = update_applicant_query + `
                         "reference_call_ranking" = '${applicant.reference_call_ranking}',
-                        "reference_call_remarks" = '${applicant.reference_call_remarks}',
+                        "reference_call_remarks" = $$${applicant.reference_call_remarks}$$,
                         "status_message" = '${applicant.status_message}',
                         "status_step" = '${applicant.status_step}',
                         "ranking" = '${applicant.ranking}',
@@ -97,7 +97,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 update_applicant_query = update_applicant_query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
-                        "reason_for_rejection" = '${applicant.reason_for_rejection}',
+                        "reason_for_rejection" = $$${applicant.reason_for_rejection}$$,
                         "${status_bar[applicant.prev_status_message]}" = now()
                         ${interview_step}
                 `;
@@ -107,7 +107,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 update_applicant_query = update_applicant_query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
-                        "reason_for_rejection" = '${applicant.reason_for_rejection}'
+                        "reason_for_rejection" = $$${applicant.reason_for_rejection}$$
                         ${interview_step}
                 `;
                 break;
@@ -116,7 +116,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 update_applicant_query = update_applicant_query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
-                        "reason_for_rejection" = '${applicant.reason_for_rejection}'
+                        "reason_for_rejection" = $$${applicant.reason_for_rejection}$$
                         ${interview_step}
                 `;
                 break;
@@ -125,7 +125,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 update_applicant_query = update_applicant_query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
-                        "reason_for_rejection" = '${applicant.reason_for_rejection}'
+                        "reason_for_rejection" = $$${applicant.reason_for_rejection}$$
                         ${interview_step}
                 `;
                 break;
@@ -134,7 +134,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 update_applicant_query = update_applicant_query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
-                        "reason_for_rejection" = '${applicant.reason_for_rejection}'
+                        "reason_for_rejection" = $$${applicant.reason_for_rejection}$$
                         ${interview_step}
                 `;
                 break;
@@ -143,7 +143,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 update_applicant_query = update_applicant_query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
-                        "reason_for_rejection" = '${applicant.reason_for_rejection}',
+                        "reason_for_rejection" = $$${applicant.reason_for_rejection}$$,
                         "${status_bar[applicant.prev_status_message]}" = now()
                 `;
                 break;
@@ -152,7 +152,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 update_applicant_query = update_applicant_query + `
                         "status_step" = '8',
                         "status_message" = 'Offer Accepted',
-                        "reason_for_rejection" = '${applicant.reason_for_rejection}',
+                        "reason_for_rejection" = $$${applicant.reason_for_rejection}$$,
                         "${status_bar[applicant.prev_status_message]}" = now()
                 `;
                 break;
@@ -161,7 +161,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 update_applicant_query = update_applicant_query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
-                        "reason_for_rejection" = '${applicant.reason_for_rejection}',
+                        "reason_for_rejection" = $$${applicant.reason_for_rejection}$$,
                         "${status_bar[applicant.prev_status_message]}" = now()
                 `;
                 break;
@@ -170,7 +170,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 update_applicant_query = update_applicant_query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
-                        "reason_for_rejection" = '${applicant.reason_for_rejection}',
+                        "reason_for_rejection" = $$${applicant.reason_for_rejection}$$,
                         "${status_bar[applicant.prev_status_message]}" = now()
                 `;
                 break;
@@ -251,8 +251,8 @@ export function updateQuery(applicant, email, type, applicant_info) {
                     "created_at"
                 )
     VALUES      (  
-                    '${applicant_info.first_name}',
-                    '${applicant_info.last_name}',
+                    $$${applicant_info.first_name}$$,
+                    $$${applicant_info.last_name}$$,
                     '${applicant_info.email}',
                     '${applicant_info.cell_phone_number}',
                     '${applicant_info.home_phone_number}',
@@ -261,8 +261,8 @@ export function updateQuery(applicant, email, type, applicant_info) {
                     '${applicant_info.marital_status}',
                     '${applicant_info.languages}',
                     '${applicant_info.rank_speaking_english}',
-                    '${applicant_info.address_1}',
-                    '${applicant_info.address_2}',
+                    $$${applicant_info.address_1}$$,
+                    $$${applicant_info.address_2}$$,
                     '${applicant_info.town_city}',
                     '${applicant_info.county_providence}',
                     '${applicant_info.state}',
@@ -280,19 +280,19 @@ export function updateQuery(applicant, email, type, applicant_info) {
                     '${applicant_info.lorry_license}',
                     '${applicant_info.tractor_license}',
                     '${applicant_info.passport}',
-                    '${applicant_info.work_experience_description}',
+                    $$${applicant_info.work_experience_description}$$,
                     '${applicant_info.degree_name}',
-                    '${applicant_info.reason_for_applying}',
+                    $$${applicant_info.reason_for_applying}$$,
                     '${applicant_info.hear_about_dht}',
                     '${applicant_info.us_phone_number}',
                     '${applicant_info.blood_type}',
                     '${applicant_info.emergency_contact_name}',
                     '${applicant_info.emergency_contact_phone}',
                     '2',
-                    '${applicant_info.unique_fact}',
+                    $$${applicant_info.unique_fact}$$,
                     '${applicant_info.current_employer}',
                     '${applicant_info.current_position_title}',
-                    '${applicant_info.current_description_of_role}',
+                    $$${applicant_info.current_description_of_role}$$,
                     '${applicant_info.current_employment_period_start}',
                     '${applicant_info.current_employment_period_end}',
                     '${applicant_info.current_supervisor_reference}',
@@ -300,7 +300,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                     '${applicant_info.current_contact_supervisor}',
                     '${applicant_info.previous_employer}',
                     '${applicant_info.previous_position_title}',
-                    '${applicant_info.previous_description_of_role}',
+                    $$${applicant_info.previous_description_of_role}$$,
                     '${applicant_info.previous_employment_period_start}',
                     '${applicant_info.previous_employment_period_end}',
                     '${applicant_info.previous_supervisor_reference}',
