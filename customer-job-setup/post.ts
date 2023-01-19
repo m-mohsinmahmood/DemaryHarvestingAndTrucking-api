@@ -13,17 +13,43 @@ const httpTrigger: AzureFunction = async function (
   console.log("Req:", req.body);
 
   try {
-    // Before creating new job for crew chief, close or complete the last active job of that crew chief 
 
-    query = `
-    UPDATE 
-    "Customer_Job_Setup"
-    SET 
-    "is_job_active"     = false, 
-    "is_job_completed"  = true
+    if (job_setup.combine_operator_id != null || job_setup.cart_operator_id != null) {
+      // Assign Roles
+      if (job_setup.combine_operator_id) {
+        query = `
+        UPDATE 
+            "Employees"
+        SET 
+            "dht_supervisor_id" = '${job_setup.crew_chief_id}'
+        WHERE 
+            "id" = '${job_setup.combine_operator_id}' ;
+            `;
+      }
+
+      if (job_setup.cart_operator_id) {
+        query = `${query} 
+        UPDATE 
+            "Employees"
+        SET 
+            "dht_supervisor_id" = '${job_setup.crew_chief_id}'
+        WHERE 
+            "id" = '${job_setup.cart_operator_id}' ;`;
+      }
+    }
+
+    else {
+      // Before creating new job for crew chief, close or complete the last active job of that crew chief 
+
+      query = `
+      UPDATE 
+      "Customer_Job_Setup"
+      SET 
+      "is_job_active"     = false, 
+      "is_job_completed"  = true
     
-    WHERE 
-    "crew_chief_id" = '${job_setup.crew_chief_id}';
+      WHERE 
+      "crew_chief_id" = '${job_setup.crew_chief_id}';
 
       INSERT INTO 
                   "Customer_Job_Setup" 
@@ -41,9 +67,11 @@ const httpTrigger: AzureFunction = async function (
                   '${job_setup.crop_id}', 
                   '${job_setup.state}', 
                   '${job_setup.field_id}',
+                  '${job_setup.crew_chief_id}',
                   'True'
                   
     );`;
+    }
     // // for customer job setup by change of fields
     // else {
     //   // to add the already selected/rendered field if employee is added

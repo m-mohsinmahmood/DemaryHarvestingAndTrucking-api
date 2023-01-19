@@ -6,6 +6,8 @@ export interface job_setup {
     state: string;
     field_id: string;
     crew_chief_id?: string;
+    combine_operator_id?: string;
+    cart_operator_id?: string;
 }
 export interface job_update {
     customer_id: string;
