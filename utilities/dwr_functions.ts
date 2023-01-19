@@ -70,6 +70,16 @@ export function createDWR(dwr: any) {
     }
     
 
+    if (dwr.workOrderId != null) {
+        optionalReq = `${optionalReq},"work_order_id"`;
+        optionalValues = `${optionalValues},'${dwr.workOrderId}'`;
+    }
+
+    if (dwr.deliveryTicketId != null) {
+        optionalReq = `${optionalReq},"delivery_ticket_id"`;
+        optionalValues = `${optionalValues},'${dwr.deliveryTicketId}'`;
+    }
+
     let query = `
         INSERT INTO 
                     "DWR" 
@@ -94,9 +104,9 @@ export function updateDWR(closingOfDay: any) {
         optionalReq = `${optionalReq},"acres_completed" = '${closingOfDay.acresCompleted}'`;
     }
 
-    if (closingOfDay.gpsAcres != null) {
-        optionalReq = `${optionalReq},"gps_acres" = '${closingOfDay.gpsAcres}'`;
-    }
+    // if (closingOfDay.gpsAcres != null) {
+    //     optionalReq = `${optionalReq},"gps_acres" = '${closingOfDay.gpsAcres}'`;
+    // }
 
     if (closingOfDay.endingEngineHours != null) {
         optionalReq = `${optionalReq},"ending_engine_hours" = '${closingOfDay.endingEngineHours}'`;
@@ -117,7 +127,7 @@ export function updateDWR(closingOfDay: any) {
     if (closingOfDay.ending_odometer_miles != null) {
         optionalReq = `${optionalReq},"ending_odometer_miles" = '${closingOfDay.ending_odometer_miles}'`;
     }
-    
+
     let query = `
     UPDATE 
         "DWR"

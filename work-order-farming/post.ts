@@ -46,7 +46,8 @@ const httpTrigger: AzureFunction = async function (
                         "tractor_driver_id", 
                         "field_address", 
                         "customer_phone",
-                        "complete_information"
+                        "complete_information",
+                        "total_acres"
                         ${optionalReq})
       
             VALUES      ('${order.dispatcherId}', 
@@ -57,7 +58,8 @@ const httpTrigger: AzureFunction = async function (
                         '${order.tractorDriverId}', 
                         '${order.fieldAddress}', 
                         '${order.phone}',
-                        '${order.completeInfo}'
+                        '${order.completeInfo}',
+                        '${order.totalAcres}'
                         ${optionalValues});
           `;
         }
@@ -76,11 +78,12 @@ const httpTrigger: AzureFunction = async function (
                         "field_address", 
                         "customer_phone",
                         "machinery_id",
-                        "complete_information"
+                        "complete_information",
+                        "total_acres"
                         ${optionalReq})
       
             VALUES      ('${order.dispatcherId}', 
-                        '${order.cBeginningEngineHours}',
+                        '${order.beginningEngineHours}',
                         '${order.customerId}', 
                         '${order.farmId}', 
                         '${order.fieldId}', 
@@ -89,7 +92,8 @@ const httpTrigger: AzureFunction = async function (
                         '${order.fieldAddress}', 
                         '${order.phone}',
                         '${order.machineryID}',
-                        '${order.completeInfo}'
+                        '${order.completeInfo}',
+                        '${order.totalAcres}'
                         ${optionalValues});
           `;
         }

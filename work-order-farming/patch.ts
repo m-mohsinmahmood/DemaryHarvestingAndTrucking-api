@@ -12,7 +12,6 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     const workOrder: UpdateWorkOrder = req.body;
-    console.log(workOrder);
 
     let query = ``;
 
@@ -34,11 +33,12 @@ const httpTrigger: AzureFunction = async function (
                 "tractor_driver_id"                         = '${workOrder.tractorDriverId}',
                 "field_address"                         = '${workOrder.fieldAddress}',
                 "customer_phone"                         = '${workOrder.phone}',
-                "beginning_engine_hours"                         = '${workOrder.cBeginningEngineHours}',
+                "beginning_engine_hours"                         = '${workOrder.beginningEngineHours}',
                 "work_order_is_completed"                         = 'false',
                 "work_order_close_out"                         = 'false',
                 "work_order_status"                         = '',
-                "complete_information" = 'true'
+                "complete_information" = 'true',
+                "total_acres" = '${workOrder.totalAcres}'
               
         WHERE 
                 "id" = '${workOrder.workOrderId}';`
@@ -55,11 +55,21 @@ const httpTrigger: AzureFunction = async function (
                 "is_active"                    = 'true'
               
         WHERE 
-                "id" = '${workOrder.workOrderId}' ;`
+                "id" = '${workOrder.workOrderId}'
+                ;`
       }
 
       else if (workOrder.searchClause === 'submitEndingDay') {
         console.log("Updating Ending Of Day");
+
+        let updateEndingOMR = `
+        UPDATE 
+                "Motorized_Vehicles"
+        SET 
+                "odometer_reading_end" = '${workOrder.endingEngineHours}'
+              
+        WHERE 
+                "id" = '${workOrder.machineryID}' ;`;
 
         query = `
         UPDATE 
@@ -68,7 +78,9 @@ const httpTrigger: AzureFunction = async function (
                 "is_active"                    = 'false'
               
         WHERE 
-                "id" = '${workOrder.workOrderId}' ;`
+                "id" = '${workOrder.workOrderId}' ;
+                ${updateEndingOMR}
+                `
       }
 
       else if (workOrder.searchClause === 'closeOutWorkOrder') {
@@ -76,13 +88,22 @@ const httpTrigger: AzureFunction = async function (
         let dwr = {
           workOrderId: workOrder.workOrderId,
           acresCompleted: workOrder.acresCompleted,
-          gpsAcres: workOrder.gpsAcres,
+          // gpsAcres: workOrder.gpsAcres,
           endingEngineHours: workOrder.endingEngineHours,
           hoursWorked: workOrder.hoursWorked,
           notes: workOrder.notes
         }
 
         let updateDwr = updateDWR(dwr);
+
+        let updateEndingOMR = `
+        UPDATE 
+                "Motorized_Vehicles"
+        SET 
+                "odometer_reading_end" = '${workOrder.endingEngineHours}'
+              
+        WHERE 
+                "id" = '${workOrder.machineryID}' ;`;
 
         query = `
         UPDATE 
@@ -98,7 +119,8 @@ const httpTrigger: AzureFunction = async function (
         WHERE 
                 "id" = '${workOrder.workOrderId}' And work_order_close_out = FALSE;
                 
-                ${updateDwr}`
+                ${updateDwr}
+                ${updateEndingOMR}`
       }
     }
 
