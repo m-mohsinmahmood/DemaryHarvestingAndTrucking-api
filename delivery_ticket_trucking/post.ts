@@ -60,7 +60,7 @@ const httpTrigger: AzureFunction = async function (
             optionalReq = `${optionalReq},"total_trip_miles"`;
             optionalValues = `${optionalValues},'${order.totalTripMiles}'`
         }
-       
+
         if (order.truckDriverNotes != null) {
             optionalReq = `${optionalReq},"truck_driver_notes"`;
             optionalValues = `${optionalValues},'${order.truckDriverNotes}'`
@@ -75,9 +75,49 @@ const httpTrigger: AzureFunction = async function (
             optionalReq = `${optionalReq},"rate_type"`;
             optionalValues = `${optionalValues},'${order.rateType}'`
         }
-        
+
+        if (order.originEmptyWeight != null) {
+            optionalReq = `${optionalReq},"originEmptyWeight"`;
+            optionalValues = `${optionalValues},'${order.originEmptyWeight}'`
+        }
+
+        if (order.originLoadedWeight != null) {
+            optionalReq = `${optionalReq},"originLoadedWeight"`;
+            optionalValues = `${optionalValues},'${order.originLoadedWeight}'`
+        }
+
+        if (order.originWeightLoad != null) {
+            optionalReq = `${optionalReq},"originWeightLoad"`;
+            optionalValues = `${optionalValues},'${order.originWeightLoad}'`
+        }
+
+        if (order.destinationLoadedWeight != null) {
+            optionalReq = `${optionalReq},"destinationLoadedWeight"`;
+            optionalValues = `${optionalValues},'${order.destinationLoadedWeight}'`
+        }
+
+        if (order.destinationEmptyWeight != null) {
+            optionalReq = `${optionalReq},"destinationEmptyWeight"`;
+            optionalValues = `${optionalValues},'${order.destinationEmptyWeight}'`
+        }
+
+        if (order.weightLoad != null) {
+            optionalReq = `${optionalReq},"weightLoad"`;
+            optionalValues = `${optionalValues},'${order.weightLoad}'`
+        }
+
+        if (order.scaleTicket != null) {
+            optionalReq = `${optionalReq},"scaleTicket"`;
+            optionalValues = `${optionalValues},'${order.scaleTicket}'`
+        }
+
+        if (order.destinationDeliveryLoad != null) {
+            optionalReq = `${optionalReq},"destinationDeliveryLoad"`;
+            optionalValues = `${optionalValues},'${order.destinationDeliveryLoad}'`
+        }
+
         // If Dispatcher will create a New Delivery Ticket then below given query will be executed.
-            query = `
+        query = `
             INSERT INTO 
                         "Trucking_Delivery_Ticket" 
                         ("dispatcher_id", 
@@ -88,7 +128,8 @@ const httpTrigger: AzureFunction = async function (
                         "destination_state", 
 						"customer_id",
 						"trucking_type",
-						"ticket_status"
+						"ticket_status",
+                        "is_ticket_info_completed"
                         ${optionalReq})
       
             VALUES      ('${order.dispatcherId}', 
@@ -99,7 +140,8 @@ const httpTrigger: AzureFunction = async function (
                         '${order.destinationState}', 
                         '${order.customerId}', 
 						'${order.truckingType}',
-                        '${order.ticketStatus}'
+                        '${order.ticketStatus}',
+                        '${order.isTicketInfoCompleted}'
                         ${optionalValues});
           `;
 

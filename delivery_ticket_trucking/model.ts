@@ -20,7 +20,17 @@ export interface DeliveryTicket {
     totalJobMiles?: string,
     totalTripMiles?: string,
     truckDriverNotes?: string,
-    rateType?:string
+    rateType?: string;
+    originEmptyWeight?: string;
+    originLoadedWeight?: string;
+    originWeightLoad?: string;
+    destinationLoadedWeight?: string;
+    destinationEmptyWeight?: string;
+    weightLoad?: string
+    scaleTicket?: string;
+    destinationDeliveryLoad?: string;
+    isTicketInfoCompleted: boolean
+
 }
 
 export interface UpdateDeliveryTicket {
@@ -42,5 +52,11 @@ export interface UpdateDeliveryTicket {
     originLoadedWeight?: string;
     originWeightLoad?: string;
     scaleTicket?: string;
-    weightLoad?: string
+    weightLoad?: string;
+    isTicketActive?: boolean;
+    isTripCheckFilled?: boolean;
+    isTicketInfoCompleted?: boolean;
+    begining_odometer_miles?: string;
+    ending_odometer_miles?: string;
+    hoursWorked?: string;
 }

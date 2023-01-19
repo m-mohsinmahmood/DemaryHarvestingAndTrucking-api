@@ -8,28 +8,30 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
     const db = new Client(config);
 
+    const id: string = req.query.id;
+
     try {
-        const search: string = req.query.search;
-        const vehicleType: string = req.query.vehicleType;
+        let whereClause: string = `WHERE "is_deleted" = false`;
 
-        let whereClause: string = ` WHERE "is_deleted" = FALSE AND "status" = TRUE AND type = '${vehicleType}'`;
+        let ticket = `
+        SELECT 
+        * 
+        FROM 
+        "Pre_Trip_Check"
 
-        if (search) whereClause = ` ${whereClause} AND LOWER(type) LIKE LOWER('%${search}%')`;
+       ${whereClause} AND id = '${id}';
+      `;
 
-        let machinery_query = `
-        SELECT "id", "type", "odometer_reading_end" FROM  "Motorized_Vehicles"  ${whereClause} ORDER BY  "type" ASC;`;
+        let query = `${ticket}`;
 
-        let machinery_count_query = `SELECT COUNT("id") FROM "Motorized_Vehicles" ${whereClause};`;
-
-        let query = `${machinery_query} ${machinery_count_query}`;
+        console.log(ticket);
 
         db.connect();
 
         let result = await db.query(query);
 
         let resp = {
-            machinery: result[0].rows,
-            count: +result[1].rows[0].count,
+            ticket: result.rows
         };
 
         db.end();

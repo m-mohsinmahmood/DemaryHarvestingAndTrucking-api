@@ -15,11 +15,9 @@ const httpTrigger: AzureFunction = async function (
         let optionalReq: string = ``;
 
         console.log(req.body);
-        
+
         if (updateTicket.truckNo != null) {
             optionalReq = `${optionalReq},"truck_id" = '${updateTicket.truckNo}'`;
-            console.log("Ticket");
-            
         }
 
         if (updateTicket.homeBeginingOdometerReading != null) {
@@ -50,37 +48,62 @@ const httpTrigger: AzureFunction = async function (
             optionalReq = `${optionalReq},"truck_driver_notes" = '${updateTicket.truckDriverNotes}'`;
         }
 
-        if (updateTicket.truckDriverNotes != null) {
+        if (updateTicket.destinationDeliveryLoad != null) {
             optionalReq = `${optionalReq},"destinationDeliveryLoad" = '${updateTicket.destinationDeliveryLoad}'`;
         }
 
-        if (updateTicket.truckDriverNotes != null) {
+        if (updateTicket.destinationEmptyWeight != null) {
             optionalReq = `${optionalReq},"destinationEmptyWeight" = '${updateTicket.destinationEmptyWeight}'`;
         }
 
-        if (updateTicket.truckDriverNotes != null) {
+        if (updateTicket.destinationLoadedWeight != null) {
             optionalReq = `${optionalReq},"destinationLoadedWeight" = '${updateTicket.destinationLoadedWeight}'`;
         }
 
-        if (updateTicket.truckDriverNotes != null) {
+        if (updateTicket.originEmptyWeight != null) {
             optionalReq = `${optionalReq},"originEmptyWeight" = '${updateTicket.originEmptyWeight}'`;
         }
 
-        if (updateTicket.truckDriverNotes != null) {
+        if (updateTicket.originLoadedWeight != null) {
             optionalReq = `${optionalReq},"originLoadedWeight" = '${updateTicket.originLoadedWeight}'`;
         }
 
-        if (updateTicket.truckDriverNotes != null) {
+        if (updateTicket.originWeightLoad != null) {
             optionalReq = `${optionalReq},"originWeightLoad" = '${updateTicket.originWeightLoad}'`;
         }
 
-        if (updateTicket.truckDriverNotes != null) {
+        if (updateTicket.scaleTicket != null) {
             optionalReq = `${optionalReq},"scaleTicket" = '${updateTicket.scaleTicket}'`;
         }
 
-        if (updateTicket.truckDriverNotes != null) {
+        if (updateTicket.weightLoad != null) {
             optionalReq = `${optionalReq},"weightLoad" = '${updateTicket.weightLoad}'`;
         }
+
+        if (updateTicket.isTicketActive != null) {
+            optionalReq = `${optionalReq},"is_ticket_active" = '${updateTicket.isTicketActive}'`;
+        }
+
+        if (updateTicket.isTripCheckFilled != null) {
+            optionalReq = `${optionalReq},"is_trip_check_filled" = '${updateTicket.isTripCheckFilled}'`;
+        }
+
+        if (updateTicket.isTicketInfoCompleted != null) {
+            optionalReq = `${optionalReq},"is_ticket_info_completed" = '${updateTicket.isTicketInfoCompleted}'`;
+        }
+
+        if (updateTicket.begining_odometer_miles != null) {
+            optionalReq = `${optionalReq},"begining_odometer_miles" = '${updateTicket.begining_odometer_miles}'`;
+        }
+
+        if (updateTicket.ending_odometer_miles != null) {
+            optionalReq = `${optionalReq},"ending_odometer_miles" = '${updateTicket.ending_odometer_miles}'`;
+        }
+
+        if (updateTicket.hoursWorked != null) {
+            optionalReq = `${optionalReq},"hours_worked" = '${updateTicket.hoursWorked}'`;
+        }
+
 
         let query = `
     UPDATE 

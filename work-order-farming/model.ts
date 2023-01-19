@@ -1,7 +1,7 @@
 export interface workOrder {
     id?: string;
     dispatcherId: string;
-    cBeginningEngineHours?: string;
+    beginningEngineHours?: string;
     customerId: string;
     farmId: string;
     fieldId: string;
@@ -14,7 +14,8 @@ export interface workOrder {
     workOrderStatus?: boolean;
     workOrderCloseOut?: boolean;
     role?: string;
-    completeInfo: boolean
+    completeInfo: boolean;
+    totalAcres:string;
 }
 
 export interface UpdateWorkOrder {
@@ -23,7 +24,7 @@ export interface UpdateWorkOrder {
     farmId?: string,
     fieldId?: string,
     service?: string,
-    cBeginningEngineHours?: string;
+    beginningEngineHours?: string;
     tractorDriverId?: string,
     fieldAddress?: string,
     phone?: string,
@@ -41,5 +42,6 @@ export interface UpdateWorkOrder {
     acresCompleted?: string;
     gpsAcres?: string;
     hoursWorked?: string;
-    notes?: string
+    notes?: string;
+    totalAcres:string;
 }
