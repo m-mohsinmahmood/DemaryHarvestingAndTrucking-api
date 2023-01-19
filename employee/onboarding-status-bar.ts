@@ -6,26 +6,24 @@ let status_bar_dates = {
     "Driver License and SS card verified": "step_four_date",
     "Email sent to review/sign compliance docs": "step_five_date",
     "Compliance docs verified": "step_six_date",
-    "System creates contract": "step_seven_date",
-    "Admin reviews/approves contract": "step_eight_date",
-    "Email Sent to notify that contract and W4 posted": "step_nine_date",
-    "Contract signed by employee is verified": "step_ten_date",
-    "Email sent to set-up online bank account": "step_eleven_date",
-    "Bank account details verified": "step_twelve_date",
-    "Email sent to complete signing and dating of some additional compliance docs including 1. Drug Policy and 2) Reprimand Policy": "step_thirteen_date",
-    "Docs verified": "step_fourteen_date",
-    "Email sent to complete CDL training": "step_fifteen_date",
-    "CDL training verified": "step_sixteen_date",
-    "Email sent to make travel arrangements": "step_seventeen_date",
-    "Results": "step_eighteen_date",
-    "Active": "step_nineteen_date",
-    "Inprocess": "step_twenty_date",
-    "Inactive": "",
+    "Email Sent to notify that contract and W4 posted": "step_seven_date",
+    "Contract signed by employee is verified": "step_eight_date",
+    "Email sent to set-up online bank account": "step_nine_date",
+    "Bank account details verified": "step_ten_date",
+    "Email sent to complete signing and dating of some additional compliance docs including 1. Drug Policy and 2) Reprimand Policy": "step_eleven_date",
+    "Docs verified": "step_twelve_date",
+    "Email sent to complete CDL training": "step_thirteen_date",
+    "CDL training verified": "step_fourteen_date",
+    "Email sent to make travel arrangements": "step_fifteen_date",
+    "Results": "step_sixteen_date",
+    "Active": "step_seventeen_date",
+    "Inprocess": "step_eighteen_date",
+    "Inactive": "step_nineteen_date",
 };
-let status_bar_steps = ["Account Activated" , "Email Sent to upload Drivers License and SS card" , "Driver License and SS card verified" , "Email sent to review/sign compliance docs" ,"Compliance docs verified", "Admin reviews/approves contract" , "Email Sent to notify that contract and W4 posted", "Contract signed by employee is verified",
+let status_bar_steps = ["Account Activated" , "Email Sent to upload Drivers License and SS card" , "Driver License and SS card verified" , "Email sent to review/sign compliance docs" ,"Compliance docs verified" , "Email Sent to notify that contract and W4 posted", "Contract signed by employee is verified",
 "Email sent to set-up online bank account", "Bank account details verified" ,"Email sent to complete signing and dating of some additional compliance docs including 1. Drug Policy and 2) Reprimand Policy" , "Docs verified", "Email sent to complete CDL training", "CDL training verified" , "Email sent to make travel arrangements","Results","Active","Inprocess","Inactive",]
 
-let status_message = ["driver_license_ss_card" , "driver_license_ss_card", "compliance_docs","compliance_docs", "contract_created" , "contract_w4", "contract_w4", "bank_account", "bank_account" , "additional_compliance_docs", "additional_compliance_docs" ,"cdl_training" , "cdl_training" , "travel_arrangements", "travel_arrangements"]
+let status_message = ["driver_license_ss_card" , "driver_license_ss_card", "compliance_docs","compliance_docs", "contract_w4", "contract_w4", "bank_account", "bank_account" , "additional_compliance_docs", "additional_compliance_docs" ,"cdl_training" , "cdl_training" , "travel_arrangements", "travel_arrangements"]
 
 export function updateQuery(employee, email) {
 
@@ -46,8 +44,6 @@ export function updateQuery(employee, email) {
         UPDATE "Employee_Status_Bar"
         SET 
         `;
-
-
         query = query + `
         "status_step" = '${employee.status_step}',
         "${status_message[employee.rejected? (employee.status_step + 1) - 3 : employee.status_step - 3]}" = '${employee.status_message}',

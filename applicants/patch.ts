@@ -13,6 +13,7 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
   const db = new Client(config);
   const db1 = new Client(config);
+  const db2 = new Client(config);
   let employee_id;
 
   try {
@@ -28,7 +29,7 @@ const httpTrigger: AzureFunction = async function (
     let result = await db.query(query);
     db.end();
 
-    //#region create employee in employee status bar if applicant accepts offer
+    //#region create employee in employee status bar and employee documents if applicant accepts offer
     if (applicant.status_message == 'Results' && applicant.status_step == '10.1') {
       employee_id = result[1].rows[0].employee_id
       try {
@@ -65,9 +66,37 @@ const httpTrigger: AzureFunction = async function (
         context.done();
         return;
       }
+      //Employee Documents 
+      try {
+        let employee_document_query = `
+        INSERT INTO 
+                    "Employee_Documents"
+                    (
+                      "employee_id",	
+                      "created_at"
+                    )
+        VALUES
+                    (
+                      '${employee_id}',
+                      now()
+                    )
+        `;
+        db2.connect();
+        let result2 = await db2.query(employee_document_query);
+        db2.end()
+      } catch (error) {
+        db2.end();
+        context.res = {
+          status: 400,
+          body: {
+            message: error.message,
+          },
+        };
+        context.done();
+        return;
+      }
     }
     //#endregion
-
     if (email && email.subject && email.to && email.body && !skip_email) {
       sgMail.setApiKey('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');
       const msg = {
