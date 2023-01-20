@@ -46,7 +46,7 @@ export function updateQuery(employee, email) {
         `;
         query = query + `
         "status_step" = '${employee.status_step}',
-        "${status_message[employee.rejected? (employee.status_step + 1) - 3 : employee.status_step - 3]}" = '${employee.status_message}',
+        "${status_message[employee.rejected? employee.status_step - 3 : employee.status_step - 3]}" = '${employee.status_message}',
         "status_message" = '${status_bar_steps[+employee.status_step - 2]}',
         "prev_status_message" = '${employee.prev_status_message}',
         "${status_bar_dates[employee.prev_status_message]}" = now()`

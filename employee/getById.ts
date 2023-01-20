@@ -260,7 +260,8 @@ const httpTrigger: AzureFunction = async function (
           show: true,
           active: true,
           showIcons: false,
-          click: +resp.status_step == 1 ? true : false
+          click: +resp.status_step == 1 ? true : false,
+          statusBar: 'account_activated',
         },
         {
           step: `Email Sent to upload Drivers License and SS card`,
@@ -269,7 +270,8 @@ const httpTrigger: AzureFunction = async function (
           show: +resp.status_step >= 2 ? true : false,
           active: +resp.status_step >= 2 ? true : false,
           showIcons: false,
-          click: +resp.status_step == 2  ? true : false
+          click: +resp.status_step == 2  ? true : false,
+          statusBar: 'driver_license_ss_card',
         },
         {
           step: `Drivers License and SS card verified`,
@@ -278,7 +280,8 @@ const httpTrigger: AzureFunction = async function (
           show: +resp.status_step >= 3 ? true : false,
           active: +resp.status_step >= 3 ? true : false,
           showIcons: resp.social_sec_disclaimer == true  && resp.cdl_license_disclaimer == true ? true : false,
-          click: +resp.status_step == 3  ? true : false
+          click: +resp.status_step == 3  ? true : false,
+          statusBar: 'driver_license_ss_card',
         },
         {
           step: `Email sent to review/sign compliance docs`,
@@ -287,7 +290,8 @@ const httpTrigger: AzureFunction = async function (
           show: +resp.status_step >= 4  ? true : false,
           active: +resp.status_step >= 4 ? true : false,
           showIcons: false,
-          click: +resp.status_step == 4  ? true : false
+          click: +resp.status_step == 4  ? true : false,
+          statusBar: 'compliance_docs',
         },
         {
           step: `Compliance docs verified`,
@@ -296,7 +300,8 @@ const httpTrigger: AzureFunction = async function (
           show: +resp.status_step >= 5  ? true : false,
           active: +resp.status_step >= 5 ? true : false,
           showIcons: resp.work_agreement_disclaimer == true  && resp.itinerary_disclaimer == true && resp.rules_disclaimer == true && resp.handbook_disclaimer == true ? true : false,
-          click: +resp.status_step == 5 ? true : false
+          click: +resp.status_step == 5 ? true : false,
+          statusBar: 'compliance_docs',
         },
         // {
         //   step: `System creates contract`,
@@ -322,7 +327,8 @@ const httpTrigger: AzureFunction = async function (
           show: +resp.status_step >= 6  ? true : false,
           active: +resp.status_step >= 6 ? true : false,
           showIcons: false,
-          click: +resp.status_step == 6  ? true : false
+          click: +resp.status_step == 6  ? true : false,
+          statusBar: 'contract_w4',
 
         },
         {
@@ -333,6 +339,7 @@ const httpTrigger: AzureFunction = async function (
           active: +resp.status_step >= 7 ? true : false,
           showIcons: resp.contract_disclaimer == true && resp.w4_disclaimer == true ? true : false,
           click: +resp.status_step == 7 ? true : false,
+          statusBar: 'contract_w4',
         },
         {
           step: `Email sent to set-up online bank account`,
@@ -342,6 +349,7 @@ const httpTrigger: AzureFunction = async function (
           active: +resp.status_step >= 8 ? true : false,
           showIcons: false,
           click: +resp.status_step == 8 ? true : false,
+          statusBar: 'bank_account',
         },
         {
           step: `Bank account details verified`,
@@ -351,6 +359,7 @@ const httpTrigger: AzureFunction = async function (
           active: +resp.status_step >= 9 ? true : false,
           showIcons: resp.bank_acc_disclaimer == true ? true : false,
           click: +resp.status_step == 9 ? true : false,
+          statusBar: 'bank_account',
         },
         {
           step: `Email sent to complete signing and dating of some additional compliance docs including 1. Drug Policy and 2) Reprimand Policy`,
@@ -360,6 +369,7 @@ const httpTrigger: AzureFunction = async function (
           active: +resp.status_step >= 10 ? true : false,
           showIcons: false,
           click: +resp.status_step == 10 ? true : false,
+          statusBar: 'additional_compliance_docs',
         },
         {
           step: `Additional compliance docs verified`,
@@ -369,6 +379,7 @@ const httpTrigger: AzureFunction = async function (
           active: +resp.status_step >= 11 ? true : false,
           showIcons: resp.reprimand_policy_disclaimer == true  && resp.drug_policy_disclaimer == true ? true : false,
           click: +resp.status_step == 11 ? true : false,
+          statusBar: 'additional_compliance_docs',
         },
         {
           step: `Email sent to complete CDL training`,
@@ -378,6 +389,7 @@ const httpTrigger: AzureFunction = async function (
           active: +resp.status_step >= 12 ? true : false,
           showIcons: false,
           click: +resp.status_step == 12 ? true : false,
+          statusBar: 'cdl_training',
         },
         {
           step: `CDL training verified`,
@@ -387,6 +399,7 @@ const httpTrigger: AzureFunction = async function (
           active: +resp.status_step >= 13 ? true : false,
           showIcons: resp.social_sec_disclaimer == true  && resp.cdl_license_disclaimer == true ? true : false,
           click: +resp.status_step == 13 ? true : false,
+          statusBar: 'cdl_training',
         },
         {
           step: `Email sent to make travel arrangements`,
@@ -396,6 +409,7 @@ const httpTrigger: AzureFunction = async function (
           active: +resp.status_step >= 14 ? true : false,
           showIcons: false,
           click: +resp.status_step == 14 ? true : false,
+          statusBar: 'travel_arrangements',
         },
         {
           step: `Results`,
@@ -405,6 +419,7 @@ const httpTrigger: AzureFunction = async function (
           active: +resp.status_step >= 15 ? true : false,
           showIcons: false,
           click: +resp.status_step == 15 ? true : false,
+          statusBar: 'results',
         },
       ];
       //#endregion
