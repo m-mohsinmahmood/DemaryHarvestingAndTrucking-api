@@ -11,6 +11,8 @@ const httpTrigger: AzureFunction = async function (
   const employeeId: string = req.query.employeeId;
   const crew_chief_id: string = req.query.crew_chief_id;
 
+  console.log(req.query);
+
   try {
     let query = ``;
 
@@ -22,10 +24,14 @@ const httpTrigger: AzureFunction = async function (
 
       "job_setup".id,
       "job_setup".state,
-      customers.customer_name as customer,
+      "job_setup".customer_id,
+      "job_setup".farm_id,
+      "job_setup".field_id,
+      job_setup.crop_id,
       farm."name" as farm_name,
       crop."name" as crop,
-      field."name" as field_name
+      field."name" as field_name,
+      customers.customer_name
 
       from "Customer_Job_Setup" job_setup
       INNER JOIN "Customers" customers
@@ -151,6 +157,9 @@ const httpTrigger: AzureFunction = async function (
     }
     // query if employee is present
     query = `${query}`;
+
+    console.log(query);
+
     db.connect();
 
     let result = await db.query(query);
