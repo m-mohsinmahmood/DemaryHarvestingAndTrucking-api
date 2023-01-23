@@ -8,6 +8,9 @@ export interface job_setup {
     crew_chief_id?: string;
     combine_operator_id?: string;
     cart_operator_id?: string;
+    changeFarmFieldCrop?: string;
+    total_acres?: string;
+    total_gps_acres?: string;
 }
 export interface job_update {
     customer_id: string;

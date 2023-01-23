@@ -10,7 +10,6 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
   let query = ``;
   const job_setup: job_setup = req.body;
-  console.log("Req:", req.body);
 
   try {
 
@@ -41,7 +40,13 @@ const httpTrigger: AzureFunction = async function (
     else {
       // Before creating new job for crew chief, close or complete the last active job of that crew chief 
 
+      if (job_setup.changeFarmFieldCrop) {
+        query = `UPDATE "Employees" Set dht_supervisor_id = '' where dht_supervisor_id = '${job_setup.crew_chief_id}';`;
+      }
+
       query = `
+      ${query}
+
       UPDATE 
       "Customer_Job_Setup"
       SET 
@@ -59,7 +64,9 @@ const httpTrigger: AzureFunction = async function (
                   "state", 
                   "field_id",
                   "crew_chief_id",
-                  "is_job_active"
+                  "is_job_active",
+                  "crop_acres",
+                  "crop_gps_acres"
                   )
                   
       VALUES      ('${job_setup.customer_id}', 
@@ -68,7 +75,9 @@ const httpTrigger: AzureFunction = async function (
                   '${job_setup.state}', 
                   '${job_setup.field_id}',
                   '${job_setup.crew_chief_id}',
-                  'True'
+                  'True',
+                  '${job_setup.total_acres}',
+                  '${job_setup.total_gps_acres}'
                   
     );`;
     }
