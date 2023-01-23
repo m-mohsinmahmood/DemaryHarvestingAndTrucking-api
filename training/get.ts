@@ -8,10 +8,11 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
     const db = new Client(config);
     const entity = req.query.entity;
+    const trainer_id = req.query.trainer_pre_trip_id;
     try {
         let query =`
         SELECT * FROM "Training"
-        WHERE "is_digital_form_started" = 'TRUE' AND "evaluation_type" = '${entity}'
+        WHERE "trainer_id" = '${trainer_id}'  AND "is_digital_form_started" = 'TRUE' AND "evaluation_type" = '${entity}'
         ;`
         console.log(query);
 

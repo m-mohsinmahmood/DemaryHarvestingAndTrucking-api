@@ -52,9 +52,10 @@ const httpTrigger: AzureFunction = async function (
                  "steeringLinkage"                     = '${engineCompartment.steeringLinkage}',
                  "turbo"                     = '${engineCompartment.turbo}',
                  "windowFluid"                     = '${engineCompartment.windowFluid}',
-                 "wiring"                     = '${engineCompartment.wiring}'
+                 "wiring"                     = '${engineCompartment.wiring}',
+                 "percentageEngineCompartment"                     = '${engineCompartment.percentageEngineCompartment}'
 
-                 WHERE "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'pre-trip'
+                 WHERE trainer_id='${roadSkillsDigital.trainer_id}'  AND "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'pre-trip'
          ;`
         }
         else if(entity === 'pre-trip' && inCab.category === 'in-cab'){
@@ -81,9 +82,10 @@ const httpTrigger: AzureFunction = async function (
                  "leakTest"                     = '${inCab.leakTest}',
                  "abcLights"                     = '${inCab.abcLights}',
                  "lightFunction"                     = '${inCab.lightFunction}',
-                 "commentsCab"                     = '${inCab.commentsCab}'
+                 "commentsCab"                     = '${inCab.commentsCab}',
+                 "percentageInCab"                     = '${inCab.percentageInCab}'
 
-                 WHERE "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'pre-trip'
+                 WHERE trainer_id='${roadSkillsDigital.trainer_id}'  AND "evaluation_type" = 'pre-trip'
          ;`
         }
         else if(entity === 'pre-trip' && vehicleExternal.category === 'vehicle-external'){
@@ -109,9 +111,10 @@ const httpTrigger: AzureFunction = async function (
                  "exhaust"                     = '${vehicleExternal.exhaust}',
                  "headerBvd"                     = '${vehicleExternal.headerBvd}',
                  "landingGear"                     = '${vehicleExternal.landingGear}',
-                 "commentsVehicle"                     = '${vehicleExternal.commentsVehicle}'
+                 "commentsVehicle"                     = '${vehicleExternal.commentsVehicle}',
+                 "percentageVehicleExternal"                     = '${vehicleExternal.percentageVehicleExternal}'
 
-                 WHERE "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'pre-trip'
+                 WHERE trainer_id='${roadSkillsDigital.trainer_id}'  AND "evaluation_type" = 'pre-trip'
          ;`
         }
         else if(entity === 'pre-trip' && coupling.category === 'coupling'){
@@ -137,9 +140,10 @@ const httpTrigger: AzureFunction = async function (
                  "safetyDevices"                     = '${coupling.safetyDevices}',
                  "print"                     = '${coupling.print}',
                  "drawBar"                     = '${coupling.drawBar}',
-                 "commentsCoupling"                     = '${coupling.commentsCoupling}'
+                 "commentsCoupling"                     = '${coupling.commentsCoupling}',
+                 "percentageCoupling"                     = '${coupling.percentageCoupling}'
 
-                 WHERE "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'pre-trip'
+                 WHERE trainer_id='${roadSkillsDigital.trainer_id}'  AND "evaluation_type" = 'pre-trip'
          ;`
         }
         else if(entity === 'pre-trip' && suspensionBrakes.category === 'suspension-brakes'){
@@ -165,9 +169,11 @@ const httpTrigger: AzureFunction = async function (
                  "cams"                     = '${suspensionBrakes.cams}',
                  "torqueArm"                     = '${suspensionBrakes.torqueArm}',
                  "wheelSeals"                     = '${suspensionBrakes.wheelSeals}',
-                 "commentsSuspension"                     = '${suspensionBrakes.commentsSuspension}'
+                 "commentsSuspension"                     = '${suspensionBrakes.commentsSuspension}',
+                 "percentageSuspension"                     = '${suspensionBrakes.percentageSuspension}',
+                 "endDatePreTrip"                     = CURRENT_TIMESTAMP
 
-                 WHERE "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'pre-trip'
+                 WHERE trainer_id='${roadSkillsDigital.trainer_id}'  AND "evaluation_type" = 'pre-trip'
          ;`
         }
         else if(entity === 'basic-skills' && straightLineBacking.category === 'straight-line-backing'){
@@ -189,9 +195,11 @@ const httpTrigger: AzureFunction = async function (
                     "parallelParkingBlind_slb"                     = '${straightLineBacking.parallelParkingBlind_slb}',
                     "parallelParkingBlindInput_slb"                     = '${straightLineBacking.parallelParkingBlindInput_slb}',
                     "coupUncoupInput_slb"                     = '${straightLineBacking.coupUncoupInput_slb}',
-                    "comments_slb"                     = '${straightLineBacking.comments_slb}'
+                    "comments_slb"                     = '${straightLineBacking.comments_slb}',
+                    "satisfactoryStraightLineBacking"                     = '${straightLineBacking.satisfactoryStraightLineBacking}',
+                    "unSatisfactoryStraightLineBacking"                     = '${straightLineBacking.unSatisfactoryStraightLineBacking}'
    
-                    WHERE "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
+                    WHERE trainer_id='${roadSkillsDigital.trainer_id}' AND "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
             ;`
         }
         else if(entity === 'basic-skills' && alleyDocking.category === 'alley-docking'){
@@ -214,9 +222,11 @@ const httpTrigger: AzureFunction = async function (
                     "parallelParkingBlindInput_ad"                     = '${alleyDocking.parallelParkingBlindInput_ad}',
                     "coupUncoup_ad"                     = '${alleyDocking.coupUncoup_ad}',
                     "coupUncoupInput_ad"                     = '${alleyDocking.coupUncoupInput_ad}',
-                    "comments_ad"                     = '${alleyDocking.comments_ad}'
+                    "comments_ad"                     = '${alleyDocking.comments_ad}',
+                    "satisfactoryAlleyDocking"                     = '${alleyDocking.satisfactoryAlleyDocking}',
+                    "unSatisfactoryAlleyDocking"                     = '${alleyDocking.unSatisfactoryAlleyDocking}'
    
-                    WHERE "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
+                    WHERE trainer_id='${roadSkillsDigital.trainer_id}'  AND "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
             ;`
         }
         else if(entity === 'basic-skills' && offSetBacking.category === 'off-set-backing'){
@@ -239,9 +249,11 @@ const httpTrigger: AzureFunction = async function (
                     "parallelParkingBlindInput_osb"                     = '${offSetBacking.parallelParkingBlindInput_osb}',
                     "coupUncoup_osb"                     = '${offSetBacking.coupUncoup_osb}',
                     "coupUncoupInput_osb"                     = '${offSetBacking.coupUncoupInput_osb}',
-                    "comments_osb"                     = '${offSetBacking.comments_osb}'
+                    "comments_osb"                     = '${offSetBacking.comments_osb}',
+                    "satisfactoryOffSetBacking"                     = '${offSetBacking.satisfactoryOffSetBacking}',
+                    "unSatisfactoryOffSetBacking"                     = '${offSetBacking.unSatisfactoryOffSetBacking}'
    
-                    WHERE "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
+                    WHERE trainer_id='${roadSkillsDigital.trainer_id}' AND "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
             ;`
         }
         else if(entity === 'basic-skills' && parkingBlind.category === 'parking-blind'){
@@ -264,9 +276,11 @@ const httpTrigger: AzureFunction = async function (
                     "parallelParkingBlindInput_pb"                     = '${parkingBlind.parallelParkingBlindInput_pb}',
                     "coupUncoup_pb"                     = '${parkingBlind.coupUncoup_pb}',
                     "coupUncoupInput_pb"                     = '${parkingBlind.coupUncoupInput_pb}',
-                    "comments_pb"                     = '${parkingBlind.comments_pb}'
+                    "comments_pb"                     = '${parkingBlind.comments_pb}',
+                    "satisfactoryParkingBlind"                     = '${parkingBlind.satisfactoryParkingBlind}',
+                    "unSatisfactoryParkingBlind"                     = '${parkingBlind.unSatisfactoryParkingBlind}'
    
-                    WHERE "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
+                    WHERE trainer_id='${roadSkillsDigital.trainer_id}' AND "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
             ;`
         }
         else if(entity === 'basic-skills' && parkingSight.category === 'parking-sight'){
@@ -289,9 +303,11 @@ const httpTrigger: AzureFunction = async function (
                     "parallelParkingBlindInput_ps"                     = '${parkingSight.parallelParkingBlindInput_ps}',
                     "coupUncoup_ps"                     = '${parkingSight.coupUncoup_ps}',
                     "coupUncoupInput_ps"                     = '${parkingSight.coupUncoupInput_ps}',
-                    "comments_ps"                     = '${parkingSight.comments_ps}'
+                    "comments_ps"                     = '${parkingSight.comments_ps}',
+                    "satisfactoryParkingSight"                     = '${parkingSight.satisfactoryParkingSight}',
+                    "unSatisfactoryParkingSight"                     = '${parkingSight.unSatisfactoryParkingSight}'
    
-                    WHERE "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
+                    WHERE trainer_id='${roadSkillsDigital.trainer_id}' AND "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
             ;`
         }
         else if(entity === 'basic-skills' && coupUncoup.category === 'coup-uncoup'){
@@ -314,9 +330,12 @@ const httpTrigger: AzureFunction = async function (
                     "parallelParkingBlindInput_cou"                     = '${coupUncoup.parallelParkingBlindInput_cou}',
                     "coupUncoup_cou"                     = '${coupUncoup.coupUncoup_cou}',
                     "coupUncoupInput_cou"                     = '${coupUncoup.coupUncoupInput_cou}',
-                    "comments_cou"                     = '${coupUncoup.comments_cou}'
+                    "comments_cou"                     = '${coupUncoup.comments_cou}',
+                    "satisfactoryCoupUncoup"                     = '${coupUncoup.satisfactoryCoupUncoup}',
+                    "unSatisfactoryCoupUncoup"                     = '${coupUncoup.unSatisfactoryCoupUncoup}',
+                    "endDateBasicSkill"                     = CURRENT_TIMESTAMP
    
-                    WHERE "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
+                    WHERE trainer_id='${roadSkillsDigital.trainer_id}' AND  "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
             ;`
         }
         else if(entity === 'road-skills' && roadSkillsDigital.category === 'road-testing'){
@@ -349,9 +368,12 @@ const httpTrigger: AzureFunction = async function (
                     "generalDriving"                     = '${roadSkillsDigital.generalDriving}',
                     "generalDrivingInput"                     = '${roadSkillsDigital.generalDrivingInput}',
                     "eLogPractical"                     = '${roadSkillsDigital.eLogPractical}',
-                    "eLogPracticalInput"                     = '${roadSkillsDigital.eLogPracticalInput}'
+                    "eLogPracticalInput"                     = '${roadSkillsDigital.eLogPracticalInput}',
+                    "satisfactoryRoadTesting"                     = '${roadSkillsDigital.satisfactoryRoadTesting}',
+                    "unSatisfactoryRoadTesting"                     = '${roadSkillsDigital.unSatisfactoryRoadTesting}',
+                    "endDateRoadSkill"                     = CURRENT_TIMESTAMP
    
-                    WHERE "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'road-skills'
+                    WHERE trainer_id='${roadSkillsDigital.trainer_id}' AND "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'road-skills'
             ;`
         }
            console.log('Query:',query)

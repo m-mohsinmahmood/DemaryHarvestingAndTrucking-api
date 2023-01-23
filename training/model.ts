@@ -47,6 +47,7 @@ export interface engineCompartment {
   turbo: string;
   windowFluid: string;
   wiring: string;
+  percentageEngineCompartment: string;
 }
 export interface inCab {
     category: string;
@@ -69,6 +70,8 @@ export interface inCab {
     abcLights: string,
     lightFunction: string,
     commentsCab: string,
+    percentageInCab: string;
+
 }
 export interface vehicleExternal {
     category: string;
@@ -90,6 +93,7 @@ export interface vehicleExternal {
       headerBvd: string
       landingGear: string
       commentsVehicle: string,
+      percentageVehicleExternal: string,
 }
 export interface coupling {
     category: string;
@@ -111,6 +115,7 @@ export interface coupling {
     print: string,
     drawBar: string,
     commentsCoupling: string,
+    percentageCoupling: string
 }
 export interface suspensionBrakes{
     category: string;
@@ -133,6 +138,7 @@ export interface suspensionBrakes{
     torqueArm: string,
     wheelSeals: string,
     commentsSuspension: string,
+    percentageSuspension: string
 }
 export interface basicSkills{
     trainer_id?: string;
@@ -166,6 +172,9 @@ export interface straightLineBacking {
       coupUncoup_slb: string,
       coupUncoupInput_slb: string,
       comments_slb: string,
+      satisfactoryStraightLineBacking:string,
+      unSatisfactoryStraightLineBacking:string,
+      trainer_id: string
 }
 export interface alleyDocking {
      category: string;
@@ -184,6 +193,9 @@ export interface alleyDocking {
       coupUncoup_ad: string,
       coupUncoupInput_ad: string,
       comments_ad: string,
+      satisfactoryAlleyDocking:string,
+      unSatisfactoryAlleyDocking:string,
+      trainer_id: string,
 }
 export interface offSetBacking {
     category: string;
@@ -202,6 +214,9 @@ export interface offSetBacking {
     coupUncoup_osb: string,
     coupUncoupInput_osb: string,
     comments_osb: string,
+    satisfactoryOffSetBacking:string,
+    unSatisfactoryOffSetBacking:string,
+    trainer_id: string
 }
 export interface parkingBlind{
         category: string;
@@ -220,6 +235,9 @@ export interface parkingBlind{
         coupUncoup_pb: string,
         coupUncoupInput_pb: string,
         comments_pb:string,
+        satisfactoryParkingBlind:string,
+        unSatisfactoryParkingBlind:string,
+        trainer_id: string
 }
 export interface parkingSight{
     category: string;
@@ -237,7 +255,10 @@ export interface parkingSight{
         parallelParkingBlindInput_ps: string,
         coupUncoup_ps: string,
         coupUncoupInput_ps: string,
-        comments_ps:string
+        comments_ps:string,
+        satisfactoryParkingSight:string,
+        unSatisfactoryParkingSight:string,
+        trainer_id: string
 }
 export interface coupUncoup{
     category: string;
@@ -256,6 +277,9 @@ export interface coupUncoup{
         coupUncoup_cou: string,
         coupUncoupInput_cou: string,
         comments_cou: string,
+        satisfactoryCoupUncoup:string,
+        unSatisfactoryCoupUncoup:string,
+        trainer_id: string
 }
 export interface roadSkills{
     trainer_id?: string;
@@ -300,4 +324,7 @@ export interface roadSkillsDigital{
     generalDrivingInput: string,
     eLogPractical: string,
     eLogPracticalInput: string,
+    satisfactoryRoadTesting:string,
+      unSatisfactoryRoadTesting:string,
+      trainer_id: string,
 }

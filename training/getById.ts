@@ -15,7 +15,7 @@ const httpTrigger: AzureFunction = async function (
     const record_id: any = req.query.record_id;
     console.log('REQ;',req.query)
 let getById;
-    if (trainee_id) {
+    if (trainee_id && !(records.evaluation_type === 'summary')) {
       getById = `
       SELECT 
       emp.first_name as "first_name",
@@ -26,7 +26,7 @@ let getById;
       WHERE 
             "id" = '${trainee_id}';
         `;
-    } else if (trainer_id) {
+    } else if (trainer_id && !(records.evaluation_type === 'summary')) {
       getById = `
       SELECT 
              concat(emp.first_name,' ' ,emp.last_name)	as "trainer_name",
@@ -99,6 +99,48 @@ let getById;
       getById = `
  SELECT * FROM "Training"
 WHERE id = '${record_id}';`;
+    }
+    else if (records.evaluation_type === 'summary'){
+getById = `
+SELECT 
+training."satisfactoryRoadTesting" as "satisfactoryRoadTesting",
+training."unSatisfactoryRoadTesting" as "unSatisfactoryRoadTesting",
+training."satisfactoryStraightLineBacking" as "satisfactoryStraightLineBacking",
+training."unSatisfactoryStraightLineBacking" as "unSatisfactoryStraightLineBacking",
+training."satisfactoryAlleyDocking" as "satisfactoryAlleyDocking",
+training."unSatisfactoryAlleyDocking" as "unSatisfactoryAlleyDocking",
+training."satisfactoryOffSetBacking" as "satisfactoryOffSetBacking",
+training."unSatisfactoryOffSetBacking" as "unSatisfactoryOffSetBacking",
+training."satisfactoryParkingBlind" as "satisfactoryParkingBlind",
+training."satisfactoryParkingBlind" as "satisfactoryParkingBlind",
+training."unSatisfactoryParkingBlind" as "unSatisfactoryParkingBlind",
+training."satisfactoryParkingSight" as "satisfactoryParkingSight",
+training."unSatisfactoryParkingSight" as "unSatisfactoryParkingSight",
+training."satisfactoryCoupUncoup" as "satisfactoryCoupUncoup",
+training."unSatisfactoryCoupUncoup" as "unSatisfactoryCoupUncoup",
+training."evaluation_type" as "evaluation_type",
+training."percentageEngineCompartment" as "percentageEngineCompartment",
+training."percentageInCab" as "percentageInCab",
+training."percentageVehicleExternal" as "percentageVehicleExternal",
+training."percentageCoupling" as "percentageCoupling",
+training."percentageSuspension" as "percentageSuspension",
+(training."endDateRoadSkill" - training."created_at") as endDateRoadSkill,
+(training."endDateBasicSkill" - training."created_at") as endDateBasicSkill,
+(training."endDatePreTrip" - training."created_at") as endDatePreTrip,
+  concat(emp_trainee.first_name,' ' ,emp_trainee.last_name)	as "trainee_name",
+      emp_trainee.id as "trainee_id",
+      concat(emp_trainer.first_name,' ' ,emp_trainer.last_name)	as "trainer_name",
+      emp_trainer.id as "trainer_id"
+
+FROM "Training" training
+INNER JOIN "Employees" emp_trainee
+		  ON training.trainee_id = emp_trainee."id"
+		  INNER JOIN "Employees" emp_trainer
+		  ON training.trainer_id = emp_trainer."id"
+WHERE trainer_id = '${records.trainer_id}'
+AND trainee_id = '${records.trainee_id}'
+AND evaluation_form = 'digital-form'
+`;
     }
 
     db.connect();
