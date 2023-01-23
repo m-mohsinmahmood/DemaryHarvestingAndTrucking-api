@@ -41,7 +41,7 @@ let getById;
     }
     // to get the training-records by ID having 'pre-trip' check in 'paper-form'
     else if (
-      records.evaluation_type === "pre-trip" &&
+    
       records.evaluation_form === "paper-form"
     ) {
       getById = `
@@ -64,13 +64,12 @@ let getById;
 		  INNER JOIN "Employees" emp_trainer
 		  ON trn.trainer_id = emp_trainer."id"
       WHERE trainee_id = '${records.trainee_record_id}'
-      AND evaluation_type = 'pre-trip'
+      AND evaluation_type = '${records.evaluation_type}'
       AND evaluation_form = 'paper-form';
       `;
     }
     // to get the training-records by ID having 'pre-trip' check in 'digital-form'
     else if (
-      records.evaluation_type === "pre-trip" &&
       records.evaluation_form === "digital-form"
     ) {
       getById = `
@@ -93,7 +92,7 @@ let getById;
 		  INNER JOIN "Employees" emp_trainer
 		  ON trn.trainer_id = emp_trainer."id"
       WHERE trainee_id = '${records.trainee_record_id}'
-      AND evaluation_type = 'pre-trip'
+      AND evaluation_type = '${records.evaluation_type}'
       AND evaluation_form = 'digital-form';
       `;
     } else if (record_id) {
