@@ -10,14 +10,15 @@ const httpTrigger: AzureFunction = async function (
   switch (req.method) {
   
     case "GET":
-      if(req.query.id)
+      if(req.query.operation === 'kartOperatorTruckDrivers' && req.query.id)
         await getKartOperatorTruckDrivers.default(context, req);  
-      else
+      else if (req.query.operation === 'truckDriversDropDown')
         await getTruckDrivers.default(context, req);
       break;
 
     case "PATCH":
-      await setupTruckDriver.default(context, req);
+      if(req.query.operation === 'addTruckDrivers')
+        await setupTruckDriver.default(context, req);
       break;
 
     default:
