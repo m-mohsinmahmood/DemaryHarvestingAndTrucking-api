@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import { config } from "../services/database/database.config";
 import { employee } from "./model";
 import { updateQuery } from "./onboarding-status-bar";
-const sgMail = require('@sendgrid/mail')
+import { EmailClient, EmailMessage } from "@azure/communication-email";
 
 
 
@@ -26,21 +26,24 @@ const httpTrigger: AzureFunction = async function (
 
     //#region Send email to employee
     if (email && email.subject && email.to && email.body) {
-      sgMail.setApiKey('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');
-      const msg = {
-        to: `${email.to}`,
-        from: 'recruiter@dht-usa.com',
-        subject: `${email.subject}`,
-        html: `${email.body}`
-      }
-      sgMail
-        .send(msg)
-        .then(() => {
-          console.log('Email sent')
-        })
-        .catch((error) => {
-          console.error(error)
-        })
+      const connectionString = process.env["EMAIL_CONNECTION_STRING"];
+      const client = new EmailClient(connectionString);
+      const emailMessage: EmailMessage = {
+        sender: "recruiter@dht-usa.com",
+        content: {
+          subject: `${email.subject}`,
+          html: `${email.body}`
+        },
+        recipients: {
+          to: [
+            {
+              email: `${email.to}`,
+            },
+          ],
+        },
+      };
+  
+      const messageId: any = await client.send(emailMessage);
     }
     //#endregion
 

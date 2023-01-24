@@ -35,12 +35,8 @@ const httpTrigger: AzureFunction = async function (
     INNER JOIN "Employees" emp
     on dwr.employee_id = emp."id"
     
-<<<<<<< Updated upstream
-    where emp.id = '${employee_id}';
-=======
     where emp.id = '${employee_id}'
-    AND dwr.created_at between '2023-01-01' AND '2023-01-31';
->>>>>>> Stashed changes
+    AND dwr.created_at >= now() - interval '14 DAYS';
       `;
 
     let hours_count_query = `

@@ -32,26 +32,50 @@ const httpTrigger: AzureFunction = async function (
     //#region create employee in employee status bar and employee documents if applicant accepts offer
     if (applicant.status_message == 'Results' && applicant.status_step == '10.1') {
       employee_id = result[1].rows[0].employee_id
+      let employee_status_bar_query
       try {
-        let employee_status_bar_query = `
-        INSERT INTO 
-                    "Employee_Status_Bar"
-                    (
-                      "employee_id",
-                      "status_step",
-                      "status_message",
-                      "step_one_date",	
-                      "created_at"
-                    )
-        VALUES
-                    (
-                      '${employee_id}',
-                      '2',
-                      'Account Activated',
-                      now(),
-                      now()
-                    )
-        `;
+        if (applicant_info.country == 'United States of America') {
+          employee_status_bar_query = `
+          INSERT INTO 
+                      "Employee_Status_Bar"
+                      (
+                        "employee_id",
+                        "status_step",
+                        "status_message",
+                        "step_one_date",	
+                        "created_at"
+                      )
+          VALUES
+                      (
+                        '${employee_id}',
+                        '2',
+                        'Account Activated',
+                        now(),
+                        now()
+                      )
+          `;
+        }
+        else if (applicant_info.country != 'United States of America') {
+          employee_status_bar_query = `
+          INSERT INTO 
+                      "H2a_Status_Bar"
+                      (
+                        "employee_id",
+                        "status_step",
+                        "status_message",
+                        "step_one_date",	
+                        "created_at"
+                      )
+          VALUES
+                      (
+                        '${employee_id}',
+                        '2',
+                        'Account Activated',
+                        now(),
+                        now()
+                      )
+          `;
+        }
         db1.connect();
         let result2 = await db1.query(employee_status_bar_query);
         db1.end()
@@ -100,10 +124,8 @@ const httpTrigger: AzureFunction = async function (
     //#region Email
     if (email && email.subject && email.to && email.body && !skip_email) {
       let emailBody = email.body.replace('&#8205', '');
-
       const connectionString = process.env["EMAIL_CONNECTION_STRING"];
       const client = new EmailClient(connectionString);
-
       const emailMessage: EmailMessage = {
         sender: "recruiter@dht-usa.com",
         content: {
