@@ -23,7 +23,7 @@ const httpTrigger: AzureFunction = async function (
 if(entity === 'trainee'){
   query = `
    INSERT INTO 
-               "Training" 
+               "Trainee" 
                (
                "trainee_id", 
                "trainer_id",
@@ -31,7 +31,8 @@ if(entity === 'trainee'){
                "state",
                "training_type",
                "topic",
-               "detail"
+               "detail",
+               "user_type"
                )
                
    VALUES      (
@@ -41,13 +42,14 @@ if(entity === 'trainee'){
                '${trainee.city}',
                '${trainee.training_type}',
                '${trainee.topic}',
-               '${trainee.detail}'
+               '${trainee.detail}',
+               'trainee'
  );`;
 }else if (entity === 'trainer'){
   // for trainer
   query = `
   INSERT INTO 
-              "Training" 
+              "Trainer_Training_Tasks" 
               (
               "trainer_id", 
               "supervisor_id",
@@ -55,7 +57,8 @@ if(entity === 'trainee'){
               "state",
               "training_type",
               "topic",
-              "notes"
+              "notes",
+              "user_type"
               )
               
   VALUES      (
@@ -65,7 +68,8 @@ if(entity === 'trainee'){
               '${trainer.state}',
               '${trainer.training_type}',
               '${trainer.topic}',
-              '${trainer.notes}'
+              '${trainer.notes}',
+              'trainer'
 );`;
 } else if(entity === 'pre-trip' && preTripCheck.evaluation_form === 'paper-form'){
   // for pre-trip check form having 'Paper Form'
