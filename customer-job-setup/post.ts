@@ -15,6 +15,16 @@ const httpTrigger: AzureFunction = async function (
 
     if (job_setup.combine_operator_id != null || job_setup.cart_operator_id != null) {
       // Assign Roles
+      let assign = `INSERT INTO 
+      "Customer_Job_Assigned_Roles" 
+      ("job_id", 
+      "employee_id"
+      )
+      VALUES      
+      ('${job_setup.job_id}', 
+      '${job_setup.employee_id}'
+      );`;
+
       if (job_setup.combine_operator_id) {
         query = `
         UPDATE 
@@ -23,6 +33,8 @@ const httpTrigger: AzureFunction = async function (
             "dht_supervisor_id" = '${job_setup.crew_chief_id}'
         WHERE 
             "id" = '${job_setup.combine_operator_id}' ;
+
+            ${assign}
             `;
       }
 
@@ -33,7 +45,10 @@ const httpTrigger: AzureFunction = async function (
         SET 
             "dht_supervisor_id" = '${job_setup.crew_chief_id}'
         WHERE 
-            "id" = '${job_setup.cart_operator_id}' ;`;
+            "id" = '${job_setup.cart_operator_id}' ;
+            
+            ${assign}
+            `;
       }
     }
 
@@ -44,42 +59,52 @@ const httpTrigger: AzureFunction = async function (
         query = `UPDATE "Employees" Set dht_supervisor_id = '' where dht_supervisor_id = '${job_setup.crew_chief_id}';`;
       }
 
-      query = `
-      ${query}
+      if (job_setup.closeJob) {
+        query = `
+      
+        ${query}
+        UPDATE 
+        "Customer_Job_Setup"
+        SET 
+        "is_job_active"     = false, 
+        "is_job_completed"  = true,
+        "crop_acres" = '${job_setup.total_acres}',
+        "crop_gps_acres" = '${job_setup.total_gps_acres}'
+      
+        WHERE 
+        "crew_chief_id" = '${job_setup.crew_chief_id}' AND is_job_active = TRUE AND is_job_completed = FALSE;`;
+      }
 
-      UPDATE 
-      "Customer_Job_Setup"
-      SET 
-      "is_job_active"     = false, 
-      "is_job_completed"  = true
-    
-      WHERE 
-      "crew_chief_id" = '${job_setup.crew_chief_id}';
-
-      INSERT INTO 
-                  "Customer_Job_Setup" 
-                  ("customer_id", 
-                  "farm_id", 
-                  "crop_id", 
-                  "state", 
-                  "field_id",
-                  "crew_chief_id",
-                  "is_job_active",
-                  "crop_acres",
-                  "crop_gps_acres"
-                  )
-                  
-      VALUES      ('${job_setup.customer_id}', 
-                  '${job_setup.farm_id}', 
-                  '${job_setup.crop_id}', 
-                  '${job_setup.state}', 
-                  '${job_setup.field_id}',
-                  '${job_setup.crew_chief_id}',
-                  'True',
-                  '${job_setup.total_acres}',
-                  '${job_setup.total_gps_acres}'
-                  
-    );`;
+      if (job_setup.newJobSetup) {
+        query = `
+      
+        ${query}
+        INSERT INTO 
+        "Customer_Job_Setup" 
+        ("customer_id", 
+        "farm_id", 
+        "crop_id", 
+        "state", 
+        "field_id",
+        "crew_chief_id",
+        "is_job_active",
+        "crop_acres",
+        "crop_gps_acres"
+        )
+        
+        VALUES      
+        ('${job_setup.customer_id}', 
+        '${job_setup.farm_id}', 
+        '${job_setup.crop_id}', 
+        '${job_setup.state}', 
+        '${job_setup.field_id}',
+        '${job_setup.crew_chief_id}',
+        'True',
+        '${job_setup.total_acres}',
+        '${job_setup.total_gps_acres}'
+        
+        );`;
+      }
     }
     // // for customer job setup by change of fields
     // else {

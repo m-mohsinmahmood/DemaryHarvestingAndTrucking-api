@@ -15,13 +15,8 @@ export function createDWR(dwr: any) {
     }
 
     if (dwr.beginning_separator_hours != null) {
-        optionalReq = `${optionalReq},"beginning_seperators_hours"`;
+        optionalReq = `${optionalReq},"beginning_separator_hours"`;
         optionalValues = `${optionalValues},'${dwr.beginning_separator_hours}'`
-    }
-
-    if (dwr.field_id != null) {
-        optionalReq = `${optionalReq},"beginning_engine_hours"`;
-        optionalValues = `${optionalValues},'${dwr.field_id}'`
     }
 
     if (dwr.field_acres != null) {
@@ -69,15 +64,14 @@ export function createDWR(dwr: any) {
         optionalValues = `${optionalValues},'${dwr.workOrderId}'`;
     }
     
-
-    if (dwr.workOrderId != null) {
-        optionalReq = `${optionalReq},"work_order_id"`;
-        optionalValues = `${optionalValues},'${dwr.workOrderId}'`;
-    }
-
     if (dwr.deliveryTicketId != null) {
         optionalReq = `${optionalReq},"delivery_ticket_id"`;
         optionalValues = `${optionalValues},'${dwr.deliveryTicketId}'`;
+    }
+
+    if (dwr.jobId != null) {
+        optionalReq = `${optionalReq},"job_id"`;
+        optionalValues = `${optionalValues},'${dwr.jobId}'`;
     }
 
     let query = `
