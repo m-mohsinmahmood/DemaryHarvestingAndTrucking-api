@@ -175,6 +175,7 @@ let documents = {
     "field2": "w4_doc",
     "field3": "w4_sign",
     "field4": "w4_disclaimer",
+    "field5": "w4_no_of_dependents",
 
   },
 }
@@ -236,7 +237,9 @@ export function updateQuery(employee_doc,doc_status, employee_id, docName) {
         "${documents['w4'].field1}" = '',
         "${documents['w4'].field2}" = '',
         "${documents['w4'].field3}" = '',
-        "${documents['w4'].field4}" = false
+        "${documents['w4'].field4}" = false,
+        "${documents['w4'].field5}" = ''
+
         `;
         break;
       case "bank_account":
@@ -522,7 +525,9 @@ export function updateQuery(employee_doc,doc_status, employee_id, docName) {
         "${documents['w4'].field1}" = '${employee_doc.w4_name}',
         "${documents['w4'].field2}" = '',
         "${documents['w4'].field3}" = '${employee_doc.w4_sign}',
-        "${documents['w4'].field4}" = '${employee_doc.w4_disclaimer}'
+        "${documents['w4'].field4}" = '${employee_doc.w4_disclaimer}',
+        "${documents['w4'].field5}" = '${employee_doc.w4_no_of_dependents}'
+
 
         `;
         break;

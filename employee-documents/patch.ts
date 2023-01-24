@@ -56,7 +56,7 @@ const httpTrigger: AzureFunction = async function (
   }
 
   //#region Upload Employee Doc to blob and update employee in DB
-  if (doc_status != 'Reject') {
+  if (doc_status != 'Reject' && employee_doc[doc_name] != null && employee_doc[doc_name] != '' ) {
     try {
       const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/employees?sp=rawd&st=2023-01-14T11:52:11Z&se=2024-12-31T19:52:11Z&spr=https&sv=2021-06-08&sr=c&sig=qsEWo%2F1vfQzmw9V8HdI%2FEfL1R4l3hho4wd49Czmq%2BC8%3D");
       const container = blob.getContainerClient("employees");
@@ -102,7 +102,7 @@ const httpTrigger: AzureFunction = async function (
 
   //#endregion
 
-  //#region Send an email when document is rejected by admin
+  //#region Send an email when document is rejected by admin or employee uploads details
   if (doc_status == 'Reject') {
     const connectionString = process.env["EMAIL_CONNECTION_STRING"];
     const client = new EmailClient(connectionString);
@@ -122,6 +122,27 @@ const httpTrigger: AzureFunction = async function (
     };
 
     const messageId: any = await client.send(emailMessage);
+  }
+  else {
+    const connectionString = process.env["EMAIL_CONNECTION_STRING"];
+    const client = new EmailClient(connectionString);
+    const emailMessage: EmailMessage = {
+      sender: "recruiter@dht-usa.com",
+      content: {
+        subject: `${subject}`,
+        html: `${email_body}`
+      },
+      recipients: {
+        to: [
+          {
+            email:"recruiter@dht-usa.com",
+          },
+        ],
+      },
+    };
+
+    const messageId: any = await client.send(emailMessage);
+
   }
 
 
