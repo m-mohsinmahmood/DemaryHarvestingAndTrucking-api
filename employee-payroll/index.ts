@@ -1,5 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import * as getEmployeeDwr from "./get";
+import * as getEmployeeDwrByPeriod from "./getByPeriod";
+
 
 
 const httpTrigger: AzureFunction = async function (
