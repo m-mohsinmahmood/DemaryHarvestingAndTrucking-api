@@ -26,17 +26,28 @@ const httpTrigger: AzureFunction = async function (
                 ON c."id" = cc."crop_id" AND cc."customer_id" = '${customer_id}' AND cc."is_deleted" = FALSE AND cc."status" = TRUE
         ${whereClause}
         ORDER BY 
-                c."name" ASC
+                c."name" ASC;
         `
 
-    let query = `${customer_crop_dropdown_query}`;
+    let customer_crop_count_query = `
+        SELECT 
+                COUNT(c."id")
+                FROM 
+                "Crops" c
+                INNER JOIN "Customer_Crop" cc 
+                ON c."id" = cc."crop_id" AND cc."customer_id" = '${customer_id}' AND cc."is_deleted" = FALSE AND cc."status" = TRUE
+        ${whereClause};
+      `;
+
+    let query = `${customer_crop_dropdown_query} ${customer_crop_count_query}`;
 
     db.connect();
 
     let result = await db.query(query);
 
     let resp = {
-      customer_crops: result.rows
+      customer_crops: result[0].rows,
+      count: +result[1].rows[0].count,
     };
 
     db.end();

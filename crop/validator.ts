@@ -1,24 +1,24 @@
 import { crop } from "./model";
 // import { ajv } from "../utilities/validator_intance";
 
-const schema = {
-  type: "object",
-  required: ["name", "variety", "bushel_weight"],
-  properties: {
-    name: { type: "string" },
-    variety: { type: "string" },
-    bushel_weight: { type: "number" },
-  },
-  errorMessage: {
-    type: "should be an object",
-    required: {
-      name: "name is missing",
-      variety: "variety is missing",
-      bushel_weight: "bushel weight is missing",
-    },
-  },
-  additionalProperties: false,
-};
+// const schema = {
+//   type: "object",
+//   required: ["name", "variety", "bushel_weight"],
+//   properties: {
+//     name: { type: "string" },
+//     variety: { type: "string" },
+//     bushel_weight: { type: "number" },
+//   },
+//   errorMessage: {
+//     type: "should be an object",
+//     required: {
+//       name: "name is missing",
+//       variety: "variety is missing",
+//       bushel_weight: "bushel weight is missing",
+//     },
+//   },
+//   additionalProperties: false,
+// };
 
 export function cropValidator(crop: crop) {
   // const validate = ajv.compile(schema);
