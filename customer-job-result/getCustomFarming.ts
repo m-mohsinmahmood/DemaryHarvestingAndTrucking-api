@@ -25,7 +25,8 @@ const httpTrigger: AzureFunction = async function (
   wo.total_acres as acres, 
   wo."total_gps-service-acres" as gps_acres, 
   dwr.start_time, 
-  dwr.end_time 
+  dwr.end_time,
+  wo.work_order_status as status
 FROM 
   "Farming_Work_Order" wo 
   INNER JOIN "Customers" c ON wo."customer_id" = c."id" 
