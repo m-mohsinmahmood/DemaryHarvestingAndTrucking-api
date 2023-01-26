@@ -14,28 +14,32 @@ const httpTrigger: AzureFunction = async function (
     const customer_id: string = req.query.customer_id;
 
     let dwr_info_query = `
+          
     SELECT 
-    wo.id as id, 
-    wo.created_at as date, 
-    wo.service as service, 
-    farm.name AS "farm_name", 
-    field.name AS "field_name", 
-    wo.total_acres as acres, 
-    wo."total_gps-service-acres" as gps_acres, 
-    dwr.start_time, 
-    dwr.end_time 
-  FROM 
-    "Farming_Work_Order" wo 
-    INNER JOIN "Customers" c ON wo."customer_id" = c."id" 
-    INNER JOIN "Customer_Farm" farm ON wo.farm_id = farm.id 
-    INNER JOIN "Customer_Field" field ON wo.field_id = field.id 
-    INNER JOIN "DWR" dwr On wo."id" = dwr.work_order_id 
-  Where 
-    wo.work_order_is_completed = True 
-    AND wo.work_order_status = 'verified' 
-    And wo.work_order_close_out = True 
-    And wo.customer_id = '${customer_id}'
-    AND wo."is_deleted" = FALSE;
+  wo.id as id, 
+  wo.created_at as date, 
+  wo.service as service, 
+  c."customer_name" AS "customer_name", 
+  "farm".name AS "farm_name", 
+  "field".name AS "field_name", 
+  wo.total_acres as acres, 
+  wo."total_gps-service-acres" as gps_acres, 
+  dwr.start_time, 
+  dwr.end_time 
+FROM 
+  "Farming_Work_Order" wo 
+  INNER JOIN "Customers" c ON wo."customer_id" = c."id" 
+  INNER JOIN "Customer_Farm" farm ON "farm".id = wo.farm_id 
+  INNER JOIN "Customer_Field" field ON "field".id = wo.field_id 
+  INNER JOIN "DWR" dwr On wo."id" = dwr.work_order_id 
+Where 
+  wo.work_order_is_completed = True 
+  AND "work_order_status" = 'verified' 
+  And "work_order_close_out" = True 
+  And wo.customer_id = '${customer_id}'
+  AND wo."is_deleted" = FALSE 
+ORDER BY 
+  c."customer_name" ASC;
 
       `;
 

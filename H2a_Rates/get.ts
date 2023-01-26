@@ -16,7 +16,7 @@ const httpTrigger: AzureFunction = async function (
     const order: string = req.query.order ? req.query.order : `asc`;
     let whereClause: string = ` WHERE "is_deleted" = false`;
 
-    if (search) whereClause = ` ${whereClause} AND LOWER(name) LIKE LOWER('%${search}%')`;
+    if (search) whereClause = ` ${whereClause} AND LOWER(state) LIKE LOWER('%${search}%')`;
 
     let h2a_rates_info_query = `
         SELECT 
