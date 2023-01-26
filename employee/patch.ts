@@ -6,8 +6,6 @@ import { employee } from "./model";
 import { updateQuery } from "./onboarding-status-bar";
 import { EmailClient, EmailMessage } from "@azure/communication-email";
 
-
-
 const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
