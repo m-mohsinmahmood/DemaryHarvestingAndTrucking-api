@@ -13,7 +13,7 @@ const httpTrigger: AzureFunction = async function (
     const h2aRate: h2aRate = req.body;
     let query = `
         UPDATE "H2a_Hourly_Rate" 
-        SET "state"          = '${h2aRate.state}', 
+        SET  
             "hourly_rate"       = '${h2aRate.hourly_rate}',
             "modified_at"   = 'now()'
         WHERE 
