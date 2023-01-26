@@ -3,6 +3,14 @@ import * as getAllCrops from "./getAllCrops";
 import * as getCustomerCrops from "./getCustomerCrops";
 import * as getCustomerFarms from "./getCustomerFarms";
 import * as getAllRecruiters from "./getAllRecruiters";
+import * as getAllEmployees from "./getAllEmployees";
+import * as getAllCustomers from "./getAllCustomers";
+import * as getCustomerFields from "./getCustomerFields";
+import * as getCustomerServices from "./getCustomerService";
+import * as getAllMachinery from "./getAllMachinery";
+import * as getCustomerTruckingRates from "./getCustomerTruckingRate";
+import * as getMotorizedVehicles from "./getAllMotorizedVehicles";
+import * as getNonMotorizedVehicles from "./getAllNonMotorizedVehicles";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -19,6 +27,22 @@ const httpTrigger: AzureFunction = async function (
           await getCustomerFarms.default(context, req);
         else if (req.query.entity === "allRecruiters")
           await getAllRecruiters.default(context, req);
+        else if (req.query.entity === "allEmployees")
+          await getAllEmployees.default(context, req);
+        else if (req.query.entity === "allCustomers")
+          await getAllCustomers.default(context, req);
+        else if (req.query.entity === "customerFields")
+          await getCustomerFields.default(context, req);
+        else if (req.query.entity === "customerServices")
+          await getCustomerServices.default(context, req);
+        else if (req.query.entity === "allMachinery")
+          await getAllMachinery.default(context, req);
+        else if (req.query.entity === "allCustomersTruckingRate")
+          await getCustomerTruckingRates.default(context, req);
+        else if (req.query.entity === "allMotorizedVehicles")
+          await getMotorizedVehicles.default(context, req);
+        else if (req.query.entity === "allNonMotorizedVehicles")
+          await getNonMotorizedVehicles.default(context, req);
         break;
 
       default:
