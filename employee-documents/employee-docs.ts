@@ -64,6 +64,8 @@ let documents = {
     "field4": "cdl_license_doc",
     "field5": "cdl_license_sign",
     "field6": "cdl_license_disclaimer",
+    "field7": "license_type",
+
   },
   work_agreement: {
     "field1": "work_agreement_date",
@@ -176,11 +178,15 @@ let documents = {
     "field3": "w4_sign",
     "field4": "w4_disclaimer",
     "field5": "w4_no_of_dependents",
-
+  },
+  cdl_training: {
+    "field1": "cdl_training_date",
+    "field2": "cdl_training_sign",
+    "field3": "cdl_training_disclaimer",
   },
 }
 
-export function updateQuery(employee_doc,doc_status, employee_id, docName) {
+export function updateQuery(employee_doc, doc_status, employee_id, docName) {
   let query = `
             UPDATE "Employee_Documents"
             SET 
@@ -195,6 +201,8 @@ export function updateQuery(employee_doc,doc_status, employee_id, docName) {
         "${documents['cdl_license'].field4}" = '',
         "${documents['cdl_license'].field5}" = '',
         "${documents['cdl_license'].field6}" = false,
+        "${documents['cdl_license'].field7}" = ''
+
 
         "${documents['social_sec'].field1}" = '',
         "${documents['social_sec'].field2}" = '',
@@ -264,12 +272,16 @@ export function updateQuery(employee_doc,doc_status, employee_id, docName) {
         "${documents['reprimand_policy'].field2}" = '',
         "${documents['reprimand_policy'].field3}" = '',
         "${documents['reprimand_policy'].field4}" = false
-      
         `;
         break;
+
       case "cdl_training":
         query = query + `
+        "${documents['cdl_training'].field1}" = '',
+        "${documents['cdl_training'].field2}" = '',
+        "${documents['cdl_training'].field3}" = false
         `;
+        break;
 
       default:
         break;
@@ -365,7 +377,9 @@ export function updateQuery(employee_doc,doc_status, employee_id, docName) {
         "${documents['cdl_license'].field3}" = '${employee_doc.cdl_license_issue_date}',
         "${documents['cdl_license'].field4}" = '',
         "${documents['cdl_license'].field5}" = '${employee_doc.cdl_license_sign}',
-        "${documents['cdl_license'].field6}" = '${employee_doc.cdl_license_disclaimer}'
+        "${documents['cdl_license'].field6}" = '${employee_doc.cdl_license_disclaimer}',
+        "${documents['cdl_license'].field7}" = '${employee_doc.cdl_license_type}'
+
 
         `;
         break;
@@ -527,8 +541,14 @@ export function updateQuery(employee_doc,doc_status, employee_id, docName) {
         "${documents['w4'].field3}" = '${employee_doc.w4_sign}',
         "${documents['w4'].field4}" = '${employee_doc.w4_disclaimer}',
         "${documents['w4'].field5}" = '${employee_doc.w4_no_of_dependents}'
+        `;
+        break;
 
-
+      case "cdl_training":
+        query = query + `
+        "${documents['cdl_training'].field1}" = '${employee_doc.cdl_training_date}',
+        "${documents['cdl_training'].field2}" = '${employee_doc.cdl_training_sign}',
+        "${documents['cdl_training'].field3}" = '${employee_doc.cdl_training_disclaimer}'
         `;
         break;
 
