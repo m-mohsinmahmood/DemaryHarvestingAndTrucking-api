@@ -9,11 +9,41 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const employee_id: string = req.query.id;
-    const h2a_employee: string = 'false';
-    let employee_info_query 
+    const employee_id: string = req.query?.id;
+    const firebase_id: string = req.query?.fb_id;
+    const h2a_employee: string = req.query?.h2a;
 
-    employee_info_query = `
+    if (firebase_id) {
+      let employee_id_query = `
+        SELECT 
+               "id"
+        FROM 
+                "Employees" 
+        Where fb_id = '${firebase_id}'        
+      `;
+
+      db.connect();
+
+      let result = await db.query(employee_id_query);
+      let resp;
+      if (result.rows.length > 0) resp = result.rows[0];
+      else
+        resp = {
+          message: "No Employee with this id.",
+        };
+
+      db.end();
+
+      context.res = {
+        status: 200,
+        body: resp,
+      };
+      context.done();
+      return;
+    }
+    else {
+      let employee_info_query
+      employee_info_query = `
           SELECT 
                 e1."id",
                 e1."first_name",	
@@ -201,7 +231,7 @@ const httpTrigger: AzureFunction = async function (
                 e2."w4_no_of_dependents",
                 e2."w4_disclaimer" `;
 
-                h2a_employee == 'true' ? employee_info_query = employee_info_query +  `,
+      h2a_employee == 'true' ? employee_info_query = employee_info_query + `,
                 e3."id",	
                 e3."employee_id",	
                 e3."status_step" , 
@@ -236,7 +266,7 @@ const httpTrigger: AzureFunction = async function (
                 e3."status_message",	
                 e3."prev_status_message"
                 ` :
-                employee_info_query = employee_info_query +  `,
+        employee_info_query = employee_info_query + `,
                 e3."id",	
                 e3."employee_id",	
                 e3."status_step" , 
@@ -273,384 +303,385 @@ const httpTrigger: AzureFunction = async function (
                 e3."modified_at",	
                 e3."status_message",	
                 e3."prev_status_message"
-                ` 
+                `
 
-                employee_info_query = employee_info_query + `
+      employee_info_query = employee_info_query + `
           FROM 
                 "Employees" e1
                 FULL JOIN "Employee_Documents" e2
                 ON e1."id" = e2."employee_id" `;
-                h2a_employee == "true" ? 
-                employee_info_query = employee_info_query + `
+      h2a_employee == "true" ?
+        employee_info_query = employee_info_query + `
                 FULL JOIN "H2a_Status_Bar" e3
-                ON e1."id" = e3."employee_id" ` : 
-                employee_info_query = employee_info_query + `
+                ON e1."id" = e3."employee_id" ` :
+        employee_info_query = employee_info_query + `
                 FULL JOIN "Employee_Status_Bar" e3
                 ON e1."id" = e3."employee_id"`;
 
-                employee_info_query = employee_info_query + `
+      employee_info_query = employee_info_query + `
           WHERE 
                 e1."id" = '${employee_id}';
       `;
 
-    db.connect();
+      db.connect();
 
-    let result = await db.query(employee_info_query);
-    let resp;
-    let status_bar;
-    resp = result.rows[0];
-    if (result.rows.length > 0 && h2a_employee != 'true') {
-      //#region Status Bar
-      status_bar = [
-        {
-          step: `Account Activated`,
-          date: resp.created_at,
-          status: true,
-          show: true,
-          active: true,
-          showIcons: false,
-          click: +resp.status_step == 1 ? true : false,
-          statusBar: 'account_activated',
-        },
-        {
-          step: `Email Sent to upload Drivers License and SS card`,
-          date: resp.step_two_date,
-          status:  +resp.status_step >= 2 && resp.driver_license_ss_card ? true : false,
-          show: +resp.status_step >= 2 ? true : false,
-          active: +resp.status_step >= 2 ? true : false,
-          showIcons: false,
-          click: +resp.status_step == 2  ? true : false,
-          statusBar: 'driver_license_ss_card',
-        },
-        {
-          step: `Drivers License and SS card verified`,
-          date: resp.step_three_date,
-          status:  +resp.status_step >= 3  && resp.driver_license_ss_card == 'Verified' ? true : false,
-          show: +resp.status_step >= 3 ? true : false,
-          active: +resp.status_step >= 3 ? true : false,
-          showIcons: resp.social_sec_disclaimer == true  && resp.cdl_license_disclaimer == true ? true : false,
-          click: +resp.status_step == 3  ? true : false,
-          statusBar: 'driver_license_ss_card',
-        },
-        {
-          step: `Email sent to review/sign compliance docs`,
-          date: resp.step_four_date,
-          status:  +resp.status_step >= 4  && resp.compliance_docs? true : false,
-          show: +resp.status_step >= 4  ? true : false,
-          active: +resp.status_step >= 4 ? true : false,
-          showIcons: false,
-          click: +resp.status_step == 4  ? true : false,
-          statusBar: 'compliance_docs',
-        },
-        {
-          step: `Compliance docs verified`,
-          date: resp.step_five_date,
-          status:  +resp.status_step >= 5  && resp.compliance_docs == 'Verified' ? true : false,
-          show: +resp.status_step >= 5  ? true : false,
-          active: +resp.status_step >= 5 ? true : false,
-          showIcons: resp.work_agreement_disclaimer == true  && resp.itinerary_disclaimer == true && resp.rules_disclaimer == true && resp.handbook_disclaimer == true ? true : false,
-          click: +resp.status_step == 5 ? true : false,
-          statusBar: 'compliance_docs',
-        },
-        // {
-        //   step: `System creates contract`,
-        //   date: resp.step_six_date,
-        //   status:  +resp.status_step >= 6 ? true : false,
-        //   show: +resp.status_step >= 6  ? true : false,
-        //   showIcons: false,
-        //   active: +resp.status_step >= 6 ? true : false,
-        // },
-        // {
-        //   step: `Admin reviews/approves contract`,
-        //   date: resp.step_seven_date,
-        //   status:  +resp.status_step >= 6 && resp.contract_created == 'Verified' ? true : false,
-        //   show: +resp.status_step >= 6  ? true : false,
-        //   active: +resp.status_step >= 6 ? true : false,
-        //   showIcons: true,
-        //   click: +resp.status_step == 6  ? true : false
-        // },
-        {
-          step: `Email Sent to notify that contract and W4 posted`,
-          date: resp.step_six_date,
-          status:  +resp.status_step >= 6 && resp.contract_w4? true : false,
-          show: +resp.status_step >= 6  ? true : false,
-          active: +resp.status_step >= 6 ? true : false,
-          showIcons: false,
-          click: +resp.status_step == 6  ? true : false,
-          statusBar: 'contract_w4',
+      let result = await db.query(employee_info_query);
+      let resp;
+      let status_bar;
+      resp = result.rows[0];
+      if (result.rows.length > 0 && h2a_employee != 'true') {
+        //#region Status Bar
+        status_bar = [
+          {
+            step: `Account Activated`,
+            date: resp.created_at,
+            status: true,
+            show: true,
+            active: true,
+            showIcons: false,
+            click: +resp.status_step == 1 ? true : false,
+            statusBar: 'account_activated',
+          },
+          {
+            step: `Email Sent to upload Drivers License and SS card`,
+            date: resp.step_two_date,
+            status: +resp.status_step >= 2 && resp.driver_license_ss_card ? true : false,
+            show: +resp.status_step >= 2 ? true : false,
+            active: +resp.status_step >= 2 ? true : false,
+            showIcons: false,
+            click: +resp.status_step == 2 ? true : false,
+            statusBar: 'driver_license_ss_card',
+          },
+          {
+            step: `Drivers License and SS card verified`,
+            date: resp.step_three_date,
+            status: +resp.status_step >= 3 && resp.driver_license_ss_card == 'Verified' ? true : false,
+            show: +resp.status_step >= 3 ? true : false,
+            active: +resp.status_step >= 3 ? true : false,
+            showIcons: resp.social_sec_disclaimer == true && resp.cdl_license_disclaimer == true ? true : false,
+            click: +resp.status_step == 3 ? true : false,
+            statusBar: 'driver_license_ss_card',
+          },
+          {
+            step: `Email sent to review/sign compliance docs`,
+            date: resp.step_four_date,
+            status: +resp.status_step >= 4 && resp.compliance_docs ? true : false,
+            show: +resp.status_step >= 4 ? true : false,
+            active: +resp.status_step >= 4 ? true : false,
+            showIcons: false,
+            click: +resp.status_step == 4 ? true : false,
+            statusBar: 'compliance_docs',
+          },
+          {
+            step: `Compliance docs verified`,
+            date: resp.step_five_date,
+            status: +resp.status_step >= 5 && resp.compliance_docs == 'Verified' ? true : false,
+            show: +resp.status_step >= 5 ? true : false,
+            active: +resp.status_step >= 5 ? true : false,
+            showIcons: resp.work_agreement_disclaimer == true && resp.itinerary_disclaimer == true && resp.rules_disclaimer == true && resp.handbook_disclaimer == true ? true : false,
+            click: +resp.status_step == 5 ? true : false,
+            statusBar: 'compliance_docs',
+          },
+          // {
+          //   step: `System creates contract`,
+          //   date: resp.step_six_date,
+          //   status:  +resp.status_step >= 6 ? true : false,
+          //   show: +resp.status_step >= 6  ? true : false,
+          //   showIcons: false,
+          //   active: +resp.status_step >= 6 ? true : false,
+          // },
+          // {
+          //   step: `Admin reviews/approves contract`,
+          //   date: resp.step_seven_date,
+          //   status:  +resp.status_step >= 6 && resp.contract_created == 'Verified' ? true : false,
+          //   show: +resp.status_step >= 6  ? true : false,
+          //   active: +resp.status_step >= 6 ? true : false,
+          //   showIcons: true,
+          //   click: +resp.status_step == 6  ? true : false
+          // },
+          {
+            step: `Email Sent to notify that contract and W4 posted`,
+            date: resp.step_six_date,
+            status: +resp.status_step >= 6 && resp.contract_w4 ? true : false,
+            show: +resp.status_step >= 6 ? true : false,
+            active: +resp.status_step >= 6 ? true : false,
+            showIcons: false,
+            click: +resp.status_step == 6 ? true : false,
+            statusBar: 'contract_w4',
 
-        },
-        {
-          step: `Contract signed by employee is verified`,
-          date: resp.step_seven_date,
-          status:  +resp.status_step >= 7 && resp.contract_w4 == 'Verified' ? true : false,
-          show: +resp.status_step >= 7 ? true : false,
-          active: +resp.status_step >= 7 ? true : false,
-          showIcons: resp.contract_disclaimer == true && resp.w4_disclaimer == true ? true : false,
-          click: +resp.status_step == 7 ? true : false,
-          statusBar: 'contract_w4',
-        },
-        {
-          step: `Email sent to set-up online bank account`,
-          date: resp.step_eight_date,
-          status:  +resp.status_step >= 8 && resp.bank_account? true : false,
-          show: +resp.status_step >= 8 ? true : false,
-          active: +resp.status_step >= 8 ? true : false,
-          showIcons: false,
-          click: +resp.status_step == 8 ? true : false,
-          statusBar: 'bank_account',
-        },
-        {
-          step: `Bank account details verified`,
-          date: resp.step_nine_date,
-          status:  +resp.status_step >= 9 && resp.bank_account == 'Verified' ? true : false,
-          show: +resp.status_step >= 9 ? true : false,
-          active: +resp.status_step >= 9 ? true : false,
-          showIcons: resp.bank_acc_disclaimer == true ? true : false,
-          click: +resp.status_step == 9 ? true : false,
-          statusBar: 'bank_account',
-        },
-        {
-          step: `Email sent to complete signing and dating of some additional compliance docs including 1. Drug Policy and 2) Reprimand Policy`,
-          date: resp.step_ten_date,
-          status:  +resp.status_step >= 10 && resp.additional_compliance_docs? true : false,
-          show: +resp.status_step >= 10 ? true : false,
-          active: +resp.status_step >= 10 ? true : false,
-          showIcons: false,
-          click: +resp.status_step == 10 ? true : false,
-          statusBar: 'additional_compliance_docs',
-        },
-        {
-          step: `Additional compliance docs verified`,
-          date: resp.step_eleven_date,
-          status:  +resp.status_step >= 11 && resp.additional_compliance_docs == 'Verified' ? true : false,
-          show: +resp.status_step >= 11 ? true : false,
-          active: +resp.status_step >= 11 ? true : false,
-          showIcons: resp.reprimand_policy_disclaimer == true  && resp.drug_policy_disclaimer == true ? true : false,
-          click: +resp.status_step == 11 ? true : false,
-          statusBar: 'additional_compliance_docs',
-        },
-        // {
-        //   step: `Email sent to complete CDL training`,
-        //   date: resp.step_twelve_date,
-        //   status:  +resp.status_step >= 12 && resp.cdl_training? true : false,
-        //   show: +resp.status_step >= 12 ? true : false,
-        //   active: +resp.status_step >= 12 ? true : false,
-        //   showIcons: false,
-        //   click: +resp.status_step == 12 ? true : false,
-        //   statusBar: 'cdl_training',
-        // },
-        // {
-        //   step: `CDL training verified`,
-        //   date: resp.step_thirteen_date,
-        //   status:  +resp.status_step >= 13 && resp.cdl_training == 'Verified' ? true : false,
-        //   show: +resp.status_step >= 13 ? true : false,
-        //   active: +resp.status_step >= 13 ? true : false,
-        //   showIcons: resp.social_sec_disclaimer == true  && resp.cdl_license_disclaimer == true ? true : false,
-        //   click: +resp.status_step == 13 ? true : false,
-        //   statusBar: 'cdl_training',
-        // },
-        {
-          step: `Email sent to make travel arrangements`,
-          date: resp.step_twelve_date,
-          status:  +resp.status_step >= 12 && resp.travel_arrangements? true : false,
-          show: +resp.status_step >= 12 ? true : false,
-          active: +resp.status_step >= 12 ? true : false,
-          showIcons: false,
-          click: +resp.status_step == 12 ? true : false,
-          statusBar: 'travel_arrangements',
-        },
-        {
-          step: `Results`,
-          date: resp.step_thirteen_date,
-          status:  +resp.status_step >= 13 && resp.travel_arrangements? true : false,
-          show: +resp.status_step >= 13 ? true : false,
-          active: +resp.status_step >= 13 ? true : false,
-          showIcons: false,
-          click: +resp.status_step == 13 ? true : false,
-          statusBar: 'results',
-        },
-      ];
-      //#endregion
-
-
-    }
-
-    else if (result.rows.length > 0 && h2a_employee == 'true'){
-      status_bar = [
-        {
-          step: `Account Activated`,
-          date: resp.created_at,
-          status: true,
-          show: true,
-          active: true,
-          showIcons: false,
-          click: +resp.status_step == 1 ? true : false,
-          statusBar: 'account_activated',
-        },
-        {
-          step: `Email Sent to upload Passport and drivers license`,
-          date: resp.step_two_date,
-          status:  +resp.status_step >= 2 && resp.passport_driver_license ? true : false,
-          show: +resp.status_step >= 2 ? true : false,
-          active: +resp.status_step >= 2 ? true : false,
-          showIcons: false,
-          click: +resp.status_step == 2  ? true : false,
-          statusBar: 'passport_driver_license',
-        },
-        {
-          step: `Passport and Drivers License verified`,
-          date: resp.step_three_date,
-          status:  +resp.status_step >= 3  && resp.passport_driver_license == 'Verified' ? true : false,
-          show: +resp.status_step >= 3 ? true : false,
-          active: +resp.status_step >= 3 ? true : false,
-          showIcons: resp.passport_disclaimer == true  && resp.cdl_license_disclaimer == true ? true : false,
-          click: +resp.status_step == 3  ? true : false,
-          statusBar: 'passport_driver_license',
-        },
-        {
-          step: `Email sent to review/sign compliance docs`,
-          date: resp.step_four_date,
-          status:  +resp.status_step >= 4  && resp.compliance_docs? true : false,
-          show: +resp.status_step >= 4  ? true : false,
-          active: +resp.status_step >= 4 ? true : false,
-          showIcons: false,
-          click: +resp.status_step == 4  ? true : false,
-          statusBar: 'compliance_docs',
-        },
-        {
-          step: `Compliance docs verified`,
-          date: resp.step_five_date,
-          status:  +resp.status_step >= 5  && resp.compliance_docs == 'Verified' ? true : false,
-          show: +resp.status_step >= 5  ? true : false,
-          active: +resp.status_step >= 5 ? true : false,
-          showIcons: resp.work_agreement_disclaimer == true  && resp.itinerary_disclaimer == true && resp.rules_disclaimer == true && resp.handbook_disclaimer == true ? true : false,
-          click: +resp.status_step == 5 ? true : false,
-          statusBar: 'compliance_docs',
-        },
-        {
-          step: `Email Sent to review/complete VISA app`,
-          date: resp.step_six_date,
-          status:  +resp.status_step >= 6 && resp.visa? true : false,
-          show: +resp.status_step >= 6  ? true : false,
-          active: +resp.status_step >= 6 ? true : false,
-          showIcons: false,
-          click: +resp.status_step == 6  ? true : false,
-          statusBar: 'visa  ',
-
-        },
-        {
-          step: `Visa is verified`,
-          date: resp.step_seven_date,
-          status:  +resp.status_step >= 7 && resp.visa == 'Verified' ? true : false,
-          show: +resp.status_step >= 7 ? true : false,
-          active: +resp.status_step >= 7 ? true : false,
-          showIcons: resp.visa == true ? true : false,
-          click: +resp.status_step == 7 ? true : false,
-          statusBar: 'visa',
-        },
-        {
-          step: `Email Sent to notify that contract and Approval letter posted`,
-          date: resp.step_eight_date,
-          status:  +resp.status_step >= 8 && resp.contract_approval_letter? true : false,
-          show: +resp.status_step >= 8  ? true : false,
-          active: +resp.status_step >= 8 ? true : false,
-          showIcons: false,
-          click: +resp.status_step == 8  ? true : false,
-          statusBar: 'contract_approval_letter',
-
-        },
-        {
-          step: `Contract signed by employee is verified`,
-          date: resp.step_nine_date,
-          status:  +resp.status_step >= 9 && resp.contract_approval_letter == 'Verified' ? true : false,
-          show: +resp.status_step >= 9 ? true : false,
-          active: +resp.status_step >= 9 ? true : false,
-          showIcons: resp.contract_disclaimer == true && resp.approval_letter_disclaimer == true ? true : false,
-          click: +resp.status_step == 9 ? true : false,
-          statusBar: 'contract_approval_letter',
-        },
-        {
-          step: `Email sent to set-up online bank account`,
-          date: resp.step_ten_date,
-          status:  +resp.status_step >= 10 && resp.bank_account? true : false,
-          show: +resp.status_step >= 10 ? true : false,
-          active: +resp.status_step >= 10 ? true : false,
-          showIcons: false,
-          click: +resp.status_step == 10 ? true : false,
-          statusBar: 'bank_account',
-        },
-        {
-          step: `Bank account details verified`,
-          date: resp.step_eleven_date,
-          status:  +resp.status_step >= 12 && resp.bank_account == 'Verified' ? true : false,
-          show: +resp.status_step >= 12 ? true : false,
-          active: +resp.status_step >= 12 ? true : false,
-          showIcons: resp.bank_acc_disclaimer == true ? true : false,
-          click: +resp.status_step == 12 ? true : false,
-          statusBar: 'bank_account',
-        },
-        {
-          step: `Email sent to complete signing and dating of some additional compliance docs including 1. Drug Policy and 2) Reprimand Policy`,
-          date: resp.step_twelve_date,
-          status:  +resp.status_step >= 13 && resp.additional_compliance_docs? true : false,
-          show: +resp.status_step >= 13 ? true : false,
-          active: +resp.status_step >= 13 ? true : false,
-          showIcons: false,
-          click: +resp.status_step == 13 ? true : false,
-          statusBar: 'additional_compliance_docs',
-        },
-        {
-          step: `Additional compliance docs verified`,
-          date: resp.step_thirteen_date,
-          status:  +resp.status_step >= 14 && resp.additional_compliance_docs == 'Verified' ? true : false,
-          show: +resp.status_step >= 14 ? true : false,
-          active: +resp.status_step >= 14 ? true : false,
-          showIcons: resp.reprimand_policy_disclaimer == true  && resp.drug_policy_disclaimer == true ? true : false,
-          click: +resp.status_step == 14 ? true : false,
-          statusBar: 'additional_compliance_docs',
-        },
-        {
-          step: `Email sent to make travel arrangements`,
-          date: resp.step_fourteen_date,
-          status:  +resp.status_step >= 15 && resp.travel_arrangements? true : false,
-          show: +resp.status_step >= 15 ? true : false,
-          active: +resp.status_step >= 15 ? true : false,
-          showIcons: false,
-          click: +resp.status_step == 15 ? true : false,
-          statusBar: 'travel_arrangements',
-        },
-        {
-          step: `Results`,
-          date: resp.step_fifteen_date,
-          status:  +resp.status_step >= 16 && resp.travel_arrangements? true : false,
-          show: +resp.status_step >= 16 ? true : false,
-          active: +resp.status_step >= 16 ? true : false,
-          showIcons: false,
-          click: +resp.status_step == 16 ? true : false,
-          statusBar: 'results',
-        },
-      ];
-    }
-    else {
-      resp = {
-        message: "No employee exists with this id.",
-      };
-    }
+          },
+          {
+            step: `Contract signed by employee is verified`,
+            date: resp.step_seven_date,
+            status: +resp.status_step >= 7 && resp.contract_w4 == 'Verified' ? true : false,
+            show: +resp.status_step >= 7 ? true : false,
+            active: +resp.status_step >= 7 ? true : false,
+            showIcons: resp.contract_disclaimer == true && resp.w4_disclaimer == true ? true : false,
+            click: +resp.status_step == 7 ? true : false,
+            statusBar: 'contract_w4',
+          },
+          {
+            step: `Email sent to set-up online bank account`,
+            date: resp.step_eight_date,
+            status: +resp.status_step >= 8 && resp.bank_account ? true : false,
+            show: +resp.status_step >= 8 ? true : false,
+            active: +resp.status_step >= 8 ? true : false,
+            showIcons: false,
+            click: +resp.status_step == 8 ? true : false,
+            statusBar: 'bank_account',
+          },
+          {
+            step: `Bank account details verified`,
+            date: resp.step_nine_date,
+            status: +resp.status_step >= 9 && resp.bank_account == 'Verified' ? true : false,
+            show: +resp.status_step >= 9 ? true : false,
+            active: +resp.status_step >= 9 ? true : false,
+            showIcons: resp.bank_acc_disclaimer == true ? true : false,
+            click: +resp.status_step == 9 ? true : false,
+            statusBar: 'bank_account',
+          },
+          {
+            step: `Email sent to complete signing and dating of some additional compliance docs including 1. Drug Policy and 2) Reprimand Policy`,
+            date: resp.step_ten_date,
+            status: +resp.status_step >= 10 && resp.additional_compliance_docs ? true : false,
+            show: +resp.status_step >= 10 ? true : false,
+            active: +resp.status_step >= 10 ? true : false,
+            showIcons: false,
+            click: +resp.status_step == 10 ? true : false,
+            statusBar: 'additional_compliance_docs',
+          },
+          {
+            step: `Additional compliance docs verified`,
+            date: resp.step_eleven_date,
+            status: +resp.status_step >= 11 && resp.additional_compliance_docs == 'Verified' ? true : false,
+            show: +resp.status_step >= 11 ? true : false,
+            active: +resp.status_step >= 11 ? true : false,
+            showIcons: resp.reprimand_policy_disclaimer == true && resp.drug_policy_disclaimer == true ? true : false,
+            click: +resp.status_step == 11 ? true : false,
+            statusBar: 'additional_compliance_docs',
+          },
+          // {
+          //   step: `Email sent to complete CDL training`,
+          //   date: resp.step_twelve_date,
+          //   status:  +resp.status_step >= 12 && resp.cdl_training? true : false,
+          //   show: +resp.status_step >= 12 ? true : false,
+          //   active: +resp.status_step >= 12 ? true : false,
+          //   showIcons: false,
+          //   click: +resp.status_step == 12 ? true : false,
+          //   statusBar: 'cdl_training',
+          // },
+          // {
+          //   step: `CDL training verified`,
+          //   date: resp.step_thirteen_date,
+          //   status:  +resp.status_step >= 13 && resp.cdl_training == 'Verified' ? true : false,
+          //   show: +resp.status_step >= 13 ? true : false,
+          //   active: +resp.status_step >= 13 ? true : false,
+          //   showIcons: resp.social_sec_disclaimer == true  && resp.cdl_license_disclaimer == true ? true : false,
+          //   click: +resp.status_step == 13 ? true : false,
+          //   statusBar: 'cdl_training',
+          // },
+          {
+            step: `Email sent to make travel arrangements`,
+            date: resp.step_twelve_date,
+            status: +resp.status_step >= 12 && resp.travel_arrangements ? true : false,
+            show: +resp.status_step >= 12 ? true : false,
+            active: +resp.status_step >= 12 ? true : false,
+            showIcons: false,
+            click: +resp.status_step == 12 ? true : false,
+            statusBar: 'travel_arrangements',
+          },
+          {
+            step: `Results`,
+            date: resp.step_thirteen_date,
+            status: +resp.status_step >= 13 && resp.travel_arrangements ? true : false,
+            show: +resp.status_step >= 13 ? true : false,
+            active: +resp.status_step >= 13 ? true : false,
+            showIcons: false,
+            click: +resp.status_step == 13 ? true : false,
+            statusBar: 'results',
+          },
+        ];
+        //#endregion
 
 
-    db.end();
-
-    context.res = {
-      status: 200,
-      body: {
-      employee_info: resp,
-      employee_status_bar: status_bar
       }
-    };
 
-    context.done();
-    return;
+      else if (result.rows.length > 0 && h2a_employee == 'true') {
+        status_bar = [
+          {
+            step: `Account Activated`,
+            date: resp.created_at,
+            status: true,
+            show: true,
+            active: true,
+            showIcons: false,
+            click: +resp.status_step == 1 ? true : false,
+            statusBar: 'account_activated',
+          },
+          {
+            step: `Email Sent to upload Passport and drivers license`,
+            date: resp.step_two_date,
+            status: +resp.status_step >= 2 && resp.passport_driver_license ? true : false,
+            show: +resp.status_step >= 2 ? true : false,
+            active: +resp.status_step >= 2 ? true : false,
+            showIcons: false,
+            click: +resp.status_step == 2 ? true : false,
+            statusBar: 'passport_driver_license',
+          },
+          {
+            step: `Passport and Drivers License verified`,
+            date: resp.step_three_date,
+            status: +resp.status_step >= 3 && resp.passport_driver_license == 'Verified' ? true : false,
+            show: +resp.status_step >= 3 ? true : false,
+            active: +resp.status_step >= 3 ? true : false,
+            showIcons: resp.passport_disclaimer == true && resp.cdl_license_disclaimer == true ? true : false,
+            click: +resp.status_step == 3 ? true : false,
+            statusBar: 'passport_driver_license',
+          },
+          {
+            step: `Email sent to review/sign compliance docs`,
+            date: resp.step_four_date,
+            status: +resp.status_step >= 4 && resp.compliance_docs ? true : false,
+            show: +resp.status_step >= 4 ? true : false,
+            active: +resp.status_step >= 4 ? true : false,
+            showIcons: false,
+            click: +resp.status_step == 4 ? true : false,
+            statusBar: 'compliance_docs',
+          },
+          {
+            step: `Compliance docs verified`,
+            date: resp.step_five_date,
+            status: +resp.status_step >= 5 && resp.compliance_docs == 'Verified' ? true : false,
+            show: +resp.status_step >= 5 ? true : false,
+            active: +resp.status_step >= 5 ? true : false,
+            showIcons: resp.work_agreement_disclaimer == true && resp.itinerary_disclaimer == true && resp.rules_disclaimer == true && resp.handbook_disclaimer == true ? true : false,
+            click: +resp.status_step == 5 ? true : false,
+            statusBar: 'compliance_docs',
+          },
+          {
+            step: `Email Sent to review/complete VISA app`,
+            date: resp.step_six_date,
+            status: +resp.status_step >= 6 && resp.visa ? true : false,
+            show: +resp.status_step >= 6 ? true : false,
+            active: +resp.status_step >= 6 ? true : false,
+            showIcons: false,
+            click: +resp.status_step == 6 ? true : false,
+            statusBar: 'visa  ',
+
+          },
+          {
+            step: `Visa is verified`,
+            date: resp.step_seven_date,
+            status: +resp.status_step >= 7 && resp.visa == 'Verified' ? true : false,
+            show: +resp.status_step >= 7 ? true : false,
+            active: +resp.status_step >= 7 ? true : false,
+            showIcons: resp.visa == true ? true : false,
+            click: +resp.status_step == 7 ? true : false,
+            statusBar: 'visa',
+          },
+          {
+            step: `Email Sent to notify that contract and Approval letter posted`,
+            date: resp.step_eight_date,
+            status: +resp.status_step >= 8 && resp.contract_approval_letter ? true : false,
+            show: +resp.status_step >= 8 ? true : false,
+            active: +resp.status_step >= 8 ? true : false,
+            showIcons: false,
+            click: +resp.status_step == 8 ? true : false,
+            statusBar: 'contract_approval_letter',
+
+          },
+          {
+            step: `Contract signed by employee is verified`,
+            date: resp.step_nine_date,
+            status: +resp.status_step >= 9 && resp.contract_approval_letter == 'Verified' ? true : false,
+            show: +resp.status_step >= 9 ? true : false,
+            active: +resp.status_step >= 9 ? true : false,
+            showIcons: resp.contract_disclaimer == true && resp.approval_letter_disclaimer == true ? true : false,
+            click: +resp.status_step == 9 ? true : false,
+            statusBar: 'contract_approval_letter',
+          },
+          {
+            step: `Email sent to set-up online bank account`,
+            date: resp.step_ten_date,
+            status: +resp.status_step >= 10 && resp.bank_account ? true : false,
+            show: +resp.status_step >= 10 ? true : false,
+            active: +resp.status_step >= 10 ? true : false,
+            showIcons: false,
+            click: +resp.status_step == 10 ? true : false,
+            statusBar: 'bank_account',
+          },
+          {
+            step: `Bank account details verified`,
+            date: resp.step_eleven_date,
+            status: +resp.status_step >= 12 && resp.bank_account == 'Verified' ? true : false,
+            show: +resp.status_step >= 12 ? true : false,
+            active: +resp.status_step >= 12 ? true : false,
+            showIcons: resp.bank_acc_disclaimer == true ? true : false,
+            click: +resp.status_step == 12 ? true : false,
+            statusBar: 'bank_account',
+          },
+          {
+            step: `Email sent to complete signing and dating of some additional compliance docs including 1. Drug Policy and 2) Reprimand Policy`,
+            date: resp.step_twelve_date,
+            status: +resp.status_step >= 13 && resp.additional_compliance_docs ? true : false,
+            show: +resp.status_step >= 13 ? true : false,
+            active: +resp.status_step >= 13 ? true : false,
+            showIcons: false,
+            click: +resp.status_step == 13 ? true : false,
+            statusBar: 'additional_compliance_docs',
+          },
+          {
+            step: `Additional compliance docs verified`,
+            date: resp.step_thirteen_date,
+            status: +resp.status_step >= 14 && resp.additional_compliance_docs == 'Verified' ? true : false,
+            show: +resp.status_step >= 14 ? true : false,
+            active: +resp.status_step >= 14 ? true : false,
+            showIcons: resp.reprimand_policy_disclaimer == true && resp.drug_policy_disclaimer == true ? true : false,
+            click: +resp.status_step == 14 ? true : false,
+            statusBar: 'additional_compliance_docs',
+          },
+          {
+            step: `Email sent to make travel arrangements`,
+            date: resp.step_fourteen_date,
+            status: +resp.status_step >= 15 && resp.travel_arrangements ? true : false,
+            show: +resp.status_step >= 15 ? true : false,
+            active: +resp.status_step >= 15 ? true : false,
+            showIcons: false,
+            click: +resp.status_step == 15 ? true : false,
+            statusBar: 'travel_arrangements',
+          },
+          {
+            step: `Results`,
+            date: resp.step_fifteen_date,
+            status: +resp.status_step >= 16 && resp.travel_arrangements ? true : false,
+            show: +resp.status_step >= 16 ? true : false,
+            active: +resp.status_step >= 16 ? true : false,
+            showIcons: false,
+            click: +resp.status_step == 16 ? true : false,
+            statusBar: 'results',
+          },
+        ];
+      }
+      else {
+        resp = {
+          message: "No employee exists with this id.",
+        };
+      }
+
+
+      db.end();
+
+      context.res = {
+        status: 200,
+        body: {
+          employee_info: resp,
+          employee_status_bar: status_bar
+        }
+      };
+
+      context.done();
+      return;
+    }
   } catch (err) {
     db.end();
     context.res = {

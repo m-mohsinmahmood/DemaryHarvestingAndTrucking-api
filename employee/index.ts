@@ -11,7 +11,7 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
   switch (req.method) {
     case "GET":
-      if (req.query.id) await getEmployeesById.default(context, req);
+      if (req.query.id || req.query.fb_id) await getEmployeesById.default(context, req);
       else await getEmployees.default(context, req);
       break;
 
