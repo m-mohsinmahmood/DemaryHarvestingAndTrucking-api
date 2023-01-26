@@ -115,7 +115,7 @@ export function updateDWR(closingOfDay: any) {
     }
 
     if (closingOfDay.ending_separator_hours != null) {
-        optionalReq = `${optionalReq},"ending_seperators_hours" = '${closingOfDay.ending_separator_hours}'`;
+        optionalReq = `${optionalReq},"ending_separator_hours" = '${closingOfDay.ending_separator_hours}'`;
     }
 
     if (closingOfDay.ending_odometer_miles != null) {

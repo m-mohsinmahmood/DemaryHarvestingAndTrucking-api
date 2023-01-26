@@ -86,6 +86,102 @@ const httpTrigger: AzureFunction = async function (
        WHERE is_job_active = true AND is_job_completed = false;
      `;
     }
+    else if (entity === "truck-driver") {
+      query = `
+      select 
+      
+      "job_setup".id,
+     "job_setup".state,
+     "job_setup".customer_id,
+     "job_setup".farm_id,
+      "job_setup".field_id,
+       job_setup.crop_id,
+      farm."name" as farm_name,
+      crop."name" as crop,
+       field."name" as field_name,
+      field.acres as field_acres,
+      customers.customer_name,
+      emp.first_name as crew_chief_name
+ 
+      from "Customer_Job_Setup" job_setup
+      INNER JOIN "Customers" customers
+       on job_setup.customer_id = customers.id
+       
+       INNER JOIN "Employees" emp
+       on emp.id = job_setup.crew_chief_id
+
+     INNER JOIN "Customer_Farm" farm
+       on farm.id = job_setup.farm_id
+
+       INNER JOIN "Crops" crop
+      on crop.id = job_setup.crop_id
+
+       INNER JOIN "Customer_Field" field
+     on field.id = job_setup.field_id
+     
+       INNER JOIN "Customer_Job_Assigned_Roles" assigned
+      on job_setup.id = assigned.job_id AND assigned.employee_id = '${employeeId}'
+ 
+      WHERE is_job_active = true AND is_job_completed = false;
+     `;
+    }
+    else if (entity === "kart-operator") {
+      query = `
+      select 
+      
+      "job_setup".id,
+     "job_setup".state,
+     "job_setup".customer_id,
+     "job_setup".farm_id,
+      job_setup.crop_id,
+      farm."name" as farm_name,
+      crop."name" as crop,
+      customers.customer_name,
+      emp.first_name as crew_chief_name
+ 
+      from "Customer_Job_Setup" job_setup
+      
+      INNER JOIN "Customers" customers
+      on job_setup.customer_id = customers.id
+       
+      INNER JOIN "Employees" emp
+      on emp.id = job_setup.crew_chief_id
+
+      INNER JOIN "Customer_Farm" farm
+      on farm.id = job_setup.farm_id
+
+      INNER JOIN "Crops" crop
+      on crop.id = job_setup.crop_id
+     
+      INNER JOIN "Customer_Job_Assigned_Roles" assigned
+      on job_setup.id = assigned.job_id AND assigned.employee_id = '${employeeId}'
+ 
+      WHERE is_job_active = true AND is_job_completed = false;
+     `;
+    }
+    else if ("truck-driver-active-tickets") {
+      const isTicketActive: string = req.query.isTicketActive;
+      const isPreCHeckFilled: string = req.query.isPreCheckFilled;
+      let whereClause = ``;
+
+      if (isTicketActive) whereClause = ` ${whereClause}  And cjs.is_job_active=${isTicketActive}`;
+      if (isPreCHeckFilled) whereClause = ` ${whereClause}  And is_trip_check_filled=${isPreCHeckFilled}`;
+
+      query = `
+      select 
+      cjs."id" as "id",
+      CUS.customer_name as "customerName",
+      dwr.machinery_id as truck_id
+      from "Customer_Job_Setup"  cjs
+			
+      INNER JOIN "Customers" cus ON cus."id" = cjs.customer_id
+      INNER JOIN "DWR" dwr ON cjs.id = dwr.job_id 
+       
+      where dwr.employee_id = '${employeeId}'
+      ${whereClause}
+      ;`;
+    }
+
     // to get the opened/not-closed jobs of kart operator
     else if (entity === "kart-operator") {
       // to get the opened/not-closed jobs of kart operator if employee is present
