@@ -31,7 +31,7 @@ const httpTrigger: AzureFunction = async function (
 FROM 
   "Trucking_Delivery_Ticket" td 
   INNER JOIN "Employees" emp ON td."dispatcher_id" = emp."id" 
-	INNER JOIN "Employees" tDriver ON td.truck_driver_id = emp."id" 
+	INNER JOIN "Employees" tDriver ON td.truck_driver_id = tDriver."id" 
 
 Where 
 

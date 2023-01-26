@@ -8,12 +8,11 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
   const db = new Client(config);
 
-  console.log(req.query);
 
   try {
     const customer_id: string = req.query.customer_id;
 
-    let dwr_info_query = `
+    let info_query = `
           
     SELECT 
     ht.id as id, 
@@ -31,15 +30,18 @@ const httpTrigger: AzureFunction = async function (
     Where 
 
     ht.status = 'verified' 
-    And ht.customer_id = '${customer_id}'
+    And ht.customer_id = '${customer_id}';
+    `;
+
+    let count_query = `
+    SELECT 
+    SUM(loaded_miles)
+    FROM "Harvesting_Ticket" 
+    WHERE customer_id = '${customer_id}';
+    `;
 
 
-
-      `;
-
-
-
-    let query = `${dwr_info_query}`;
+    let query = `${info_query} ${count_query}`;
 
     console.log(query);
 
@@ -48,7 +50,8 @@ const httpTrigger: AzureFunction = async function (
     let result = await db.query(query);
 
     let resp = {
-      harvestingJobs: result.rows
+      harvestingJobs: result[0].rows,
+      total_loads: +result[1].rows[0].sum,
     };
 
     db.end();
