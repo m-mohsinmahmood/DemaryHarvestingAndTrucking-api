@@ -201,7 +201,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         "${documents['cdl_license'].field4}" = '',
         "${documents['cdl_license'].field5}" = '',
         "${documents['cdl_license'].field6}" = false,
-        "${documents['cdl_license'].field7}" = ''
+        "${documents['cdl_license'].field7}" = '',
 
 
         "${documents['social_sec'].field1}" = '',
