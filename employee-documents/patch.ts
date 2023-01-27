@@ -61,7 +61,7 @@ const httpTrigger: AzureFunction = async function (
       const random_num = Math.random() * 1000;
       const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/employees?sp=rawd&st=2023-01-14T11:52:11Z&se=2024-12-31T19:52:11Z&spr=https&sv=2021-06-08&sr=c&sig=qsEWo%2F1vfQzmw9V8HdI%2FEfL1R4l3hho4wd49Czmq%2BC8%3D");
       const container = blob.getContainerClient("employees");
-      doc = "doc-" + random_num + '-'  + employee_id;
+      doc = "doc" + Math.round(random_num) + employee_id;
       const blockBlob = container.getBlockBlobClient(doc);
       const uploadFileResp = await blockBlob.uploadData(files[0].bufferFile, {
         blobHTTPHeaders: { blobContentType: files[0].mimeType },
