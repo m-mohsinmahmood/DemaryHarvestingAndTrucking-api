@@ -159,7 +159,7 @@ const httpTrigger: AzureFunction = async function (
       WHERE is_job_active = true AND is_job_completed = false;
      `;
     }
-    else if ("truck-driver-active-tickets") {
+    else if (entity ==="truck-driver-active-tickets") {
       const isTicketActive: string = req.query.isTicketActive;
       const isPreCHeckFilled: string = req.query.isPreCheckFilled;
       let whereClause = ``;

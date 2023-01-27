@@ -2,6 +2,7 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as setupTruckDriver from "./setupTruckDriver";
 import * as getTruckDrivers from "./getTruckDrivers";
 import * as getKartOperatorTruckDrivers from "./getKartOperatorTruckDrivers";
+import * as createDeliveryTicket from "./post"
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -21,6 +22,10 @@ const httpTrigger: AzureFunction = async function (
         await setupTruckDriver.default(context, req);
       break;
 
+      case "POST":
+        if(req.body.operation === 'createDeliveryTicket')
+          await createDeliveryTicket.default(context, req);
+        break;
     default:
       context.res = {
         status: 404,

@@ -7,6 +7,7 @@ export interface job_setup {
     field_id: string;
     crew_chief_id?: string;
     combine_operator_id?: string;
+    truck_driver_id?: string;
     cart_operator_id?: string;
     changeFarmFieldCrop?: boolean;
     closeJob?: boolean;
