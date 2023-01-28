@@ -25,7 +25,7 @@ const httpTrigger: AzureFunction = async function (
 
     case "DELETE":
       await deleteCustomerField.default(context, req);
-      break;      
+      break;
 
     default:
       context.res = {

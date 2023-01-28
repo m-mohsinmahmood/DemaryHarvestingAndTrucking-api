@@ -11,7 +11,7 @@ const httpTrigger: AzureFunction = async function (
   try {
     const search: string = req.query.search;
     const customer_id: string = req.query.customerId;
-    
+
     let whereClause: string = ` WHERE "is_deleted" = FALSE AND "status" = TRUE AND "customer_id" = '${customer_id}'`;
 
     if (search) whereClause = ` ${whereClause} AND LOWER(name) LIKE LOWER('%${search}%')`;
@@ -24,17 +24,25 @@ const httpTrigger: AzureFunction = async function (
               "Customer_Farm" 
         ${whereClause}
         ORDER BY 
-              "name" ASC
+              "name" ASC;
       `;
 
-    let query = `${customer_farm_query}`;
+    let customer_farm_count_query = `
+      SELECT 
+              COUNT("id")
+              FROM 
+              "Customer_Farm" 
+        ${whereClause}
+    `;
+    let query = `${customer_farm_query} ${customer_farm_count_query}`;
 
     db.connect();
 
     let result = await db.query(query);
 
     let resp = {
-      customer_farms: result.rows
+      customer_farms: result[0].rows,
+      count: +result[1].rows[0].count,
     };
 
     db.end();

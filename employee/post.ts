@@ -2,7 +2,6 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
 import { employee } from "./model";
-const sgMail = require('@sendgrid/mail')
 
 const httpTrigger: AzureFunction = async function (
   context: Context,

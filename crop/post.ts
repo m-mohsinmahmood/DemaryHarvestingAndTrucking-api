@@ -2,7 +2,7 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
 import { crop } from "./model";
-import { cropValidator } from "./validator";
+// import { cropValidator } from "./validator";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
