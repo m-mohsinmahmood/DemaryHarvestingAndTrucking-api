@@ -9,6 +9,8 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
   const db = new Client(config);
   let query: string = '';
+  let result;
+
   try {
     const trainee: trainee = req.body;
     const trainer: trainer = req.body;
@@ -129,7 +131,9 @@ if(entity === 'trainee'){
               '${preTripCheck.is_completed_group_practical}',
               'pre-trip',
               'TRUE'
-);`;
+)
+ RETURNING id as training_record_id
+;`;
 
 }else if(entity === 'basic-skills' && basicSkills.evaluation_form === 'paper-form'){
   // for basic skills form having 'Paper Form'
@@ -283,12 +287,13 @@ if(entity === 'trainee'){
 
     db.connect();
     console.log(query)
-    await db.query(query);
+   result =  await db.query(query);
     db.end();
 
     context.res = {
       status: 200,
       body: {
+       id:  result.rows[0],
         message: "Your details have been submitted",
         status: 200,
       },

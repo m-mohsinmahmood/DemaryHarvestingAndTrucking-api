@@ -73,6 +73,23 @@ export function createDWR(dwr: any) {
         optionalReq = `${optionalReq},"job_id"`;
         optionalValues = `${optionalValues},'${dwr.jobId}'`;
     }
+    if (dwr.main_repair_ticket_id != null) {
+        optionalReq = `${optionalReq},"main_repair_ticket_id"`;
+        optionalValues = `${optionalValues},'${dwr.main_repair_ticket_id}'`;
+    }
+    if (dwr.training_record_id != null) {
+        optionalReq = `${optionalReq},"training_record_id"`;
+        optionalValues = `${optionalValues},'${dwr.training_record_id}'`;
+    }
+    if (dwr.evaluation_type != null) {
+        optionalReq = `${optionalReq},"evaluation_type"`;
+        optionalValues = `${optionalValues},'${dwr.evaluation_type}'`;
+    }
+    if (dwr.evaluation_form != null) {
+        optionalReq = `${optionalReq},"evaluation_form"`;
+        optionalValues = `${optionalValues},'${dwr.evaluation_form}'`;
+    }
+    
 
     let query = `
         INSERT INTO 

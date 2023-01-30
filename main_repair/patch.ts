@@ -37,7 +37,8 @@ const httpTrigger: AzureFunction = async function (
       SET 
               "summary"                     =  $$${completeTicket.summary}$$,
               "iscompleted" = TRUE,
-              "iscontinue" = FALSE
+              "iscontinue" = FALSE,
+              "completedat" = 'now()'
 
       WHERE 
               "id" = '${ticketRecordId}';`;

@@ -131,6 +131,38 @@ const httpTrigger: AzureFunction = async function (
         mr."id"='${ticket_record_id}'
           ;`;
       }
+      // to get the completed ticket record for DWR
+      else if (entity === "completedTicket") {
+        query = `
+        SELECT 
+        mr."repairTicketId" as "repairTicketId",
+        mr."equipmentId" as "equipmentId",
+        mr."city" as "city",
+        mr."state" as "state",
+        mr."issueCategory" as "issueCategory",
+        mr."severityType" as "severityType",
+        mr."status" as "status",
+        mr."ticketType" as "ticketType",
+        mr."summary" as "summary",
+        mr."description" as "description",
+        mr."empModule" as "empModule",
+        mr."assignedById" as "assignedById",
+        mr."assignedToId" as "assignedToId",
+        concat(emp.first_name, ' ', emp.last_name) as "assignedBy",
+        concat(emp2.first_name, ' ', emp2.last_name) as "assignedTo"
+      
+        FROM 
+        "Maintenance_Repair" mr
+              
+        INNER JOIN "Employees" emp
+        on mr."assignedById" = emp."id"
+              
+        INNER JOIN "Employees" emp2
+        on mr."assignedToId" = emp2."id"
+        WHERE 
+        mr."id"='${ticket_record_id}'
+          ;`;
+      }
     console.log(query);
 
     db.connect();

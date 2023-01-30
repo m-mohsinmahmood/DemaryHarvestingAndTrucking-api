@@ -26,7 +26,8 @@ let getById;
       WHERE 
             "id" = '${trainee_id}';
         `;
-    } else if (trainer_id && !(records.evaluation_type === 'summary')) {
+    } 
+    else if (trainer_id && !(records.evaluation_type === 'summary')) {
       getById = `
       SELECT 
              concat(emp.first_name,' ' ,emp.last_name)	as "trainer_name",
@@ -40,10 +41,7 @@ let getById;
         `;
     }
     // to get the training-records by ID having 'pre-trip' check in 'paper-form'
-    else if (
-    
-      records.evaluation_form === "paper-form"
-    ) {
+    else if (records.evaluation_form === "paper-form") {
       getById = `
       SELECT 
       trn.is_completed_cdl_classroom as "is_completed_cdl_classroom",
@@ -69,9 +67,7 @@ let getById;
       `;
     }
     // to get the training-records by ID having 'pre-trip' check in 'digital-form'
-    else if (
-      records.evaluation_form === "digital-form"
-    ) {
+    else if (records.evaluation_form === "digital-form") {
       getById = `
       SELECT 
       trn.is_completed_cdl_classroom as "is_completed_cdl_classroom",
@@ -95,7 +91,8 @@ let getById;
       AND evaluation_type = '${records.evaluation_type}'
       AND evaluation_form = 'digital-form';
       `;
-    } else if (record_id) {
+    } 
+    else if (record_id) {
       getById = `
  SELECT * FROM "Training"
 WHERE id = '${record_id}';`;
