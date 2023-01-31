@@ -19,7 +19,8 @@ export interface beginningOfDay {
     truck_company?: string;
     begining_odometer_miles?: string;
     ending_odometer_miles?: string;
-    // job_id?: string;
-    // total_acres?: string,
-    // total_gps_acres?: string
+    supervisor_id?: string;
+    state?: string;
+    apprTaskId?: string;
+    notesOther?: string;
 }

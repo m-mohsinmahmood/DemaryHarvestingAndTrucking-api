@@ -1,7 +1,8 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
+import * as _ from "lodash";
 import { config } from "../services/database/database.config";
-import { job_close_out } from "./model";
+
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -9,36 +10,30 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
   const db = new Client(config);
 
-  try {
-    const job_close_out: job_close_out = req.body;
+  const driverIds: [string] = req.body.driverIds;
+  const kartOperatorId: string = req.body.kartOperatorId;
+  let in_clause: string = driverIds.map(d => `'${d}'`).join(',');
 
+  try {
+    
     let query = `
-      INSERT INTO 
-                  "Customer_Job_Close_Out" 
-                  (
-                  "date", 
-                  "total_acres",
-                  "total_gps_acres"
-                  )
-                  
-      VALUES      (
-                  '${job_close_out.date}', 
-                  ${job_close_out.total_acres},
-                  ${job_close_out.total_gps_acres}
-    );`;
+        UPDATE 
+                "Employees"
+        SET 
+                "dht_supervisor_id"= '${kartOperatorId}'
+        WHERE 
+                "id" IN (${in_clause});`
 
     db.connect();
-    await db.query(query);
+    let result = await db.query(query);
     db.end();
 
     context.res = {
       status: 200,
       body: {
-        message: "Job has been closed successfully",
-        status: 200,
+        message: "Employee has been assigned as a Truck Driver.",
       },
     };
-
     context.done();
     return;
   } catch (error) {
