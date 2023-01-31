@@ -75,7 +75,7 @@ let getById;
       trn.evaluation_form as "evaluation_form",
       trn.evaluation_type as "evaluation_type",
       trn."id" as "record_id",
-
+      trn."created_at" as "created_at",
       concat(emp_trainee.first_name,' ' ,emp_trainee.last_name)	as "trainee_name",
       emp_trainee.id as "trainee_id",
       concat(emp_trainer.first_name,' ' ,emp_trainer.last_name)	as "trainer_name",
