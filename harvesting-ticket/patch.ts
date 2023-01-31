@@ -70,19 +70,6 @@ const httpTrigger: AzureFunction = async function (
           "id" = '${ticket_update.ticketId}' ;`
     }
 
-    // else if (ticket_update.operation === 'reassignTicket') {
-    //   // for reassigning the ticket to truck driver
-    //   query = `
-    //       UPDATE 
-    //               "Harvesting_Ticket"
-    //       SET 
-    //               "status"                     = '${ticket_reassign.status}',
-    //               "truck_driver_id"       ='${ticket_reassign.truck_driver_id}'
-
-    //       WHERE 
-    //               "delivery_ticket_number" = '${ticket_id}';`
-    // }
-
     db.connect();
     let result = await db.query(query);
     db.end();
