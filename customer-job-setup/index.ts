@@ -2,34 +2,40 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import * as createJob from "./post";
 import * as getCreateJob from "./get";
 import * as updateJob from "./patch";
+import * as getEmployeeById from "./getById";
+import * as getAssignedRoles from "./getAssignedRoles";
+
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    switch (req.method) {    
-      case "GET":
-          await getCreateJob.default(context, req);
-          break;
+  switch (req.method) {
+    case "GET":
+      if (req.query.job_id) await getEmployeeById.default(context, req);
+      if (req.query.combine_operator_id || req.query.cart_operator_id) await getAssignedRoles.default(context, req);
 
-        case "POST":
-          await createJob.default(context, req);
-          break;
+      else await getCreateJob.default(context, req);
+      break;
 
-          case "PUT":
+    case "POST":
       await createJob.default(context, req);
-      break;  
-      
-      case "PATCH":
-        await updateJob.default(context, req);
-        break;  
-    
-        default:
-          context.res = {
-            status: 404,
-            body: {
-              message: "Route not found.",
-            },
-          };
-          break;
-      }
+      break;
+
+    case "PUT":
+      await createJob.default(context, req);
+      break;
+
+    case "PATCH":
+      await updateJob.default(context, req);
+      break;
+
+    default:
+      context.res = {
+        status: 404,
+        body: {
+          message: "Route not found.",
+        },
+      };
+      break;
+  }
 
 };
 

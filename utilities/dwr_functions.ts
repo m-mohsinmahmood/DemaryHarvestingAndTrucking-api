@@ -15,13 +15,8 @@ export function createDWR(dwr: any) {
     }
 
     if (dwr.beginning_separator_hours != null) {
-        optionalReq = `${optionalReq},"beginning_seperators_hours"`;
+        optionalReq = `${optionalReq},"beginning_separator_hours"`;
         optionalValues = `${optionalValues},'${dwr.beginning_separator_hours}'`
-    }
-
-    if (dwr.field_id != null) {
-        optionalReq = `${optionalReq},"beginning_engine_hours"`;
-        optionalValues = `${optionalValues},'${dwr.field_id}'`
     }
 
     if (dwr.field_acres != null) {
@@ -48,16 +43,53 @@ export function createDWR(dwr: any) {
         optionalReq = `${optionalReq},"begining_odometer_miles"`;
         optionalValues = `${optionalValues},'${dwr.begining_odometer_miles}'`;
     }
-
+    if (dwr.state != null) {
+        optionalReq = `${optionalReq},"state"`;
+        optionalValues = `${optionalValues},'${dwr.state}'`;
+    }
+    if (dwr.supervisor_id != null) {
+        optionalReq = `${optionalReq},"supervisor_id"`;
+        optionalValues = `${optionalValues},'${dwr.supervisor_id}'`;
+    }
+    if (dwr.apprTaskId != null) {
+        optionalReq = `${optionalReq},"apprTaskId"`;
+        optionalValues = `${optionalValues},'${dwr.apprTaskId}'`;
+    }
+    if (dwr.notesOther != null) {
+        optionalReq = `${optionalReq},"notesOther"`;
+        optionalValues = `${optionalValues},'${dwr.notesOther}'`;
+    }
     if (dwr.workOrderId != null) {
         optionalReq = `${optionalReq},"work_order_id"`;
         optionalValues = `${optionalValues},'${dwr.workOrderId}'`;
     }
-
+    
     if (dwr.deliveryTicketId != null) {
         optionalReq = `${optionalReq},"delivery_ticket_id"`;
         optionalValues = `${optionalValues},'${dwr.deliveryTicketId}'`;
     }
+
+    if (dwr.jobId != null) {
+        optionalReq = `${optionalReq},"job_id"`;
+        optionalValues = `${optionalValues},'${dwr.jobId}'`;
+    }
+    if (dwr.main_repair_ticket_id != null) {
+        optionalReq = `${optionalReq},"main_repair_ticket_id"`;
+        optionalValues = `${optionalValues},'${dwr.main_repair_ticket_id}'`;
+    }
+    if (dwr.training_record_id != null) {
+        optionalReq = `${optionalReq},"training_record_id"`;
+        optionalValues = `${optionalValues},'${dwr.training_record_id}'`;
+    }
+    if (dwr.evaluation_type != null) {
+        optionalReq = `${optionalReq},"evaluation_type"`;
+        optionalValues = `${optionalValues},'${dwr.evaluation_type}'`;
+    }
+    if (dwr.evaluation_form != null) {
+        optionalReq = `${optionalReq},"evaluation_form"`;
+        optionalValues = `${optionalValues},'${dwr.evaluation_form}'`;
+    }
+    
 
     let query = `
         INSERT INTO 
@@ -100,7 +132,7 @@ export function updateDWR(closingOfDay: any) {
     }
 
     if (closingOfDay.ending_separator_hours != null) {
-        optionalReq = `${optionalReq},"ending_seperators_hours" = '${closingOfDay.ending_separator_hours}'`;
+        optionalReq = `${optionalReq},"ending_separator_hours" = '${closingOfDay.ending_separator_hours}'`;
     }
 
     if (closingOfDay.ending_odometer_miles != null) {
