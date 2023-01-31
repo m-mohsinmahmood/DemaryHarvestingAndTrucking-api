@@ -91,18 +91,17 @@ const httpTrigger: AzureFunction = async function (
       `;
         }
 
-        query = `${query}`;
+        console.log(query);
 
         db.connect();
-        console.log("Query:", query); +
-            await db.query(query);
+        await db.query(query);
         db.end();
 
         context.res = {
             status: 200,
             body: {
-                message: "Job has been created successfully",
                 status: 200,
+                message: "Farm Work Order has been created successfully",
             },
         };
 
@@ -113,6 +112,7 @@ const httpTrigger: AzureFunction = async function (
         context.res = {
             status: 500,
             body: {
+                status: 500,
                 message: error.message,
             },
         };

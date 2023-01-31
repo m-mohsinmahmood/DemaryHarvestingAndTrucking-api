@@ -9,23 +9,23 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest
 ): Promise<void> {
   switch (req.method) {
-  
+
     case "GET":
-      if(req.query.operation === 'kartOperatorTruckDrivers' && req.query.id)
-        await getKartOperatorTruckDrivers.default(context, req);  
+      if (req.query.operation === 'kartOperatorTruckDrivers' && req.query.id)
+        await getKartOperatorTruckDrivers.default(context, req);
       else if (req.query.operation === 'truckDriversDropDown')
         await getTruckDrivers.default(context, req);
       break;
 
     case "PATCH":
-      if(req.query.operation === 'addTruckDrivers')
+      if (req.body.operation === 'addTruckDrivers')
         await setupTruckDriver.default(context, req);
       break;
 
-      case "POST":
-        if(req.body.operation === 'createDeliveryTicket')
-          await createDeliveryTicket.default(context, req);
-        break;
+    case "POST":
+      if (req.body.operation === 'createDeliveryTicket')
+        await createDeliveryTicket.default(context, req);
+      break;
     default:
       context.res = {
         status: 404,
