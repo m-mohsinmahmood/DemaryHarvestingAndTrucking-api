@@ -150,6 +150,7 @@ if(entity === 'trainee'){
               "is_completed_cdl_classroom",
               "is_completed_group_practical",
               "clp",
+              "truckId",
               "odometerEndingMiles",
               "odometerStartingMiles",
               "evaluation_type"
@@ -165,6 +166,7 @@ if(entity === 'trainee'){
               '${basicSkills.is_completed_cdl_classroom}',
               '${basicSkills.is_completed_group_practical}',
               '${basicSkills.clp}',
+              '${basicSkills.truckId}',
               '${basicSkills.odometerEndingMiles}',
               '${basicSkills.odometerStartingMiles}',
               'basic-skills'
@@ -224,6 +226,7 @@ if(entity === 'trainee'){
               "is_completed_cdl_classroom",
               "is_completed_group_practical",
               "clp",
+              "truckId"
               "odometerEndingMiles",
               "odometerStartingMiles",
               "evaluation_type"
@@ -239,7 +242,8 @@ if(entity === 'trainee'){
               '${roadSkills.is_completed_cdl_classroom}',
               '${roadSkills.is_completed_group_practical}',
               '${roadSkills.clp}',
-              '${roadSkills.odometerEndingMiles}',
+              '${basicSkills.truckId}',
+            '${roadSkills.odometerEndingMiles}',
               '${roadSkills.odometerStartingMiles}',
               'road-skills'
 );`;
