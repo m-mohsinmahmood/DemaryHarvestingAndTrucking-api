@@ -134,27 +134,35 @@ let documents = {
     "field4": "rules_disclaimer",
 
   },
+
   drug_policy: {
     "field1": "drug_policy_date",
     "field2": "drug_policy_doc",
     "field3": "drug_policy_sign",
     "field4": "drug_policy_disclaimer",
-
   },
+
   reprimand_policy: {
     "field1": "reprimand_policy_date",
     "field2": "reprimand_policy_doc",
     "field3": "reprimand_policy_sign",
     "field4": "reprimand_policy_disclaimer",
-
   },
+
   departure: {
     "field1": "departure_date",
     "field2": "departure_doc",
     "field3": "departure_sign",
     "field4": "departure_disclaimer",
-
   },
+
+  equipment_policy: {
+    "field1": "equipment_policy_date",
+    "field2": "equipment_policy_doc",
+    "field3": "equipment_policy_sign",
+    "field4": "equipment_policy_disclaimer",
+  },
+
   bank_acc: {
     "field1": "bank_acc_name",
     "field2": "bank_acc_routing",
@@ -184,6 +192,14 @@ let documents = {
     "field2": "cdl_training_sign",
     "field3": "cdl_training_disclaimer",
   },
+  foreign_driver_license: {
+    "field1": "foreign_driver_license_state",
+    "field2": "foreign_driver_license_number",
+    "field3": "foreign_driver_license_issue_date",
+    "field4": "foreign_driver_license_doc",
+    "field5": "foreign_driver_license_sign",
+    "field6": "foreign_driver_license_disclaimer"
+  }
 }
 
 export function updateQuery(employee_doc, doc_status, employee_id, docName) {
@@ -209,6 +225,24 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         "${documents['social_sec'].field3}" = '',
         "${documents['social_sec'].field4}" = '',
         "${documents['social_sec'].field5}" = false
+
+        `;
+        break;
+      case "passport_driver_license":
+        query = query + `
+        "${documents['foreign_driver_license'].field1}" = '',
+        "${documents['foreign_driver_license'].field2}" = '',
+        "${documents['foreign_driver_license'].field3}" = '',
+        "${documents['foreign_driver_license'].field4}" = '',
+        "${documents['foreign_driver_license'].field5}" = '',
+        "${documents['foreign_driver_license'].field6}" = false,
+
+        "${documents['passport'].field1}" = '',
+        "${documents['passport'].field2}" = '',
+        "${documents['passport'].field3}" = '',
+        "${documents['passport'].field4}" = '',
+        "${documents['passport'].field5}" = '',
+        "${documents['passport'].field6}" = false
 
         `;
         break;
@@ -250,6 +284,14 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
         `;
         break;
+      case "contract":
+        query = query + `
+          "${documents['contract'].field1}" = '',
+          "${documents['contract'].field2}" = '',
+          "${documents['contract'].field3}" = '',
+          "${documents['contract'].field4}" = false
+          `;
+        break;
       case "bank_account":
         query = query + `
         "${documents['bank_acc'].field1}" = '',
@@ -271,16 +313,50 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         "${documents['reprimand_policy'].field1}" = '',
         "${documents['reprimand_policy'].field2}" = '',
         "${documents['reprimand_policy'].field3}" = '',
-        "${documents['reprimand_policy'].field4}" = false
+        "${documents['reprimand_policy'].field4}" = false,
+
+        "${documents['equipment_policy'].field1}" = '',
+        "${documents['equipment_policy'].field2}" = '',
+        "${documents['equipment_policy'].field3}" = '',
+        "${documents['equipment_policy'].field4}" = false,
+
+        "${documents['departure'].field1}" = '',
+        "${documents['departure'].field2}" = '',
+        "${documents['departure'].field3}" = '',
+        "${documents['departure'].field4}" = false
+
         `;
         break;
-
       case "cdl_training":
         query = query + `
         "${documents['cdl_training'].field1}" = '',
         "${documents['cdl_training'].field2}" = '',
         "${documents['cdl_training'].field3}" = false
         `;
+        break;
+
+      case "approval_letter":
+        query = query + `
+          "${documents['approval_letter'].field1}" = '',
+          "${documents['approval_letter'].field2}" = '',
+          "${documents['approval_letter'].field3}" = '',
+          "${documents['approval_letter'].field4}" = false
+
+          `;
+        break;
+
+      case "visa":
+        query = query + `
+          "${documents['visa'].field1}" = '',
+          "${documents['visa'].field2}" = '',
+          "${documents['visa'].field3}" = '',
+          "${documents['visa'].field4}" = '',
+          "${documents['visa'].field5}" = '',
+          "${documents['visa'].field6}" = '',
+          "${documents['visa'].field7}" = '',
+          "${documents['visa'].field8}" = '',
+          "${documents['visa'].field9}" = false
+          `;
         break;
 
       default:
@@ -300,6 +376,17 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         "${documents['passport'].field6}" = '${employee_doc.passport_disclaimer}'
 
         `;
+        break;
+
+      case "foreign_driver_license_doc":
+        query = query + `
+          "${documents['foreign_driver_license'].field1}" = $$${employee_doc.foreign_driver_license_state}$$,
+          "${documents['foreign_driver_license'].field2}" = '${employee_doc.foreign_driver_license_number}',
+          "${documents['foreign_driver_license'].field3}" = '${employee_doc.foreign_driver_license_issue_date}',
+          "${documents['foreign_driver_license'].field4}" = '',
+          "${documents['foreign_driver_license'].field5}" = $$${employee_doc.foreign_driver_license_sign}$$,
+          "${documents['foreign_driver_license'].field6}" = '${employee_doc.foreign_driver_license_disclaimer}'
+          `;
         break;
 
       case "approval_letter_doc":
@@ -351,7 +438,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         "${documents['drug_test'].field2}" = '${employee_doc.drug_test_expiration_date}',
         "${documents['drug_test'].field3}" = '${employee_doc.drug_test_issue_date}',
         "${documents['drug_test'].field4}" = '',
-        "${documents['drug_test'].field5}" = $$${employee_doc.drug_test_sign}$$',
+        "${documents['drug_test'].field5}" = $$${employee_doc.drug_test_sign}$$,
         "${documents['drug_test'].field6}" = '${employee_doc.drug_test_disclaimer}'
 
         `;
@@ -502,6 +589,16 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         `;
         break;
 
+      case "equipment_policy_doc":
+        query = query + `
+        "${documents['equipment_policy'].field1}" = '${employee_doc.equipment_policy_date}',
+        "${documents['equipment_policy'].field2}" = '',
+        "${documents['equipment_policy'].field3}" = $$${employee_doc.equipment_policy_sign}$$,
+        "${documents['equipment_policy'].field4}" = '${employee_doc.equipment_policy_disclaimer}'
+
+        `;
+        break;
+
       case "departure_doc":
         query = query + `
         "${documents['departure'].field1}" = '${employee_doc.departure_date}',
@@ -556,8 +653,6 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         break;
     }
   }
-
-
   query = query + `
       WHERE "employee_id" = '${employee_id}';
     `;
