@@ -89,6 +89,10 @@ export function createDWR(dwr: any) {
         optionalReq = `${optionalReq},"evaluation_form"`;
         optionalValues = `${optionalValues},'${dwr.evaluation_form}'`;
     }
+    if (dwr.role != null) {
+        optionalReq = `${optionalReq},"role"`;
+        optionalValues = `${optionalValues},'${dwr.role}'`;
+    }
     
 
     let query = `
