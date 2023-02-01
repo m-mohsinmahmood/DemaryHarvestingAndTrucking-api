@@ -64,7 +64,7 @@ const httpTrigger: AzureFunction = async function (
       UPDATE 
           "Harvesting_Delivery_Ticket"
       SET 
-          "ticket_status" = 'verified'
+          "ticket_status" = 'pending'
            ${optionalReq}
       WHERE 
           "id" = '${ticket_update.ticketId}' ;`
