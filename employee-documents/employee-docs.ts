@@ -334,7 +334,6 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         "${documents['cdl_training'].field3}" = false
         `;
         break;
-
       case "approval_letter":
         query = query + `
           "${documents['approval_letter'].field1}" = '',
@@ -344,7 +343,6 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
           `;
         break;
-
       case "visa":
         query = query + `
           "${documents['visa'].field1}" = '',
@@ -462,12 +460,10 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         "${documents['cdl_license'].field1}" = $$${employee_doc.cdl_license_state}$$,
         "${documents['cdl_license'].field2}" = '${employee_doc.cdl_license_number}',
         "${documents['cdl_license'].field3}" = '${employee_doc.cdl_license_issue_date}',
-        "${documents['cdl_license'].field4}" = '',
+        "${documents['cdl_license'].field4}" = $$${employee_doc.cdl_license_doc}$$,
         "${documents['cdl_license'].field5}" = $$${employee_doc.cdl_license_sign}$$,
         "${documents['cdl_license'].field6}" = '${employee_doc.cdl_license_disclaimer}',
         "${documents['cdl_license'].field7}" = '${employee_doc.cdl_license_type}'
-
-
         `;
         break;
 
@@ -494,7 +490,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "visa_doc":
         query = query + `
-        "${documents['visa'].field1}" = '${employee_doc.visa_control_number}',
+        "${documents['visa'].field1}" = $$${employee_doc.visa_control_number}$$,
         "${documents['visa'].field2}" = '${employee_doc.visa_issue_date}',
         "${documents['visa'].field3}" = '${employee_doc.visa_expiration_date}',
         "${documents['visa'].field4}" = $$${employee_doc.visa_nationality}$$,
@@ -622,7 +618,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         break;
       case "social_sec_doc":
         query = query + `
-        "${documents['social_sec'].field1}" = '${employee_doc.social_sec_number}',
+        "${documents['social_sec'].field1}" = $$${employee_doc.social_sec_number}$$,
         "${documents['social_sec'].field2}" = $$${employee_doc.social_sec_name}$$,
         "${documents['social_sec'].field3}" = '',
         "${documents['social_sec'].field4}" = $$${employee_doc.social_sec_sign}$$,
