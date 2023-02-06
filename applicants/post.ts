@@ -92,10 +92,6 @@ const httpTrigger: AzureFunction = async function (
                   "degree_name",
                   "reason_for_applying",
                   "hear_about_dht",
-                  "us_phone_number",
-                  "blood_type",
-                  "emergency_contact_name",
-                  "emergency_contact_phone",
                   "status_step",
                   "status_message",
                   "unique_fact",
@@ -120,6 +116,7 @@ const httpTrigger: AzureFunction = async function (
                   "school_college",
                   "graduation_year",
                   "resume",
+                  "employment_period",
                   "created_at"
                 )
       VALUES      
@@ -159,10 +156,6 @@ const httpTrigger: AzureFunction = async function (
                   $$${applicant.degree_name}$$,
                   $$${applicant.reason_for_applying}$$,
                   $$${applicant.hear_about_dht}$$,
-                  $$${applicant.us_phone_number}$$,
-                  $$${applicant.blood_type}$$,
-                  $$${applicant.emergency_contact_name}$$,
-                  $$${applicant.emergency_contact_phone}$$,
                   '2',
                   'Preliminary Review',
                   $$${applicant.unique_fact}$$,
@@ -186,7 +179,8 @@ const httpTrigger: AzureFunction = async function (
                   $$${applicant.previous_contact_supervisor}$$,
                   $$${applicant.school_college}$$,
                   $$${applicant.graduation_year}$$,
-                  '${applicant.resume}',
+                  $$${applicant.resume}$$,
+                  $$${applicant.employment_period}$$,
                   'now()'
                 )
                 RETURNING id as applicant_id

@@ -9,7 +9,8 @@
         "get",
         "post",
         "put",
-        "patch"
+        "patch",
+        "delete"
       ]
     },
     {
