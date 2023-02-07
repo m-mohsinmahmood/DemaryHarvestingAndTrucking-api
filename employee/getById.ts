@@ -96,6 +96,7 @@ const httpTrigger: AzureFunction = async function (
                 e1."current_employment_period_end",	
                 e1."current_supervisor_reference",	
                 e1."current_supervisor_phone_number",	
+                e1."current_supervisor_country_code",	
                 e1."current_contact_supervisor",	
                 e1."previous_employer",	
                 e1."previous_position_title",	
@@ -104,6 +105,7 @@ const httpTrigger: AzureFunction = async function (
                 e1."previous_employment_period_end",	
                 e1."previous_supervisor_reference",	
                 e1."previous_supervisor_phone_number",	
+                e1."previous_supervisor_country_code",	
                 e1."previous_contact_supervisor",	
                 e1."school_college",	
                 e1."graduation_year",	
@@ -358,7 +360,7 @@ const httpTrigger: AzureFunction = async function (
             statusBar: 'account_activated',
           },
           {
-            step: `Email Sent to upload Drivers License and SS card`,
+            step: `Admin sending email to upload DL and SS card`,
             date: resp.step_two_date,
             status: +resp.status_step >= 2 && resp.driver_license_ss_card ? true : false,
             show: +resp.status_step >= 2 ? true : false,
@@ -378,7 +380,7 @@ const httpTrigger: AzureFunction = async function (
             statusBar: 'driver_license_ss_card',
           },
           {
-            step: `Email sent to review/sign compliance docs`,
+            step: `Compliance docs posted`,
             date: resp.step_four_date,
             status: +resp.status_step >= 4 && resp.compliance_docs ? true : false,
             show: +resp.status_step >= 4 ? true : false,
@@ -415,7 +417,7 @@ const httpTrigger: AzureFunction = async function (
           //   click: +resp.status_step == 6  ? true : false
           // },
           {
-            step: `Email Sent to notify that contract and W4 posted`,
+            step: `Employee Contract and W4 posted`,
             date: resp.step_six_date,
             status: +resp.status_step >= 6 && resp.contract_w4 ? true : false,
             show: +resp.status_step >= 6 ? true : false,
@@ -426,7 +428,7 @@ const httpTrigger: AzureFunction = async function (
 
           },
           {
-            step: `Contract signed by employee is verified`,
+            step: `Employee Contract and W4 verified`,
             date: resp.step_seven_date,
             status: +resp.status_step >= 7 && resp.contract_w4 == 'Verified' ? true : false,
             show: +resp.status_step >= 7 ? true : false,
@@ -436,7 +438,7 @@ const httpTrigger: AzureFunction = async function (
             statusBar: 'contract_w4',
           },
           {
-            step: `Email sent to set-up online bank account`,
+            step: `Bank account information requested`,
             date: resp.step_eight_date,
             status: +resp.status_step >= 8 && resp.bank_account ? true : false,
             show: +resp.status_step >= 8 ? true : false,
@@ -456,7 +458,7 @@ const httpTrigger: AzureFunction = async function (
             statusBar: 'bank_account',
           },
           {
-            step: `Email sent to complete signing and dating of some additional compliance docs including 1. Drug Policy and 2) Reprimand Policy`,
+            step: `DHT Company docs posted`,
             date: resp.step_ten_date,
             status: +resp.status_step >= 10 && resp.additional_compliance_docs ? true : false,
             show: +resp.status_step >= 10 ? true : false,
@@ -476,7 +478,7 @@ const httpTrigger: AzureFunction = async function (
             statusBar: 'additional_compliance_docs',
           },
           {
-            step: `Email sent to complete CDL training`,
+            step: `CDL training instructions posted`,
             date: resp.step_twelve_date,
             status: +resp.status_step >= 12 && resp.cdl_training ? true : false,
             show: +resp.status_step >= 12 ? true : false,
@@ -486,7 +488,7 @@ const httpTrigger: AzureFunction = async function (
             statusBar: 'cdl_training',
           },
           {
-            step: `CDL training verified`,
+            step: `CDL training instructions verified`,
             date: resp.step_thirteen_date,
             status: +resp.status_step >= 13 && resp.cdl_training == 'Verified' ? true : false,
             show: +resp.status_step >= 13 ? true : false,
@@ -496,7 +498,7 @@ const httpTrigger: AzureFunction = async function (
             statusBar: 'cdl_training',
           },
           {
-            step: `Email sent to make travel arrangements`,
+            step: `Travel arrangements email`,
             date: resp.step_fourteen_date,
             status: +resp.status_step >= 14 && resp.travel_arrangements ? true : false,
             show: +resp.status_step >= 14 ? true : false,
@@ -506,7 +508,7 @@ const httpTrigger: AzureFunction = async function (
             statusBar: 'travel_arrangements',
           },
           {
-            step: `Results`,
+            step: `Onboarding Completed`,
             date: resp.step_fifteen_date,
             status: +resp.status_step >= 15 && resp.travel_arrangements ? true : false,
             show: +resp.status_step >= 15 ? true : false,
@@ -554,7 +556,7 @@ const httpTrigger: AzureFunction = async function (
             statusBar: 'passport_driver_license',
           },
           {
-            step: `Email sent to review/sign compliance docs`,
+            step: `Compliance docs posted`,
             date: resp.step_four_date,
             status: +resp.status_step >= 4 && resp.compliance_docs ? true : false,
             show: +resp.status_step >= 4 ? true : false,
@@ -584,7 +586,7 @@ const httpTrigger: AzureFunction = async function (
             statusBar: 'contract',
           },
           {
-            step: `Contract signed by employee is verified`,
+            step: `Employee Contract and W4 verified`,
             date: resp.step_seven_date,
             status: +resp.status_step >= 7 && resp.contract == 'Verified' ? true : false,
             show: +resp.status_step >= 7 ? true : false,
@@ -595,7 +597,7 @@ const httpTrigger: AzureFunction = async function (
           },
 
           {
-            step: `Email sent to set-up online bank account`,
+            step: `Bank account information requested`,
             date: resp.step_eight_date,
             status: +resp.status_step >= 8 && resp.bank_account ? true : false,
             show: +resp.status_step >= 8 ? true : false,
@@ -678,7 +680,7 @@ const httpTrigger: AzureFunction = async function (
             statusBar: 'additional_compliance_docs',
           },
           {
-            step: `Email sent to complete CDL training`,
+            step: `CDL training instructions posted`,
             date: resp.step_sixteen_date,
             status: +resp.status_step >= 16 && resp.cdl_training ? true : false,
             show: +resp.status_step >= 16 ? true : false,
@@ -688,7 +690,7 @@ const httpTrigger: AzureFunction = async function (
             statusBar: 'cdl_training',
           },
           {
-            step: `CDL training verified`,
+            step: `CDL training instructions verified`,
             date: resp.step_seventeen_date,
             status: +resp.status_step >= 17 && resp.cdl_training == 'Verified' ? true : false,
             show: +resp.status_step >= 17 ? true : false,
@@ -698,7 +700,7 @@ const httpTrigger: AzureFunction = async function (
             statusBar: 'cdl_training',
           },
           {
-            step: `Email sent to make travel arrangements`,
+            step: `Travel arrangements email`,
             date: resp.step_eighteen_date,
             status: +resp.status_step >= 18 && resp.travel_arrangements ? true : false,
             show: +resp.status_step >= 18 ? true : false,
@@ -708,7 +710,7 @@ const httpTrigger: AzureFunction = async function (
             statusBar: 'travel_arrangements',
           },
           {
-            step: `Results`,
+            step: `Onboarding Completed`,
             date: resp.step_nineteen_date,
             status: +resp.status_step >= 19 && resp.travel_arrangements ? true : false,
             show: +resp.status_step >= 19 ? true : false,
