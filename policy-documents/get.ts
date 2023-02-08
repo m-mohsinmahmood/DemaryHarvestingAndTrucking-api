@@ -4,10 +4,15 @@ import { config } from "../services/database/database.config";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     const db = new Client(config);
-    let whereClause: string = ` WHERE "is_deleted" = FALSE`;
+    const type : string = req.query.type;
+    const id   : string = req.query.id;
+    let whereClause: string = '';
+    
+    whereClause = ` WHERE "is_deleted" = FALSE`;
+    whereClause = `${whereClause} AND  "document_type" = '${type}'`;
+    if (id) whereClause = `${whereClause} AND "employee_id" = '${id}'`;
 
     try {
-        const id: string = req.query.id;
         let policy_doc_query = `
         SELECT 
                 *

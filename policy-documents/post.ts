@@ -26,12 +26,16 @@ const httpTrigger: AzureFunction = async function (
     INSERT INTO 
                 "Policy_Documents" 
                 (
+                "employee_id",
                 "document_name",
+                "document_type",
                 "created_at" 
                 )
       VALUES      
                 (
+                '${policy_doc.employee_id}',
                 '${policy_doc.name}',
+                '${policy_doc.type}',
                 'now()'
                 )
                 RETURNING id as policy_document_id
