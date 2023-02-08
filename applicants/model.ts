@@ -38,10 +38,6 @@ export interface applicant {
   degree_name : string,
   reason_for_applying : string,
   hear_about_dht : string,
-  us_phone_number : string,
-  blood_type : string,
-  emergency_contact_name : string,
-  emergency_contact_phone : string,
   first_call_remarks : string,
   first_call_ranking : string,
   first_interviewer_id : string,
@@ -92,5 +88,5 @@ export interface applicant {
   previous_contact_supervisor: boolean,
   school_college: string,
   graduation_year: string,
-  resume: string
+  resume: string,
 }

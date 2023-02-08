@@ -38,10 +38,6 @@ export interface employee {
   degree_name: string,
   reason_for_applying: string,
   hear_about_dht: string,
-  us_phone_number: string,
-  blood_type: string,
-  emergency_contact_name: string,
-  emergency_contact_phone: string,
   reason_for_rejection: string,
   unique_fact: string,
   ranking: string,
@@ -63,5 +59,11 @@ export interface employee {
   previous_contact_supervisor: boolean,
   school_college: string,
   graduation_year: string,
-  resume: string
+  resume: string,
+  status_step: string,
+  status_message: string,
+  current_supervisor_country_code: string,
+  previous_supervisor_country_code: string,
+  cell_phone_country_code: string,
+  home_phone_country_code: string,
 }

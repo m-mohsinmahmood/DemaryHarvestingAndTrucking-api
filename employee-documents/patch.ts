@@ -56,7 +56,7 @@ const httpTrigger: AzureFunction = async function (
   }
 
   //#region Upload Employee Doc to blob and update employee in DB
-  if (doc_status != 'Reject' && employee_doc[doc_name] != null && employee_doc[doc_name] != '') {
+  if (doc_status != 'Reject' && employee_doc[doc_name] != null && employee_doc[doc_name] != '' && files[0]) {
     try {
       const random_num = Math.random() * 1000;
       const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/employees?sp=rawd&st=2023-01-14T11:52:11Z&se=2024-12-31T19:52:11Z&spr=https&sv=2021-06-08&sr=c&sig=qsEWo%2F1vfQzmw9V8HdI%2FEfL1R4l3hho4wd49Czmq%2BC8%3D");
@@ -82,7 +82,7 @@ const httpTrigger: AzureFunction = async function (
       let update_query = `
       UPDATE "Employee_Documents"
       SET 
-      ${doc_name} = '${'https://dhtstorageaccountdev.blob.core.windows.net/employees/employees/' + doc}'
+      ${doc_name} = $$${'https://dhtstorageaccountdev.blob.core.windows.net/employees/employees/' + doc}$$
       WHERE 
       "employee_id" = '${employee_id}';`
       db1.connect();
@@ -151,7 +151,7 @@ const httpTrigger: AzureFunction = async function (
 
 
   //#region Update Status Bar
-  if (status_bar_doc) {
+  if (status_bar_doc ) {
     let update_status_bar_query;
     try {
       if (h2a == 'false') {
@@ -171,7 +171,7 @@ const httpTrigger: AzureFunction = async function (
       doc_status == 'Reject' ?
         update_status_bar_query = update_status_bar_query + ` ${status_bar_doc} = 'Inprogress'` :
         update_status_bar_query = update_status_bar_query + ` ${status_bar_doc} = 'Document Uploaded'`;
-      update_status_bar_query = update_status_bar_query + `
+        update_status_bar_query = update_status_bar_query + `
         WHERE "employee_id" = '${employee_id}';
         `;
       db2.connect();
