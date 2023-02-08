@@ -27,7 +27,6 @@ const httpTrigger: AzureFunction = async function (
   dwr.start_time, 
   wo.work_order_status as status,
   CAST (wo.ending_engine_hours AS FLOAT) - CAST (wo.beginning_engine_hours AS FLOAT) as engine_hours,
-  wo.created_at,
   wo.modified_at as end_time
 
 FROM 
