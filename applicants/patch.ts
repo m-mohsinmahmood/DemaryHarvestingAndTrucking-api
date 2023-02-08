@@ -7,6 +7,8 @@ import { config } from "../services/database/database.config";
 import { updateQuery } from "./applicant-review";
 import { firebaseConfig } from "../utilities/firebase.config";
 const admin = require('firebase-admin');
+import { initializeFirebase } from "../utilities/initialize-firebase";
+
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -30,10 +32,7 @@ const httpTrigger: AzureFunction = async function (
     // Create employee if applicant accepts offer
     if (applicant.status_message == 'Results' && applicant.status_step == '10.1') {
       if (!admin.apps.length) {
-          admin.initializeApp({
-          credential: admin.credential.cert(firebaseConfig),
-          databaseURL: "dB_URL"
-        });
+        initializeFirebase();
       }
       // Define the custom claims object
       try {
