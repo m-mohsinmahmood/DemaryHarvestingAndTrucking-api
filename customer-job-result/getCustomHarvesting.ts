@@ -19,12 +19,16 @@ const httpTrigger: AzureFunction = async function (
     ht.destination as destination, 
 	  ht.loaded_miles as load_miles,
 	  ht.status as status,
-	  "field".name AS "field_name"
-
+	  "field".name AS "field_name",
+    ht.scale_ticket_weight as net_pounds,
+		cc.bushel_weight as net_bushel
+		
     FROM 
  
     "Harvesting_Ticket" ht 
 	  INNER JOIN "Customer_Field" field ON "field".id = ht.field_id 
+		INNER JOIN "Crops"  cc ON  cc."id" = ht.crop_id 
+
 
 
     Where 
