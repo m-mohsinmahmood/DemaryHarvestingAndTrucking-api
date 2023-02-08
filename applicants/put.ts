@@ -67,6 +67,7 @@ const httpTrigger: AzureFunction = async function (
                 "reason_for_applying"                   = $$${applicant.reason_for_applying}$$,
                 "hear_about_dht"                        = $$${applicant.hear_about_dht}$$,
                 "status_step"                           = '${applicant.status_step}',
+                "status_message"                        = '${applicant.status_message}',
                 "unique_fact"                           = $$${applicant.unique_fact}$$,
                 "current_employer"                      = $$${applicant.current_employer}$$, 
                 "current_position_title"                = $$${applicant.current_position_title}$$,
@@ -140,7 +141,7 @@ const httpTrigger: AzureFunction = async function (
         "avatar" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + image_file_url}', 
         "resume" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + resume_file_url}' ` : '';
         image && !resume ? update_query = update_query + ` "avatar" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + image_file_url}' ` : '';
-        resume && !resume ? update_query = update_query + ` "resume" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + resume_file_url}' ` : '';
+        resume && !image ? update_query = update_query + ` "resume" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + resume_file_url}' ` : '';
         update_query = update_query +
           `WHERE 
                 "id" = '${applicant.id}';`;

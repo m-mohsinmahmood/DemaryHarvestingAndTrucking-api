@@ -142,7 +142,7 @@ const httpTrigger: AzureFunction = async function (
         "avatar" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + image_file_url}', 
         "resume" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + resume_file_url}' ` : '';
         image && !resume ? update_query = update_query + ` "avatar" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + image_file_url}' ` : '';
-        resume && !resume ? update_query = update_query + ` "resume" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + resume_file_url}' ` : '';
+        resume && !image ? update_query = update_query + ` "resume" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + resume_file_url}' ` : '';
         update_query = update_query +
           `WHERE 
                 "id" = '${employee.id}';`;
