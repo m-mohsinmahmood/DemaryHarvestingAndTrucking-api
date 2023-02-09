@@ -586,7 +586,7 @@ const httpTrigger: AzureFunction = async function (
             statusBar: 'contract',
           },
           {
-            step: `Employee Contract and W4 verified`,
+            step: `Employee Contract verified`,
             date: resp.step_seven_date,
             status: +resp.status_step >= 7 && resp.contract == 'Verified' ? true : false,
             show: +resp.status_step >= 7 ? true : false,
