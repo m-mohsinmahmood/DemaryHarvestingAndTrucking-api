@@ -226,7 +226,7 @@ if(entity === 'trainee'){
               "is_completed_cdl_classroom",
               "is_completed_group_practical",
               "clp",
-              "truckId"
+              "truckId",
               "odometerEndingMiles",
               "odometerStartingMiles",
               "evaluation_type"

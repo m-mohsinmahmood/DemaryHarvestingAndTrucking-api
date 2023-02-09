@@ -53,10 +53,6 @@ const httpTrigger: AzureFunction = async function (
               a."degree_name",
               a."reason_for_applying",
               a."hear_about_dht",
-              a."us_phone_number",
-              a."blood_type",
-              a."emergency_contact_name",
-              a."emergency_contact_phone",
               a."unique_fact",
               a."first_call_remarks",
               a."first_call_ranking",
@@ -107,7 +103,8 @@ const httpTrigger: AzureFunction = async function (
               a."previous_supervisor_country_code",
               a."previous_contact_supervisor",
               a."school_college",
-              a."graduation_year",				
+              a."graduation_year",	
+              a."employment_period",			
               a."resume",                  
               a."created_at"        
         FROM                   

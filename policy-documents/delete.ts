@@ -1,8 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
-import * as _ from "lodash";
 import { config } from "../services/database/database.config";
-
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -10,21 +8,15 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
   const db = new Client(config);
 
-  const driverIds: string = req.body.driverIds;
-  const kartOperatorId: string = req.body.kartOperatorId;
-  // let in_clause: string = driverIds.map(d => `'${d}'`).join(',');
-
   try {
-
+    const policy_document_id: string = req.query.id;
     let query = `
-        UPDATE 
-                "Employees"
-        SET 
-                "dht_supervisor_id"= '${kartOperatorId}'
+        UPDATE "Policy_Documents" 
+        SET "is_deleted"  = TRUE, 
+            "modified_at" = 'now()'
         WHERE 
-                "id" ='${driverIds}';`
-
-    console.log(query);
+            "id" = '${policy_document_id}';
+        `;
 
     db.connect();
     let result = await db.query(query);
@@ -33,7 +25,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        message: "Employee has been assigned as a Truck Driver.",
+        message: "Policy Document has been deleted successfully.",
       },
     };
     context.done();

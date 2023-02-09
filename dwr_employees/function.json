@@ -6,11 +6,9 @@
       "direction": "in",
       "name": "req",
       "methods": [
-        "get",
         "post",
-        "put",
-        "patch",
-        "delete"
+        "get",
+        "patch"
       ]
     },
     {
@@ -19,5 +17,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/employee/index.js"
+  "scriptFile": "../dist/dwr_employees/index.js"
 }

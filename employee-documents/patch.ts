@@ -14,7 +14,6 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest
 ): Promise<void> {
   //#region Variables
-  const statusBarDocs: any[] = ['cdl_license_doc', 'social_sec_doc', 'work_agreement_doc', 'itinerary_doc', 'rules_doc', 'handbook_doc', 'contract_doc', 'w4_doc', 'bank_acc_doc', 'drug_policy_doc', 'reprimand_policy_doc', 'departure_doc'];
   const db = new Client(config);
   const db1 = new Client(config);
   const db2 = new Client(config);
@@ -23,7 +22,7 @@ const httpTrigger: AzureFunction = async function (
   let doc;
 
   const multiPartConfig = {
-    limits: { fields: 8, files: 1 },
+    limits: { fields: 9, files: 1 },
   };
   const { fields, files } = await parseMultipartFormData(req, multiPartConfig);
 
@@ -35,6 +34,7 @@ const httpTrigger: AzureFunction = async function (
   let email = fields[5].value;
   let subject = fields[6].value;
   let email_body = fields[7].value;
+  let h2a = fields[8].value;
   //#endregion
 
   try {
@@ -56,7 +56,7 @@ const httpTrigger: AzureFunction = async function (
   }
 
   //#region Upload Employee Doc to blob and update employee in DB
-  if (doc_status != 'Reject' && employee_doc[doc_name] != null && employee_doc[doc_name] != '' ) {
+  if (doc_status != 'Reject' && employee_doc[doc_name] != null && employee_doc[doc_name] != '' && files[0]) {
     try {
       const random_num = Math.random() * 1000;
       const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/employees?sp=rawd&st=2023-01-14T11:52:11Z&se=2024-12-31T19:52:11Z&spr=https&sv=2021-06-08&sr=c&sig=qsEWo%2F1vfQzmw9V8HdI%2FEfL1R4l3hho4wd49Czmq%2BC8%3D");
@@ -82,7 +82,7 @@ const httpTrigger: AzureFunction = async function (
       let update_query = `
       UPDATE "Employee_Documents"
       SET 
-      ${doc_name} = '${'https://dhtstorageaccountdev.blob.core.windows.net/employees/employees/' + doc}'
+      ${doc_name} = $$${'https://dhtstorageaccountdev.blob.core.windows.net/employees/employees/' + doc}$$
       WHERE 
       "employee_id" = '${employee_id}';`
       db1.connect();
@@ -136,7 +136,7 @@ const httpTrigger: AzureFunction = async function (
       recipients: {
         to: [
           {
-            email:"recruiter@dht-usa.com",
+            email: "recruiter@dht-usa.com",
           },
         ],
       },
@@ -150,18 +150,30 @@ const httpTrigger: AzureFunction = async function (
   //#endregion
 
 
-  //#region Update Status Bar 
-  if (status_bar_doc) {
+  //#region Update Status Bar
+  if (status_bar_doc ) {
     let update_status_bar_query;
     try {
-      update_status_bar_query = `
-      UPDATE "Employee_Status_Bar"
-      SET 
-      `;
-      doc_status == 'Reject' ? update_status_bar_query = update_status_bar_query + ` ${status_bar_doc} = 'Inprogress'` : update_status_bar_query = update_status_bar_query + ` ${status_bar_doc} = 'Document Uploaded'`;
-      update_status_bar_query = update_status_bar_query + `
-      WHERE "employee_id" = '${employee_id}';
-      `; 
+      if (h2a == 'false') {
+        update_status_bar_query = `
+        UPDATE "Employee_Status_Bar"
+        SET 
+        `;
+      }
+
+      else if (h2a == 'true') {
+        update_status_bar_query = `
+        UPDATE "H2a_Status_Bar"
+        SET 
+        `;
+      }
+
+      doc_status == 'Reject' ?
+        update_status_bar_query = update_status_bar_query + ` ${status_bar_doc} = 'Inprogress'` :
+        update_status_bar_query = update_status_bar_query + ` ${status_bar_doc} = 'Document Uploaded'`;
+        update_status_bar_query = update_status_bar_query + `
+        WHERE "employee_id" = '${employee_id}';
+        `;
       db2.connect();
       await db2.query(update_status_bar_query);
       db2.end();
