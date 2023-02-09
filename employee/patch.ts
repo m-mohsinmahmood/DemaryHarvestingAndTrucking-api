@@ -16,8 +16,9 @@ const httpTrigger: AzureFunction = async function (
   try {
     const employee: employee = req.body.employee_data;
     const email: any = req.body.email_data;
+    const h2a: string = req.body.h2a;
 
-    query = updateQuery(employee, email);
+    query = updateQuery(employee, h2a);
     db.connect();
     let result = await db.query(query);
     db.end();

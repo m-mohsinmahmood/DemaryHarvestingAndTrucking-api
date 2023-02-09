@@ -7,7 +7,8 @@
       "name": "req",
       "methods": [
         "get",
-        "post"
+        "post",
+        "patch"
       ]
     },
     {
@@ -16,5 +17,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/customer-job-close-out/index.js"
+  "scriptFile": "../dist/training/index.js"
 }

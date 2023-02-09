@@ -51,10 +51,6 @@ const httpTrigger: AzureFunction = async function (
                   "degree_name",
                   "reason_for_applying",
                   "hear_about_dht",
-                  "us_phone_number",
-                  "blood_type",
-                  "emergency_contact_name",
-                  "emergency_contact_phone",
                   "status_step",
                   "status_message",
                   "unique_fact",
@@ -77,6 +73,7 @@ const httpTrigger: AzureFunction = async function (
                   "school_college",
                   "graduation_year",
                   "resume",
+                  "employment_period",
                   "created_at"
                 )
       VALUES      
@@ -116,10 +113,6 @@ const httpTrigger: AzureFunction = async function (
                   '${employee.degree_name}',
                   '${employee.reason_for_applying}',
                   '${employee.hear_about_dht}',
-                  '${employee.us_phone_number}',
-                  '${employee.blood_type}',
-                  '${employee.emergency_contact_name}',
-                  '${employee.emergency_contact_phone}',
                   '2',
                   'Account activated',
                   '${employee.unique_fact}',
@@ -142,6 +135,7 @@ const httpTrigger: AzureFunction = async function (
                   '${employee.school_college}',
                   '${employee.graduation_year}',
                   '${employee.resume}',
+                  '${employee.employment_period}',
                   'now()'
                 );
     `;

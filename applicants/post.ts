@@ -51,7 +51,7 @@ const httpTrigger: AzureFunction = async function (
   //#endregion
   //#region Create Applicant
   try {
-    applicant.resume? applicant.resume = '' : '';
+    applicant.resume ? applicant.resume = '' : '';
     applicant.avatar = '';
     let query = `
     INSERT INTO 
@@ -92,10 +92,6 @@ const httpTrigger: AzureFunction = async function (
                   "degree_name",
                   "reason_for_applying",
                   "hear_about_dht",
-                  "us_phone_number",
-                  "blood_type",
-                  "emergency_contact_name",
-                  "emergency_contact_phone",
                   "status_step",
                   "status_message",
                   "unique_fact",
@@ -120,6 +116,7 @@ const httpTrigger: AzureFunction = async function (
                   "school_college",
                   "graduation_year",
                   "resume",
+                  "employment_period",
                   "created_at"
                 )
       VALUES      
@@ -159,10 +156,6 @@ const httpTrigger: AzureFunction = async function (
                   $$${applicant.degree_name}$$,
                   $$${applicant.reason_for_applying}$$,
                   $$${applicant.hear_about_dht}$$,
-                  $$${applicant.us_phone_number}$$,
-                  $$${applicant.blood_type}$$,
-                  $$${applicant.emergency_contact_name}$$,
-                  $$${applicant.emergency_contact_phone}$$,
                   '2',
                   'Preliminary Review',
                   $$${applicant.unique_fact}$$,
@@ -186,7 +179,8 @@ const httpTrigger: AzureFunction = async function (
                   $$${applicant.previous_contact_supervisor}$$,
                   $$${applicant.school_college}$$,
                   $$${applicant.graduation_year}$$,
-                  '${applicant.resume}',
+                  $$${applicant.resume}$$,
+                  $$${applicant.employment_period}$$,
                   'now()'
                 )
                 RETURNING id as applicant_id
@@ -211,15 +205,15 @@ const httpTrigger: AzureFunction = async function (
     applicant_id = result.rows[0].applicant_id;
     const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/applicants?sp=racw&st=2022-12-23T16:39:56Z&se=2025-01-01T00:39:56Z&spr=https&sv=2021-06-08&sr=c&sig=Jsxo862%2FCE8ooBBhlzWEJrZ7hRkFRpqDWCY4PFYQH9U%3D");
     const container = blob.getContainerClient("applicants");
-   
-    if (files[1]){
+
+    if (files[1]) {
       resume_file = "resume" + applicant_id;
       const resumeBlockBlob = container.getBlockBlobClient(resume_file);
       const res = await resumeBlockBlob.uploadData(files[1].bufferFile, {
         blobHTTPHeaders: { blobContentType: files[1].mimeType },
       });
     }
-   
+
     image_file = "image" + applicant_id;
     const blockBlob = container.getBlockBlobClient(image_file);
     const uploadFileResp = await blockBlob.uploadData(files[0].bufferFile, {
@@ -241,9 +235,10 @@ const httpTrigger: AzureFunction = async function (
   try {
     let update_query = `
     UPDATE "Applicants"
-    SET 
-    "avatar" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + image_file}',
-    "resume" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + resume_file}'
+    SET `;
+    resume_file ? update_query = update_query + `"resume" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + resume_file}',` : ''
+    image_file ? update_query = update_query + `"avatar" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + image_file}'` : ''
+    update_query = update_query + `
     WHERE 
     "id" = '${applicant_id}';`
     db2.connect();
@@ -265,7 +260,7 @@ const httpTrigger: AzureFunction = async function (
   try {
     const connectionString = process.env["EMAIL_CONNECTION_STRING"];
     const client = new EmailClient(connectionString);
-    
+
     const emailMessage: EmailMessage = {
       sender: "recruiter@dht-usa.com",
       content: {
@@ -285,8 +280,8 @@ const httpTrigger: AzureFunction = async function (
         ],
       },
     };
-    
-    const messageId:any = await client.send(emailMessage);
+
+    const messageId: any = await client.send(emailMessage);
     console.log(messageId);
     // const status = await client.getSendStatus(messageId);
   }
