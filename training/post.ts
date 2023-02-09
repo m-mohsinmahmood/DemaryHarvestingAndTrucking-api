@@ -70,7 +70,7 @@ if(entity === 'trainee'){
               '${trainer.state}',
               '${trainer.training_type}',
               '${trainer.topic}',
-              '${trainer.notes}',
+              $$${trainer.notes}$$,
               'trainer'
 );`;
 } else if(entity === 'pre-trip' && preTripCheck.evaluation_form === 'paper-form'){

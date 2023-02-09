@@ -100,6 +100,7 @@ WHERE id = '${record_id}';`;
     else if (records.evaluation_type === 'summary'){
 getById = `
 SELECT 
+training."id" as "id",
 training."satisfactoryRoadTesting" as "satisfactoryRoadTesting",
 training."unSatisfactoryRoadTesting" as "unSatisfactoryRoadTesting",
 training."satisfactoryStraightLineBacking" as "satisfactoryStraightLineBacking",
