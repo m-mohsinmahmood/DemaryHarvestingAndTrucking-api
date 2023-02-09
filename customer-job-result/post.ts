@@ -21,19 +21,19 @@ const httpTrigger: AzureFunction = async function (
             optionalValues = `${optionalValues},'${jobResult.service}'`
         }
 
-        if (jobResult.customer_name != null) {
-            optionalReq = `${optionalReq},"customer_name"`;
-            optionalValues = `${optionalValues},'${jobResult.customer_name}'`
+        if (jobResult.customer_id != null) {
+            optionalReq = `${optionalReq},"customer_id"`;
+            optionalValues = `${optionalValues},'${jobResult.customer_id}'`
         }
 
-        if (jobResult.farm_name != null) {
-            optionalReq = `${optionalReq},"farm_name"`;
-            optionalValues = `${optionalValues},'${jobResult.farm_name}'`
+        if (jobResult.farm_id != null) {
+            optionalReq = `${optionalReq},"farm_id"`;
+            optionalValues = `${optionalValues},'${jobResult.farm_id}'`
         }
 
-        if (jobResult.field_name != null) {
-            optionalReq = `${optionalReq},"field_name"`;
-            optionalValues = `${optionalValues},'${jobResult.field_name}'`
+        if (jobResult.field_id != null) {
+            optionalReq = `${optionalReq},"field_id"`;
+            optionalValues = `${optionalValues},'${jobResult.field_id}'`
         }
 
         if (jobResult.acres != null) {
@@ -56,17 +56,11 @@ const httpTrigger: AzureFunction = async function (
             optionalValues = `${optionalValues},'${jobResult.engine_hours}'`
         }
 
-        if (jobResult.dispatcher_first_name != null) {
-            optionalReq = `${optionalReq},"dispatcher_first_name"`;
-            optionalValues = `${optionalValues},'${jobResult.dispatcher_first_name}'`
+        if (jobResult.dispatcher_id != null) {
+            optionalReq = `${optionalReq},"dispatcher_id"`;
+            optionalValues = `${optionalValues},'${jobResult.dispatcher_id}'`
         }
 
-        if (jobResult.dispatcher_last_name != null) {
-            optionalReq = `${optionalReq},"dispatcher_last_name"`;
-            optionalValues = `${optionalValues},'${jobResult.dispatcher_last_name}'`
-        }
-
-        // If Tractor Driver will create a work Order then below given query will be executed.
         let query = `
             INSERT INTO 
                         "Job_Results" 

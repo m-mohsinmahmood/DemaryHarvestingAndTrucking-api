@@ -17,8 +17,7 @@ const httpTrigger: AzureFunction = async function (
 fwo.id,
 fr.rate,
 fr.equipment_type,
-fwo.quantity,
-fwo.quantity_type,
+
 dwr.created_at,
 dwr.start_time,
 dwr.end_time,
