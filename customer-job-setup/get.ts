@@ -120,7 +120,7 @@ const httpTrigger: AzureFunction = async function (
      on field.id = job_setup.field_id
      
        INNER JOIN "Customer_Job_Assigned_Roles" assigned
-      on job_setup.id = assigned.job_id AND assigned.employee_id = '${employeeId}'
+      on job_setup.id = assigned.job_id 
  
       WHERE is_job_active = true AND is_job_completed = false;
      `;
@@ -159,7 +159,7 @@ const httpTrigger: AzureFunction = async function (
       WHERE is_job_active = true AND is_job_completed = false;
      `;
     }
-    else if (entity ==="truck-driver-active-tickets") {
+    else if (entity === "truck-driver-active-tickets") {
       const isTicketActive: string = req.query.isTicketActive;
       const isPreCHeckFilled: string = req.query.isPreCheckFilled;
       let whereClause = ``;

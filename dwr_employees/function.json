@@ -6,6 +6,7 @@
       "direction": "in",
       "name": "req",
       "methods": [
+        "post",
         "get",
         "patch"
       ]
@@ -16,5 +17,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/harvesting-ticket/index.js"
+  "scriptFile": "../dist/dwr_employees/index.js"
 }
