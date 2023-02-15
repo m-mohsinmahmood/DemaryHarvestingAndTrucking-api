@@ -16,7 +16,7 @@ const httpTrigger: AzureFunction = async function (
                 if (req.query.customer_id && req.query.data == 'trucking') await getCommercialTruckingJobs.default(context, req);
                 else
                     if (req.query.customer_id && req.query.data == 'harvesting') await getCustomHarvestingJobs.default(context, req);
-
+                    
             break;
 
         case "POST":

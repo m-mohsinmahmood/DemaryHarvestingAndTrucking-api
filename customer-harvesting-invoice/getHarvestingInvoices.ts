@@ -35,7 +35,7 @@ AND  hdt.quantity_type = hr.rate_type
 INNER JOIN "Customer_Farm" cf on cf.id = hdt.farm_id
 
 INNER JOIN "Customers" customers ON customers."id" = hdt.customer_id
-WHERE customers.id = '${customer_id}' ;
+WHERE hdt.customers.id = '${customer_id}' ;
       `;
 
       

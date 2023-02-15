@@ -13,7 +13,6 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
     switch (req.method) {
         case "GET":
-            // if (req.query.id) await getWorkOrderById.default(context, req);
             await getHarvestingList.default(context, req);
             break;
 

@@ -8,45 +8,47 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
   const db = new Client(config);
 
+
   try {
     const customer_id: string = req.query.customer_id;
-    const sort: string = req.query.sort ? req.query.sort : `hi."created_at"`;
-    const order: string = req.query.order ? req.query.order : `desc`;
 
-
-
-    let harvesting_list_query = `
+    let info_query = `
+          
     SELECT 
-	cf."name" as farm_name,
-	hi.service_type,
-	hi.crop,
-	hi.quantity_type,
-	hi.quantity,
-	hi.rate,
-	hi.amount,
-  hi.id,
-  cf.id as farm_id
-	
-	from "Harvesting_Invoice" hi
-	
-	INNER JOIN "Customer_Farm" cf ON cf."id" =  hi.farm_id
-  WHERE hi.customer_id = '${customer_id}'
-        ORDER BY 
-              ${sort} ${order};
-
-      `;
+    ht.id as id, 
+    ht.destination as destination, 
+	  ht.loaded_miles as load_miles,
+	  ht.ticket_status as status,
+	  "field".name AS "field_name",
+    ht.scale_ticket_weight as net_pounds,
+		cc.bushel_weight as net_bushel,
+    ht.created_at as load_date
+		
+    FROM 
+ 
+    "Harvesting_Delivery_Ticket" ht 
+	  INNER JOIN "Customer_Field" field ON "field".id = ht.field_id 
+		INNER JOIN "Crops"  cc ON  cc."name" = ht.crop
 
 
 
+    Where  
 
-    let query = `${harvesting_list_query} `;
+    ht.customer_id = '${customer_id}';
+    `;
+
+
+
+    let query = `${info_query}`;
+
+    console.log(query);
 
     db.connect();
 
     let result = await db.query(query);
 
     let resp = {
-      harvestingInvoicesList: result.rows
+      harvestingJobs: result.rows,
     };
 
     db.end();

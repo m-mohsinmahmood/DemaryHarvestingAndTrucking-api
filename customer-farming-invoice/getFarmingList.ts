@@ -18,7 +18,7 @@ const httpTrigger: AzureFunction = async function (
     let farming_list_query = `
     SELECT 
   fi."id",
-	fi.date,
+	fi.created_at as date,
 	fi.equipment_type,
 	fi.quantity_type,
 	fi.quantity,

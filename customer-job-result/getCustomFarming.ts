@@ -37,7 +37,6 @@ FROM
   INNER JOIN "DWR" dwr On wo."id" = dwr.work_order_id 
 Where 
   wo.work_order_is_completed = True 
-  AND "work_order_status" = 'verified' 
   And "work_order_close_out" = True 
   And wo.customer_id = '${customer_id}'
   AND wo."is_deleted" = FALSE 
