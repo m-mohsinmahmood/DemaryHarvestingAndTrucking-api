@@ -8,49 +8,47 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
   const db = new Client(config);
 
-  console.log(req.query);
-
   try {
     const customer_id: string = req.query.customer_id;
 
-    let dwr_info_query = `
-          
-    SELECT 
-  td.id as id, 
-  td.created_at as load_date, 
-  td.cargo as cargo, 
-	td.origin_city as origin_city,
-	td.destination_city as dest_city,
-  emp.first_name AS disp_first_name,
-	emp.last_name AS disp_last_name,
+    let harvesting_invoice_query = `
+    select
+hdt.id,
+cf."name" as farm_name,
+hdt.crop as crop_name,
+hdt.loaded_miles,
+hdt.quantity,
+hdt.total_tons,
+hdt.dht_tickets,
+customers.customer_name,
+hr.rate,
+hr.rate_type as quantity_type,
+hr.premium_rate,
+hr.base_rate,
+customers.address
 
-	tDriver."first_name" AS dr_first_name,
-	tDriver."last_name" AS dr_last_name,
-  td.ticket_status as status 
-	
-FROM 
-  "Trucking_Delivery_Ticket" td 
-  INNER JOIN "Employees" emp ON td."dispatcher_id" = emp."id" 
-	INNER JOIN "Employees" tDriver ON td.truck_driver_id = tDriver."id" 
+from "Hauling_Rates" hr
 
-Where 
+INNER JOIN "Harvesting_Delivery_Ticket" hdt ON hdt.customer_id = hr.customer_id 
+AND  hdt.quantity_type = hr.rate_type
 
-td.customer_id = '${customer_id}' 
-  AND td."is_deleted" = FALSE;
+INNER JOIN "Customer_Farm" cf on cf.id = hdt.farm_id
+
+INNER JOIN "Customers" customers ON customers."id" = hdt.customer_id
+WHERE hdt.customers.id = '${customer_id}' ;
       `;
 
+      
+    
 
-
-    let query = `${dwr_info_query}`;
-
-    console.log(query);
+    let query = `${harvesting_invoice_query} `;
 
     db.connect();
 
     let result = await db.query(query);
 
     let resp = {
-      truckingJobs: result.rows
+      harvestingInvoices: result.rows
     };
 
     db.end();

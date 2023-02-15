@@ -25,8 +25,10 @@ const httpTrigger: AzureFunction = async function (
   wo.total_acres as acres, 
   wo."total_gps-service-acres" as gps_acres, 
   dwr.start_time, 
-  dwr.end_time,
-  wo.work_order_status as status
+  wo.work_order_status as status,
+  CAST (wo.ending_engine_hours AS FLOAT) - CAST (wo.beginning_engine_hours AS FLOAT) as engine_hours,
+  wo.modified_at as end_time
+
 FROM 
   "Farming_Work_Order" wo 
   INNER JOIN "Customers" c ON wo."customer_id" = c."id" 
@@ -35,7 +37,6 @@ FROM
   INNER JOIN "DWR" dwr On wo."id" = dwr.work_order_id 
 Where 
   wo.work_order_is_completed = True 
-  AND "work_order_status" = 'verified' 
   And "work_order_close_out" = True 
   And wo.customer_id = '${customer_id}'
   AND wo."is_deleted" = FALSE 
