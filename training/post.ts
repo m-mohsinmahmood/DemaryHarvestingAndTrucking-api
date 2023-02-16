@@ -17,21 +17,24 @@ const httpTrigger: AzureFunction = async function (
   let image_1 = '';
   let image_2 = '';
   let image_3 = '';
+  const entity = req.query.entity;
   const multiPartConfig = {
     limits: { fields: 1, files: 3 },
   };
   const { fields, files } = await parseMultipartFormData(req, multiPartConfig);
   let trainer: any = (JSON.parse(fields[0].value));
+  let trainee: any = (JSON.parse(fields[0].value));
+  let preTripCheck: any = (JSON.parse(fields[0].value));
+  let basicSkills: any = (JSON.parse(fields[0].value));
+  let roadSkills: any = (JSON.parse(fields[0].value));
 
   try {
-    const trainee: trainee = req.body;
+    // const trainee: trainee = req.body;
     // const trainer: trainer = req.body;
-    const preTripCheck: preTripCheck = req.body;
-    const basicSkills: basicSkills = req.body;
-    const roadSkills: roadSkills = req.body;
-    const entity = req.query.entity;
-
-
+    // const preTripCheck: preTripCheck = req.body;
+    // const basicSkills: basicSkills = req.body;
+    // const roadSkills: roadSkills = req.body;
+    // const entity = req.query.entity;
 
     console.log('REQ:',req.body)
     console.log('Entity:',entity)
@@ -60,7 +63,9 @@ if(entity === 'trainee'){
                '${trainee.topic}',
                '${trainee.detail}',
                'trainee'
- );`;
+ )
+ RETURNING id as record_id
+ ;`;
 }else if (entity === 'trainer'){
   // for trainer
   query = `
@@ -116,7 +121,9 @@ if(entity === 'trainee'){
               '${preTripCheck.is_completed_cdl_classroom}',
               '${preTripCheck.is_completed_group_practical}',
               'pre-trip'
-);`;
+)
+RETURNING id as record_id
+;`;
 
 }else if(entity === 'pre-trip' && preTripCheck.evaluation_form === 'digital-form'){
   // for pre-trip check form having 'Digital Form'
@@ -186,7 +193,9 @@ if(entity === 'trainee'){
               '${basicSkills.odometerEndingMiles}',
               '${basicSkills.odometerStartingMiles}',
               'basic-skills'
-);`;
+)
+RETURNING id as record_id
+;`;
 
 }else if(entity === 'basic-skills' && basicSkills.evaluation_form === 'digital-form'){
   // for pre-trip check form having 'Digital Form'
@@ -262,7 +271,9 @@ if(entity === 'trainee'){
             '${roadSkills.odometerEndingMiles}',
               '${roadSkills.odometerStartingMiles}',
               'road-skills'
-);`;
+)
+RETURNING id as record_id
+;`;
 
 }else if(entity === 'road-skills' && roadSkills.evaluation_form === 'digital-form'){
   // for pre-trip check form having 'Digital Form'
@@ -360,30 +371,144 @@ if(entity === 'trainee'){
       return;
     }
     //#endregion
-    //#region Update Trainer_Training_Tasks
-  try {
-    let update_query = `
-    UPDATE "Trainer_Training_Tasks"
-    SET `;
-
-    if (files[0]) update_query = update_query + `"image_1" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_1}'` 
-    if (files[1]) update_query = update_query + `,"image_2" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_2}'` 
-    if (files[2]) update_query = update_query + `,"image_3" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_3}'` 
-
-    update_query = update_query + `WHERE "id" = '${record_id}';`
-    db1.connect();
-    await db1.query(update_query);
-    db1.end();
-  } catch (error) {
-    db1.end();
-    context.res = {
-      status: 400,
-      body: {
-        message: "An error occured while creating the trainer",
-      },
-    };
-    context.done();
-    return;
+    //#region Update Trainer_Training_Tasks (Trainer)
+    if(entity === 'trainer'){
+      try {
+        let update_query = `
+        UPDATE "Trainer_Training_Tasks"
+        SET `;
+    
+        if (files[0]) update_query = update_query + `"image_1" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_1}'` 
+        if (files[1]) update_query = update_query + `,"image_2" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_2}'` 
+        if (files[2]) update_query = update_query + `,"image_3" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_3}'` 
+    
+        update_query = update_query + `WHERE "id" = '${record_id}';`
+        db1.connect();
+        await db1.query(update_query);
+        db1.end();
+      } catch (error) {
+        db1.end();
+        context.res = {
+          status: 400,
+          body: {
+            message: "An error occured while creating the trainer",
+          },
+        };
+        context.done();
+        return;
+      }
+    }
+  //#endregion
+  //#region Update Trainee
+  if(entity === 'trainee'){
+    try {
+      let update_query = `
+      UPDATE "Trainee"
+      SET `;
+  
+      if (files[0]) update_query = update_query + `"image_1" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_1}'` 
+      if (files[1]) update_query = update_query + `,"image_2" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_2}'` 
+      if (files[2]) update_query = update_query + `,"image_3" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_3}'` 
+  
+      update_query = update_query + `WHERE "id" = '${record_id}';`
+      db1.connect();
+      await db1.query(update_query);
+      db1.end();
+    } catch (error) {
+      db1.end();
+      context.res = {
+        status: 400,
+        body: {
+          message: "An error occured while creating the trainer",
+        },
+      };
+      context.done();
+      return;
+    }
+  }
+  //#endregion
+  //#region Update Pre-Trip (Paper From)
+  if(entity === 'pre-trip' && preTripCheck.evaluation_form === 'paper-form'){
+    try {
+      let update_query = `
+      UPDATE "Training"
+      SET `;
+  
+      if (files[0]) update_query = update_query + `"image_1" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_1}'` 
+      if (files[1]) update_query = update_query + `,"image_2" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_2}'` 
+      if (files[2]) update_query = update_query + `,"image_3" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_3}'` 
+  
+      update_query = update_query + `WHERE "id" = '${record_id}';`
+      db1.connect();
+      await db1.query(update_query);
+      db1.end();
+    } catch (error) {
+      db1.end();
+      context.res = {
+        status: 400,
+        body: {
+          message: "An error occured while creating the trainer",
+        },
+      };
+      context.done();
+      return;
+    }
+  }
+  //#endregion
+  //#region Update Basic-Skills (Paper From)
+  if(entity === 'basic-skills' && basicSkills.evaluation_form === 'paper-form'){
+    try {
+      let update_query = `
+      UPDATE "Training"
+      SET `;
+  
+      if (files[0]) update_query = update_query + `"image_1" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_1}'` 
+      if (files[1]) update_query = update_query + `,"image_2" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_2}'` 
+      if (files[2]) update_query = update_query + `,"image_3" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_3}'` 
+  
+      update_query = update_query + `WHERE "id" = '${record_id}';`
+      db1.connect();
+      await db1.query(update_query);
+      db1.end();
+    } catch (error) {
+      db1.end();
+      context.res = {
+        status: 400,
+        body: {
+          message: "An error occured while creating the trainer",
+        },
+      };
+      context.done();
+      return;
+    }
+  }
+  //#endregion
+   //#region Update Road-Skills (Paper From)
+   if(entity === 'road-skills' && roadSkills.evaluation_form === 'paper-form'){
+    try {
+      let update_query = `
+      UPDATE "Training"
+      SET `;
+  
+      if (files[0]) update_query = update_query + `"image_1" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_1}'` 
+      if (files[1]) update_query = update_query + `,"image_2" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_2}'` 
+      if (files[2]) update_query = update_query + `,"image_3" = '${'https://dhtstorageaccountdev.blob.core.windows.net/training/training/' + image_3}'` 
+  
+      update_query = update_query + `WHERE "id" = '${record_id}';`
+      db1.connect();
+      await db1.query(update_query);
+      db1.end();
+    } catch (error) {
+      db1.end();
+      context.res = {
+        status: 400,
+        body: {
+          message: "An error occured while creating the trainer",
+        },
+      };
+      context.done();
+      return;
+    }
   }
   //#endregion
 
