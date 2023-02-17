@@ -1,15 +1,5 @@
 import * as _ from "lodash";
 
-
-
-
-
-
-
-
-
-
-
 let status_bar_dates = {
     "Account Activated": "step_two_date",
     "Admin sending email to upload DL and SS card": "step_three_date",
@@ -67,72 +57,83 @@ let status_message = [
 
 let h2a_status_bar_dates = {
     "Account Activated": "step_two_date",
-    "Email Sent to upload Passport and Drivers License": "step_three_date",
+    "Admin sending email to upload PP,DL, and SS docs": "step_three_date",
     "Passport and Drivers License verified": "step_four_date",
-    "Compliance docs posted": "step_five_date",
-    "Compliance docs verified": "step_six_date",
-    "Email Sent to notify that contract posted" : "step_seven_date",
-    "Employee Contract verified": "step_eight_date",
-    "Bank account information requested": "step_nine_date",
-    "Bank account details verified": "step_ten_date",
-    "Email Sent to review/complete VISA application": "step_eleven_date",
-    "Visa is verified": "step_twelve_date",
-    "Email sent to notify that DHT Approval Letter posted": "step_thirteen_date",
-    "Approval Letter verified": "step_fourteen_date",
-    "Email sent to complete signing and dating of some additional compliance docs": "step_fifteen_date",
-    "Additional compliance docs verified": "step_sixteen_date",
-    "CDL training instructions posted":"step_seventeen_date",
-    "CDL training instructions verified":"step_eighteen_date",
-    "Travel arrangements email": "step_nineteen_date",
-    "Onboarding Completed": "step_twenty_date",
-    "Active": "step_twentyone_date",
-    "Inprocess": "step_twentytwo_date",
-    "Inactive": "step_twentythree_date",
+    "CDL training instructions posted": "step_five_date",
+    "CDL training instructions verified": "step_six_date",
+    "Compliance docs posted" : "step_seven_date",
+    "Compliance docs verified": "step_eight_date",
+    "Employee Contract posted": "step_nine_date",
+    "Employee Contract verified": "step_ten_date",
+    "Bank account information requested": "step_eleven_date",
+    "Bank account details verified": "step_twelve_date",
+    "VISA Application Instructions posted": "step_thirteen_date",
+    "VISA Interview Date and Consulate Details verified": "step_fourteen_date",
+    "Approval Letter posted": "step_fifteen_date",
+    "Approval Letter verified": "step_sixteen_date",
+    "Waiting for VISA verification":"step_seventeen_date",
+    "VISA is verified":"step_eighteen_date",
+    "Waiting for further H2A required documentation": "step_nineteen_date",
+    "Additional H2A documentation verified": "step_twenty_date",
+    "Social Security Card posted": "step_twenty_one_date",
+    "Social Security Card verified": "step_twenty_two_date",
+    "American and CDL (if applicable) Drivers license posted": "step_twenty_three_date",
+    "Drivers license verified": "step_twenty_four_date",
+    "Onboarding Completed": "step_twenty_five_date",
+
+
 };
 
 let h2a_status_bar_steps = [
     "Account Activated",
-    "Email Sent to upload Passport and Drivers License",
+    "Admin sending email to upload PP,DL, and SS docs",
     "Passport and Drivers License verified",
+    "CDL training instructions posted",
+    "CDL training instructions verified",
     "Compliance docs posted",
     "Compliance docs verified",
-    "Email Sent to notify that contract posted" ,
+    "Employee Contract posted",
     "Employee Contract verified",
     "Bank account information requested",
     "Bank account details verified",
-    "Email Sent to review/complete VISA application",
-    "Visa is verified",
-    "Email sent to notify that DHT Approval Letter posted",
+    "VISA Application Instructions posted",
+    "VISA Interview Date and Consulate Details verified",
+    "Approval Letter posted",
     "Approval Letter verified",
-    "Email sent to complete signing and dating of some additional compliance docs",
-    "Additional compliance docs verified",
-    "CDL training instructions posted",
-    "CDL training instructions verified",
-    "Travel arrangements email",
+    "Waiting for VISA verification",
+    "VISA is verified",
+    "Waiting for further H2A required documentation",
+    "Additional H2A documentation verified",
+    "Social Security Card posted",
+    "Social Security Card verified",
+    "American and CDL (if applicable) Drivers license posted",
+    "Drivers license verified",
     "Onboarding Completed",
-    "Active",
-    "Inprocess",
-    "Inactive",
 ]
 
 let h2a_status_message = [
     "passport_driver_license",
     "passport_driver_license",
+    "cdl_training",
+    "cdl_training",
     "compliance_docs",
     "compliance_docs",
     "contract",
     "contract",
     "bank_account",
     "bank_account",
-    "visa",
-    "visa",
+    "visa_consulate_details",
+    "visa_consulate_details",
     "approval_letter",
     "approval_letter",
-    "additional_compliance_docs",
-    "additional_compliance_docs",
-    "cdl_training",
-    "cdl_training",
-    "travel_arrangements"
+    "visa",
+    "visa",
+    "h2a_documents",
+    "h2a_documents",
+    "social_security",
+    "social_security",
+    "american_license",
+    "american_license",
 ]
 
 export function updateQuery(employee, h2a) {

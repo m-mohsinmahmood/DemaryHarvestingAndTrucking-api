@@ -8,49 +8,43 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
   const db = new Client(config);
 
-  console.log(req.query);
-
   try {
     const customer_id: string = req.query.customer_id;
+    const sort: string = req.query.sort ? req.query.sort : `ti."created_at"`;
+    const order: string = req.query.order ? req.query.order : `desc`;
 
-    let dwr_info_query = `
-          
+
+
+    let trucking_list_query = `
     SELECT 
-  td.id as id, 
-  td.created_at as load_date, 
-  td.cargo as cargo, 
-	td.origin_city as origin_city,
-	td.destination_city as dest_city,
-  emp.first_name AS disp_first_name,
-	emp.last_name AS disp_last_name,
-
-	tDriver."first_name" AS dr_first_name,
-	tDriver."last_name" AS dr_last_name,
-  td.ticket_status as status 
+ti."id",
+	ti.date,
+	ti.billing_id,
+	ti.cargo,
+	ti.city,
+	ti.state,
+	ti.rate_type,
+	ti.rate,
+	ti.amount
 	
-FROM 
-  "Trucking_Delivery_Ticket" td 
-  INNER JOIN "Employees" emp ON td."dispatcher_id" = emp."id" 
-	INNER JOIN "Employees" tDriver ON td.truck_driver_id = tDriver."id" 
+	from "Trucking_Invoice" ti
+  WHERE ti.customer_id = '${customer_id}'
+        ORDER BY 
+              ${sort} ${order};
 
-Where 
-
-td.customer_id = '${customer_id}' 
-  AND td."is_deleted" = FALSE;
       `;
 
 
 
-    let query = `${dwr_info_query}`;
 
-    console.log(query);
+    let query = `${trucking_list_query} `;
 
     db.connect();
 
     let result = await db.query(query);
 
     let resp = {
-      truckingJobs: result.rows
+      truckingInvoicesList: result.rows
     };
 
     db.end();
