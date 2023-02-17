@@ -23,7 +23,7 @@ let documents = {
     "field4": "contract_disclaimer",
   },
   b797: {
-    "field1": "b797_date",
+    "field1": "b797_number",
     "field2": "b797_expiration_date",
     "field3": "b797_doc",
     "field4": "b797_sign",
@@ -199,6 +199,25 @@ let documents = {
     "field4": "foreign_driver_license_doc",
     "field5": "foreign_driver_license_sign",
     "field6": "foreign_driver_license_disclaimer"
+  },
+  american_license: {
+    "field1": "american_license_state",
+    "field2": "american_license_number",
+    "field3": "american_license_issue_date",
+    "field4": "american_license_doc",
+    "field5": "american_license_sign",
+    "field6": "american_license_type",
+    "field7": "american_license_disclaimer"
+  },
+  visa_interview: {
+    "field1": "visa_interview_date",
+    "field2": "visa_interview_embassy",
+    "field3": "visa_interview_street",
+    "field4": "visa_interview_city",
+    "field5": "visa_interview_country",
+    "field6": "visa_interview_phone_number",
+    "field7": "visa_interview_sign",
+    "field8": "visa_interview_disclaimer"
   }
 }
 
@@ -209,6 +228,29 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
           `;
   if (doc_status == 'Reject') {
     switch (docName) {
+      case "american_license":
+        query = query + `
+        "${documents['american_license'].field1}" = '',
+        "${documents['american_license'].field2}" = '',
+        "${documents['american_license'].field3}" = '',
+        "${documents['american_license'].field4}" = '',
+        "${documents['american_license'].field5}" = '',
+        "${documents['american_license'].field6}" = '',
+        "${documents['american_license'].field7}" = false
+        `;
+        break;
+      case "visa_consulate_details":
+        query = query + `
+        "${documents['visa_interview'].field1}" = '',
+        "${documents['visa_interview'].field2}" = '',
+        "${documents['visa_interview'].field3}" = '',
+        "${documents['visa_interview'].field4}" = '',
+        "${documents['visa_interview'].field5}" = '',
+        "${documents['visa_interview'].field6}" = '',
+        "${documents['visa_interview'].field7}" = '',
+        "${documents['visa_interview'].field8}" = false
+        `;
+        break;
       case "driver_license_ss_card":
         query = query + `
         "${documents['cdl_license'].field1}" = '',
@@ -364,6 +406,33 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
   }
   else {
     switch (docName) {
+
+      case "american_license_doc":
+        query = query + `
+        "${documents['american_license'].field1}" = $$${employee_doc.american_license_state}$$,
+        "${documents['american_license'].field2}" = $$${employee_doc.american_license_number}$$,
+        "${documents['american_license'].field3}" = $$${employee_doc.american_license_issue_date}$$,
+        "${documents['american_license'].field4}" = $$${employee_doc.american_license_doc}$$,
+        "${documents['american_license'].field5}" = $$${employee_doc.american_license_sign}$$,
+        "${documents['american_license'].field6}" = $$${employee_doc.american_license_type}$$,
+        "${documents['american_license'].field7}" = $$${employee_doc.american_license_disclaimer}$$
+        `;
+        break;
+
+      case "visa_interview_doc":
+        query = query + `
+        "${documents['visa_interview'].field1}" = $$${employee_doc.visa_interview_date}$$,
+        "${documents['visa_interview'].field2}" = $$${employee_doc.visa_interview_embassy}$$,
+        "${documents['visa_interview'].field3}" = $$${employee_doc.visa_interview_street}$$,
+        "${documents['visa_interview'].field4}" = $$${employee_doc.visa_interview_city}$$,
+        "${documents['visa_interview'].field5}" = $$${employee_doc.visa_interview_country}$$,
+        "${documents['visa_interview'].field6}" = $$${employee_doc.visa_interview_phone_number}$$,
+        "${documents['visa_interview'].field7}" = $$${employee_doc.visa_interview_sign}$$,
+        "${documents['visa_interview'].field8}" = $$${employee_doc.visa_interview_disclaimer}$$
+        `;
+        break;
+
+
       case "passport_doc":
         query = query + `
         "${documents['passport'].field1}" = '${employee_doc.passport_country}',
@@ -409,7 +478,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "b797_doc":
         query = query + `
-        "${documents['b797'].field1}" = '${employee_doc.b797_date}',
+        "${documents['b797'].field1}" = '${employee_doc.b797_number}',
         "${documents['b797'].field2}" = '${employee_doc.b797_expiration_date}',
         "${documents['b797'].field3}" = '',
         "${documents['b797'].field4}" = $$${employee_doc.b797_sign}$$,
@@ -509,7 +578,6 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         "${documents['i9'].field2}" = '',
         "${documents['i9'].field3}" = $$${employee_doc.i9_sign}$$,
         "${documents['i9'].field4}" = '${employee_doc.i9_disclaimer}'
-
         `;
         break;
 
