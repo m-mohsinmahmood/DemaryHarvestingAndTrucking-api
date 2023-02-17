@@ -7,8 +7,7 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest
 ): Promise<void> {
   const db = new Client(config);
-
-  try {
+    try {
     const search: string = req.query.search;
     const status: string = req.query.status;
     const role: string = req.query.role;
@@ -43,6 +42,7 @@ const httpTrigger: AzureFunction = async function (
                 "cell_phone_country_code",
                 "fb_id",
                 "status",
+                "status_step",
                 "created_at"
         FROM 
                 "Employees"

@@ -248,7 +248,13 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         "${documents['visa_interview'].field5}" = '',
         "${documents['visa_interview'].field6}" = '',
         "${documents['visa_interview'].field7}" = '',
-        "${documents['visa_interview'].field8}" = false
+        "${documents['visa_interview'].field8}" = false,
+
+        "${documents['b797'].field1}" = '',
+        "${documents['b797'].field2}" = '',
+        "${documents['b797'].field3}" = '',
+        "${documents['b797'].field4}" = '',
+        "${documents['b797'].field5}" = false
         `;
         break;
       case "driver_license_ss_card":
@@ -308,7 +314,27 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         "${documents['itinerary'].field1}" = '',
         "${documents['itinerary'].field2}" = '',
         "${documents['itinerary'].field3}" = '',
-        "${documents['itinerary'].field4}" = false
+        "${documents['itinerary'].field4}" = false,
+
+        "${documents['drug_policy'].field1}" = '',
+        "${documents['drug_policy'].field2}" = '',
+        "${documents['drug_policy'].field3}" = '',
+        "${documents['drug_policy'].field4}" = false,
+
+        "${documents['reprimand_policy'].field1}" = '',
+        "${documents['reprimand_policy'].field2}" = '',
+        "${documents['reprimand_policy'].field3}" = '',
+        "${documents['reprimand_policy'].field4}" = false,
+
+        "${documents['equipment_policy'].field1}" = '',
+        "${documents['equipment_policy'].field2}" = '',
+        "${documents['equipment_policy'].field3}" = '',
+        "${documents['equipment_policy'].field4}" = false,
+
+        "${documents['departure'].field1}" = '',
+        "${documents['departure'].field2}" = '',
+        "${documents['departure'].field3}" = '',
+        "${documents['departure'].field4}" = false
           `;
         break;
       case "contract_w4":
@@ -398,7 +424,51 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
           "${documents['visa'].field9}" = false
           `;
         break;
+      case "h2a_documents":
+        query = query + `
+          "${documents['i9'].field1}" = '',
+          "${documents['i9'].field2}" = '',
+          "${documents['i9'].field3}" = '',
+          "${documents['i9'].field4}" = false,
 
+          "${documents['i94'].field1}" = '',
+          "${documents['i94'].field2}" = '',
+          "${documents['i94'].field3}" = '',
+          "${documents['i94'].field4}" = false,
+
+          "${documents['cert'].field1}" = '',
+          "${documents['cert'].field2}" = '',
+          "${documents['cert'].field3}" = '',
+          "${documents['cert'].field4}" = '',
+          "${documents['cert'].field5}" = false,
+
+          "${documents['dot_physical'].field1}" = '',
+          "${documents['dot_physical'].field2}" = '',
+          "${documents['dot_physical'].field3}" = '',
+          "${documents['dot_physical'].field4}" = '',
+          "${documents['dot_physical'].field5}" = '',
+          "${documents['dot_physical'].field6}" = false,
+
+          "${documents['drug_test'].field1}" = '',
+          "${documents['drug_test'].field2}" = '',
+          "${documents['drug_test'].field3}" = '',
+          "${documents['drug_test'].field4}" = '',
+          "${documents['drug_test'].field5}" = '',
+          "${documents['drug_test'].field6}" = false
+
+            `;
+        break;
+
+
+        case "social_security":
+          query = query + `
+          "${documents['social_sec'].field1}" = '',
+          "${documents['social_sec'].field2}" = '',
+          "${documents['social_sec'].field3}" = '',
+          "${documents['social_sec'].field4}" = '',
+          "${documents['social_sec'].field5}" = false
+            `;
+          break;
       default:
         break;
     }
