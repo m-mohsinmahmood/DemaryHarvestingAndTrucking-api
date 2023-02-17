@@ -168,7 +168,7 @@ export function updateQuery(employee, h2a) {
 
         return query;
     }
-    else {
+    else if (h2a == 'true') {
         let query
         query = `
             UPDATE "H2a_Status_Bar"

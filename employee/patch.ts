@@ -11,6 +11,7 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest
 ): Promise<void> {
   const db = new Client(config);
+  const db1 = new Client(config);
   let query;
 
   try {
@@ -23,6 +24,30 @@ const httpTrigger: AzureFunction = async function (
     let result = await db.query(query);
     db.end();
 
+    //Update employee Status step
+    try {
+      let update_employee_query = `
+      UPDATE
+        "Employees"
+      SET
+        "status_step" = '${employee.status_step}'
+      WHERE
+        "id" = '${employee.id}';
+      `
+      db1.connect();
+      await db1.query(update_employee_query);
+      db1.end();
+    }
+    catch (error) {
+      db1.end();
+      context.res = {
+        status: 500,
+        body: {
+          message: error.message,
+        },
+      };
+      return;
+    }
     //#region Send email to employee
     if (email && email.subject && email.to && email.body) {
       const connectionString = process.env["EMAIL_CONNECTION_STRING"];
@@ -41,7 +66,7 @@ const httpTrigger: AzureFunction = async function (
           ],
         },
       };
-  
+
       const messageId: any = await client.send(emailMessage);
     }
     //#endregion
