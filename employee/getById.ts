@@ -726,7 +726,7 @@ const httpTrigger: AzureFunction = async function (
             status: +resp.status_step >= 17 && resp.visa == 'Verified' ? true : false,
             show: +resp.status_step >= 17 ? true : false,
             active: +resp.status_step >= 17 ? true : false,
-            showIcons: resp.reprimand_policy_disclaimer == true && resp.drug_policy_disclaimer == true && resp.equipment_policy_disclaimer == true && resp.departure_disclaimer == true ? true : false,
+            showIcons: resp.visa_disclaimer == true ? true : false,
             click: +resp.status_step == 17 ? true : false,
             statusBar: 'visa',
           },
