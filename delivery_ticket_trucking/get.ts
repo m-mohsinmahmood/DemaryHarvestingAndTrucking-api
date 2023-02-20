@@ -49,6 +49,7 @@ const httpTrigger: AzureFunction = async function (
 
             TD."id" as "id",
             td.cargo as cargo,
+            td.load as load,
             td.origin_city as originCity,
             td.destination_city as destinationCity,
             td.destination_state as destinationState,

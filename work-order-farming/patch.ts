@@ -38,7 +38,8 @@ const httpTrigger: AzureFunction = async function (
                 "work_order_close_out"                         = 'false',
                 "work_order_status"                         = '',
                 "complete_information" = 'true',
-                "total_acres" = '${workOrder.totalAcres}'
+                "total_acres" = '${workOrder.totalAcres}',
+                modified_at = now()
               
         WHERE 
                 "id" = '${workOrder.workOrderId}';`
@@ -52,7 +53,8 @@ const httpTrigger: AzureFunction = async function (
         UPDATE 
                 "Farming_Work_Order"
         SET 
-                "is_active"                    = 'true'
+                "is_active"                    = 'true',
+                modified_at = now()
               
         WHERE 
                 "id" = '${workOrder.workOrderId}'
@@ -66,7 +68,8 @@ const httpTrigger: AzureFunction = async function (
         UPDATE 
                 "Motorized_Vehicles"
         SET 
-                "odometer_reading_end" = '${workOrder.endingEngineHours}'
+                "odometer_reading_end" = '${workOrder.endingEngineHours}',
+                modified_at = now()
               
         WHERE 
                 "id" = '${workOrder.machineryID}' ;`;
@@ -75,7 +78,8 @@ const httpTrigger: AzureFunction = async function (
         UPDATE 
                 "Farming_Work_Order"
         SET 
-                "is_active"                    = 'false'
+                "is_active"                    = 'false',
+                modified_at = now()
               
         WHERE 
                 "id" = '${workOrder.workOrderId}' ;
@@ -100,7 +104,8 @@ const httpTrigger: AzureFunction = async function (
         UPDATE 
                 "Motorized_Vehicles"
         SET 
-                "odometer_reading_end" = '${workOrder.endingEngineHours}'
+                "odometer_reading_end" = '${workOrder.endingEngineHours}',
+                modified_at = now()
               
         WHERE 
                 "id" = '${workOrder.machineryID}' ;`;
@@ -114,7 +119,8 @@ const httpTrigger: AzureFunction = async function (
                 "ending_engine_hours"                          = '${workOrder.endingEngineHours}',
                 "work_order_close_out"                         = 'True',
                 "work_order_is_completed"                         = 'True',
-                "work_order_status"                         = 'pending'
+                "work_order_status"                         = 'pending',
+                modified_at = now()
               
         WHERE 
                 "id" = '${workOrder.workOrderId}' And work_order_close_out = FALSE;
@@ -134,7 +140,8 @@ const httpTrigger: AzureFunction = async function (
         SET 
                 "work_order_close_out"                         = 'True',
                 "work_order_is_completed"                         = 'True',
-                "work_order_status"                         = 'verified'
+                "work_order_status"                         = 'verified',
+                modified_at = now()
 
         WHERE 
                 "id" = '${workOrder.customerId}';`
