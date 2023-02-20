@@ -13,7 +13,7 @@ export interface employee_docs {
     contract_date: string,
     contract_doc: string,
     contract_sign: string,
-    b797_date: string,
+    b797_number: string,
     b797_expiration_date: string,
     b797_doc: string,
     b797_sign: string,

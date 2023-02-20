@@ -28,6 +28,7 @@ const httpTrigger: AzureFunction = async function (
                 (
                 "employee_id",
                 "document_name",
+                "employment_period",
                 "document_type",
                 "created_at" 
                 )
@@ -35,6 +36,7 @@ const httpTrigger: AzureFunction = async function (
                 (
                 '${policy_doc.employee_id}',
                 '${policy_doc.name}',
+                '${policy_doc.employment_period}',
                 '${policy_doc.type}',
                 'now()'
                 )
