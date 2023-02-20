@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { farming } from './model';
+import { rentals } from './model';
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -10,18 +10,18 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const farming: farming = req.body;
+    const rentals: rentals = req.body;
     let query = `
-        UPDATE  "Farming_Invoice"
-        SET     "customer_id"     = '${farming.customer_id}', 
-                "created_at"            = '${farming.date}',
-                "equipment_type"  = '${farming.equipment_type}',
-                "quantity_type"   =  '${farming.quantity_type}',
-                "quantity"        = '${farming.quantity}', 
-                "rate"            = '${farming.rate}',
-                "amount"          =  '${farming.amount}'
+        UPDATE  "Rental_Invoice"
+        SET     "customer_id"     = '${rentals.customer_id}', 
+                "created_at"            = '${rentals.date}',
+                "rental_type"  = '${rentals.rental_type}',
+                "quantity_type"   =  '${rentals.quantity_type}',
+                "quantity"        = '${rentals.quantity}', 
+                "rate"            = '${rentals.rate}',
+                "amount"          =  '${rentals.amount}'
               
-        WHERE   "id"             = '${farming.id}';`
+        WHERE   "id"             = '${rentals.id}';`
 
     db.connect();
     let result = await db.query(query);

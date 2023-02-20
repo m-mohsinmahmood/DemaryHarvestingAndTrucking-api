@@ -15,7 +15,7 @@ const httpTrigger: AzureFunction = async function (
 
     let dwr_info_query = `
           
-    SELECT 
+  SELECT 
   wo.id as id, 
   wo.created_at as date, 
   wo.service as service, 
@@ -41,7 +41,7 @@ Where
   And wo.customer_id = '${customer_id}'
   AND wo."is_deleted" = FALSE 
 ORDER BY 
-  c."customer_name" ASC;
+wo.created_at desc;
 
       `;
 
