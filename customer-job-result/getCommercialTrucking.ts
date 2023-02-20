@@ -35,8 +35,7 @@ FROM
 
 Where 
 
- td.ticket_status = 'verified' 
-  And td.customer_id = '${customer_id}' 
+td.customer_id = '${customer_id}' 
   AND td."is_deleted" = FALSE;
       `;
 

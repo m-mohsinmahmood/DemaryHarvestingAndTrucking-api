@@ -8,8 +8,11 @@ const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
 ): Promise<void> {
-  switch (req.method) {
 
+  console.log("Query: ", req.query);
+  console.log("Body: ", req.body);
+
+  switch (req.method) {
     case "GET":
       if (req.query.operation === 'kartOperatorTruckDrivers' && req.query.id)
         await getKartOperatorTruckDrivers.default(context, req);

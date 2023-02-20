@@ -18,6 +18,7 @@ export interface job_setup {
     employee_id?: string;
 }
 export interface job_update {
+    id?:string,
     customer_id: string;
     farm_id: string;
     crop_id: string
