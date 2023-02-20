@@ -4,6 +4,8 @@ import * as addWorkOrder from "./post";
 import * as getWorkOrder from "./get";
 import * as updateWorkOrder from "./patch";
 import * as getWorkOrderById from "./getById";
+import * as updateInvoicedWorkOwrder from "./updateInvoicedWorkOrder";
+import * as updatePaidWorkOrder from "./updatePaidWorkOrders";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -20,7 +22,11 @@ const httpTrigger: AzureFunction = async function (
             await addWorkOrder.default(context, req);
             break;
         case "PATCH":
-            await updateWorkOrder.default(context, req);
+            if (req.body.operation === 'updateInvoicedWorkOrder')
+                await updateInvoicedWorkOwrder.default(context, req);
+            else if (req.body.operation === 'updatePaidWorkOrder')
+                await updatePaidWorkOrder.default(context, req);
+            else await updateWorkOrder.default(context, req);
             break;
         default:
             context.res = {

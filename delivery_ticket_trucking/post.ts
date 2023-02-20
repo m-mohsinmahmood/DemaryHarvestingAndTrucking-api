@@ -16,15 +16,15 @@ const httpTrigger: AzureFunction = async function (
         let optionalReq: string = ``;
         let optionalValues: string = ``;
 
-        // if (order.load != null) {
-        //     optionalReq = `${optionalReq},"beginning_engine_hours"`;
-        //     optionalValues = `${optionalValues},'${order.load}'`
-        // }
+        if (order.load != null) {
+            optionalReq = `${optionalReq},"load"`;
+            optionalValues = `${optionalValues},'${order.load}'`
+        }
 
-        // if (order.loadDate != null) {
-        //     optionalReq = `${optionalReq},"beginning_engine_hours"`;
-        //     optionalValues = `${optionalValues},'${order.loadDate}'`
-        // }
+        if (order.loadDate != null) {
+            optionalReq = `${optionalReq},"load_date"`;
+            optionalValues = `${optionalValues},'${order.loadDate}'`
+        }
 
         if (order.destinationEndingnOdometerReading != null) {
             optionalReq = `${optionalReq},"destination_ending_OMR"`;

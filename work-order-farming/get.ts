@@ -53,9 +53,10 @@ const httpTrigger: AzureFunction = async function (
             "emp".first_name AS "dispatcher_name",
 			tractor."first_name" AS "tractor_driver_name",
             "farm".name AS "farm_name",
-            "field".name AS "field_name"
+            "field".name AS "field_name",
+            wo.farm_id as farm_id,
+            wo.field_id as field_id
 			
-                     
             FROM 
             "Farming_Work_Order" wo
             INNER JOIN "Customers" c 

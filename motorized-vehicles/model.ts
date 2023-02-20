@@ -5,8 +5,8 @@ export interface Motorized {
     company_id: string;
     color: string;
     year: string;
-    odometer:string;
-    odometer_reading:string;
+    odometer: string;
+    odometer_reading: string;
     make: string;
     model: string;
     title: string;
@@ -23,8 +23,9 @@ export interface Motorized {
     estimated_market_value: string;
     source_of_market_value: string;
     date_of_market_value: string;
-    name:string;
-    license_plate:string;
+    name: string;
+    license_plate: string;
     pictures: string;
-    status:string;
+    status: string;
+    endingEngineHours?: string;
 }

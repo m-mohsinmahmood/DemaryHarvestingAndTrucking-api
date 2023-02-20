@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { farmingInvoice } from "./model";
+import { truckingInvoice } from "./model";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -9,20 +9,19 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
     const db = new Client(config);
 
-    console.log("Customer Farming Invoice");
+    console.log("Customer Trucking Invoice");
 
     try {
         // First, required data will be fetched from tables            
-        const order: farmingInvoice = req.body;
+        const order: truckingInvoice = req.body;
 
-        let rate = `select equipment_type, rate from "Farming_Rates" where customer_id = '${order.customerId}' 
-                    AND equipment_type='${order.equipmentType}' ;`;
+        let rate = `select rate, rate_type from "Trucking_Rates" where customer_id = '${order.customerId}' 
+                    AND id='${order.rateType}' ; `;
 
-        let quantity = `select acres as quantity from "Customer_Field" where customer_id = '${order.customerId}' 
-                        AND id = '${order.fieldId}' ;`;
+        let quantity = order.weightLoad;
 
 
-        let fetchData = `${rate} ${quantity}`;
+        let fetchData = `${rate}`;
 
         console.log(fetchData);
 
@@ -31,39 +30,37 @@ const httpTrigger: AzureFunction = async function (
         let result = await db.query(fetchData);
 
         let resp = {
-            rate: result[0].rows,
-            quantity: result[1].rows
+            rate: result.rows
         };
 
-        console.log(resp);
+        console.log("Rate:", resp.rate[0].rate);
 
-        console.log("Rate:", resp.rate[0]?.rate);
-        console.log("quantity:", resp.quantity[0].quantity);
-
-        quantity = resp.quantity[0].quantity
-        rate = resp.rate[0]?.rate;
-        
+        rate = resp.rate[0].rate;
         let amount = parseInt(quantity) * parseFloat(rate);
+        console.log("amount:", amount);
+
         // Now data will be posted in designated table            
         let query = `
             INSERT INTO 
-                        "Farming_Invoice" 
+                        "Trucking_Invoice" 
                         ("customer_id", 
-                        "equipment_type", 
-                        "quantity_type", 
-                        "quantity",
-                        "rate", 
-                        "amount",
-                        "field_id" 
+                        "billing_id", 
+                        "cargo", 
+                        "city",
+                        "state", 
+                        "rate_type",
+                        "rate",
+                        "amount" 
                       )
 
             VALUES      ('${order.customerId}', 
-                        '${order.equipmentType}', 
-                        'acres', 
-                        '${quantity}', 
-                        '${rate}',
-                        '${amount}', 
-                        '${order.fieldId}' 
+                        '', 
+                        '${order.cargo}', 
+                        '${order.destinationCity}',
+                        '${order.destinationState}', 
+                        '${resp.rate[0].rate_type}',
+                        '${rate}', 
+                        '${amount}' 
                        );
           `;
 
