@@ -40,12 +40,20 @@ const httpTrigger: AzureFunction = async function (
         ;`;
 
         let queryToRun = `
-        SELECT * FROM "Farming_Work_Order"
-        WHERE customer_id = '${customer_id}' 
+        SELECT fw.created_at AS date, fw.service,  farm."name" AS farm, field."name" AS field, fw.total_service_acres AS acres,
+        fw.beginning_engine_hours, fw.ending_engine_hours
+        
+        FROM "Farming_Work_Order" fw
+         
+        INNER JOIN "Customer_Farm" farm ON fw.farm_id = farm.id
+        INNER JOIN "Customer_Field" field ON fw.field_id = field."id"
+         
+         
+        WHERE fw.customer_id = '15e77518-26bd-488f-93db-25cd1f726680' 
         ${whereClause}
-        AND ("work_order_status" <> 'invoiced' OR "work_order_status" <> 'paid')
-        AND is_deleted = FALSE
-        ORDER BY created_at ASC;
+        AND fw.work_order_status = 'verified'
+        AND fw.is_deleted = FALSE
+        ORDER BY fw.created_at ASC;
         ;`;
 
         let query = `${queryToRun} ${totalAmount}`;

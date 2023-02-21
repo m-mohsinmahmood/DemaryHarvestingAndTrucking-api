@@ -61,7 +61,7 @@ const httpTrigger: AzureFunction = async function (
 							 
 				WHERE customer_id = '${workOrder.customerId}'
                 ${whereClause}
-				AND ("work_order_status" <> 'invoiced' OR "work_order_status" <> 'paid')
+                AND "work_order_status" = 'verified'
 				AND is_deleted = FALSE
                 ;`
 
