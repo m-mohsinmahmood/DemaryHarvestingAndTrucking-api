@@ -41,7 +41,7 @@ const httpTrigger: AzureFunction = async function (
 
         let queryToRun = `
         SELECT fw.created_at AS date, fw.service,  farm."name" AS farm, field."name" AS field, fw.total_service_acres AS acres,
-        fw.beginning_engine_hours, fw.ending_engine_hours
+        fw.beginning_engine_hours, fw.ending_engine_hours, fw.work_order_status
         
         FROM "Farming_Work_Order" fw
          
