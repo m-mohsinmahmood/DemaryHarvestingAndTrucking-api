@@ -52,6 +52,11 @@ export interface InvoicedWorkOrder {
     serviceType?: string;
     from?: string;
     to?: string;
+    quantityType?: string;
+    quantity?: string;
+    rate?: string;
+    amount?: string;
+    fieldId?: string;
 }
 
 export interface PaidWorkOrder {

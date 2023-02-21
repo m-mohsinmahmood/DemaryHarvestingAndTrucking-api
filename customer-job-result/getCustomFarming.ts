@@ -23,7 +23,7 @@ const httpTrigger: AzureFunction = async function (
   "farm".name AS "farm_name", 
   "field".name AS "field_name", 
   wo.total_acres as acres, 
-  wo."total_gps-service-acres" as gps_acres, 
+  wo."total_gps_service_acres" as gps_acres, 
   dwr.start_time, 
   wo.work_order_status as status,
   CAST (wo.ending_engine_hours AS FLOAT) - CAST (wo.beginning_engine_hours AS FLOAT) as engine_hours,

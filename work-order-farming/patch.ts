@@ -92,7 +92,6 @@ const httpTrigger: AzureFunction = async function (
         let dwr = {
           workOrderId: workOrder.workOrderId,
           acresCompleted: workOrder.acresCompleted,
-          // gpsAcres: workOrder.gpsAcres,
           endingEngineHours: workOrder.endingEngineHours,
           hoursWorked: workOrder.hoursWorked,
           notes: workOrder.notes
@@ -115,12 +114,13 @@ const httpTrigger: AzureFunction = async function (
                 "Farming_Work_Order"
         SET 
                 "total_service_acres"                    = '${workOrder.acresByService}',
-                "total_gps-service-acres"                     = '${workOrder.gpsAcresByService}',
+                "total_gps_service_acres"                     = '${workOrder.gpsAcresByService}',
                 "ending_engine_hours"                          = '${workOrder.endingEngineHours}',
                 "work_order_close_out"                         = 'True',
                 "work_order_is_completed"                         = 'True',
                 "work_order_status"                         = 'pending',
-                modified_at = now()
+                modified_at = now(),
+                "hours_worked"                              = '${workOrder.hoursWorked}'
               
         WHERE 
                 "id" = '${workOrder.workOrderId}' And work_order_close_out = FALSE;

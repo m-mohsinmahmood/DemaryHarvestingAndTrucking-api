@@ -12,27 +12,59 @@ const httpTrigger: AzureFunction = async function (
     try {
         const workOrder: InvoicedWorkOrder = req.body;
 
-        let query = ``;
+        let whereClause = ``;
+        if (workOrder.from) whereClause = ` ${whereClause}  AND '${workOrder.from}' <= created_at::"date"`;
+        if (workOrder.to) whereClause = ` ${whereClause}  AND '${workOrder.to}' >= created_at::"date"`;
+        if (workOrder.serviceType) whereClause = ` ${whereClause}  AND service = '${workOrder.serviceType}'`;
+        if (workOrder.quantityType) whereClause = ` ${whereClause}  AND quantity_type = '${workOrder.quantityType}'`;
+
+        let insertquery = `
+            INSERT INTO 
+                        "Farming_Invoice" 
+                        ("customer_id", 
+                        "equipment_type", 
+                        "quantity_type", 
+                        "quantity",
+                        "rate", 
+                        "amount",
+                        "field_id" 
+                      )
+
+            VALUES      ('${workOrder.customerId}', 
+                        '${workOrder.serviceType}', 
+                        '${workOrder.quantityType}', 
+                        '${workOrder.quantity}', 
+                        '${workOrder.rate}',
+                        '${workOrder.amount}', 
+                        '${workOrder.fieldId}' 
+                       ) returning id;
+          `;
+
+        db.connect();
+        // console.log(insertquery);
+
+        let invoice = await db.query(insertquery);
+        invoice = invoice.rows[0].id;
+        console.log("Invoice: ", invoice);
+
 
         // If user make a call from Verify Work Order of Dispatcher
         console.log("Updating Work Order for Invoice");
 
-        query = `
+        let query = `
                 UPDATE "Farming_Work_Order"
 
 				SET    
                 work_order_status = 'invoiced',
-				invoice_id = '',
+				invoice_id = '${invoice}',
                 modified_at = now()
 							 
 				WHERE customer_id = '${workOrder.customerId}'
-				AND created_at::"date" BETWEEN '${workOrder.from}' AND '${workOrder.to}' 
-				AND service = '${workOrder.serviceType}'
+                ${whereClause}
 				AND ("work_order_status" <> 'invoiced' OR "work_order_status" <> 'paid')
 				AND is_deleted = FALSE
                 ;`
 
-        db.connect();
         console.log(query);
 
         let result = await db.query(query);
