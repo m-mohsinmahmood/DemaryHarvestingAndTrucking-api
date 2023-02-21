@@ -24,20 +24,11 @@ const httpTrigger: AzureFunction = async function (
   const { fields, files } = await parseMultipartFormData(req, multiPartConfig);
   let trainer: any = (JSON.parse(fields[0].value));
   let trainee: any = (JSON.parse(fields[0].value));
-  let preTripCheck: any = (JSON.parse(fields[0].value));
-  let basicSkills: any = (JSON.parse(fields[0].value));
-  let roadSkills: any = (JSON.parse(fields[0].value));
-
+    let preTripCheck: any = (JSON.parse(fields[0].value));
+    let basicSkills: any = (JSON.parse(fields[0].value));
+    let roadSkills: any = (JSON.parse(fields[0].value));``
   try {
-    // const trainee: trainee = req.body;
-    // const trainer: trainer = req.body;
-    // const preTripCheck: preTripCheck = req.body;
-    // const basicSkills: basicSkills = req.body;
-    // const roadSkills: roadSkills = req.body;
-    // const entity = req.query.entity;
 
-    console.log('REQ:',req.body)
-    console.log('Entity:',entity)
 
 if(entity === 'trainee'){
   query = `
@@ -234,7 +225,9 @@ RETURNING id as record_id
               '${basicSkills.truckId}',
               'basic-skills',
               'TRUE'
-);`;
+)
+RETURNING id as training_record_id
+;`;
 
 }else if(entity === 'road-skills' && roadSkills.evaluation_form === 'paper-form'){
   // for basic skills form having 'Paper Form'
@@ -332,47 +325,50 @@ RETURNING id as record_id
     return;
   }
     //#region Upload
-    try {
-      record_id = result.rows[0].record_id;
-      const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/training?sp=rwdl&st=2023-02-01T11:36:10Z&se=2024-12-31T19:36:10Z&spr=https&sv=2021-06-08&sr=c&sig=We3CxYtlHMyvsDa0tVag%2Fc0i%2BKniBfMoEXNRLq0qhBU%3D");
-      const container = blob.getContainerClient("training");
-     
-      if (files[0]){
-        image_1 = "image_1" + record_id;
-        const imageBlockBlob = container.getBlockBlobClient(image_1);
-        const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
-          blobHTTPHeaders: { blobContentType: files[0].mimeType },
-        });
+      if(files.length !==0){
+        try {
+          record_id = result.rows[0].record_id;
+          const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/training?sp=rwdl&st=2023-02-01T11:36:10Z&se=2024-12-31T19:36:10Z&spr=https&sv=2021-06-08&sr=c&sig=We3CxYtlHMyvsDa0tVag%2Fc0i%2BKniBfMoEXNRLq0qhBU%3D");
+          const container = blob.getContainerClient("training");
+         
+          if (files[0]){
+            image_1 = "image_1" + record_id;
+            const imageBlockBlob = container.getBlockBlobClient(image_1);
+            const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
+              blobHTTPHeaders: { blobContentType: files[0].mimeType },
+            });
+          }
+          
+          if (files[1]){
+            image_2 = "image_2" + record_id;
+            const imageBlockBlob = container.getBlockBlobClient(image_2);
+            const res = await imageBlockBlob.uploadData(files[1].bufferFile, {
+              blobHTTPHeaders: { blobContentType: files[1].mimeType },
+            });
+          }
+          if (files[2]){
+            image_3 = "image_3" + record_id;
+            const imageBlockBlob = container.getBlockBlobClient(image_3);
+            const res = await imageBlockBlob.uploadData(files[2].bufferFile, {
+              blobHTTPHeaders: { blobContentType: files[2].mimeType },
+            });
+          }
+        }
+        catch (error) {
+          context.res = {
+            status: 400,
+            body: {
+              message: "An error occured while creating the Trainerrrr",
+            },
+          };
+          context.done();
+          return;
+        }
+
       }
-      
-      if (files[1]){
-        image_2 = "image_2" + record_id;
-        const imageBlockBlob = container.getBlockBlobClient(image_2);
-        const res = await imageBlockBlob.uploadData(files[1].bufferFile, {
-          blobHTTPHeaders: { blobContentType: files[1].mimeType },
-        });
-      }
-      if (files[2]){
-        image_3 = "image_3" + record_id;
-        const imageBlockBlob = container.getBlockBlobClient(image_3);
-        const res = await imageBlockBlob.uploadData(files[2].bufferFile, {
-          blobHTTPHeaders: { blobContentType: files[2].mimeType },
-        });
-      }
-    }
-    catch (error) {
-      context.res = {
-        status: 400,
-        body: {
-          message: "An error occured while creating the Trainer",
-        },
-      };
-      context.done();
-      return;
-    }
     //#endregion
     //#region Update Trainer_Training_Tasks (Trainer)
-    if(entity === 'trainer'){
+    if(entity === 'trainer' && files.length !==0){
       try {
         let update_query = `
         UPDATE "Trainer_Training_Tasks"
@@ -391,7 +387,7 @@ RETURNING id as record_id
         context.res = {
           status: 400,
           body: {
-            message: "An error occured while creating the trainer",
+            message: "An error occured while creating the trainerr",
           },
         };
         context.done();
@@ -400,7 +396,7 @@ RETURNING id as record_id
     }
   //#endregion
   //#region Update Trainee
-  if(entity === 'trainee'){
+  if(entity === 'trainee' && files.length !==0){
     try {
       let update_query = `
       UPDATE "Trainee"
@@ -428,7 +424,7 @@ RETURNING id as record_id
   }
   //#endregion
   //#region Update Pre-Trip (Paper From)
-  if(entity === 'pre-trip' && preTripCheck.evaluation_form === 'paper-form'){
+  if(entity === 'pre-trip' && preTripCheck.evaluation_form === 'paper-form' && files.length !==0){
     try {
       let update_query = `
       UPDATE "Training"
@@ -456,7 +452,7 @@ RETURNING id as record_id
   }
   //#endregion
   //#region Update Basic-Skills (Paper From)
-  if(entity === 'basic-skills' && basicSkills.evaluation_form === 'paper-form'){
+  if(entity === 'basic-skills' && basicSkills.evaluation_form === 'paper-form' && files.length !==0){
     try {
       let update_query = `
       UPDATE "Training"
@@ -484,7 +480,7 @@ RETURNING id as record_id
   }
   //#endregion
    //#region Update Road-Skills (Paper From)
-   if(entity === 'road-skills' && roadSkills.evaluation_form === 'paper-form'){
+   if(entity === 'road-skills' && roadSkills.evaluation_form === 'paper-form' && files.length !==0){
     try {
       let update_query = `
       UPDATE "Training"
