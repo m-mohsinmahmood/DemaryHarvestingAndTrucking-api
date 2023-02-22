@@ -23,4 +23,6 @@ export interface beginningOfDay {
     state?: string;
     apprTaskId?: string;
     notesOther?: string;
+    module?: string;
+    dwrId?: string;
 }
