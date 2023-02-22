@@ -40,20 +40,21 @@ const httpTrigger: AzureFunction = async function (
         ;`;
 
         let queryToRun = `
-        SELECT fw.created_at AS date, fw.service,  farm."name" AS farm, field."name" AS field, fw.total_service_acres AS acres,
-        fw.beginning_engine_hours, fw.ending_engine_hours, fw.work_order_status
-        
-        FROM "Farming_Work_Order" fw
+        SELECT trucking.load_date,concat(dispatcher.first_name,' ' ,dispatcher.last_name) AS dispatcher,
+        concat(driver.first_name,' ' ,driver.last_name) AS driver, trucking.id AS ticket_number, 
+        trucking.cargo, trucking.destination_city, trucking.destination_state,
+        trucking.ticket_status
+ 
+        FROM "Trucking_Delivery_Ticket" trucking
          
-        INNER JOIN "Customer_Farm" farm ON fw.farm_id = farm.id
-        INNER JOIN "Customer_Field" field ON fw.field_id = field."id"
+        INNER JOIN "Employees" dispatcher ON trucking.dispatcher_id = dispatcher."id"
+		INNER JOIN "Employees" driver ON trucking.truck_driver_id = driver."id"         
          
-         
-        WHERE fw.customer_id = '${customer_id}' 
+        WHERE trucking.customer_id = '${customer_id}' 
         ${whereClause}
-        AND fw.work_order_status = 'verified'
-        AND fw.is_deleted = FALSE
-        ORDER BY fw.created_at ASC;
+        AND trucking.ticket_status = 'verified'
+        AND trucking.is_deleted = FALSE
+        ORDER BY trucking.created_at ASC;
         ;`;
 
         let query = `${queryToRun} ${totalAmount}`;

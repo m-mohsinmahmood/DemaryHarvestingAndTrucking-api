@@ -120,6 +120,7 @@ const httpTrigger: AzureFunction = async function (
                 "work_order_is_completed"                         = 'True',
                 "work_order_status"                         = 'pending',
                 modified_at = now(),
+                "notes" = '${workOrder.notes}',
                 "hours_worked"                              = '${workOrder.hoursWorked}'
               
         WHERE 

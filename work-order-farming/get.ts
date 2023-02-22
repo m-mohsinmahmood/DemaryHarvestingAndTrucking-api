@@ -40,6 +40,7 @@ const httpTrigger: AzureFunction = async function (
             SELECT 
             wo."id" AS "work_order_id", 
             wo."created_at" AS "date", 
+            wo.hours_worked,
             wo."service" AS "service", 
             c."id" AS "customer_id", 
             wo."total_service_acres" AS "acres_completed", 
@@ -55,7 +56,8 @@ const httpTrigger: AzureFunction = async function (
             "farm".name AS "farm_name",
             "field".name AS "field_name",
             wo.farm_id as farm_id,
-            wo.field_id as field_id
+            wo.field_id as field_id,
+            wo.notes
 			
             FROM 
             "Farming_Work_Order" wo

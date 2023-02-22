@@ -3,6 +3,7 @@ import * as createFarmingInvoice from "./createFarmingInvoice";
 import * as createTruckingInvoice from "./createTruckingInvoice";
 import * as createHarvestingInvoice from "./createHarvestingInvoice";
 import * as getallCustomerJobResults from "./getCustomerJobResult";
+import * as getTruckingCustomerJobResults from "./getTruckingCustomerJobResult";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     switch (req.method) {
@@ -16,6 +17,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
         case "GET":
             if (req.query.operation === 'allCustomerJobResult') await getallCustomerJobResults.default(context, req);
+            else if (req.query.operation === 'allTruckingCustomerJobResult') await getTruckingCustomerJobResults.default(context, req);
 
             break;
 
