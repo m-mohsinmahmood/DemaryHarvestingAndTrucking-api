@@ -91,7 +91,6 @@ const httpTrigger: AzureFunction = async function (
         console.log("Updating Closing Of Order");
         let dwr = {
           workOrderId: workOrder.workOrderId,
-          acresCompleted: workOrder.acresCompleted,
           endingEngineHours: workOrder.endingEngineHours,
           hoursWorked: workOrder.hoursWorked,
           notes: workOrder.notes
@@ -119,6 +118,7 @@ const httpTrigger: AzureFunction = async function (
                 "work_order_close_out"                         = 'True',
                 "work_order_is_completed"                         = 'True',
                 "work_order_status"                         = 'pending',
+                "acres_completed"                              = '${workOrder.acresCompleted}'
                 modified_at = now(),
                 "notes" = '${workOrder.notes}',
                 "hours_worked"                              = '${workOrder.hoursWorked}'

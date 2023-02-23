@@ -115,10 +115,6 @@ export function updateDWR(closingOfDay: any) {
     // If user make a call from Existing Work Order of Tractor Driver
     let optionalReq: string = ``;
 
-    if (closingOfDay.acresCompleted != null) {
-        optionalReq = `${optionalReq},"acres_completed" = '${closingOfDay.acresCompleted}'`;
-    }
-
     if (closingOfDay.endingEngineHours != null) {
         optionalReq = `${optionalReq},"ending_engine_hours" = '${closingOfDay.endingEngineHours}'`;
     }
