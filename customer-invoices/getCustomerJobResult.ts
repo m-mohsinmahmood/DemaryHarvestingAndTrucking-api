@@ -23,21 +23,49 @@ const httpTrigger: AzureFunction = async function (
     if (to) whereClause = ` ${whereClause}  AND '${to}' >= created_at::"date"`;
     if (service_type) whereClause = ` ${whereClause}  AND service = '${service_type}'`;
     if (service_type) amountWhereClause = ` ${amountWhereClause}  AND fr.equipment_type = '${service_type}'`;
-    if (quantityType) whereClause = ` ${whereClause}  AND quantity_type = '${quantityType}'`;
 
     try {
 
-        let totalAmount = `
-        SELECT fr.equipment_type AS description, Sum(fwo.total_service_acres) AS Total_Acres, fr.rate, 
-        SUM(fwo.total_service_acres * fr.rate ) AS Total_Amount_Acres,
-        SUM(fwo.hours_worked * fr.rate ) AS Total_Amount_Hours
+        let totalAmount = ``;
 
-        FROM "Farming_Work_Order" fwo INNER JOIN "Farming_Rates" fr ON fwo.customer_id = fr.customer_id  
-        ${amountWhereClause}
-        WHERE fwo.customer_id = '${customer_id}' 
+        if (quantityType === 'acres') {
+            totalAmount = `
+            SELECT fr.equipment_type AS description, Sum(fwo.total_service_acres) AS Total_Acres, fr.rate, 
+            SUM(fwo.total_service_acres * fr.rate ) AS Total_Amount
+    
+            FROM "Farming_Work_Order" fwo INNER JOIN "Farming_Rates" fr ON fwo.customer_id = fr.customer_id  
+            ${amountWhereClause}
+            WHERE fwo.customer_id = '${customer_id}' 
+    
+            GROUP BY fwo.customer_id, fr.equipment_type, fr.rate
+            ;`;
+        }
 
-        GROUP BY fwo.customer_id, fr.equipment_type, fr.rate
-        ;`;
+        else if (quantityType === 'hours') {
+            totalAmount = `
+            SELECT fr.equipment_type AS description, Sum(fwo.hours_worked) AS Total_Hours, fr.rate, 
+            SUM(fwo.hours_worked * fr.rate ) AS Total_Amount
+    
+            FROM "Farming_Work_Order" fwo INNER JOIN "Farming_Rates" fr ON fwo.customer_id = fr.customer_id  
+            ${amountWhereClause}
+            WHERE fwo.customer_id = '${customer_id}' 
+    
+            GROUP BY fwo.customer_id, fr.equipment_type, fr.rate
+            ;`;
+        }
+
+        else if (quantityType === 'flat_rate') {
+            totalAmount = `
+            SELECT fr.equipment_type AS description, Sum(fwo.total_service_acres) AS Total_Acres, fr.rate AS Total_Amount
+    
+            FROM "Farming_Work_Order" fwo INNER JOIN "Farming_Rates" fr ON fwo.customer_id = fr.customer_id  
+            ${amountWhereClause}
+            WHERE fwo.customer_id = '${customer_id}' 
+    
+            GROUP BY fwo.customer_id, fr.equipment_type, fr.rate
+            ;`;
+        }
+
 
         let queryToRun = `
         SELECT fw.created_at AS date, fw.service,  farm."name" AS farm, field."name" AS field, fw.total_service_acres AS acres,
@@ -47,7 +75,6 @@ const httpTrigger: AzureFunction = async function (
          
         INNER JOIN "Customer_Farm" farm ON fw.farm_id = farm.id
         INNER JOIN "Customer_Field" field ON fw.field_id = field."id"
-         
          
         WHERE fw.customer_id = '${customer_id}' 
         ${whereClause}
