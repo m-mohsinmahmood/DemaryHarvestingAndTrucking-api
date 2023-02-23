@@ -52,6 +52,7 @@ const httpTrigger: AzureFunction = async function (
 
         invoice.forEach(element => {
             console.log("test 1: ", element);
+
             farmingInvoiceRecords =
                 farmingInvoiceRecords +
 
@@ -60,13 +61,12 @@ const httpTrigger: AzureFunction = async function (
                         ("equipment", 
                         "rate", 
                         "quantity", 
-                        "amount",
-                        "farming_invoice_id"
+                        "amount"
                       )
 
             VALUES      ('${element.description}', 
                         '${element.rate}', 
-                        '${element.total_acres}', 
+                        '${element.total_acres == undefined ? '' : element.total_acres }', 
                         '${element.total_amount}'
                        );
           `;
