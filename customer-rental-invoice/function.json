@@ -6,8 +6,10 @@
       "direction": "in",
       "name": "req",
       "methods": [
+        "get",
         "post",
-        "get"
+        "put"
+
       ]
     },
     {
@@ -16,5 +18,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/customer-invoices/index.js"
+  "scriptFile": "../dist/customer-rental-invoice/index.js"
 }

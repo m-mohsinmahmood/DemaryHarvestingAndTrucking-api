@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { farming } from "./model";
+import { rentals } from "./model";
 // import { cropValidator } from "./validator";
 
 const httpTrigger: AzureFunction = async function (
@@ -12,17 +12,17 @@ const httpTrigger: AzureFunction = async function (
 
   try {    
     //#region Validation
-    const farming: farming = req.body;
+    const rentals: rentals = req.body;
     // const error = cropValidator(crop);
     // if (error.length > 0) throw { message: error };
     //#endregion
     //#region Query Execution
     let query = `
         INSERT INTO 
-                  "Farming_Invoice" 
+                  "Rental_Invoice" 
                   (
                     "created_at",
-                    "equipment_type",
+                    "rental_type",
                     "quantity_type",
                     "quantity",
                     "rate",
@@ -30,13 +30,13 @@ const httpTrigger: AzureFunction = async function (
                     "customer_id"
                   )
         VALUES 
-                  ('${farming.date}', 
-                  '${farming.equipment_type}', 
-                  '${farming.quantity_type}', 
-                  '${farming.quantity}', 
-                  '${farming.rate}', 
-                  '${farming.amount}', 
-                  '${farming.customer_id}'
+                  ('${rentals.date}', 
+                  '${rentals.rental_type}', 
+                  '${rentals.quantity_type}', 
+                  '${rentals.quantity}', 
+                  '${rentals.rate}', 
+                  '${rentals.amount}', 
+                  '${rentals.customer_id}'
                  );
     `;
     db.connect();

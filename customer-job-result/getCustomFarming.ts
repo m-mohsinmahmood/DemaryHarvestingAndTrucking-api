@@ -15,7 +15,7 @@ const httpTrigger: AzureFunction = async function (
 
     let dwr_info_query = `
           
-    SELECT 
+  SELECT 
   wo.id as id, 
   wo.created_at as date, 
   wo.service as service, 
@@ -23,7 +23,7 @@ const httpTrigger: AzureFunction = async function (
   "farm".name AS "farm_name", 
   "field".name AS "field_name", 
   wo.total_acres as acres, 
-  wo."total_gps-service-acres" as gps_acres, 
+  wo."total_gps_service_acres" as gps_acres, 
   dwr.start_time, 
   wo.work_order_status as status,
   CAST (wo.ending_engine_hours AS FLOAT) - CAST (wo.beginning_engine_hours AS FLOAT) as engine_hours,
@@ -41,7 +41,7 @@ Where
   And wo.customer_id = '${customer_id}'
   AND wo."is_deleted" = FALSE 
 ORDER BY 
-  c."customer_name" ASC;
+wo.created_at desc;
 
       `;
 

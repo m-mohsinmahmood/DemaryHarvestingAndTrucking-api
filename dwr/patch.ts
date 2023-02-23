@@ -14,9 +14,32 @@ const httpTrigger: AzureFunction = async function (
         const closingOfDay: beginningOfDay = req.body;
 
         let query = updateDWR(closingOfDay);
-                db.connect();
+        db.connect();
 
-        let result = await db.query(query);
+        let taskId = await db.query(query);
+
+        let bridgeDailyTasksDwr = ``;
+        if (closingOfDay.module === 'farming' || closingOfDay.module === 'harvesting' || closingOfDay.module === 'trucking') {
+            taskId = taskId.rows[0].id;
+            console.log("task Id: ", taskId);
+
+            bridgeDailyTasksDwr = ` 
+            INSERT INTO 
+            "Bridge_DailyTasks_DWR" 
+            (
+             "dwr_id",
+             "task_id"
+            )
+
+            VALUES      
+            
+            ('${closingOfDay.dwrId}',
+            '${taskId}'
+            );`;
+
+            let result = await db.query(bridgeDailyTasksDwr);
+        }
+
         db.end();
 
         context.res = {

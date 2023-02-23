@@ -21,7 +21,7 @@ const httpTrigger: AzureFunction = async function (
         INSERT INTO 
                   "Trucking_Invoice" 
                   (
-                    "date",
+                    "created_at",
                     "billing_id",
                     "cargo",
                     "city",
