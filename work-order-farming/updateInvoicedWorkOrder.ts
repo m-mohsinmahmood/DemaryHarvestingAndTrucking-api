@@ -11,9 +11,7 @@ const httpTrigger: AzureFunction = async function (
 
     try {
         const workOrder: InvoicedWorkOrder = req.body;
-        const { invoice, total_amount, filters } = req.body;
-
-        console.log(req.body);
+        const { invoice, total_amount, filters } = req.body.invoice;
 
         let whereClause = ``;
         if (filters.date_period_start) whereClause = ` ${whereClause}  AND '${filters.date_period_start}' <= created_at::"date"`;
@@ -46,16 +44,18 @@ const httpTrigger: AzureFunction = async function (
         db.connect();
         // console.log(insertquery);
 
-        let invoiceId = await db.query(insertquery);
-        invoiceId = invoiceId.rows[0].id;
-        console.log("Invoice: ", invoiceId);
+        // let invoiceId = await db.query(insertquery);
+        // invoiceId = invoiceId.rows[0].id;
+        // console.log("Invoice: ", invoiceId);
 
         let farmingInvoiceRecords = ``;
 
         invoice.forEach(element => {
             console.log("test 1: ", element);
-            farmingInvoiceRecords = `
-            INSERT INTO 
+            farmingInvoiceRecords =
+                farmingInvoiceRecords +
+
+                `INSERT INTO 
                         "Farming_Invoice_Records" 
                         ("equipment", 
                         "rate", 
@@ -66,12 +66,13 @@ const httpTrigger: AzureFunction = async function (
 
             VALUES      ('${element.description}', 
                         '${element.rate}', 
-                        '${element.quantity}', 
-                        '${element.total_amount}', 
-                        '${invoiceId}'
+                        '${element.total_acres}', 
+                        '${element.total_amount}'
                        );
           `;
         });
+
+        console.log("Farming invoice Records: ", farmingInvoiceRecords);
 
         let resultOfRecords = await db.query(farmingInvoiceRecords);
 
@@ -83,7 +84,6 @@ const httpTrigger: AzureFunction = async function (
 
 				SET    
                 work_order_status = 'invoiced',
-				invoice_id = '${invoiceId}',
                 modified_at = now()
 							 
 				WHERE customer_id = '${workOrder.customerId}'
