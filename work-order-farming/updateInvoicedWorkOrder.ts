@@ -11,12 +11,15 @@ const httpTrigger: AzureFunction = async function (
 
     try {
         const workOrder: InvoicedWorkOrder = req.body;
+        const { invoice, total_amount, filters } = req.body;
+
+        console.log(req.body);
 
         let whereClause = ``;
-        if (workOrder.from) whereClause = ` ${whereClause}  AND '${workOrder.from}' <= created_at::"date"`;
-        if (workOrder.to) whereClause = ` ${whereClause}  AND '${workOrder.to}' >= created_at::"date"`;
-        if (workOrder.serviceType) whereClause = ` ${whereClause}  AND service = '${workOrder.serviceType}'`;
-        if (workOrder.quantityType) whereClause = ` ${whereClause}  AND quantity_type = '${workOrder.quantityType}'`;
+        if (filters.date_period_start) whereClause = ` ${whereClause}  AND '${filters.date_period_start}' <= created_at::"date"`;
+        if (filters.date_period_end) whereClause = ` ${whereClause}  AND '${filters.date_period_end}' >= created_at::"date"`;
+        if (filters.service_type) whereClause = ` ${whereClause}  AND service = '${filters.service_type}'`;
+        if (filters.quantity_type) whereClause = ` ${whereClause}  AND quantity_type = '${filters.quantity_type}'`;
 
         let insertquery = `
             INSERT INTO 
@@ -31,8 +34,8 @@ const httpTrigger: AzureFunction = async function (
                       )
 
             VALUES      ('${workOrder.customerId}', 
-                        '${workOrder.serviceType}', 
-                        '${workOrder.quantityType}', 
+                        '${filters.service_type}', 
+                        '${filters.quantity_type}', 
                         '${workOrder.quantity}', 
                         '${workOrder.rate}',
                         '${workOrder.amount}', 
@@ -43,10 +46,34 @@ const httpTrigger: AzureFunction = async function (
         db.connect();
         // console.log(insertquery);
 
-        let invoice = await db.query(insertquery);
-        invoice = invoice.rows[0].id;
-        console.log("Invoice: ", invoice);
+        let invoiceId = await db.query(insertquery);
+        invoiceId = invoiceId.rows[0].id;
+        console.log("Invoice: ", invoiceId);
 
+        let farmingInvoiceRecords = ``;
+
+        invoice.forEach(element => {
+            console.log("test 1: ", element);
+            farmingInvoiceRecords = `
+            INSERT INTO 
+                        "Farming_Invoice_Records" 
+                        ("equipment", 
+                        "rate", 
+                        "quantity", 
+                        "amount",
+                        "farming_invoice_id"
+                      )
+
+            VALUES      ('${element.description}', 
+                        '${element.rate}', 
+                        '${element.quantity}', 
+                        '${element.total_amount}', 
+                        '${invoiceId}'
+                       );
+          `;
+        });
+
+        let resultOfRecords = await db.query(farmingInvoiceRecords);
 
         // If user make a call from Verify Work Order of Dispatcher
         console.log("Updating Work Order for Invoice");
@@ -56,7 +83,7 @@ const httpTrigger: AzureFunction = async function (
 
 				SET    
                 work_order_status = 'invoiced',
-				invoice_id = '${invoice}',
+				invoice_id = '${invoiceId}',
                 modified_at = now()
 							 
 				WHERE customer_id = '${workOrder.customerId}'
