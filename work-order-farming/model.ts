@@ -15,7 +15,7 @@ export interface workOrder {
     workOrderCloseOut?: boolean;
     role?: string;
     completeInfo: boolean;
-    totalAcres:string;
+    totalAcres: string;
 }
 
 export interface UpdateWorkOrder {
@@ -43,5 +43,26 @@ export interface UpdateWorkOrder {
     gpsAcres?: string;
     hoursWorked?: string;
     notes?: string;
-    totalAcres:string;
+    totalAcres: string;
+}
+
+export interface InvoicedWorkOrder {
+    operation: string;
+    customerId?: string;
+    serviceType?: string;
+    from?: string;
+    to?: string;
+    quantityType?: string;
+    quantity?: string;
+    rate?: string;
+    amount?: string;
+    fieldId?: string;
+}
+
+export interface PaidWorkOrder {
+    operation: string;
+    customerId?: string;
+    serviceType?: string;
+    from?: string;
+    to?: string;
 }

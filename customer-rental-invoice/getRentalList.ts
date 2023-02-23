@@ -10,41 +10,39 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     const customer_id: string = req.query.customer_id;
-    const sort: string = req.query.sort ? req.query.sort : `ti."created_at"`;
+    const sort: string = req.query.sort ? req.query.sort : `ri."created_at"`;
     const order: string = req.query.order ? req.query.order : `desc`;
 
 
 
-    let trucking_list_query = `
+    let rental_list_query = `
     SELECT 
-ti."id",
-	ti.created_at as date,
-	ti.billing_id,
-	ti.cargo,
-	ti.city,
-	ti.state,
-	ti.rate_type,
-	ti.rate,
-	ti.amount
-	
-	from "Trucking_Invoice" ti
-  WHERE ti.customer_id = '${customer_id}'
-        ORDER BY 
-              ${sort} ${order};
+    ri."id",
+    ri.created_at as date,
+    ri.rental_type,
+    ri.quantity_type,
+    ri.quantity,
+    ri.rate,
+    ri.amount,
+    ri.customer_id
+    
+    from "Rental_Invoice" ri
+  WHERE ri.customer_id = '${customer_id}'
+       ;
 
       `;
 
 
 
 
-    let query = `${trucking_list_query} `;
+    let query = `${rental_list_query} `;
 
     db.connect();
 
     let result = await db.query(query);
 
     let resp = {
-      truckingInvoicesList: result.rows
+      rentalInvoicesList: result.rows
     };
 
     db.end();

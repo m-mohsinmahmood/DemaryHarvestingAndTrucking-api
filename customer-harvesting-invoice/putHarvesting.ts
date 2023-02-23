@@ -20,7 +20,7 @@ const httpTrigger: AzureFunction = async function (
                 "rate"    = '${harvesting.rate}', 
                 "amount" = '${harvesting.amount}',
                 "farm_id"           =  '${harvesting.farm_id}',
-                "crop_name"    = '${harvesting.crop}'
+                "crop"    = '${harvesting.crop}'
         WHERE   "id"             = '${harvesting.id}';`
 
     db.connect();

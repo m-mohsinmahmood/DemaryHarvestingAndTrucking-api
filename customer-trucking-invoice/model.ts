@@ -9,4 +9,5 @@ export interface trucking{
       rate: string,
       amount:string,
       customer_id:string,
+      created_at: string
 }

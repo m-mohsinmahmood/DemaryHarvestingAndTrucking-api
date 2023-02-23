@@ -21,6 +21,9 @@ const httpTrigger: AzureFunction = async function (
             FROM 
                   "Customers"
             ${whereClause}
+
+            ORDER BY 
+            "customer_name" ASC
           ;`;
 
         let customer_count_query = `
