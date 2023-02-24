@@ -2,6 +2,8 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as createDeliveryTicket from "./post";
 import * as getDeliveryTicket from "./get";
 import * as updateDeliveryTicket from "./patch";
+import * as updateInvoicedDeliveryTicket from "./updatedInvoicedDeliveryTicket";
+import * as updatePaidDeliveryTicket from "./updatedInvoicedDeliveryTicket";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -17,7 +19,11 @@ const httpTrigger: AzureFunction = async function (
             break;
 
         case "PATCH":
-            await updateDeliveryTicket.default(context, req);
+            if (req.body.operation === 'updateInvoicedDeliveryTicket')
+                await updateInvoicedDeliveryTicket.default(context, req);
+            else if (req.body.operation === 'updatePaidDeliveryTicket')
+                await updatePaidDeliveryTicket.default(context, req);
+            else await updateDeliveryTicket.default(context, req);
             break;
         default:
             context.res = {
