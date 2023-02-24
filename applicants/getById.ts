@@ -68,6 +68,7 @@ const httpTrigger: AzureFunction = async function (
               a."third_interviewer_id",
               a."status_step",
               a."status_message",
+              a."previous_status_message",
               a."step_one_status_date",
               a."step_two_status_date",
               a."step_three_status_date",
