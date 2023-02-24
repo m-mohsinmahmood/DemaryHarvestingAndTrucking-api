@@ -24,12 +24,14 @@ const httpTrigger: AzureFunction = async function (
                         "Farming_Invoice" 
                         ("total_amount", 
                         "invoice_name",
-                        "customer_id"
+                        "customer_id",
+                        "status"
                       )
 
             VALUES      ('${total_amount}', 
                         'new invoice',
-                        '${workOrder.customerId}'
+                        '${workOrder.customerId}',
+                        'invoiced'
                        ) returning id;
           `;
 

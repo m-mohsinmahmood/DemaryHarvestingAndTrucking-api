@@ -68,19 +68,25 @@ const httpTrigger: AzureFunction = async function (
 
 
         let queryToRun = `
-        SELECT fw.created_at AS date, fw.service,  farm."name" AS farm, field."name" AS field, fw.total_service_acres AS acres,
-        fw.beginning_engine_hours, fw.ending_engine_hours, fw.work_order_status
+        SELECT TO_CHAR(fw.created_at::date, 'yyyy/mm/dd') AS date,
+        fw.service,
+        farm."name" AS farm,
+        field."name" AS field,
+        fw.total_service_acres AS acres,
+        fw.hours_worked as hours,
+        fw.work_order_status
         
-        FROM "Farming_Work_Order" fw
-         
+        FROM "Farming_Work_Order" fw 
         INNER JOIN "Customer_Farm" farm ON fw.farm_id = farm.id
+        
         INNER JOIN "Customer_Field" field ON fw.field_id = field."id"
-         
-        WHERE fw.customer_id = '${customer_id}' 
+        
+        WHERE fw.customer_id = '${customer_id}'
         ${whereClause}
         AND fw.work_order_status = 'verified'
         AND fw.is_deleted = FALSE
-        ORDER BY fw.created_at ASC;
+
+        ORDER BY fw.created_at ASC
         ;`;
 
         let query = `${queryToRun} ${totalAmount}`;
