@@ -10,7 +10,7 @@ const httpTrigger: AzureFunction = async function (
 
     try {
         const { invoice, total_amount, filters } = req.body.invoice;
-        const customer_id = req.body;
+        const customerid = req.body.customerId;
 
         let whereClause = ``;
         if (filters.date_period_start) whereClause = ` ${whereClause}  AND '${filters.date_period_start}' <= created_at::"date"`;
@@ -22,11 +22,13 @@ const httpTrigger: AzureFunction = async function (
             INSERT INTO 
                         "Trucking_Invoice" 
                         ("total_amount", 
-                        "invoice_name"
+                        "invoice_name",
+                        "customer_id"
                       )
 
             VALUES      ('${total_amount}', 
-                        'new invoice'
+                        'new invoice',
+                        '${customerid}'
                        ) returning id;
           `;
 
@@ -76,7 +78,7 @@ const httpTrigger: AzureFunction = async function (
                 invoice_id = '${invoiceId}',
                 modified_at = now()
 							 
-				WHERE customer_id = '${customer_id}'
+				WHERE customer_id = '${customerid}'
                 ${whereClause}
                 AND "ticket_status" = 'verified'
 				AND is_deleted = FALSE

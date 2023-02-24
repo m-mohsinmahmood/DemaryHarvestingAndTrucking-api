@@ -23,11 +23,13 @@ const httpTrigger: AzureFunction = async function (
             INSERT INTO 
                         "Farming_Invoice" 
                         ("total_amount", 
-                        "invoice_name"
+                        "invoice_name",
+                        "customer_id"
                       )
 
             VALUES      ('${total_amount}', 
-                        'new invoice'
+                        'new invoice',
+                        '${workOrder.customerId}'
                        ) returning id;
           `;
 
