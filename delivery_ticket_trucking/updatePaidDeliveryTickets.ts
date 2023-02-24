@@ -9,7 +9,7 @@ const httpTrigger: AzureFunction = async function (
     const db = new Client(config);
 
     try {
-        const customer_id = req.body;
+        const customer_id = req.body.customerId;;
 
         let query = ``;
 

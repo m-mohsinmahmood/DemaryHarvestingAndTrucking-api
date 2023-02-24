@@ -9,14 +9,14 @@ const httpTrigger: AzureFunction = async function (
     const db = new Client(config);
 
     try {
-        const { invoice, total_amount, filters } = req.body.invoice;
+        const { invoice, total_amount, filters, title } = req.body.invoice;
         const customerid = req.body.customerId;
 
         let whereClause = ``;
         if (filters.date_period_start) whereClause = ` ${whereClause}  AND '${filters.date_period_start}' <= created_at::"date"`;
         if (filters.date_period_end) whereClause = ` ${whereClause}  AND '${filters.date_period_end}' >= created_at::"date"`;
         if (filters.service_type) whereClause = ` ${whereClause}  AND service = '${filters.service_type}'`;
-        if (filters.quantity_type) whereClause = ` ${whereClause}  AND quantity_type = '${filters.quantity_type}'`;
+        if (filters.quantity_type) whereClause = ` ${whereClause}  AND rate_type = '${filters.quantity_type}'`;
 
         let insertquery = `
             INSERT INTO 
@@ -27,7 +27,7 @@ const httpTrigger: AzureFunction = async function (
                       )
 
             VALUES      ('${total_amount}', 
-                        'new invoice',
+                        '${title.truckingTitle}',
                         '${customerid}'
                        ) returning id;
           `;
