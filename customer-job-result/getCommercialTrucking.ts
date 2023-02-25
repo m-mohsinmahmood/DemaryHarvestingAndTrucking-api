@@ -23,7 +23,7 @@ const httpTrigger: AzureFunction = async function (
 	td.destination_city as dest_city,
   emp.first_name AS disp_first_name,
 	emp.last_name AS disp_last_name,
-
+	td.destination_state,
 	tDriver."first_name" AS dr_first_name,
 	tDriver."last_name" AS dr_last_name,
   td.ticket_status as status 
@@ -36,7 +36,9 @@ FROM
 Where 
 
 td.customer_id = '${customer_id}' 
-  AND td."is_deleted" = FALSE;
+  AND td."is_deleted" = FALSE
+  ORDER BY 
+td.created_at desc;
       `;
 
 

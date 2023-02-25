@@ -67,7 +67,7 @@ let h2a_status_bar_dates = {
     "Employee Contract verified": "step_ten_date",
     "Bank account information requested": "step_eleven_date",
     "Bank account details verified": "step_twelve_date",
-    "VISA Application Instructions posted": "step_thirteen_date",
+    "I-797B and VISA Application Instructions posted": "step_thirteen_date",
     "VISA Interview Date and Consulate Details verified": "step_fourteen_date",
     "Approval Letter posted": "step_fifteen_date",
     "Approval Letter verified": "step_sixteen_date",
@@ -80,8 +80,6 @@ let h2a_status_bar_dates = {
     "American and CDL (if applicable) Drivers license posted": "step_twenty_three_date",
     "Drivers license verified": "step_twenty_four_date",
     "Onboarding Completed": "step_twenty_five_date",
-
-
 };
 
 let h2a_status_bar_steps = [
@@ -96,7 +94,7 @@ let h2a_status_bar_steps = [
     "Employee Contract verified",
     "Bank account information requested",
     "Bank account details verified",
-    "VISA Application Instructions posted",
+    "I-797B and VISA Application Instructions posted",
     "VISA Interview Date and Consulate Details verified",
     "Approval Letter posted",
     "Approval Letter verified",
@@ -134,6 +132,7 @@ let h2a_status_message = [
     "social_security",
     "american_license",
     "american_license",
+    "onboarding_completed",
 ]
 
 export function updateQuery(employee, h2a) {

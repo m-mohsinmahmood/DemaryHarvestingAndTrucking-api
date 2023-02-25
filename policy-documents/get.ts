@@ -8,12 +8,14 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     const type: string = req.query.type;
     const id: string = req.query.id;
     const employee_id: string = req.query.employee_id;
+    const category: string = req.query.category;
     let whereClause: string = '';
     let employeeWhereClause: string = '';
 
     whereClause = ` WHERE "is_deleted" = FALSE`;
     whereClause = `${whereClause} AND  "document_type" = '${type}'`;
     if (id) whereClause = `${whereClause} AND "employee_id" = '${id}'`;
+    if (category) whereClause = `${whereClause} AND "category"= '${category}'`;
     employee_id? employeeWhereClause = `WHERE "id" = '${employee_id}'` : employeeWhereClause = `WHERE "id" = '${id}'`
 
     try {

@@ -40,6 +40,7 @@ const httpTrigger: AzureFunction = async function (
             SELECT 
             wo."id" AS "work_order_id", 
             wo."created_at" AS "date", 
+            wo.hours_worked,
             wo."service" AS "service", 
             c."id" AS "customer_id", 
             wo."total_service_acres" AS "acres_completed", 
@@ -49,13 +50,15 @@ const httpTrigger: AzureFunction = async function (
             wo."field_address" AS "address",
             wo."dispatcher_id" AS "dispatcher_id",
             tractor."id" AS "tractor_driver_id",
-            wo."total_gps-service-acres" AS "gps_acres", 
+            wo."total_gps_service_acres" AS "gps_acres", 
             "emp".first_name AS "dispatcher_name",
 			tractor."first_name" AS "tractor_driver_name",
             "farm".name AS "farm_name",
-            "field".name AS "field_name"
+            "field".name AS "field_name",
+            wo.farm_id as farm_id,
+            wo.field_id as field_id,
+            wo.notes
 			
-                     
             FROM 
             "Farming_Work_Order" wo
             INNER JOIN "Customers" c 
@@ -127,7 +130,7 @@ const httpTrigger: AzureFunction = async function (
             wo."field_address" AS "address",
             wo."dispatcher_id" AS "dispatcher_id",
             tractor."id" AS "tractor_driver_id",
-            wo."total_gps-service-acres" AS "gps_acres", 
+            wo."total_gps_service_acres" AS "gps_acres", 
             "emp".first_name AS "dispatcher_name",
 			tractor."first_name" AS "tractor_driver_name",
             "farm".name AS "farm_name",
@@ -205,7 +208,7 @@ const httpTrigger: AzureFunction = async function (
             wo."field_address" AS "address",
             wo."dispatcher_id" AS "dispatcher_id",
             tractor."id" AS "tractor_driver_id",
-            wo."total_gps-service-acres" AS "gps_acres", 
+            wo."total_gps_service_acres" AS "gps_acres", 
             "emp".first_name AS "dispatcher_name",
 			tractor."first_name" AS "tractor_driver_name",
             "farm".name AS "farm_name",
@@ -283,7 +286,7 @@ const httpTrigger: AzureFunction = async function (
             wo."field_address" AS "address",
             wo."dispatcher_id" AS "dispatcher_id",
             wo."tractor_driver_id" AS "tractor_driver_id",
-            wo."total_gps-service-acres" AS "gps_acres", 
+            wo."total_gps_service_acres" AS "gps_acres", 
             "emp".first_name AS "dispatcher_name",
             "farm".name AS "farm_name",
             "field".name AS "field_name",
@@ -364,7 +367,7 @@ const httpTrigger: AzureFunction = async function (
             wo."field_address" AS "address",
             wo."dispatcher_id" AS "dispatcher_id",
             wo."tractor_driver_id" AS "tractor_driver_id",
-            wo."total_gps-service-acres" AS "gps_acres", 
+            wo."total_gps_service_acres" AS "gps_acres", 
             "emp".first_name AS "dispatcher_name",
             "farm".name AS "farm_name",
             "field".name AS "field_name",
