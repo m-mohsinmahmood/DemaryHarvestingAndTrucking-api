@@ -11,6 +11,7 @@ const httpTrigger: AzureFunction = async function (
 
     try {
         const workOrder: PaidWorkOrder = req.body;
+        const invoice_id = req.body.invoice_id
 
         let query = ``;
 
@@ -18,15 +19,15 @@ const httpTrigger: AzureFunction = async function (
         console.log("Updating Work Order for Invoice");
 
         query = `
-        UPDATE "Farming_Work_Order" 
+        UPDATE "Farming_Invoice" 
 				
         SET    
-        work_order_status = 'paid',
-        modified_at = now()
+        status = 'paid',
+        updated_at = now()
         
-        WHERE invoice_id= ''  
+        WHERE id= '${invoice_id}'  
         AND customer_id = '${workOrder.customerId}' 
-        AND ("work_order_status" = 'invoiced') 
+        AND ("status" = 'invoiced') 
         AND is_deleted = FALSE 
         ;`
 

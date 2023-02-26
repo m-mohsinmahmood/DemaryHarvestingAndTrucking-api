@@ -3,7 +3,7 @@ import * as createDeliveryTicket from "./post";
 import * as getDeliveryTicket from "./get";
 import * as updateDeliveryTicket from "./patch";
 import * as updateInvoicedDeliveryTicket from "./updatedInvoicedDeliveryTicket";
-import * as updatePaidDeliveryTicket from "./updatedInvoicedDeliveryTicket";
+import * as updatePaidDeliveryTicket from "./updatePaidDeliveryTickets";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,

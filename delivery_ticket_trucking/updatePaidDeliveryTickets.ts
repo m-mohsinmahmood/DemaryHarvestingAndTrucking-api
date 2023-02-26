@@ -9,7 +9,8 @@ const httpTrigger: AzureFunction = async function (
     const db = new Client(config);
 
     try {
-        const customer_id = req.body.customerId;;
+        const customer_id = req.body.customerId;
+        const invoice_id = req.body.invoice_id;
 
         let query = ``;
 
@@ -17,15 +18,15 @@ const httpTrigger: AzureFunction = async function (
         console.log("Updating Trucking_Delivery_Ticket for Invoice");
 
         query = `
-        UPDATE "Trucking_Delivery_Ticket" 
+        UPDATE "Trucking_Invoice" 
 				
         SET    
-        ticket_status = 'paid',
+        status = 'paid',
         modified_at = now()
         
-        WHERE invoice_id= ''  
+        WHERE id= '${invoice_id}'  
         AND customer_id = '${customer_id}' 
-        AND ("ticket_status" = 'invoiced') 
+        AND ("status" = 'invoiced') 
         AND is_deleted = FALSE 
         ;`
 

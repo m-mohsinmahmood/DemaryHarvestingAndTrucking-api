@@ -21,7 +21,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             if (req.query.operation === 'allCustomerJobResult') await getallCustomerJobResults.default(context, req);
             else if (req.query.operation === 'allTruckingCustomerJobResult') await getTruckingCustomerJobResults.default(context, req);
             else if (req.query.operation === 'getFarmingInvoices') await getFarmingInvoices.default(context, req);
-            else if (req.query.operation === 'getTruckingInvoice') await getTruckingInvoice.default(context, req);
+            else if (req.query.operation === 'getTruckingInvoices') await getTruckingInvoice.default(context, req);
 
             break;
 
