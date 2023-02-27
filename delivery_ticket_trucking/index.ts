@@ -21,7 +21,7 @@ const httpTrigger: AzureFunction = async function (
         case "PATCH":
             if (req.body.operation === 'updateInvoicedDeliveryTicket')
                 await updateInvoicedDeliveryTicket.default(context, req);
-            else if (req.body.operation === 'updatePaidDeliveryTicket')
+            else if (req.body.operation === 'updatePaidDeliveryTicket') 
                 await updatePaidDeliveryTicket.default(context, req);
             else await updateDeliveryTicket.default(context, req);
             break;
