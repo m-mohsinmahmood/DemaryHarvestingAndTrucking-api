@@ -33,7 +33,7 @@ const httpTrigger: AzureFunction = async function (
 
         let resp = {
             invoices: result[0].rows,
-            count: +result[1].rows[0].count,
+            count: +result[1].rows[0].count
         };
 
         db.end();

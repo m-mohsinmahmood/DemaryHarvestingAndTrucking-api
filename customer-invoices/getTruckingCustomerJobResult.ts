@@ -44,10 +44,7 @@ const httpTrigger: AzureFunction = async function (
 
         let result = await db.query(query);
 
-        console.log(result[1].rows);
-        console.log(result[1].rows.total_amount);
-       
-        
+
         let totalResult = [];
         if (result[1].rows.length > 0 && result[1].rows[0].total_amount)
             totalResult.push(result[1].rows[0])
