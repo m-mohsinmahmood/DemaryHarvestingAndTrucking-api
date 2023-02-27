@@ -11,7 +11,7 @@ const httpTrigger: AzureFunction = async function (
 
     try {
         const workOrder: InvoicedWorkOrder = req.body;
-        const { invoice, total_amount, filters } = req.body.invoice;
+        const { invoice, total_amount, filters, title } = req.body.invoice;
 
         let whereClause = ``;
         if (filters.date_period_start) whereClause = ` ${whereClause}  AND '${filters.date_period_start}' <= created_at::"date"`;
@@ -30,7 +30,7 @@ const httpTrigger: AzureFunction = async function (
 
             VALUES      ('${total_amount}', 
                         'new invoice',
-                        '${workOrder.customerId}',
+                        '${title.farmingTitle}',
                         'invoiced'
                        ) returning id;
           `;
