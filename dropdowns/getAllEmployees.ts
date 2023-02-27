@@ -42,6 +42,8 @@ const httpTrigger: AzureFunction = async function (
 
     let query = `${employees_dropdown_query} ${employees_field_count_query}`;
 
+    console.log("Get All Employees: ", query);
+
     db.connect();
 
     let result = await db.query(query);

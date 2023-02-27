@@ -19,8 +19,16 @@ const httpTrigger: AzureFunction = async function (
     let whereClause = ``;
     let amountWhereClause = ``;
 
-    if (from) whereClause = ` ${whereClause}  AND '${from}' <= created_at::"date"`;
-    if (to) whereClause = ` ${whereClause}  AND '${to}' >= created_at::"date"`;
+    if (from) {
+        whereClause = ` ${whereClause}  AND '${from}' <= created_at::"date"`;
+        amountWhereClause = ` ${amountWhereClause}  AND '${from}' <= created_at::"date"`;
+    }
+
+    if (to) {
+        whereClause = ` ${whereClause}  AND '${to}' >= created_at::"date"`;
+        amountWhereClause = ` ${amountWhereClause}  AND '${to}' >= created_at::"date"`;
+    }
+
     if (service_type) whereClause = ` ${whereClause}  AND service = '${service_type}'`;
     if (service_type) amountWhereClause = ` ${amountWhereClause}  AND fr.equipment_type = '${service_type}'`;
 
@@ -36,6 +44,8 @@ const httpTrigger: AzureFunction = async function (
             FROM "Farming_Work_Order" fwo INNER JOIN "Farming_Rates" fr ON fwo.customer_id = fr.customer_id  
             ${amountWhereClause}
             WHERE fwo.customer_id = '${customer_id}' 
+            AND fwo.work_order_status = 'verified'
+            AND fwo.is_deleted = FALSE
     
             GROUP BY fwo.customer_id, fr.equipment_type, fr.rate
             ;`;
@@ -49,7 +59,9 @@ const httpTrigger: AzureFunction = async function (
             FROM "Farming_Work_Order" fwo INNER JOIN "Farming_Rates" fr ON fwo.customer_id = fr.customer_id  
             ${amountWhereClause}
             WHERE fwo.customer_id = '${customer_id}' 
-    
+            AND fwo.work_order_status = 'verified'
+            AND fwo.is_deleted = FALSE
+
             GROUP BY fwo.customer_id, fr.equipment_type, fr.rate
             ;`;
         }
@@ -61,7 +73,9 @@ const httpTrigger: AzureFunction = async function (
             FROM "Farming_Work_Order" fwo INNER JOIN "Farming_Rates" fr ON fwo.customer_id = fr.customer_id  
             ${amountWhereClause}
             WHERE fwo.customer_id = '${customer_id}' 
-    
+            AND fwo.work_order_status = 'verified'
+            AND fwo.is_deleted = FALSE
+
             GROUP BY fwo.customer_id, fr.equipment_type, fr.rate
             ;`;
         }
@@ -96,7 +110,7 @@ const httpTrigger: AzureFunction = async function (
         db.connect();
 
         let result = await db.query(query);
-        console.log(result);
+        // console.log(result);
 
         let resp = {
             jobResults: result[0].rows,
