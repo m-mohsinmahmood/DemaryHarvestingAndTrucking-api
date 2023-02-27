@@ -16,7 +16,8 @@ const httpTrigger: AzureFunction = async function (
     if (firebase_id) {
       let employee_id_query = `
         SELECT 
-               "id"
+               "id",
+               "role"
         FROM 
                 "Employees" 
         Where fb_id = '${firebase_id}'        
