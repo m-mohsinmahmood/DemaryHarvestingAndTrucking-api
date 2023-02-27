@@ -358,6 +358,7 @@ const httpTrigger: AzureFunction = async function (
                     "urbanBusinessInput"                     = '${roadSkillsDigital.urbanBusinessInput}',
                     "lanceChanges"                     = '${roadSkillsDigital.lanceChanges}',
                     "lanceChangesInput"                     = '${roadSkillsDigital.lanceChangesInput}',
+                    "curve"                     = '${roadSkillsDigital.curve}',
                     "curveInput"                     = '${roadSkillsDigital.curveInput}',
                     "roadside"                     = '${roadSkillsDigital.roadside}',
                     "roadsideInput"                     = '${roadSkillsDigital.roadsideInput}',

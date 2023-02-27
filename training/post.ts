@@ -305,7 +305,9 @@ RETURNING id as record_id
               '${roadSkills.truckId}',
               'road-skills',
               'TRUE'
-);`;
+)
+RETURNING id as training_record_id
+;`;
 
 }
 
