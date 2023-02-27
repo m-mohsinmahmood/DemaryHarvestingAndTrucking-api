@@ -20,13 +20,13 @@ const httpTrigger: AzureFunction = async function (
     let amountWhereClause = ``;
 
     if (from) {
-        whereClause = ` ${whereClause}  AND '${from}' <= created_at::"date"`;
-        amountWhereClause = ` ${amountWhereClause}  AND '${from}' <= created_at::"date"`;
+        whereClause = ` ${whereClause}  AND '${from}' <= fw.created_at::"date"`;
+        amountWhereClause = ` ${amountWhereClause}  AND '${from}' <= fw.created_at::"date"`;
     }
 
     if (to) {
-        whereClause = ` ${whereClause}  AND '${to}' >= created_at::"date"`;
-        amountWhereClause = ` ${amountWhereClause}  AND '${to}' >= created_at::"date"`;
+        whereClause = ` ${whereClause}  AND '${to}' >= fw.created_at::"date"`;
+        amountWhereClause = ` ${amountWhereClause}  AND '${to}' >= fw.created_at::"date"`;
     }
 
     if (service_type) whereClause = ` ${whereClause}  AND service = '${service_type}'`;
