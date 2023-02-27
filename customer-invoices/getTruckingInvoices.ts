@@ -8,39 +8,32 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
     const db = new Client(config);
 
+    const customer_id: string = req.query.customer_id;
+
+    console.log(req.query);
+
     try {
-        const search: string = req.query.search;
-        const customer_id: string = req.query.customerId;
+        let queryToRun = ``;
+        let count_query = ``;
 
-        console.log(req.query);
-        
-        let whereClause: string = ` WHERE "is_deleted" = FALSE AND "id" = '${customer_id}'`;
+        queryToRun = `
+        select * from "Trucking_Invoice" where customer_id = '${customer_id}' AND is_deleted = false
+        ;`;
 
-        if (search) whereClause = ` ${whereClause} AND LOWER(customer_type) LIKE LOWER('%${search}%')`;
+        count_query = `
+            SELECT  COUNT(id) from "Trucking_Invoice" where customer_id = '${customer_id}' AND is_deleted = false ;`;
 
-        let customer_farm_query = `
-        SELECT 
-        "id",
-        "customer_type"
-         FROM 
-        "Customers" 
-        ${whereClause}
-        ORDER BY 
-        "id" ASC`;
+        let query = `${queryToRun} ${count_query}`;
 
-        let query = `${customer_farm_query}`;
+        console.log(query);
 
         db.connect();
 
         let result = await db.query(query);
-        console.log(result.rows);
-        
-        const arr = result.rows[0].customer_type.split(',');
-
-        console.log(arr);
 
         let resp = {
-            customer_farms: arr
+            invoices: result[0].rows,
+            count: +result[1].rows[0].count
         };
 
         db.end();
@@ -52,6 +45,7 @@ const httpTrigger: AzureFunction = async function (
 
         context.done();
         return;
+
     } catch (err) {
         db.end();
         context.res = {

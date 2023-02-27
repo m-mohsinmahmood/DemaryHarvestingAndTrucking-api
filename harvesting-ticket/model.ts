@@ -72,4 +72,6 @@ export interface UpdateHarvestingTicket {
   testWeight?: string;
   proteinContent?: string;
   moistureContent?: String;
+  image_1: string;
+  image_2: string;
 }
