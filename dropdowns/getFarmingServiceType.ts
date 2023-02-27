@@ -13,34 +13,26 @@ const httpTrigger: AzureFunction = async function (
         const customer_id: string = req.query.customerId;
 
         console.log(req.query);
-        
-        let whereClause: string = ` WHERE "is_deleted" = FALSE AND "id" = '${customer_id}'`;
 
-        if (search) whereClause = ` ${whereClause} AND LOWER(customer_type) LIKE LOWER('%${search}%')`;
+        let whereClause: string = ` WHERE "is_deleted" = FALSE AND "customer_id" = '${customer_id}'`;
+
+        if (search) whereClause = ` ${whereClause} AND LOWER(equipment_type) LIKE LOWER('%${search}%')`;
 
         let customer_farm_query = `
-        SELECT 
-        "id",
-        "customer_type"
-         FROM 
-        "Customers" 
+        select equipment_type as service from "Farming_Rates"  
         ${whereClause}
         ORDER BY 
-        "id" ASC`;
+        "equipment_type" ASC`;
 
         let query = `${customer_farm_query}`;
+        console.log(query);
 
         db.connect();
 
         let result = await db.query(query);
-        console.log(result.rows);
-        
-        const arr = result.rows[0].customer_type.split(',');
-
-        console.log(arr);
 
         let resp = {
-            customer_farms: arr
+            customer_farms: result.rows
         };
 
         db.end();

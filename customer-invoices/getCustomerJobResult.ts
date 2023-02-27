@@ -38,7 +38,7 @@ const httpTrigger: AzureFunction = async function (
 
         if (quantityType === 'acres') {
             totalAmount = `
-            SELECT fr.equipment_type AS description, Sum(fwo.total_service_acres) AS Total_Acres, fr.rate, 
+            SELECT fr.equipment_type AS description, Sum(fwo.total_service_acres) AS quantity, fr.rate, 
             SUM(fwo.total_service_acres * fr.rate ) AS Total_Amount
     
             FROM "Farming_Work_Order" fwo INNER JOIN "Farming_Rates" fr ON fwo.customer_id = fr.customer_id  AND fwo.service = fr.equipment_type
@@ -53,7 +53,7 @@ const httpTrigger: AzureFunction = async function (
 
         else if (quantityType === 'hours') {
             totalAmount = `
-            SELECT fr.equipment_type AS description, Sum(fwo.hours_worked) AS Total_Hours, fr.rate, 
+            SELECT fr.equipment_type AS description, Sum(fwo.hours_worked) AS quantity, fr.rate, 
             SUM(fwo.hours_worked * fr.rate ) AS Total_Amount
     
             FROM "Farming_Work_Order" fwo INNER JOIN "Farming_Rates" fr ON fwo.customer_id = fr.customer_id  AND fwo.service = fr.equipment_type
@@ -68,7 +68,7 @@ const httpTrigger: AzureFunction = async function (
 
         else if (quantityType === 'flat_rate') {
             totalAmount = `
-            SELECT fr.equipment_type AS description, Sum(fwo.total_service_acres) AS Total_Acres, fr.rate AS Total_Amount
+            SELECT fr.equipment_type AS description, Sum(fwo.total_service_acres) AS quantity, fr.rate AS Total_Amount
     
             FROM "Farming_Work_Order" fwo INNER JOIN "Farming_Rates" fr ON fwo.customer_id = fr.customer_id  AND fwo.service = fr.equipment_type
             ${amountWhereClause}
