@@ -30,6 +30,7 @@ const httpTrigger: AzureFunction = async function (
                 "document_name",
                 "employment_period",
                 "document_type",
+                "category",
                 "created_at" 
                 )
       VALUES      
@@ -38,6 +39,7 @@ const httpTrigger: AzureFunction = async function (
                 '${policy_doc.name}',
                 '${policy_doc.employment_period}',
                 '${policy_doc.type}',
+                '${policy_doc.category}',
                 'now()'
                 )
                 RETURNING id as policy_document_id

@@ -63,7 +63,7 @@ export function createDWR(dwr: any) {
         optionalReq = `${optionalReq},"work_order_id"`;
         optionalValues = `${optionalValues},'${dwr.workOrderId}'`;
     }
-    
+
     if (dwr.deliveryTicketId != null) {
         optionalReq = `${optionalReq},"delivery_ticket_id"`;
         optionalValues = `${optionalValues},'${dwr.deliveryTicketId}'`;
@@ -93,7 +93,7 @@ export function createDWR(dwr: any) {
         optionalReq = `${optionalReq},"role"`;
         optionalValues = `${optionalValues},'${dwr.role}'`;
     }
-    
+
 
     let query = `
         INSERT INTO 
@@ -114,14 +114,6 @@ export function createDWR(dwr: any) {
 export function updateDWR(closingOfDay: any) {
     // If user make a call from Existing Work Order of Tractor Driver
     let optionalReq: string = ``;
-
-    if (closingOfDay.acresCompleted != null) {
-        optionalReq = `${optionalReq},"acres_completed" = '${closingOfDay.acresCompleted}'`;
-    }
-
-    // if (closingOfDay.gpsAcres != null) {
-    //     optionalReq = `${optionalReq},"gps_acres" = '${closingOfDay.gpsAcres}'`;
-    // }
 
     if (closingOfDay.endingEngineHours != null) {
         optionalReq = `${optionalReq},"ending_engine_hours" = '${closingOfDay.endingEngineHours}'`;
@@ -150,8 +142,9 @@ export function updateDWR(closingOfDay: any) {
         "is_day_closed" = 'true'
          ${optionalReq}
     WHERE 
-        "work_order_id" = '${closingOfDay.workOrderId}' AND is_day_closed = 'false' ;`
+        "work_order_id" = '${closingOfDay.workOrderId}' AND is_day_closed = 'false' 
+        returning id;`
 
-    console.log(query);
+        console.log(query);
     return query;
 }

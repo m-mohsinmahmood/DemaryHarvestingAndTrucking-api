@@ -1,7 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { InvoicedWorkOrder } from "./model";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -10,8 +9,8 @@ const httpTrigger: AzureFunction = async function (
     const db = new Client(config);
 
     try {
-        const workOrder: InvoicedWorkOrder = req.body;
         const { invoice, total_amount, filters } = req.body.invoice;
+        const customerid = req.body.customerId;
 
         let whereClause = ``;
         if (filters.date_period_start) whereClause = ` ${whereClause}  AND '${filters.date_period_start}' <= created_at::"date"`;
@@ -21,7 +20,7 @@ const httpTrigger: AzureFunction = async function (
 
         let insertquery = `
             INSERT INTO 
-                        "Farming_Invoice" 
+                        "Trucking_Invoice" 
                         ("total_amount", 
                         "invoice_name",
                         "customer_id"
@@ -29,7 +28,7 @@ const httpTrigger: AzureFunction = async function (
 
             VALUES      ('${total_amount}', 
                         'new invoice',
-                        '${workOrder.customerId}'
+                        '${customerid}'
                        ) returning id;
           `;
 
@@ -47,12 +46,12 @@ const httpTrigger: AzureFunction = async function (
                 farmingInvoiceRecords +
 
                 `INSERT INTO 
-                        "Farming_Invoice_Records" 
+                        "Trucking_Invoice_Records" 
                         ("equipment", 
                         "rate", 
                         "quantity", 
                         "amount",
-                        "farming_invoice_id"
+                        "trucking_invoice_id"
                       )
 
             VALUES      ('${element.description}', 
@@ -64,7 +63,7 @@ const httpTrigger: AzureFunction = async function (
           `;
         });
 
-        console.log("Farming invoice Records: ", farmingInvoiceRecords);
+        console.log("Trucking invoice Records: ", farmingInvoiceRecords);
 
         let resultOfRecords = await db.query(farmingInvoiceRecords);
 
@@ -72,16 +71,16 @@ const httpTrigger: AzureFunction = async function (
         console.log("Updating Work Order for Invoice");
 
         let query = `
-                UPDATE "Farming_Work_Order"
+                UPDATE "Trucking_Delivery_Ticket"
 
 				SET    
-                work_order_status = 'invoiced',
+                ticket_status = 'invoiced',
                 invoice_id = '${invoiceId}',
                 modified_at = now()
 							 
-				WHERE customer_id = '${workOrder.customerId}'
+				WHERE customer_id = '${customerid}'
                 ${whereClause}
-                AND "work_order_status" = 'verified'
+                AND "ticket_status" = 'verified'
 				AND is_deleted = FALSE
                 ;`
 
@@ -93,7 +92,7 @@ const httpTrigger: AzureFunction = async function (
         context.res = {
             status: 200,
             body: {
-                message: "Work Order has been updated successfully.",
+                message: "Delivery Ticket has been updated successfully.",
                 status: 200
             },
         };

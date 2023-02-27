@@ -304,6 +304,7 @@ const httpTrigger: AzureFunction = async function (
                 e3."social_security",	
                 e3."american_license",
                 e3."visa_consulate_details",
+                e3."onboarding_completed",
                 e3."results",	
                 e3."modified_at",	
                 e3."status_message",	
@@ -670,7 +671,7 @@ const httpTrigger: AzureFunction = async function (
           },
 
           {
-            step: `Visa Application Instructions posted`,
+            step: `I-797B and Visa Application Instructions posted`,
             date: resp.step_twelve_date,
             status: +resp.status_step >= 12 && resp.visa_consulate_details ? true : false,
             show: +resp.status_step >= 12 ? true : false,
@@ -727,7 +728,7 @@ const httpTrigger: AzureFunction = async function (
             status: +resp.status_step >= 17 && resp.visa == 'Verified' ? true : false,
             show: +resp.status_step >= 17 ? true : false,
             active: +resp.status_step >= 17 ? true : false,
-            showIcons: resp.reprimand_policy_disclaimer == true && resp.drug_policy_disclaimer == true && resp.equipment_policy_disclaimer == true && resp.departure_disclaimer == true ? true : false,
+            showIcons: resp.visa_disclaimer == true ? true : false,
             click: +resp.status_step == 17 ? true : false,
             statusBar: 'visa',
           },
@@ -815,12 +816,12 @@ const httpTrigger: AzureFunction = async function (
           {
             step: `Onboarding Completed`,
             date: resp.step_twenty_four_date,
-            status: +resp.status_step >= 24  ? true : false,
+            status: +resp.status_step >= 24 && resp.onboarding_completed ? true : false,
             show: +resp.status_step >= 24 ? true : false,
             active: +resp.status_step >= 24 ? true : false,
             showIcons: false,
             click: +resp.status_step == 24 ? true : false,
-            statusBar: 'results',
+            statusBar: 'onboarding_completed',
           },
         ];
       }

@@ -11,6 +11,7 @@ const httpTrigger: AzureFunction = async function (
     const search: string = req.query.search;
     const searchClause: string = req.query.searchClause;
     const employeeId: string = req.query.employeeId;
+    const fieldId:string = req.query.fieldId;
 
     let whereClause: string = `wo."is_deleted" = FALSE`;
 
@@ -40,6 +41,7 @@ const httpTrigger: AzureFunction = async function (
             SELECT 
             wo."id" AS "work_order_id", 
             wo."created_at" AS "date", 
+            wo.hours_worked,
             wo."service" AS "service", 
             c."id" AS "customer_id", 
             wo."total_service_acres" AS "acres_completed", 
@@ -55,7 +57,8 @@ const httpTrigger: AzureFunction = async function (
             "farm".name AS "farm_name",
             "field".name AS "field_name",
             wo.farm_id as farm_id,
-            wo.field_id as field_id
+            wo.field_id as field_id,
+            wo.notes
 			
             FROM 
             "Farming_Work_Order" wo
@@ -448,6 +451,18 @@ const httpTrigger: AzureFunction = async function (
              Where is_active = true
              AND tractor_driver_id='${employeeId}' And work_order_close_out=false;
                    `;
+        }
+
+        if(searchClause === 'getRemainingAcresofField'){
+            queryGetCustomers = `
+            select SUM(total_acres) AS total_acres from "Farming_Work_Order" where field_id = '${fieldId}'
+            AND (work_order_status='pending' OR work_order_status='verified')
+            GROUP BY field_id;
+            `;
+
+            count_query = ` select count(total_acres) AS total_acres from "Farming_Work_Order" where field_id = '${fieldId}'
+            AND (work_order_status='pending' OR work_order_status='verified')
+            GROUP BY field_id;`;
         }
 
         let query = `${queryGetCustomers} ${count_query}`;
