@@ -100,6 +100,8 @@ WHERE id = '${record_id}';`;
     else if (records.evaluation_type === 'summary'){
 getById = `
 SELECT 
+training."id" as "id",
+training."created_at" as "created_at",
 training."satisfactoryRoadTesting" as "satisfactoryRoadTesting",
 training."unSatisfactoryRoadTesting" as "unSatisfactoryRoadTesting",
 training."satisfactoryStraightLineBacking" as "satisfactoryStraightLineBacking",
@@ -137,6 +139,7 @@ INNER JOIN "Employees" emp_trainee
 WHERE trainer_id = '${records.trainer_id}'
 AND trainee_id = '${records.trainee_id}'
 AND evaluation_form = 'digital-form'
+AND CAST(training.created_at AS Date) = '${records.date}'
 `;
     }
 
