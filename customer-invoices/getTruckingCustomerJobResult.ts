@@ -17,6 +17,11 @@ const httpTrigger: AzureFunction = async function (
 
     try {
 
+        let whereClause = ``;
+
+        if (from) whereClause = `${whereClause}  AND '${from}' <= trucking.created_at::"date"`;
+        if (to) whereClause = ` ${whereClause}  AND '${to}' >= trucking.created_at::"date"`;
+
         let totalAmount = getTruckingJobResult(from, to, customer_id);
 
         let queryToRun = `
@@ -31,6 +36,7 @@ const httpTrigger: AzureFunction = async function (
 		INNER JOIN "Employees" driver ON trucking.truck_driver_id = driver."id"         
          
         WHERE trucking.customer_id = '${customer_id}' 
+        ${whereClause}
         AND trucking.ticket_status = 'verified'
         AND trucking.is_deleted = FALSE
         ORDER BY trucking.created_at ASC;
