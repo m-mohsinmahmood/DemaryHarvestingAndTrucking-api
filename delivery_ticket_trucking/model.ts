@@ -30,6 +30,8 @@ export interface DeliveryTicket {
     scaleTicket?: string;
     destinationDeliveryLoad?: string;
     isTicketInfoCompleted: boolean
+    cropId: string;
+    hoursWorked?: string;
 
 }
 

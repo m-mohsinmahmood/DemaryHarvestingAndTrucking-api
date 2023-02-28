@@ -3,8 +3,8 @@ export function getTruckingJobResult(from: any, to: any, customerId: any) {
 
     let whereClause = ``;
 
-    if (from) whereClause = ` ${whereClause}  AND '${from}' <= created_at::"date"`;
-    if (to) whereClause = ` ${whereClause}  AND '${to}' >= created_at::"date"`;
+    if (from) whereClause = ` ${whereClause}  AND '${from}' <= tdt.created_at::"date"`;
+    if (to) whereClause = ` ${whereClause}  AND '${to}' >= tdt.created_at::"date"`;
 
     let query = `
     Select tr.rate_type, tr.rate, (SUM(CAST("weightLoad" AS float))) as quantity, (SUM(CAST("weightLoad" AS float))) * tr.rate AS total_amount 
