@@ -9,18 +9,22 @@ const httpTrigger: AzureFunction = async function (
     const db = new Client(config);
     let query = ``;
     try {
-        const id = req.query.ticketId;
+        const id = req.body.jobId;
+        const role = req.body.role;
+
         console.log('Request::', req.body);
 
-        query = `
+        if (role === 'truck-driver') {
+            query = `
          UPDATE 
                  "Customer_Job_Setup"
          SET 
                 "is_trip_check_filled"  = FALSE,
-                "is_dwr_made"         = FALSE,
+                "is_dwr_made"         = TRUE,
                 "is_job_completed"      = FALSE                 
          WHERE 
                  "id" = '${id}';`
+        }
 
         console.log('Query:', query)
         db.connect();
@@ -30,7 +34,7 @@ const httpTrigger: AzureFunction = async function (
         context.res = {
             status: 200,
             body: {
-                message: "Job has been closed successfully.",
+                message: "Day has begun successfully.",
                 status: 200,
             },
         };

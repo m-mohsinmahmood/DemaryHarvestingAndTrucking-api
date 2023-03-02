@@ -142,7 +142,7 @@ export function updateDWR(closingOfDay: any) {
         "is_day_closed" = 'true'
          ${optionalReq}
     WHERE 
-        "work_order_id" = '${closingOfDay.workOrderId}' AND is_day_closed = 'false' 
+        ("work_order_id" = '${closingOfDay.workOrderId}' OR "job_id" = '${closingOfDay.workOrderId}') AND is_day_closed = 'false' 
         returning id;`
 
         console.log(query);
