@@ -1,3 +1,4 @@
+
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
@@ -7,30 +8,34 @@ const httpTrigger: AzureFunction = async function (
     req: HttpRequest
 ): Promise<void> {
     const db = new Client(config);
-    let query = ``;
+    let updateEndingOMR = ``;
+
     try {
-        const id = req.query.ticketId;
+        const id = req.body.jobId;
+        const role = req.body.role;
+        const endingEngineHours = req.body.endingEngineHours
+
         console.log('Request::', req.body);
 
-        query = `
-         UPDATE 
-                 "Customer_Job_Setup"
-         SET 
-                "is_trip_check_filled"  = FALSE,
-                "is_dwr_made"         = FALSE,
-                "is_job_completed"      = FALSE                 
-         WHERE 
-                 "id" = '${id}';`
+        updateEndingOMR = `
+            UPDATE 
+                    "Motorized_Vehicles"
+            SET 
+                    "odometer_reading_end" = '${endingEngineHours}',
+                    modified_at = now()
+                  
+            WHERE 
+                    "id" = '${id}' ;`;
 
-        console.log('Query:', query)
+        console.log('Query:', updateEndingOMR)
         db.connect();
-        let result = await db.query(query);
+        let result = await db.query(updateEndingOMR);
         db.end();
 
         context.res = {
             status: 200,
             body: {
-                message: "Job has been closed successfully.",
+                message: "Motorized Vehicle has been updated",
                 status: 200,
             },
         };

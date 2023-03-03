@@ -6,7 +6,8 @@ import * as updatePreTripCheck from "./updatePreTripStatus";
 import * as getEmployeeById from "./getById";
 import * as getAssignedRoles from "./getAssignedRoles";
 import * as updateCustomerJob from "./updateCustomerJob";
-
+import * as beginningofDay from "./beginningOfDay";
+import * as endingofDay from "./endingOfDay";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
   switch (req.method) {
@@ -28,6 +29,10 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     case "PATCH":
       if (req.query.id)
         await updatePreTripCheck.default(context, req);
+      else if (req.body.operation === 'beginningOfDay')
+        await beginningofDay.default(context, req);
+      else if (req.body.operation === 'endingOfDay')
+        await endingofDay.default(context, req);
       else if (req.query.operation === 'updateCustomerJob')
         await updateCustomerJob.default(context, req);
       else

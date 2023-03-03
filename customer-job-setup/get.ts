@@ -164,7 +164,7 @@ const httpTrigger: AzureFunction = async function (
       const isPreCHeckFilled: string = req.query.isPreCheckFilled;
       let whereClause = ``;
 
-      if (isTicketActive) whereClause = ` ${whereClause}  And cjs.is_job_active=${isTicketActive}`;
+      if (isTicketActive) whereClause = ` ${whereClause}  And cjs.is_dwr_made=${isTicketActive}`;
       if (isPreCHeckFilled) whereClause = ` ${whereClause}  And is_trip_check_filled=${isPreCHeckFilled}`;
 
       query = `
@@ -255,7 +255,7 @@ const httpTrigger: AzureFunction = async function (
     // query if employee is present
     query = `${query}`;
 
-    console.log(query);
+    console.log("Query: ", query);
 
     db.connect();
 

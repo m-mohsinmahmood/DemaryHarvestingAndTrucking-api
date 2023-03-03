@@ -116,6 +116,16 @@ const httpTrigger: AzureFunction = async function (
             optionalValues = `${optionalValues},'${order.destinationDeliveryLoad}'`
         }
 
+        if (order.cropId != null) {
+            optionalReq = `${optionalReq},"crop_id"`;
+            optionalValues = `${optionalValues},'${order.cropId}'`
+        }
+
+        if (order.hoursWorked != null) {
+            optionalReq = `${optionalReq},"hours_worked"`;
+            optionalValues = `${optionalValues},'${order.hoursWorked}'`
+        }
+
         // If Dispatcher will create a New Delivery Ticket then below given query will be executed.
         query = `
             INSERT INTO 

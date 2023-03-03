@@ -1,6 +1,5 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as addWorkOrder from "./post";
-// import * as getWorkOrderById from "./getById";
 import * as getWorkOrder from "./get";
 import * as updateWorkOrder from "./patch";
 import * as getWorkOrderById from "./getById";
@@ -15,7 +14,6 @@ const httpTrigger: AzureFunction = async function (
         case "GET":
             if (req.query.work_order_id) await getWorkOrderById.default(context, req);
             else await getWorkOrder.default(context, req);
-            // await getWorkOrder.default(context, req);
             break;
 
         case "POST":

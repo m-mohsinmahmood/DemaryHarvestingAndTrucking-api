@@ -19,41 +19,88 @@ const httpTrigger: AzureFunction = async function (
     let whereClause = ``;
     let amountWhereClause = ``;
 
-    if (from) whereClause = ` ${whereClause}  AND '${from}' <= created_at::"date"`;
-    if (to) whereClause = ` ${whereClause}  AND '${to}' >= created_at::"date"`;
+    if (from) {
+        whereClause = ` ${whereClause}  AND '${from}' <= fw.created_at::"date"`;
+        amountWhereClause = ` ${amountWhereClause}  AND '${from}' <= fwo.created_at::"date"`;
+    }
+
+    if (to) {
+        whereClause = ` ${whereClause}  AND '${to}' >= fw.created_at::"date"`;
+        amountWhereClause = ` ${amountWhereClause}  AND '${to}' >= fwo.created_at::"date"`;
+    }
+
     if (service_type) whereClause = ` ${whereClause}  AND service = '${service_type}'`;
     if (service_type) amountWhereClause = ` ${amountWhereClause}  AND fr.equipment_type = '${service_type}'`;
-    if (quantityType) whereClause = ` ${whereClause}  AND quantity_type = '${quantityType}'`;
 
     try {
 
-        let totalAmount = `
-        SELECT fr.equipment_type AS description, Sum(fwo.total_service_acres) AS Total_Acres, fr.rate, 
-        SUM(fwo.total_service_acres * fr.rate ) AS Total_Amount_Acres,
-        SUM(fwo.hours_worked * fr.rate ) AS Total_Amount_Hours
+        let totalAmount = ``;
 
-        FROM "Farming_Work_Order" fwo INNER JOIN "Farming_Rates" fr ON fwo.customer_id = fr.customer_id  
-        ${amountWhereClause}
-        WHERE fwo.customer_id = '${customer_id}' 
+        if (quantityType === 'acres') {
+            totalAmount = `
+            SELECT fr.equipment_type AS description, Sum(fwo.total_service_acres) AS quantity, fr.rate, 
+            SUM(fwo.total_service_acres * fr.rate ) AS Total_Amount
+    
+            FROM "Farming_Work_Order" fwo INNER JOIN "Farming_Rates" fr ON fwo.customer_id = fr.customer_id  AND fwo.service = fr.equipment_type
+            ${amountWhereClause}
+            WHERE fwo.customer_id = '${customer_id}' 
+            AND fwo.work_order_status = 'verified'
+            AND fwo.is_deleted = FALSE
+    
+            GROUP BY fwo.customer_id, fr.equipment_type, fr.rate
+            ;`;
+        }
 
-        GROUP BY fwo.customer_id, fr.equipment_type, fr.rate
-        ;`;
+        else if (quantityType === 'hours') {
+            totalAmount = `
+            SELECT fr.equipment_type AS description, Sum(fwo.hours_worked) AS quantity, fr.rate, 
+            SUM(fwo.hours_worked * fr.rate ) AS Total_Amount
+    
+            FROM "Farming_Work_Order" fwo INNER JOIN "Farming_Rates" fr ON fwo.customer_id = fr.customer_id  AND fwo.service = fr.equipment_type
+            ${amountWhereClause}
+            WHERE fwo.customer_id = '${customer_id}' 
+            AND fwo.work_order_status = 'verified'
+            AND fwo.is_deleted = FALSE
+
+            GROUP BY fwo.customer_id, fr.equipment_type, fr.rate
+            ;`;
+        }
+
+        else if (quantityType === 'flat_rate') {
+            totalAmount = `
+            SELECT fr.equipment_type AS description, Sum(fwo.total_service_acres) AS quantity, fr.rate AS Total_Amount
+    
+            FROM "Farming_Work_Order" fwo INNER JOIN "Farming_Rates" fr ON fwo.customer_id = fr.customer_id  AND fwo.service = fr.equipment_type
+            ${amountWhereClause}
+            WHERE fwo.customer_id = '${customer_id}' 
+            AND fwo.work_order_status = 'verified'
+            AND fwo.is_deleted = FALSE
+
+            GROUP BY fwo.customer_id, fr.equipment_type, fr.rate
+            ;`;
+        }
+
 
         let queryToRun = `
-        SELECT fw.created_at AS date, fw.service,  farm."name" AS farm, field."name" AS field, fw.total_service_acres AS acres,
-        fw.beginning_engine_hours, fw.ending_engine_hours, fw.work_order_status
+        SELECT TO_CHAR(fw.created_at::date, 'yyyy/mm/dd') AS date,
+        fw.service,
+        farm."name" AS farm,
+        field."name" AS field,
+        fw.total_service_acres AS acres,
+        fw.hours_worked as hours,
+        fw.work_order_status
         
-        FROM "Farming_Work_Order" fw
-         
+        FROM "Farming_Work_Order" fw 
         INNER JOIN "Customer_Farm" farm ON fw.farm_id = farm.id
+        
         INNER JOIN "Customer_Field" field ON fw.field_id = field."id"
-         
-         
-        WHERE fw.customer_id = '${customer_id}' 
+        
+        WHERE fw.customer_id = '${customer_id}'
         ${whereClause}
         AND fw.work_order_status = 'verified'
         AND fw.is_deleted = FALSE
-        ORDER BY fw.created_at ASC;
+
+        ORDER BY fw.created_at ASC
         ;`;
 
         let query = `${queryToRun} ${totalAmount}`;
@@ -63,7 +110,7 @@ const httpTrigger: AzureFunction = async function (
         db.connect();
 
         let result = await db.query(query);
-        console.log(result);
+        // console.log(result);
 
         let resp = {
             jobResults: result[0].rows,

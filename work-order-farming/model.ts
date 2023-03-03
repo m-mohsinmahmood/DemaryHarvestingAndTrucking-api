@@ -39,7 +39,7 @@ export interface UpdateWorkOrder {
     work_order_status?: boolean;
     searchClause?: string;
     isActive?: boolean;
-    acresCompleted?: string;
+    acresCompleted?: number;
     gpsAcres?: string;
     hoursWorked?: string;
     notes?: string;
