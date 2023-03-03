@@ -59,6 +59,7 @@ const httpTrigger: AzureFunction = async function (
                 (
                   "first_name",
                   "last_name",
+                  "legal_name",
                   "email",
                   "cell_phone_number",
                   "cell_phone_country_code",
@@ -124,6 +125,7 @@ const httpTrigger: AzureFunction = async function (
                 (
                   $$${applicant.first_name}$$,
                   $$${applicant.last_name}$$,
+                  $$${applicant.legal_name}$$,
                   $$${applicant.email}$$,
                   $$${applicant.cell_phone_number}$$,
                   $$${applicant.cell_phone_country_code}$$,

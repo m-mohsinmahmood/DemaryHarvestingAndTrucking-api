@@ -38,7 +38,7 @@ let status_message_step = {
 let query;
 
 export function updateQuery(applicant, email, type, applicant_info) {
-    
+
     let update_applicant_query = `
                 UPDATE "Applicants"
                 SET 
@@ -96,6 +96,35 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 `;
                 break;
 
+
+            case "First Interview Updated":
+                update_applicant_query = update_applicant_query + `
+                        "first_call_ranking" = '${applicant.first_call_ranking}',
+                        "first_call_remarks" = $$${applicant.first_call_remarks}$$,
+                        "ranking" = '${applicant.ranking}'
+                `;
+                break;
+            case "Second Interview Updated":
+                update_applicant_query = update_applicant_query + `
+                        "second_call_ranking" = '${applicant.second_call_ranking}',
+                        "second_call_remarks" = $$${applicant.second_call_remarks}$$,
+                        "ranking" = '${applicant.ranking}'
+                    `;
+                break;
+            case "Third Interview Updated":
+                update_applicant_query = update_applicant_query + `
+                        "third_call_ranking" = '${applicant.third_call_ranking}',
+                        "third_call_remarks" = $$${applicant.third_call_remarks}$$,
+                        "ranking" = '${applicant.ranking}'
+                    `;
+                break;
+            case "Reference Interview Updated":
+                update_applicant_query = update_applicant_query + `
+                        "reference_call_ranking" = '${applicant.reference_call_ranking}',
+                        "reference_call_remarks" = $$${applicant.reference_call_remarks}$$,
+                        "ranking" = '${applicant.ranking}'
+                    `;
+                break;
             default:
                 break;
         }
@@ -200,11 +229,11 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 break;
 
             case "Resume Onboarding":
-            update_applicant_query = update_applicant_query + `
+                update_applicant_query = update_applicant_query + `
                     "status_step" = '${status_message_step[applicant.status_message]}',
                     "status_message" = '${applicant.status_message}' 
             `;
-            break;
+                break;
 
             default:
                 break;
@@ -215,7 +244,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
             WHERE "id" = '${applicant.id}';
     `;
     query = `${update_applicant_query};`
- 
+
     return query;
 
 }

@@ -2,6 +2,7 @@ export interface employee {
   id: string,
   first_name: string,
   last_name: string,
+  legal_name: string,
   role: string,
   status: boolean,
   email: string,

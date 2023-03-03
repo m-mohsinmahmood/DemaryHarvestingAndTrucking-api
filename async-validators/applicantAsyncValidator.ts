@@ -12,16 +12,20 @@ const httpTrigger: AzureFunction = async function (
     const email: string = req.query.email;
 
     let query = `
-        SELECT *
-        FROM "Applicants"
-        WHERE "email" = '${email}' AND "is_deleted" = FALSE
+      SELECT emp.email , app.email  
+      FROM "Employees" emp
+
+      FULL JOIN "Applicants" app ON 
+      emp.email = app.email
+
+      WHERE (app.email = '${email}' AND app.is_deleted = FALSE) OR (emp.email = '${email}'  AND emp.is_deleted = FALSE);
       `;
 
     db.connect();
 
     let result = await db.query(query);
     let resp;
-    result.rows.length > 0 ? resp = true : resp = false; 
+    result.rows.length > 0 ? resp = true : resp = false;
     db.end();
 
     context.res = {

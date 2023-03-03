@@ -33,6 +33,7 @@ const httpTrigger: AzureFunction = async function (
         SET 
                 "first_name"                            = $$${applicant.first_name}$$,
                 "last_name"                             = $$${applicant.last_name}$$,
+                "legal_name"                            = $$${applicant.legal_name}$$,
                 "email"                                 = $$${applicant.email}$$,
                 "cell_phone_number"                     = $$${applicant.cell_phone_number}$$,
                 "cell_phone_country_code"               = $$${applicant.cell_phone_country_code}$$,

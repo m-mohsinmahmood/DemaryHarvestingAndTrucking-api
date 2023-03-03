@@ -15,6 +15,9 @@ const httpTrigger: AzureFunction = async function (
     const status: string = req.query.status;
     const date: string = req.query.date;
     const ranking: string = req.query.ranking;
+    const country: string = req.query.country;
+    const employment_period: string = req.query.employment_period;
+
     const created_at: string = req.query.created_at;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 10;
@@ -24,6 +27,8 @@ const httpTrigger: AzureFunction = async function (
 
     if (search) whereClause = ` ${whereClause} AND LOWER("last_name") LIKE LOWER('%${search}%')`;
     if (state) whereClause = ` ${whereClause} AND "state" = '${state}'`;
+    if (country) whereClause = ` ${whereClause} AND "country" = '${country}'`;
+    if (employment_period) whereClause = ` ${whereClause} AND "employment_period" = '${employment_period}'`;
     if (created_at) whereClause = ` ${whereClause} AND  extract(year from "created_at") = '${created_at}'`;
     if (status) whereClause = ` ${whereClause} AND status_message = '${status}'`; 
     if (ranking) {
