@@ -11,14 +11,21 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
     const db = new Client(config);
     const db1 = new Client(config);
+    const db2 = new Client(config);
+    const db3 = new Client(config);
 
     let image_1 = '';
      let image_2 = '';
      let image_3 = '';
+     let weightimages_1 ='';
+     let weightimages_2 ='';
+     let weightimages_3 ='';
+     let loadimages_1 ='';
+     let loadimages_2 ='';
      let result;
      let record_id;
   const multiPartConfig = {
-    limits: { fields: 1, files: 3 },
+    limits: { fields: 1, files: 8 },
   };
   const { fields, files } = await parseMultipartFormData(req, multiPartConfig);
   const order: DeliveryTicket = (JSON.parse(fields[0].value));
@@ -217,29 +224,42 @@ const httpTrigger: AzureFunction = async function (
           blobHTTPHeaders: { blobContentType: files[0].mimeType },
         });
         }
+        if(file.name === "weightimages_1"){
+            weightimages_1 = "weightimages_1" + record_id;
+        const imageBlockBlob = container.getBlockBlobClient(weightimages_1);
+        const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
+          blobHTTPHeaders: { blobContentType: files[0].mimeType },
+        });
+        }
+        if(file.name === "weightimages_2"){
+            weightimages_2 = "weightimages_2" + record_id;
+        const imageBlockBlob = container.getBlockBlobClient(weightimages_2);
+        const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
+          blobHTTPHeaders: { blobContentType: files[0].mimeType },
+        });
+        }
+        if(file.name === "weightimages_3"){
+            weightimages_3 = "weightimages_3" + record_id;
+        const imageBlockBlob = container.getBlockBlobClient(weightimages_3);
+        const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
+          blobHTTPHeaders: { blobContentType: files[0].mimeType },
+        });
+        }
+        if(file.name === "loadimages_1"){
+            loadimages_1 = "loadimages_1" + record_id;
+        const imageBlockBlob = container.getBlockBlobClient(loadimages_1);
+        const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
+          blobHTTPHeaders: { blobContentType: files[0].mimeType },
+        });
+        }
+        if(file.name === "loadimages_2"){
+            loadimages_2 = "loadimages_2" + record_id;
+        const imageBlockBlob = container.getBlockBlobClient(loadimages_2);
+        const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
+          blobHTTPHeaders: { blobContentType: files[0].mimeType },
+        });
+        }
      })
-    //   if (files[0]){
-    //     image_1 = "image_1" + record_id;
-    //     const imageBlockBlob = container.getBlockBlobClient(image_1);
-    //     const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
-    //       blobHTTPHeaders: { blobContentType: files[0].mimeType },
-    //     });
-    //   }
-      
-    //   if (files[1]){
-    //     image_2 = "image_2" + record_id;
-    //     const imageBlockBlob = container.getBlockBlobClient(image_2);
-    //     const res = await imageBlockBlob.uploadData(files[1].bufferFile, {
-    //       blobHTTPHeaders: { blobContentType: files[1].mimeType },
-    //     });
-    //   }
-    //   if (files[2]){
-    //     image_3 = "image_3" + record_id;
-    //     const imageBlockBlob = container.getBlockBlobClient(image_3);
-    //     const res = await imageBlockBlob.uploadData(files[2].bufferFile, {
-    //       blobHTTPHeaders: { blobContentType: files[2].mimeType },
-    //     });
-    //   }
     }
     catch (error) {
       context.res = {
@@ -254,32 +274,25 @@ const httpTrigger: AzureFunction = async function (
 
   }
 //#endregion
-//#region delivery ticket trucking
-if(files.length !==0){
+//#region 1st images block
+let array = []
+files.map((files)=>{
+array.push(files.name)
+})
+
+console.log(array.includes('image_1'));
+if(files.length !==0 && array.includes('image_1')){
     try {
       let query = `
       UPDATE "Trucking_Delivery_Ticket"
       SET `;
-      let namesArray = []
-      for (let index = 0; index < files.length; index++) {
-        namesArray.push(files[index].name)
-       if(files[index].name === 'image_1'){
-            query = query + `"image_1" = '${'https://dhtstorageaccountdev.blob.core.windows.net/trucking/trucking/' + image_1}'`
-        }
-    if (namesArray.includes("image_1") && namesArray.includes("image_2")) query = query + ", "
-    if (namesArray.includes("image_1") && namesArray.includes("image_3")) query = query + ", "
-        if(files[index].name === 'image_2'){
-            query = query + `"image_2" = '${'https://dhtstorageaccountdev.blob.core.windows.net/trucking/trucking/' + image_2}'` 
-        }
-    if (namesArray.includes("image_2") && namesArray.includes("image_3")) query = query + ", "
 
-        if(files[index].name === 'image_3'){
-            query = query + `"image_3" = '${'https://dhtstorageaccountdev.blob.core.windows.net/trucking/trucking/' + image_3}'` 
-        }
-      }
-
+    files.map((files)=>{    
+    if(files.name === 'image_1') query = query + `"image_1" = '${'https://dhtstorageaccountdev.blob.core.windows.net/trucking/trucking/' + image_1}'`
+    if(files.name === 'image_2') query = query + `,"image_2" = '${'https://dhtstorageaccountdev.blob.core.windows.net/trucking/trucking/' + image_2}'` 
+    if(files.name === 'image_3')query = query + `,"image_3" = '${'https://dhtstorageaccountdev.blob.core.windows.net/trucking/trucking/' + image_3}'` 
+})
       query = query + `WHERE "id" = '${record_id}';`
-      console.log('QUERY::',query);
       db1.connect();
       await db1.query(query);
       db1.end();
@@ -288,7 +301,7 @@ if(files.length !==0){
       context.res = {
         status: 400,
         body: {
-          message: "An error occured while creating the tickett",
+          message: "An error occured while creating the ticket-1",
         },
       };
       context.done();
@@ -296,6 +309,66 @@ if(files.length !==0){
     }
   }
 //#endregion
+
+//#region 2nd images block
+if(files.length !==0 && array.includes('weightimages_1')){
+    try {
+      let query = `
+      UPDATE "Trucking_Delivery_Ticket"
+      SET `;
+
+    files.map((files)=>{
+        if(files.name === 'weightimages_1')query = query + `"weightimages_1" = '${'https://dhtstorageaccountdev.blob.core.windows.net/trucking/trucking/' + weightimages_1}'`
+        if(files.name === 'weightimages_2')query = query + `,"weightimages_2" = '${'https://dhtstorageaccountdev.blob.core.windows.net/trucking/trucking/' + weightimages_2}'`
+        if(files.name === 'weightimages_3')query = query + `,"weightimages_3" = '${'https://dhtstorageaccountdev.blob.core.windows.net/trucking/trucking/' + weightimages_3}'` 
+    })
+
+      query = query + `WHERE "id" = '${record_id}';`
+      db2.connect();
+      await db2.query(query);
+      db2.end();
+    } catch (error) {
+      db1.end();
+      context.res = {
+        status: 400,
+        body: {
+          message: "An error occured while creating the ticket-2",
+        },
+      };
+      context.done();
+      return;
+    }
+  }
+  //#endregion
+  //#region 3rd images block
+if(files.length !==0 && array.includes('loadimages_1')){
+    try {
+      let query = `
+      UPDATE "Trucking_Delivery_Ticket"
+      SET `;
+    files.map((files)=>{
+        if(files.name === 'loadimages_1')query = query + `"loadimages_1" = '${'https://dhtstorageaccountdev.blob.core.windows.net/trucking/trucking/' + loadimages_1}'`
+        if(files.name === 'loadimages_2')query = query + `,"loadimages_2" = '${'https://dhtstorageaccountdev.blob.core.windows.net/trucking/trucking/' + loadimages_2}'`
+    })
+
+      query = query + `WHERE "id" = '${record_id}';`
+      db3.connect();
+      await db3.query(query);
+      db3.end();
+    } catch (error) {
+      db3.end();
+      context.res = {
+        status: 400,
+        body: {
+          message: "An error occured while creating the ticket-3",
+        },
+      };
+      context.done();
+      return;
+    }
+  }
+  //#endregion
+
 context.res = {
     status: 200,
     body: {
