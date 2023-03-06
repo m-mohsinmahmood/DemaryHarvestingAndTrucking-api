@@ -41,7 +41,6 @@ const httpTrigger: AzureFunction = async function (
     "company_id"              = '${motorized.company_id}',
     "name"                    = '${motorized.name}',
     "license_plate"           = '${motorized.license_plate}',
-    "pictures"                = '${motorized.pictures}',
     "status"                  = '${motorized.status}'
 
     WHERE 
