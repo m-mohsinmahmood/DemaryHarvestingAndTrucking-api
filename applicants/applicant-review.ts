@@ -23,6 +23,18 @@ let interview_steps = {
     "Reference Call Completed": "reference_interviewer_id",
     "Third Interview Completed": "third_interviewer_id"
 };
+
+let status_message_step = {
+    "Preliminary Review": "2",
+    "First Interview Completed": "3",
+    "Second Interview Completed": "4",
+    "Reference Call Completed": "5",
+    "Third Interview Completed": "6",
+    "Offer Accepted": "8",
+    "Waitlisted": "10.2",
+
+}
+
 let query;
 
 export function updateQuery(applicant, email, type, applicant_info) {
@@ -40,6 +52,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                         "first_call_ranking" = '${applicant.first_call_ranking}',
                         "first_call_remarks" = $$${applicant.first_call_remarks}$$,
                         "status_message" = '${applicant.status_message}',
+                        "previous_status_message" = '${applicant.prev_status_message}',
                         "status_step" = '${applicant.status_step}',
                         "ranking" = '${applicant.ranking}',
                         "step_three_status_date" = now()
@@ -51,6 +64,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                         "second_call_ranking" = '${applicant.second_call_ranking}',
                         "second_call_remarks" = $$${applicant.second_call_remarks}$$,
                         "status_message" = '${applicant.status_message}',
+                        "previous_status_message" = '${applicant.prev_status_message}',
                         "status_step" = '${applicant.status_step}',
                         "ranking" = '${applicant.ranking}',
                         "step_four_status_date" = now()
@@ -62,6 +76,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                         "third_call_ranking" = '${applicant.third_call_ranking}',
                         "third_call_remarks" = $$${applicant.third_call_remarks}$$,
                         "status_message" = '${applicant.status_message}',
+                        "previous_status_message" = '${applicant.prev_status_message}',
                         "status_step" = '${applicant.status_step}',
                         "ranking" = '${applicant.ranking}',
                         "step_six_status_date" = now()
@@ -73,6 +88,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                         "reference_call_ranking" = '${applicant.reference_call_ranking}',
                         "reference_call_remarks" = $$${applicant.reference_call_remarks}$$,
                         "status_message" = '${applicant.status_message}',
+                        "previous_status_message" = '${applicant.prev_status_message}',
                         "status_step" = '${applicant.status_step}',
                         "ranking" = '${applicant.ranking}',
                         "step_five_status_date" = now()
@@ -97,6 +113,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
                         "reason_for_rejection" = $$${applicant.reason_for_rejection}$$,
+                        "previous_status_message" = '${applicant.prev_status_message}',
                         "${status_bar[applicant.prev_status_message]}" = now()
                         ${interview_step}
                 `;
@@ -106,6 +123,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 update_applicant_query = update_applicant_query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
+                        "previous_status_message" = '${applicant.prev_status_message}',
                         "reason_for_rejection" = $$${applicant.reason_for_rejection}$$
                         ${interview_step}
                 `;
@@ -115,6 +133,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 update_applicant_query = update_applicant_query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
+                        "previous_status_message" = '${applicant.prev_status_message}',
                         "reason_for_rejection" = $$${applicant.reason_for_rejection}$$
                         ${interview_step}
                 `;
@@ -124,6 +143,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 update_applicant_query = update_applicant_query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
+                        "previous_status_message" = '${applicant.prev_status_message}',
                         "reason_for_rejection" = $$${applicant.reason_for_rejection}$$
                         ${interview_step}
                 `;
@@ -133,6 +153,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 update_applicant_query = update_applicant_query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
+                        "previous_status_message" = '${applicant.prev_status_message}',
                         "reason_for_rejection" = $$${applicant.reason_for_rejection}$$
                         ${interview_step}
                 `;
@@ -142,6 +163,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                 update_applicant_query = update_applicant_query + `
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
+                        "previous_status_message" = '${applicant.prev_status_message}',
                         "reason_for_rejection" = $$${applicant.reason_for_rejection}$$,
                         "${status_bar[applicant.prev_status_message]}" = now()
                 `;
@@ -152,6 +174,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                         "status_step" = '8',
                         "status_message" = 'Offer Accepted',
                         "reason_for_rejection" = $$${applicant.reason_for_rejection}$$,
+                        "previous_status_message" = '${applicant.prev_status_message}',
                         "${status_bar[applicant.prev_status_message]}" = now()
                 `;
                 break;
@@ -161,6 +184,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
                         "reason_for_rejection" = $$${applicant.reason_for_rejection}$$,
+                        "previous_status_message" = '${applicant.prev_status_message}',
                         "${status_bar[applicant.prev_status_message]}" = now()
                 `;
                 break;
@@ -170,9 +194,17 @@ export function updateQuery(applicant, email, type, applicant_info) {
                         "status_step" = '${applicant.status_step}',
                         "status_message" = '${applicant.status_message}',
                         "reason_for_rejection" = $$${applicant.reason_for_rejection}$$,
+                        "previous_status_message" = '${applicant.previous_status_message}',
                         "${status_bar[applicant.prev_status_message]}" = now()
                 `;
                 break;
+
+            case "Resume Onboarding":
+            update_applicant_query = update_applicant_query + `
+                    "status_step" = '${status_message_step[applicant.status_message]}',
+                    "status_message" = '${applicant.status_message}' 
+            `;
+            break;
 
             default:
                 break;
