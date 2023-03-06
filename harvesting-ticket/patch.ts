@@ -91,16 +91,6 @@ const httpTrigger: AzureFunction = async function (
     db.connect();
     let result = await db.query(query);
     db.end();
-
-    // context.res = {
-    //   status: 200,
-    //   body: {
-    //     message: "Ticket has been updated successfully.",
-    //     status: 200,
-    //   },
-    // };
-    // context.done();
-    // return;
   } catch (error) {
     db.end();
     context.res = {
