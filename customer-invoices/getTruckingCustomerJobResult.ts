@@ -1,6 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
+import { getTruckingJobResult } from "./invoicesUtilities";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -9,35 +10,19 @@ const httpTrigger: AzureFunction = async function (
     const db = new Client(config);
 
     const customer_id: string = req.query.customer_id;
-    const service_type: string = req.query.service_type;
     const to: string = req.query.to;
     const from: string = req.query.from;
-    const quantityType: string = req.query.quantity_type;
 
     console.log(req.query);
 
-    let whereClause = ``;
-    let amountWhereClause = ``;
-
-    if (from) whereClause = ` ${whereClause}  AND '${from}' <= created_at::"date"`;
-    if (to) whereClause = ` ${whereClause}  AND '${to}' >= created_at::"date"`;
-    if (service_type) whereClause = ` ${whereClause}  AND service = '${service_type}'`;
-    if (service_type) amountWhereClause = ` ${amountWhereClause}  AND fr.equipment_type = '${service_type}'`;
-    if (quantityType) whereClause = ` ${whereClause}  AND quantity_type = '${quantityType}'`;
-
     try {
 
-        let totalAmount = `
-        SELECT fr.equipment_type AS description, Sum(fwo.total_service_acres) AS Total_Acres, fr.rate, 
-        SUM(fwo.total_service_acres * fr.rate ) AS Total_Amount_Acres,
-        SUM(fwo.hours_worked * fr.rate ) AS Total_Amount_Hours
+        let whereClause = ``;
 
-        FROM "Farming_Work_Order" fwo INNER JOIN "Farming_Rates" fr ON fwo.customer_id = fr.customer_id  
-        ${amountWhereClause}
-        WHERE fwo.customer_id = '${customer_id}' 
+        if (from) whereClause = `${whereClause}  AND '${from}' <= trucking.created_at::"date"`;
+        if (to) whereClause = ` ${whereClause}  AND '${to}' >= trucking.created_at::"date"`;
 
-        GROUP BY fwo.customer_id, fr.equipment_type, fr.rate
-        ;`;
+        let totalAmount = getTruckingJobResult(from, to, customer_id);
 
         let queryToRun = `
         SELECT trucking.load_date,concat(dispatcher.first_name,' ' ,dispatcher.last_name) AS dispatcher,
@@ -64,11 +49,32 @@ const httpTrigger: AzureFunction = async function (
         db.connect();
 
         let result = await db.query(query);
-        console.log(result);
+
+
+        let totalResult = [];
+        if (result[1].rows.length > 0 && result[1].rows[0].total_amount)
+            totalResult.push(result[1].rows[0])
+
+        if (result[2].rows.length > 0 && result[2].rows[0].total_amount)
+            totalResult.push(result[2].rows[0])
+
+        if (result[3].rows.length > 0 && result[3].rows[0].total_amount)
+            totalResult.push(result[3].rows[0])
+
+        if (result[4].rows.length > 0 && result[4].rows[0].total_amount)
+            totalResult.push(result[4].rows[0])
+
+        if (result[5].rows.length > 0 && result[5].rows[0].total_amount)
+            totalResult.push(result[5].rows[0])
+
+        if (result[6].rows.length > 0 && result[6].rows[0].total_amount)
+            totalResult.push(result[6].rows[0])
+
+        console.log("Total Result: ", totalResult);
 
         let resp = {
             jobResults: result[0].rows,
-            totalAmount: result[1].rows
+            totalAmount: totalResult
         };
 
         db.end();

@@ -42,7 +42,7 @@ const httpTrigger: AzureFunction = async function (
                     "model", 
                     "title", 
                     "odometer",
-                    "odometer_reading",
+                    "odometer_reading_start",
                     "license", 
                     "registration", 
                     "insurance_status", 

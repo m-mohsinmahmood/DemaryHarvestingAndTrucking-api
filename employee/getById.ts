@@ -16,7 +16,8 @@ const httpTrigger: AzureFunction = async function (
     if (firebase_id) {
       let employee_id_query = `
         SELECT 
-               "id"
+               "id",
+               "role"
         FROM 
                 "Employees" 
         Where fb_id = '${firebase_id}'        
@@ -48,6 +49,7 @@ const httpTrigger: AzureFunction = async function (
                 e1."id",
                 e1."first_name",	
                 e1."last_name",  
+                e1."legal_name",  
                 e1."email",	
                 e1."cell_phone_number",	
                 e1."cell_phone_country_code",	
@@ -493,8 +495,8 @@ const httpTrigger: AzureFunction = async function (
             click: +resp.status_step == 10 ? true : false,
             statusBar: 'additional_compliance_docs',
           },
-          {
-            step: `Additional compliance docs verified`,
+          { 
+            step: `DHT Company docs verified`,
             date: resp.step_eleven_date,
             status: +resp.status_step >= 11 && resp.additional_compliance_docs == 'Verified' ? true : false,
             show: +resp.status_step >= 11 ? true : false,
@@ -670,7 +672,7 @@ const httpTrigger: AzureFunction = async function (
           },
 
           {
-            step: `I-797B and Visa Application Instructions posted`,
+            step: `I-797B, VISA Interview Date and Consulate Details verified`,
             date: resp.step_twelve_date,
             status: +resp.status_step >= 12 && resp.visa_consulate_details ? true : false,
             show: +resp.status_step >= 12 ? true : false,

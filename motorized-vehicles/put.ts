@@ -21,7 +21,7 @@ const httpTrigger: AzureFunction = async function (
     "year"                    = '${motorized.year}', 
     "make"                    = '${motorized.make}', 
     "odometer"                = '${motorized.odometer}',
-    "odometer_reading"        = '${motorized.odometer_reading}',
+    "odometer_reading_start"  = '${motorized.odometer_reading}',
     "model"                   = '${motorized.model}', 
     "title"                   = '${motorized.title}', 
     "license"                 = '${motorized.license}', 
@@ -41,7 +41,6 @@ const httpTrigger: AzureFunction = async function (
     "company_id"              = '${motorized.company_id}',
     "name"                    = '${motorized.name}',
     "license_plate"           = '${motorized.license_plate}',
-    "pictures"                = '${motorized.pictures}',
     "status"                  = '${motorized.status}'
 
     WHERE 

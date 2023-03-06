@@ -2,6 +2,7 @@ export interface applicant {
   id : string,
   first_name : string,
   last_name : string,
+  legal_name : string,
   email : string,
   cell_phone_number : string,
   cell_phone_country_code: string,

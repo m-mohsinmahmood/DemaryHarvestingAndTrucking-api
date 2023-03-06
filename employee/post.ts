@@ -18,6 +18,7 @@ const httpTrigger: AzureFunction = async function (
                 (
                   "first_name",
                   "last_name",
+                  "legal_name",
                   "role",
                   "email",
                   "cell_phone_number",
@@ -80,6 +81,7 @@ const httpTrigger: AzureFunction = async function (
                 (
                   '${employee.first_name}',
                   '${employee.last_name}',
+                  '${employee.legal_name}',
                   '${employee.role}',
                   '${employee.email}',
                   '${employee.cell_phone_number}',
