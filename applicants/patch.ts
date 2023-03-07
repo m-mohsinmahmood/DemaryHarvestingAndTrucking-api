@@ -30,7 +30,7 @@ const httpTrigger: AzureFunction = async function (
     const skip_email = req.body.skipEmail
 
     // Create employee if applicant accepts offer
-    if (applicant.status_message == 'Results' && applicant.status_step == '10.1') {
+    if (applicant.status_message == 'Results' && applicant.status_step == '12.1') {
       if (!admin.apps.length) {
         initializeFirebase();
       }
@@ -206,7 +206,7 @@ const httpTrigger: AzureFunction = async function (
     }
 
     //#region create employee in employee status bar and employee documents if applicant accepts offer
-    if (applicant.status_message == 'Results' && applicant.status_step == '10.1') {
+    if (applicant.status_message == 'Results' && applicant.status_step == '12.1') {
       employee_id = result[1].rows[0].employee_id
       let employee_status_bar_query
       try {
