@@ -228,7 +228,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 400,
       body: {
-        message: "An error occured while creating the Applicant",
+        message: "An error occured while Uploading Applicant Avatar",
       },
     };
     context.done();
@@ -253,7 +253,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 400,
       body: {
-        message: "An error occured while creating the Applicant",
+        message: "An error occured while Updating the Applicant",
       },
     };
     context.done();
@@ -293,7 +293,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 400,
       body: {
-        message: "An error occured while creating the Applicant",
+        message: "An error occured while Sending email",
       },
     };
     context.done();
