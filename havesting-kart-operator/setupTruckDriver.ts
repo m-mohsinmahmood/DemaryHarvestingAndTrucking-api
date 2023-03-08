@@ -12,6 +12,9 @@ const httpTrigger: AzureFunction = async function (
 
   const driverIds: string = req.body.driverIds;
   const kartOperatorId: string = req.body.kartOperatorId;
+  const employee_id: string = req.body.employee_id;
+  const job_id: string = req.body.job_id;
+
   // let in_clause: string = driverIds.map(d => `'${d}'`).join(',');
 
   try {
@@ -22,7 +25,10 @@ const httpTrigger: AzureFunction = async function (
         SET 
                 "dht_supervisor_id"= '${kartOperatorId}'
         WHERE 
-                "id" ='${driverIds}';`
+                "id" ='${driverIds}';
+                
+              
+      `;
 
     console.log(query);
 
