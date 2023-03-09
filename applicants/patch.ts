@@ -113,6 +113,7 @@ const httpTrigger: AzureFunction = async function (
                     "employment_period",
                     "applied_job",
                     "fb_id",
+                    "action_required",
                     "created_at"
               )
             VALUES      
@@ -179,6 +180,7 @@ const httpTrigger: AzureFunction = async function (
                     '${applicant_info.employment_period}',
                     '${applicant_info.applied_job}',
                     '${firebase_id}',
+                    '${true}',
                     'now()'
               )
             RETURNING id as employee_id

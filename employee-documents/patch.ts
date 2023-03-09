@@ -4,6 +4,7 @@ import * as _ from "lodash";
 import { config } from "../services/database/database.config";
 import { employee_docs } from "./model";
 import { updateQuery } from "./employee-docs";
+import { updateActionRequired } from "./update-action-required";
 import { BlobServiceClient } from '@azure/storage-blob';
 import { EmailClient, EmailMessage } from "@azure/communication-email";
 import parseMultipartFormData from "@anzp/azure-function-multipart";
@@ -17,6 +18,8 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
   const db1 = new Client(config);
   const db2 = new Client(config);
+  const db3 = new Client(config);
+  const db4 = new Client(config);
   let result;
   let query;
   let doc;
@@ -37,6 +40,8 @@ const httpTrigger: AzureFunction = async function (
   let h2a = fields[8].value;
   //#endregion
 
+  //#region Update Query
+
   try {
     query = updateQuery(employee_doc, doc_status, employee_id, doc_name);
     db.connect();
@@ -54,6 +59,118 @@ const httpTrigger: AzureFunction = async function (
     context.done();
     return;
   }
+
+  //#endregion
+
+  //#region Get Employee Documents to update Action Required
+  try {
+    let employee_info_query
+    employee_info_query = `
+        SELECT 
+              e1.status_step,
+              e2."id",	
+              e2."employee_id",	
+              e2."passport_disclaimer",	
+              e2."approval_letter_disclaimer",	
+              e2."contract_disclaimer",
+              e2."b797_disclaimer",
+              e2."dot_physical_disclaimer",
+              e2."drug_test_disclaimer",
+              e2."auto_license_disclaimer",
+              e2."cdl_license_disclaimer",
+              e2."work_agreement_disclaimer",
+              e2."itinerary_disclaimer",
+              e2."visa_disclaimer",
+              e2."i9_disclaimer",
+              e2."i94_disclaimer",
+              e2."cert_disclaimer",
+              e2."department_disclaimer",
+              e2."handbook_disclaimer",
+              e2."rules_disclaimer",
+              e2."drug_policy_disclaimer",
+              e2."reprimand_policy_disclaimer",
+              e2."departure_disclaimer",
+              e2."bank_acc_disclaimer",
+              e2."social_sec_disclaimer",
+              e2."w4_disclaimer" ,
+              e2."cdl_training_disclaimer",
+              e2."foreign_driver_license_disclaimer",
+              e2."equipment_policy_disclaimer",
+              e2."american_license_disclaimer",
+              e2."visa_interview_disclaimer"
+              `;
+
+    employee_info_query = employee_info_query + `
+        FROM 
+             "Employees" e1
+              FULL JOIN "Employee_Documents" e2
+              ON e1."id" = e2."employee_id" 
+        WHERE 
+              e1."id" = '${employee_id}'
+    `;
+
+    db4.connect();
+
+    let result = await db4.query(employee_info_query);
+    let resp;
+    resp = result.rows[0];
+    if (result.rows.length > 0) {
+      if (updateActionRequired(resp)){
+          try {
+            let updateActionRequiredQuery = 
+            `UPDATE "Employees"
+              SET
+              "action_required" = '${true}'
+              WHERE "id" = '${employee_id}'
+              `;
+            db3.connect();
+            result = await db3.query(updateActionRequiredQuery);
+            db3.end();
+          }
+          catch (error) {
+            db3.end();
+            context.res = {
+              status: 400,
+              body: {
+                message: 'Error Updating Employee Action Required',
+              },
+            };
+            context.done();
+            return;
+          }
+      }
+      // showIcons: resp.social_sec_disclaimer == true && resp.cdl_license_disclaimer == true
+      // showIcons: resp.work_agreement_disclaimer == true && resp.itinerary_disclaimer == true && resp.rules_disclaimer == true && resp.handbook_disclaimer == true ? true : false,
+      // showIcons: resp.contract_disclaimer == true && resp.w4_disclaimer == true ? true : false,
+      // showIcons: resp.bank_acc_disclaimer == true ? true : false,
+      // showIcons: resp.reprimand_policy_disclaimer == true && resp.drug_policy_disclaimer == true && resp.departure_disclaimer == true && resp.equipment_policy_disclaimer == true ? true : false,
+      // showIcons: resp.cdl_training_disclaimer == true ? true : false,
+
+    }
+    else {
+      resp = {
+        message: "No employee exists with this id.",
+      };
+    }
+
+    db4.end();
+    context.res = {
+      status: 200,
+      body: {}
+    };
+  }
+  catch (error) {
+    context.res = {
+      status: 400,
+      body: {
+        message: error,
+      },
+    };
+    context.done();
+    return;
+  }
+
+  //#endregion
 
   //#region Upload Employee Doc to blob and update employee in DB
   if (doc_status != 'Reject' && employee_doc[doc_name] != null && employee_doc[doc_name] != '' && files[0]) {
@@ -149,9 +266,8 @@ const httpTrigger: AzureFunction = async function (
 
   //#endregion
 
-
   //#region Update Status Bar
-  if (status_bar_doc ) {
+  if (status_bar_doc) {
     let update_status_bar_query;
     try {
       if (h2a == 'false') {
@@ -171,7 +287,7 @@ const httpTrigger: AzureFunction = async function (
       doc_status == 'Reject' ?
         update_status_bar_query = update_status_bar_query + ` ${status_bar_doc} = 'Inprogress'` :
         update_status_bar_query = update_status_bar_query + ` ${status_bar_doc} = 'Document Uploaded'`;
-        update_status_bar_query = update_status_bar_query + `
+      update_status_bar_query = update_status_bar_query + `
         WHERE "employee_id" = '${employee_id}';
         `;
       db2.connect();
