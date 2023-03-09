@@ -111,6 +111,7 @@ const httpTrigger: AzureFunction = async function (
                     "graduation_year",
                     "resume",
                     "employment_period",
+                    "applied_job",
                     "fb_id",
                     "created_at"
               )
@@ -176,6 +177,7 @@ const httpTrigger: AzureFunction = async function (
                     '${applicant_info.graduation_year}',
                     '${applicant_info.resume}',
                     '${applicant_info.employment_period}',
+                    '${applicant_info.applied_job}',
                     '${firebase_id}',
                     'now()'
               )

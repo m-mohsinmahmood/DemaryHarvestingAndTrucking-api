@@ -84,6 +84,7 @@ const httpTrigger: AzureFunction = async function (
                 e1."reason_for_applying",	
                 e1."hear_about_dht",	
                 e1."employment_period",
+                e1."applied_job",
                 e1."modified_at",	
                 e1."created_at",	
                 e1."is_deleted",	
