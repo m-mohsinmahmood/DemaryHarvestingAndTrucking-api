@@ -50,81 +50,78 @@ const httpTrigger: AzureFunction = async function (
       `;
 
     }
+
     // to get the opened/not-closed jobs of combine operator
     else if (entity === "combine-operator") {
       query = `
-      select 
-     
-      "job_setup".id,
-       "job_setup".state,
-       "job_setup".customer_id,
-       "job_setup".farm_id,
-       "job_setup".field_id,
-       job_setup.crop_id,
-       farm."name" as farm_name,
-       crop."name" as crop,
-       field."name" as field_name,
-       field.acres as field_acres,
-       customers.customer_name
- 
-       from "Customer_Job_Setup" job_setup
-       INNER JOIN "Customers" customers
-       on job_setup.customer_id = customers.id
- 
-       INNER JOIN "Customer_Farm" farm
-       on farm.id = job_setup.farm_id
- 
-       INNER JOIN "Crops" crop
-       on crop.id = job_setup.crop_id
- 
-       INNER JOIN "Customer_Field" field
-       on field.id = job_setup.field_id
-       
-       INNER JOIN "Customer_Job_Assigned_Roles" assigned
-       on job_setup.id = assigned.job_id AND assigned.employee_id = '${employeeId}'
- 
-       WHERE is_job_active = true AND is_job_completed = false;
-     `;
-    }
-    else if (entity === "truck-driver") {
-      query = `
-      select 
-      
-      "job_setup".id,
-     "job_setup".state,
-     "job_setup".customer_id,
-     "job_setup".farm_id,
-      "job_setup".field_id,
-       job_setup.crop_id,
+      select
+
+      cjs.id,
+      cjs.state,
+      cjs.customer_id,
+      cjs.farm_id,
+      cjs.field_id,
+      cjs.crop_id,
       farm."name" as farm_name,
       crop."name" as crop,
-       field."name" as field_name,
+      field."name" as field_name,
       field.acres as field_acres,
       customers.customer_name,
       emp.first_name as crew_chief_name
- 
-      from "Customer_Job_Setup" job_setup
-      INNER JOIN "Customers" customers
-       on job_setup.customer_id = customers.id
        
-       INNER JOIN "Employees" emp
-       on emp.id = job_setup.crew_chief_id
-
-     INNER JOIN "Customer_Farm" farm
-       on farm.id = job_setup.farm_id
-
-       INNER JOIN "Crops" crop
-      on crop.id = job_setup.crop_id
-
-       INNER JOIN "Customer_Field" field
-     on field.id = job_setup.field_id
-     
-       INNER JOIN "Customer_Job_Assigned_Roles" assigned
-      on job_setup.id = assigned.job_id 
+     from "Customer_Job_Setup" cjs 
  
-      WHERE is_job_active = true AND is_job_completed = false;
+     INNER JOIN "Customers" customers on cjs.customer_id = customers.id
+ 
+     INNER JOIN "Customer_Job_Assigned_Roles" assigned ON cjs."id" = assigned.job_id AND assigned.employee_id = '${employeeId}'
+ 
+     INNER JOIN "Employees" emp on emp.id = cjs.crew_chief_id
+ 
+     INNER JOIN "Customer_Farm" farm on farm.id = cjs.farm_id
+ 
+     INNER JOIN "Crops" crop on crop.id = cjs.crop_id
+ 
+     INNER JOIN "Customer_Field" field on field.id = cjs.field_id
+  
+     WHERE is_job_active = true AND is_job_completed = false;
      `;
     }
+
+    else if (entity === "truck-driver") {
+      query = `
+     select
+
+     cjs.id,
+     cjs.state,
+     cjs.customer_id,
+     cjs.farm_id,
+     cjs.field_id,
+     cjs.crop_id,
+     farm."name" as farm_name,
+     crop."name" as crop,
+     field."name" as field_name,
+     field.acres as field_acres,
+     customers.customer_name,
+     emp.first_name as crew_chief_name
+			
+    from "Customer_Job_Setup" cjs 
+
+    INNER JOIN "Customers" customers on cjs.customer_id = customers.id
+
+    INNER JOIN "Customer_Job_Assigned_Roles" assigned ON cjs."id" = assigned.job_id AND assigned.employee_id = '${employeeId}'
+
+    INNER JOIN "Employees" emp on emp.id = cjs.crew_chief_id
+
+    INNER JOIN "Customer_Farm" farm on farm.id = cjs.farm_id
+
+    INNER JOIN "Crops" crop on crop.id = cjs.crop_id
+
+    INNER JOIN "Customer_Field" field on field.id = cjs.field_id
+ 
+    WHERE is_job_active = true AND is_job_completed = false;
+     `;
+    }
+
     else if (entity === "kart-operator") {
       query = `
       select 
@@ -156,9 +153,10 @@ const httpTrigger: AzureFunction = async function (
       INNER JOIN "Customer_Job_Assigned_Roles" assigned
       on job_setup.id = assigned.job_id AND assigned.employee_id = '${employeeId}'
  
-      WHERE is_job_active = true AND is_job_completed = false;
+      WHERE crew_chief_id = '${crew_chief_id}' AND is_job_active = true AND is_job_completed = false;
      `;
     }
+
     else if (entity === "truck-driver-active-tickets") {
       const isTicketActive: string = req.query.isTicketActive;
       const isPreCHeckFilled: string = req.query.isPreCheckFilled;
@@ -183,75 +181,75 @@ const httpTrigger: AzureFunction = async function (
     }
 
     // to get the opened/not-closed jobs of kart operator
-    else if (entity === "kart-operator") {
-      // to get the opened/not-closed jobs of kart operator if employee is present
-      query = `
-        SELECT 
-         customer."id" as "customer_id", 
-         wo."state" as "state",
-         wo."id" as "job_id",
-				 wo."employee_id" as "employee_id",
-         wo."has_employee" as "has_employee", 
-         wo."is_close_kart" as "is_close_kart",
-         customer."customer_name" as "customer_name",
-          farm."name" as "farm_name",
-          farm."id" as "farm_id",
-          crop."name" as "crop_name",
-          crop."id" as "crop_id",
-          field."name" as "field_name",
-          field."id" as "field_id"
-         FROM 
+    // else if (entity === "kart-operator") {
+    //   // to get the opened/not-closed jobs of kart operator if employee is present
+    //   query = `
+    //     SELECT 
+    //      customer."id" as "customer_id", 
+    //      wo."state" as "state",
+    //      wo."id" as "job_id",
+		// 		 wo."employee_id" as "employee_id",
+    //      wo."has_employee" as "has_employee", 
+    //      wo."is_close_kart" as "is_close_kart",
+    //      customer."customer_name" as "customer_name",
+    //       farm."name" as "farm_name",
+    //       farm."id" as "farm_id",
+    //       crop."name" as "crop_name",
+    //       crop."id" as "crop_id",
+    //       field."name" as "field_name",
+    //       field."id" as "field_id"
+    //      FROM 
          
-         "Customer_Job_Setup" wo
+    //      "Customer_Job_Setup" wo
          
-         INNER JOIN "Customers" customer 
-         ON wo."customer_id" = customer."id"
+    //      INNER JOIN "Customers" customer 
+    //      ON wo."customer_id" = customer."id"
      
-         INNER JOIN "Customer_Farm" farm 
-         ON wo."farm_id" = farm."id"
+    //      INNER JOIN "Customer_Farm" farm 
+    //      ON wo."farm_id" = farm."id"
          
-         INNER JOIN "Crops" crop 
-         ON wo."crop_id" = crop."id"
+    //      INNER JOIN "Crops" crop 
+    //      ON wo."crop_id" = crop."id"
          
-         INNER JOIN "Customer_Field" field 
-         ON wo."field_id" = field."id"
-         WHERE
-         employee_id = '${employeeId}' AND "is_field_changed" = FALSE `;
+    //      INNER JOIN "Customer_Field" field 
+    //      ON wo."field_id" = field."id"
+    //      WHERE
+    //      employee_id = '${employeeId}' AND "is_field_changed" = FALSE `;
 
-      // to get the opened/not-closed jobs of kart operator if employee is not present
-      query = `
-        SELECT 
-         customer."id" as "customer_id", 
-         wo."state" as "state",
-         wo."id" as "job_id",
-				 wo."employee_id" as "employee_id",
-         wo."has_employee" as "has_employee", 
-         wo."is_close_kart" as "is_close_kart",
-         customer."customer_name" as "customer_name",
-          farm."name" as "farm_name",
-          farm."id" as "farm_id",
-          crop."name" as "crop_name",
-          crop."id" as "crop_id",
-          field."name" as "field_name",
-          field."id" as "field_id"
-         FROM 
+    //   // to get the opened/not-closed jobs of kart operator if employee is not present
+    //   query = `
+    //     SELECT 
+    //      customer."id" as "customer_id", 
+    //      wo."state" as "state",
+    //      wo."id" as "job_id",
+		// 		 wo."employee_id" as "employee_id",
+    //      wo."has_employee" as "has_employee", 
+    //      wo."is_close_kart" as "is_close_kart",
+    //      customer."customer_name" as "customer_name",
+    //       farm."name" as "farm_name",
+    //       farm."id" as "farm_id",
+    //       crop."name" as "crop_name",
+    //       crop."id" as "crop_id",
+    //       field."name" as "field_name",
+    //       field."id" as "field_id"
+    //      FROM 
          
-         "Customer_Job_Setup" wo
+    //      "Customer_Job_Setup" wo
          
-         INNER JOIN "Customers" customer 
-         ON wo."customer_id" = customer."id"
+    //      INNER JOIN "Customers" customer 
+    //      ON wo."customer_id" = customer."id"
      
-         INNER JOIN "Customer_Farm" farm 
-         ON wo."farm_id" = farm."id"
+    //      INNER JOIN "Customer_Farm" farm 
+    //      ON wo."farm_id" = farm."id"
          
-         INNER JOIN "Crops" crop 
-         ON wo."crop_id" = crop."id"
+    //      INNER JOIN "Crops" crop 
+    //      ON wo."crop_id" = crop."id"
          
-         INNER JOIN "Customer_Field" field 
-         ON wo."field_id" = field."id"
-         WHERE
-         "is_field_changed" = FALSE `;
-    }
+    //      INNER JOIN "Customer_Field" field 
+    //      ON wo."field_id" = field."id"
+    //      WHERE
+    //      "is_field_changed" = FALSE `;
+    // }
     // query if employee is present
     query = `${query}`;
 

@@ -12,11 +12,12 @@ const httpTrigger: AzureFunction = async function (
 
   const driverIds: string = req.body.driverIds;
   const kartOperatorId: string = req.body.kartOperatorId;
-  const employee_id: string = req.body.employee_id;
   const job_id: string = req.body.job_id;
 
   // let in_clause: string = driverIds.map(d => `'${d}'`).join(',');
 
+  console.log(req.body);
+  
   try {
 
     let query = `
@@ -27,6 +28,16 @@ const httpTrigger: AzureFunction = async function (
         WHERE 
                 "id" ='${driverIds}';
                 
+        INSERT INTO 
+        "Customer_Job_Assigned_Roles" 
+        ("job_id", 
+        "employee_id"
+        )
+
+        VALUES      
+        ('${job_id}', 
+        '${driverIds}'
+        ) ;
               
       `;
 
