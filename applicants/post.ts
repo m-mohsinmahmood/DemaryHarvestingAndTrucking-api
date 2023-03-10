@@ -265,11 +265,11 @@ const httpTrigger: AzureFunction = async function (
   //#endregion
   //#region Sending Email to applicant 
   try {
-    const connectionString = "endpoint=https://dht-email-communication-service.communication.azure.com/;accesskey=+borR2lxnz6WWgMtulLnryssphq4Rnh7zxYalWbhDXJCGL+0JhSPyFXibDROkvpUTvkXaurf+dVzjvlYfTFLNQ=="
+    const connectionString = `endpoint=https://dht-email-communication-service.communication.azure.com/;accesskey=+borR2lxnz6WWgMtulLnryssphq4Rnh7zxYalWbhDXJCGL+0JhSPyFXibDROkvpUTvkXaurf+dVzjvlYfTFLNQ==`
     const client = new EmailClient(connectionString);
 
     const emailMessage: EmailMessage = {
-      sender: "recruiter@dht-usa.com",
+      senderAddress: "recruiter@dht-usa.com",
       content: {
         subject: "DHT Employment Application Received!",
         html: `
@@ -281,14 +281,14 @@ const httpTrigger: AzureFunction = async function (
       recipients: {
         to: [
           {
-            email: `${applicant.email}`,
+            address: `${applicant.email}`,
             displayName: `${applicant.first_name} ${applicant.last_name}`,
           },
         ],
       },
     };
 
-    const messageId: any = await client.send(emailMessage);
+    const messageId: any = await client.beginSend(emailMessage);
     console.log(messageId);
     // const status = await client.getSendStatus(messageId);
   }
