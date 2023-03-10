@@ -265,7 +265,7 @@ const httpTrigger: AzureFunction = async function (
   //#endregion
   //#region Sending Email to applicant 
   try {
-    const connectionString = `endpoint=https://dht-email-communication-service.communication.azure.com/;accesskey=+borR2lxnz6WWgMtulLnryssphq4Rnh7zxYalWbhDXJCGL+0JhSPyFXibDROkvpUTvkXaurf+dVzjvlYfTFLNQ==`
+    const connectionString = process.env["EMAIL_CONNECTION_STRING"];
     const client = new EmailClient(connectionString);
 
     const emailMessage: EmailMessage = {

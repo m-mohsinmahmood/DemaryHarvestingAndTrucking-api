@@ -225,7 +225,7 @@ const httpTrigger: AzureFunction = async function (
     const connectionString = process.env["EMAIL_CONNECTION_STRING"];
     const client = new EmailClient(connectionString);
     const emailMessage: EmailMessage = {
-      sender: "recruiter@dht-usa.com",
+      senderAddress: "recruiter@dht-usa.com",
       content: {
         subject: `${subject}`,
         html: `${email_body}`
@@ -233,19 +233,19 @@ const httpTrigger: AzureFunction = async function (
       recipients: {
         to: [
           {
-            email: `${email}`,
+            address: `${email}`,
           },
         ],
       },
     };
 
-    const messageId: any = await client.send(emailMessage);
+    const messageId: any = await client.beginSend(emailMessage);
   }
   else {
     const connectionString = process.env["EMAIL_CONNECTION_STRING"];
     const client = new EmailClient(connectionString);
     const emailMessage: EmailMessage = {
-      sender: "recruiter@dht-usa.com",
+      senderAddress: "recruiter@dht-usa.com",
       content: {
         subject: `${subject}`,
         html: `${email_body}`
@@ -253,13 +253,13 @@ const httpTrigger: AzureFunction = async function (
       recipients: {
         to: [
           {
-            email: "recruiter@dht-usa.com",
+            address: "recruiter@dht-usa.com",
           },
         ],
       },
     };
 
-    const messageId: any = await client.send(emailMessage);
+    const messageId: any = await client.beginSend(emailMessage);
 
   }
 

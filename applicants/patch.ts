@@ -307,7 +307,7 @@ const httpTrigger: AzureFunction = async function (
       const connectionString = process.env["EMAIL_CONNECTION_STRING"];
       const client = new EmailClient(connectionString);
       const emailMessage: EmailMessage = {
-        sender: "recruiter@dht-usa.com",
+        senderAddress: "recruiter@dht-usa.com",
         content: {
           subject: `${email.subject}`,
           html: `${emailBody}`
@@ -315,13 +315,13 @@ const httpTrigger: AzureFunction = async function (
         recipients: {
           to: [
             {
-              email: `${email.to}`,
+              address: `${email.to}`,
             },
           ],
         },
       };
 
-      const messageId: any = await client.send(emailMessage);
+      const messageId: any = await client.beginSend(emailMessage);
     }
 
     //#endregion
