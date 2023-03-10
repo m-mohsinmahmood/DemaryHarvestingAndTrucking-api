@@ -49,6 +49,7 @@ const httpTrigger: AzureFunction = async function (
     return;
   }
   //#endregion
+
   //#region Create Applicant
   try {
     applicant.resume ? applicant.resume = '' : '';
@@ -230,7 +231,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 400,
       body: {
-        message: "An error occured while creating the Applicant",
+        message: "An error occured while Uploading Applicant Avatar to blob",
       },
     };
     context.done();
@@ -255,7 +256,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 400,
       body: {
-        message: "An error occured while creating the Applicant",
+        message: "An error occured while updating applicant avatar",
       },
     };
     context.done();
@@ -295,7 +296,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 400,
       body: {
-        message: "An error occured while creating the Applicant",
+        message: "An error occured while sending email",
       },
     };
     context.done();
