@@ -54,77 +54,71 @@ const httpTrigger: AzureFunction = async function (
     // to get the opened/not-closed jobs of combine operator
     else if (entity === "combine-operator") {
       query = `
-      select 
-     
-      "job_setup".id,
-       "job_setup".state,
-       "job_setup".customer_id,
-       "job_setup".farm_id,
-       "job_setup".field_id,
-       job_setup.crop_id,
-       farm."name" as farm_name,
-       crop."name" as crop,
-       field."name" as field_name,
-       field.acres as field_acres,
-       customers.customer_name
- 
-       from "Customer_Job_Setup" job_setup
-       INNER JOIN "Customers" customers
-       on job_setup.customer_id = customers.id
- 
-       INNER JOIN "Customer_Farm" farm
-       on farm.id = job_setup.farm_id
- 
-       INNER JOIN "Crops" crop
-       on crop.id = job_setup.crop_id
- 
-       INNER JOIN "Customer_Field" field
-       on field.id = job_setup.field_id
+      select
+
+      cjs.id,
+      cjs.state,
+      cjs.customer_id,
+      cjs.farm_id,
+      cjs.field_id,
+      cjs.crop_id,
+      farm."name" as farm_name,
+      crop."name" as crop,
+      field."name" as field_name,
+      field.acres as field_acres,
+      customers.customer_name,
+      emp.first_name as crew_chief_name
        
-       INNER JOIN "Customer_Job_Assigned_Roles" assigned
-       on job_setup.id = assigned.job_id AND assigned.employee_id = '${employeeId}'
+     from "Customer_Job_Setup" cjs 
  
-       WHERE is_job_active = true AND is_job_completed = false;
+     INNER JOIN "Customers" customers on cjs.customer_id = customers.id
+ 
+     INNER JOIN "Customer_Job_Assigned_Roles" assigned ON cjs."id" = assigned.job_id AND assigned.employee_id = '${employeeId}'
+ 
+     INNER JOIN "Employees" emp on emp.id = cjs.crew_chief_id
+ 
+     INNER JOIN "Customer_Farm" farm on farm.id = cjs.farm_id
+ 
+     INNER JOIN "Crops" crop on crop.id = cjs.crop_id
+ 
+     INNER JOIN "Customer_Field" field on field.id = cjs.field_id
+  
+     WHERE is_job_active = true AND is_job_completed = false;
      `;
     }
 
     else if (entity === "truck-driver") {
       query = `
-      select 
-      
-      "job_setup".id,
-     "job_setup".state,
-     "job_setup".customer_id,
-     "job_setup".farm_id,
-      "job_setup".field_id,
-       job_setup.crop_id,
-      farm."name" as farm_name,
-      crop."name" as crop,
-       field."name" as field_name,
-      field.acres as field_acres,
-      customers.customer_name,
-      emp.first_name as crew_chief_name
+     select
+
+     cjs.id,
+     cjs.state,
+     cjs.customer_id,
+     cjs.farm_id,
+     cjs.field_id,
+     cjs.crop_id,
+     farm."name" as farm_name,
+     crop."name" as crop,
+     field."name" as field_name,
+     field.acres as field_acres,
+     customers.customer_name,
+     emp.first_name as crew_chief_name
+			
+    from "Customer_Job_Setup" cjs 
+
+    INNER JOIN "Customers" customers on cjs.customer_id = customers.id
+
+    INNER JOIN "Customer_Job_Assigned_Roles" assigned ON cjs."id" = assigned.job_id AND assigned.employee_id = '${employeeId}'
+
+    INNER JOIN "Employees" emp on emp.id = cjs.crew_chief_id
+
+    INNER JOIN "Customer_Farm" farm on farm.id = cjs.farm_id
+
+    INNER JOIN "Crops" crop on crop.id = cjs.crop_id
+
+    INNER JOIN "Customer_Field" field on field.id = cjs.field_id
  
-      from "Customer_Job_Setup" job_setup
-      INNER JOIN "Customers" customers
-       on job_setup.customer_id = customers.id
-       
-       INNER JOIN "Employees" emp
-       on emp.id = job_setup.crew_chief_id
-
-     INNER JOIN "Customer_Farm" farm
-       on farm.id = job_setup.farm_id
-
-       INNER JOIN "Crops" crop
-      on crop.id = job_setup.crop_id
-
-       INNER JOIN "Customer_Field" field
-     on field.id = job_setup.field_id
-     
-       INNER JOIN "Customer_Job_Assigned_Roles" assigned
-      on job_setup.id = assigned.job_id 
- 
-      WHERE crew_chief_id = '${crew_chief_id}' is_job_active = true AND is_job_completed = false;
+    WHERE is_job_active = true AND is_job_completed = false;
      `;
     }
 
