@@ -288,8 +288,8 @@ const httpTrigger: AzureFunction = async function (
       },
     };
 
-    const messageId: any = await client.beginSend(emailMessage);
-    console.log(messageId);
+    await client.beginSend(emailMessage);
+    // console.log(messageId);
     // const status = await client.getSendStatus(messageId);
   }
   catch (error) {

@@ -321,7 +321,7 @@ const httpTrigger: AzureFunction = async function (
         },
       };
 
-      const messageId: any = await client.beginSend(emailMessage);
+      await client.beginSend(emailMessage);
     }
 
     //#endregion
