@@ -113,10 +113,9 @@ const httpTrigger: AzureFunction = async function (
             initializeFirebase();
           }
           try{
-            admin.auth().updateUser(result.rows[0].fb_id, {
+           await admin.auth().updateUser(result.rows[0].fb_id, {
               email: employee.email
             });
-    
           }
           catch(error){
             context.res = {
