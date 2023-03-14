@@ -49,6 +49,7 @@ const httpTrigger: AzureFunction = async function (
     return;
   }
   //#endregion
+
   //#region Create Applicant
   try {
     applicant.resume ? applicant.resume = '' : '';
@@ -119,6 +120,7 @@ const httpTrigger: AzureFunction = async function (
                   "graduation_year",
                   "resume",
                   "employment_period",
+                  "applied_job",
                   "created_at"
                 )
       VALUES      
@@ -185,6 +187,7 @@ const httpTrigger: AzureFunction = async function (
                   $$${applicant.graduation_year}$$,
                   $$${applicant.resume}$$,
                   $$${applicant.employment_period}$$,
+                  $$${applicant.applied_job}$$,
                   'now()'
                 )
                 RETURNING id as applicant_id
@@ -228,7 +231,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 400,
       body: {
-        message: "An error occured while Uploading Applicant Avatar",
+        message: "An error occured while Uploading Applicant Avatar to blob",
       },
     };
     context.done();
@@ -253,7 +256,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 400,
       body: {
-        message: "An error occured while Updating the Applicant",
+        message: "An error occured while updating applicant avatar",
       },
     };
     context.done();
@@ -266,7 +269,7 @@ const httpTrigger: AzureFunction = async function (
     const client = new EmailClient(connectionString);
 
     const emailMessage: EmailMessage = {
-      sender: "recruiter@dht-usa.com",
+      senderAddress: "recruiter@dht-usa.com",
       content: {
         subject: "DHT Employment Application Received!",
         html: `
@@ -278,22 +281,22 @@ const httpTrigger: AzureFunction = async function (
       recipients: {
         to: [
           {
-            email: `${applicant.email}`,
+            address: `${applicant.email}`,
             displayName: `${applicant.first_name} ${applicant.last_name}`,
           },
         ],
       },
     };
 
-    const messageId: any = await client.send(emailMessage);
-    console.log(messageId);
+    await client.beginSend(emailMessage);
+    // console.log(messageId);
     // const status = await client.getSendStatus(messageId);
   }
   catch (error) {
     context.res = {
       status: 400,
       body: {
-        message: "An error occured while Sending email",
+        message: "An error occured while sending email",
       },
     };
     context.done();

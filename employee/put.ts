@@ -4,6 +4,8 @@ import { config } from "../services/database/database.config";
 import { employee } from "./model";
 import parseMultipartFormData from "@anzp/azure-function-multipart";
 import { BlobServiceClient } from '@azure/storage-blob';
+import { initializeFirebase } from "../utilities/initialize-firebase";
+const admin = require('firebase-admin');
 
 
 const httpTrigger: AzureFunction = async function (
@@ -93,13 +95,39 @@ const httpTrigger: AzureFunction = async function (
                 "graduation_year"                       = $$${employee.graduation_year}$$,
                 "resume"                                = $$${employee.resume}$$,
                 "employment_period"                     = $$${employee.employment_period}$$,
+                "applied_job"                           = $$${employee.applied_job}$$,
                 "modified_at"                           = 'now()'
         WHERE 
-                "id" = '${employee.id}';`
+                "id" = '${employee.id}'
+                
+                RETURNING fb_id as fb_id        
+                ;`
 
     db.connect();
     let result = await db.query(query);
     db.end();
+
+        //#region Update Firebase Email
+        if (employee.email){
+          if (!admin.apps.length) {
+            initializeFirebase();
+          }
+          try{
+           await admin.auth().updateUser(result.rows[0].fb_id, {
+              email: employee.email
+            });
+          }
+          catch(error){
+            context.res = {
+              status: 500,
+              body: {
+                message: "Error While updating Applicant Email",
+              },
+            };
+            return;
+          }
+    
+        }
 
 
     if (files.length > 0) {

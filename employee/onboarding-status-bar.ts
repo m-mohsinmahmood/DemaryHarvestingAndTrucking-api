@@ -165,6 +165,13 @@ export function updateQuery(employee, h2a) {
                 WHERE "employee_id" = '${employee.id}';
         `;
 
+        query = query + 
+                   `UPDATE "Employees"
+                    SET
+                   "action_required" = '${+employee.status_step % 2 == 0 ? true : false}'
+                    WHERE "id" = '${employee.id}';
+                    `;
+
         return query;
     }
     else if (h2a == 'true') {
@@ -183,6 +190,12 @@ export function updateQuery(employee, h2a) {
                 WHERE "employee_id" = '${employee.id}';
         `;
 
+        query = query + 
+                       `UPDATE "Employees"
+                        SET
+                       "action_required" = '${+employee.status_step % 2 == 0 ? true : false}'
+                        WHERE "id" = '${employee.id}';
+                        `;
         return query;
     }
 

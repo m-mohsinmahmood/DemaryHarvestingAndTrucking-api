@@ -92,6 +92,7 @@ const httpTrigger: AzureFunction = async function (
                 "graduation_year"                       = $$${applicant.graduation_year}$$,
                 "resume"                                = $$${applicant.resume}$$,
                 "employment_period"                     = $$${applicant.employment_period}$$,
+                "applied_job"                           = $$${applicant.applied_job}$$,  
                 "modified_at"                           = 'now()'
         WHERE 
                 "id" = '${applicant.id}';`

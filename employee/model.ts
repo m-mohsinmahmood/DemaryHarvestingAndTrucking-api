@@ -34,6 +34,7 @@ export interface employee {
   passport: boolean,
   work_experience_description: string,
   employment_period: string,
+  applied_job: string,
   supervisor_name: string,
   supervisor_contact: string,
   degree_name: string,

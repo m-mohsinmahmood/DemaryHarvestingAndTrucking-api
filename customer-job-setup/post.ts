@@ -10,6 +10,7 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
   let query = ``;
   const job_setup: job_setup = req.body;
+  const jobId = req.body.job_id;
 
   try {
 
@@ -56,7 +57,12 @@ const httpTrigger: AzureFunction = async function (
       // Before creating new job for crew chief, close or complete the last active job of that crew chief 
 
       if (job_setup.changeFarmFieldCrop) {
-        query = `UPDATE "Employees" Set dht_supervisor_id = '' where dht_supervisor_id = '${job_setup.crew_chief_id}';`;
+        query = `
+        Update "Employees" Set dht_supervisor_id = '' 
+        from (SELECT assigned.employee_id from "Customer_Job_Setup" cjs 
+        INNER JOIN "Customer_Job_Assigned_Roles" assigned ON cjs."id" = assigned.job_id AND cjs."id" = '${jobId}') as query
+        where CAST("Employees"."id" as VARCHAR) = query.employee_id;
+        `;
       }
 
       if (job_setup.closeJob) {
