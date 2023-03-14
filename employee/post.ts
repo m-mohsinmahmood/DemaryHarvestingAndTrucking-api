@@ -75,6 +75,7 @@ const httpTrigger: AzureFunction = async function (
                   "graduation_year",
                   "resume",
                   "employment_period",
+                  "applied_job",
                   "created_at"
                 )
       VALUES      
@@ -138,6 +139,7 @@ const httpTrigger: AzureFunction = async function (
                   '${employee.graduation_year}',
                   '${employee.resume}',
                   '${employee.employment_period}',
+                  '${employee.applied_job}',
                   'now()'
                 );
     `;

@@ -17,7 +17,7 @@ const httpTrigger: AzureFunction = async function (
     const order: string = req.query.order ? req.query.order : `desc`;
     let whereClause: string = ` WHERE "is_deleted" = FALSE`;
 
-    if (search) whereClause = ` ${whereClause} AND LOWER("last_name") LIKE LOWER('%${search}%')`;
+    if (search) whereClause = ` ${whereClause} AND LOWER("last_name") LIKE LOWER('%${search}%') OR LOWER("first_name") LIKE LOWER('%${search}%')`;
     if (status) whereClause = ` ${whereClause} AND "status" = ${(status === 'true')}`;
     if (role) {
       let types = role.split(",");
@@ -38,11 +38,13 @@ const httpTrigger: AzureFunction = async function (
                 "role",
                 "email",
                 "country",
+                "employment_period",
                 "cell_phone_number",
                 "cell_phone_country_code",
                 "fb_id",
                 "status",
                 "status_step",
+                "action_required",
                 "created_at"
         FROM 
                 "Employees"

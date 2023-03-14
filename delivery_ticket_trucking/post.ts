@@ -201,57 +201,57 @@ const httpTrigger: AzureFunction = async function (
         if(file.name === "image_1"){
             image_1 = "image_1" + record_id;
         const imageBlockBlob = container.getBlockBlobClient(image_1);
-        const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
-          blobHTTPHeaders: { blobContentType: files[0].mimeType },
+        const res = await imageBlockBlob.uploadData(file.bufferFile, {
+          blobHTTPHeaders: { blobContentType: file.mimeType },
         });
         }
         if(file.name === "image_2"){
             image_2 = "image_2" + record_id;
         const imageBlockBlob = container.getBlockBlobClient(image_2);
-        const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
-          blobHTTPHeaders: { blobContentType: files[0].mimeType },
+        const res = await imageBlockBlob.uploadData(file.bufferFile, {
+          blobHTTPHeaders: { blobContentType: file.mimeType },
         });
         }
         if(file.name === "image_3"){
             image_3 = "image_3" + record_id;
         const imageBlockBlob = container.getBlockBlobClient(image_3);
-        const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
-          blobHTTPHeaders: { blobContentType: files[0].mimeType },
+        const res = await imageBlockBlob.uploadData(file.bufferFile, {
+          blobHTTPHeaders: { blobContentType: file.mimeType },
         });
         }
         if(file.name === "weightimages_1"){
             weightimages_1 = "weightimages_1" + record_id;
         const imageBlockBlob = container.getBlockBlobClient(weightimages_1);
-        const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
-          blobHTTPHeaders: { blobContentType: files[0].mimeType },
+        const res = await imageBlockBlob.uploadData(file.bufferFile, {
+          blobHTTPHeaders: { blobContentType: file.mimeType },
         });
         }
         if(file.name === "weightimages_2"){
             weightimages_2 = "weightimages_2" + record_id;
         const imageBlockBlob = container.getBlockBlobClient(weightimages_2);
-        const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
-          blobHTTPHeaders: { blobContentType: files[0].mimeType },
+        const res = await imageBlockBlob.uploadData(file.bufferFile, {
+          blobHTTPHeaders: { blobContentType: file.mimeType },
         });
         }
         if(file.name === "weightimages_3"){
             weightimages_3 = "weightimages_3" + record_id;
         const imageBlockBlob = container.getBlockBlobClient(weightimages_3);
-        const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
-          blobHTTPHeaders: { blobContentType: files[0].mimeType },
+        const res = await imageBlockBlob.uploadData(file.bufferFile, {
+          blobHTTPHeaders: { blobContentType: file.mimeType },
         });
         }
         if(file.name === "loadimages_1"){
             loadimages_1 = "loadimages_1" + record_id;
         const imageBlockBlob = container.getBlockBlobClient(loadimages_1);
-        const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
-          blobHTTPHeaders: { blobContentType: files[0].mimeType },
+        const res = await imageBlockBlob.uploadData(file.bufferFile, {
+          blobHTTPHeaders: { blobContentType: file.mimeType },
         });
         }
         if(file.name === "loadimages_2"){
             loadimages_2 = "loadimages_2" + record_id;
         const imageBlockBlob = container.getBlockBlobClient(loadimages_2);
-        const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
-          blobHTTPHeaders: { blobContentType: files[0].mimeType },
+        const res = await imageBlockBlob.uploadData(file.bufferFile, {
+          blobHTTPHeaders: { blobContentType: file.mimeType },
         });
         }
      })
@@ -269,7 +269,7 @@ const httpTrigger: AzureFunction = async function (
 
   }
 //#endregion
-//#region 1st images block
+    //#region 1st images block
 let array = []
 files.map((files)=>{
 array.push(files.name)
@@ -304,8 +304,7 @@ if(files.length !==0 && array.includes('image_1')){
     }
   }
 //#endregion
-
-//#region 2nd images block
+    //#region 2nd images block
 if(files.length !==0 && array.includes('weightimages_1')){
     try {
       let query = `
@@ -335,7 +334,7 @@ if(files.length !==0 && array.includes('weightimages_1')){
     }
   }
   //#endregion
-  //#region 3rd images block
+    //#region 3rd images block
 if(files.length !==0 && array.includes('loadimages_1')){
     try {
       let query = `
@@ -367,6 +366,7 @@ if(files.length !==0 && array.includes('loadimages_1')){
 context.res = {
     status: 200,
     body: {
+      id: result.rows[0],
       message: "Ticket has been updated successfully.",
       status: 200,
     },

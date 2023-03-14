@@ -90,4 +90,5 @@ export interface applicant {
   school_college: string,
   graduation_year: string,
   resume: string,
+  applied_job: string,
 }

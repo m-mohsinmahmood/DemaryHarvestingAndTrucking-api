@@ -34,7 +34,7 @@ const httpTrigger: AzureFunction = async function (
     
         From "Employees"
     
-        Where dht_supervisor_id = '8920a566-453c-47f0-82dc-21e74196bb98'
+        Where dht_supervisor_id = '${crew_chief_id}'
         AND (role LIKE '%Combine Operator%' OR role Like '%Kart Operator%');
       `;
 

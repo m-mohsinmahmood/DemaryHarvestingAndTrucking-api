@@ -3,14 +3,12 @@ import * as setupTruckDriver from "./setupTruckDriver";
 import * as getTruckDrivers from "./getTruckDrivers";
 import * as getKartOperatorTruckDrivers from "./getKartOperatorTruckDrivers";
 import * as createDeliveryTicket from "./post"
+import * as getCrewChief from "./getCrewChief";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
 ): Promise<void> {
-
-  console.log("Query: ", req.query);
-  console.log("Body: ", req.body);
 
   switch (req.method) {
     case "GET":
@@ -18,6 +16,8 @@ const httpTrigger: AzureFunction = async function (
         await getKartOperatorTruckDrivers.default(context, req);
       else if (req.query.operation === 'truckDriversDropDown')
         await getTruckDrivers.default(context, req);
+      else if (req.query.operation === 'getKartOpCrewChief')
+        await getCrewChief.default(context, req);
       break;
 
     case "PATCH":

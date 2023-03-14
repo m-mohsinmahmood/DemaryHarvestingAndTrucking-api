@@ -1,6 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as createDeliveryTicket from "./post";
 import * as getDeliveryTicket from "./get";
+import * as getById from "./getById";
 import * as updateDeliveryTicket from "./patch";
 import * as updateInvoicedDeliveryTicket from "./updatedInvoicedDeliveryTicket";
 import * as updatePaidDeliveryTicket from "./updatePaidDeliveryTickets";
@@ -11,6 +12,7 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
     switch (req.method) {
         case "GET":
+            if (req.query.id) await getById.default(context, req);
             await getDeliveryTicket.default(context, req);
             break;
 

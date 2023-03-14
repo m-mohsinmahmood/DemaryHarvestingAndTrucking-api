@@ -25,7 +25,7 @@ const httpTrigger: AzureFunction = async function (
     const order: string = req.query.order ? req.query.order : `asc`;
     let whereClause: string = ` WHERE "is_deleted" = FALSE`;
 
-    if (search) whereClause = ` ${whereClause} AND LOWER("last_name") LIKE LOWER('%${search}%')`;
+    if (search) whereClause = ` ${whereClause} AND LOWER("last_name") LIKE LOWER('%${search}%') OR LOWER("first_name") LIKE LOWER('%${search}%')`;
     if (state) whereClause = ` ${whereClause} AND "state" = '${state}'`;
     if (country) whereClause = ` ${whereClause} AND "country" = '${country}'`;
     if (employment_period) whereClause = ` ${whereClause} AND "employment_period" = '${employment_period}'`;
@@ -53,7 +53,8 @@ const httpTrigger: AzureFunction = async function (
                 "ranking",
                 "created_at",
                 "status_step",
-                "status_message"
+                "status_message",
+                "employment_period"
         FROM 
                 "Applicants"
         ${whereClause}
