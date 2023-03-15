@@ -104,7 +104,9 @@ export function createDWR(dwr: any) {
   
         VALUES      ('${dwr.employeeId}',
                     '${dwr.dwr_type}'
-                    ${optionalValues});
+                    ${optionalValues})
+                    
+                    returning id;
       `;
 
     console.log(query);
@@ -135,16 +137,26 @@ export function updateDWR(closingOfDay: any) {
         optionalReq = `${optionalReq},"ending_odometer_miles" = '${closingOfDay.ending_odometer_miles}'`;
     }
 
+    let ticket = ``;
+
+    if (closingOfDay.workOrderId)
+        ticket = `"work_order_id" = '${closingOfDay.workOrderId}'`;
+    else if (closingOfDay.deliveryTicketId)
+        ticket = `"delivery_ticket_id" = '${closingOfDay.deliveryTicketId}'`;
+    else if (closingOfDay.jobId)
+        ticket = `"job_id" = '${closingOfDay.jobId}'`;
+
     let query = `
     UPDATE 
         "DWR"
     SET 
-        "is_day_closed" = 'true'
+        "is_day_closed" = 'true',
+        "modified_at"   = 'now()'
          ${optionalReq}
     WHERE 
-        ("work_order_id" = '${closingOfDay.workOrderId}' OR "job_id" = '${closingOfDay.workOrderId}') AND is_day_closed = 'false' 
+        ${ticket} AND is_day_closed = 'false' 
         returning id;`
 
-        console.log(query);
+    console.log(query);
     return query;
 }
