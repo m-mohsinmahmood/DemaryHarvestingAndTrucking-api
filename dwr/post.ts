@@ -17,11 +17,19 @@ const httpTrigger: AzureFunction = async function (
     db.connect();
     await db.query(query);
 
-    if (order.module === 'training' || order.module === 'maintenance-repair') {
+    
+    if (order.module === 'training' || order.module === 'main-repair') {
       let taskId = await db.query(query);
       let bridgeDailyTasksDwr = ``;
       taskId = taskId.rows[0].id;
       console.log("task Id: ", taskId);
+      let ticket =``;
+
+      if (order.module === 'training')
+        ticket = `"training_record_id" = '${ticket}'`;
+    else if (order.module === 'main-repair')
+        ticket = `"main_repair_ticket_id" = '${ticket}'`;
+   
 
       bridgeDailyTasksDwr = ` 
         INSERT INTO 
@@ -45,7 +53,7 @@ const httpTrigger: AzureFunction = async function (
           "modified_at"   = 'now()'
           WHERE 
         
-          ${taskId} AND is_day_closed = 'false' 
+          ${ticket} AND is_day_closed = 'false' 
           returning id;
             
             `;
