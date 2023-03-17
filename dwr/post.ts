@@ -17,19 +17,17 @@ const httpTrigger: AzureFunction = async function (
     db.connect();
     await db.query(query);
 
-    
-    if (order.module === 'training' || order.module === 'main-repair') {
+    if (order.module === "training" || order.module === "main-repair") {
       let taskId = await db.query(query);
       let bridgeDailyTasksDwr = ``;
       taskId = taskId.rows[0].id;
       console.log("task Id: ", taskId);
-      let ticket =``;
+      let ticket = ``;
 
-      if (order.module === 'training')
+      if (order.module === "training") {
         ticket = `"training_record_id" = '${ticket}'`;
-    else if (order.module === 'main-repair')
+      } else if (order.module === "main-repair")
         ticket = `"main_repair_ticket_id" = '${ticket}'`;
-   
 
       bridgeDailyTasksDwr = ` 
         INSERT INTO 
