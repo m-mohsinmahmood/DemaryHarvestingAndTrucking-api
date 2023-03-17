@@ -26,4 +26,5 @@ export interface beginningOfDay {
     module?: string;
     dwrId?: string;
     trainee_record_id: string;
+    training_record_id: string;
 }

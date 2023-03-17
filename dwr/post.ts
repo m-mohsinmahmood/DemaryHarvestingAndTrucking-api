@@ -15,19 +15,28 @@ const httpTrigger: AzureFunction = async function (
 
     let query = createDWR(order);
     db.connect();
-    await db.query(query);
+    let taskId = await db.query(query);
 
-    if (order.module === "training" || order.module === "main-repair") {
-      let taskId = await db.query(query);
+
+    if (order.module === 'training' || order.module === 'main-repair') {
+      console.log("Training");
+
       let bridgeDailyTasksDwr = ``;
-      taskId = taskId.rows[0].id;
-      console.log("task Id: ", taskId);
       let ticket = ``;
 
-      if (order.module === "training") {
-        ticket = `"training_record_id" = '${ticket}'`;
-      } else if (order.module === "main-repair")
-        ticket = `"main_repair_ticket_id" = '${ticket}'`;
+      taskId = taskId.rows[0].id;
+      console.log("task Id: ", taskId);
+
+      if (order.module === 'training'){
+      if(order.trainee_record_id){
+        ticket = `"trainee_record_id" = '${taskId}'`;
+      }
+      else if(order.training_record_id){
+        ticket = `"training_record_id" = '${taskId}'`;
+      }
+    }
+      else if (order.module === 'main-repair')
+        ticket = `"main_repair_ticket_id" = '${taskId}'`;
 
       bridgeDailyTasksDwr = ` 
         INSERT INTO 
@@ -42,19 +51,9 @@ const httpTrigger: AzureFunction = async function (
         ('${order.dwrId}',
          '${taskId}'
         );
+          `;
 
-        
-          UPDATE 
-            "DWR"
-          SET 
-          "is_day_closed" = 'true',
-          "modified_at"   = 'now()'
-          WHERE 
-        
-          ${ticket} AND is_day_closed = 'false' 
-          returning id;
-            
-            `;
+      console.log(bridgeDailyTasksDwr);
 
       let result = await db.query(bridgeDailyTasksDwr);
     }

@@ -98,8 +98,29 @@ export function createDWR(dwr: any) {
         optionalValues = `${optionalValues},'${dwr.role}'`;
     }
 
+    let query = ``;
 
-    let query = `
+    if (dwr.dwr_type === 'training' || dwr.dwr_type === 'main-repair') {
+        query = `
+        INSERT INTO 
+                    "DWR" 
+                    ("employee_id",
+                    dwr_type,
+                    modified_at,
+                    is_day_closed
+                    ${optionalReq})
+  
+        VALUES      ('${dwr.employeeId}',
+                    '${dwr.dwr_type}',
+                    'now()',
+                    'TRUE'
+                    ${optionalValues})
+                    
+                    returning id;
+      `;
+
+    } else {
+        query = `
         INSERT INTO 
                     "DWR" 
                     ("employee_id",
@@ -109,9 +130,9 @@ export function createDWR(dwr: any) {
         VALUES      ('${dwr.employeeId}',
                     '${dwr.dwr_type}'
                     ${optionalValues})
-                    
-                    returning id;
+                    ;
       `;
+    }
 
     console.log(query);
     return query;
