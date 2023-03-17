@@ -24,6 +24,7 @@ const httpTrigger: AzureFunction = async function (
      let loadimages_2 ='';
      let result;
      let record_id;
+     
   const multiPartConfig = {
     limits: { fields: 1, files: 8 },
   };
