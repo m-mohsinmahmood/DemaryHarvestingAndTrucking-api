@@ -38,7 +38,9 @@ const httpTrigger: AzureFunction = async function (
             resp = {
                 // farming: result[0].rows,
                 // trucking: result[1].rows
-                training: result[0].rows
+                // training: result[0].rows
+                trainingData: result[0].rows,
+                traineeData: result[1].rows
             };
         }
         else if (req.query.operation === 'getTasks') {
