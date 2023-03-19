@@ -1,14 +1,14 @@
 
-export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month: any, year: any, role: any, operation) {
+export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month: any, year: any, role: any, operation, taskId: any) {
 
-    let getDwr;
+    let getDwr = ``;
 
     let where = ``;
 
     if (role === 'supervisor')
-        where = `${where} AND fwo.dispatcher_id = '${employee_id}'`;
+        where = `${where} AND training.trainer_id = '${employee_id}'`;
     else
-        where = `${where} AND fwo.tractor_driver_id = '${employee_id}'`;
+        where = `${where} AND dwr.employee_id = '${employee_id}'`;
 
     if (dateType === 'month') {
         where = `${where} AND EXTRACT(MONTH FROM dwr.created_at) = '${month}'`
@@ -18,23 +18,48 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         where = `${where} AND CAST(created_at AS Date) = '${date}'`
     }
 
-    getDwr = `
+    if (operation === 'getDWR') {
+        getDwr = `
     select 
  
     DISTINCT dwr_employees."id" as dwr_id,
     dwr.dwr_type,
     dwr_employees.created_at
-	
-        INNER JOIN "Farming_Work_Order" fwo ON dwr.work_order_id = fwo.id
-        INNER JOIN "Customers" customers ON customers."id" = fwo.customer_id
-        INNER JOIN "Customer_Farm" farm ON farm."id" = fwo.farm_id
-        INNER JOIN "Customer_Field" field ON field."id" = fwo.field_id
-                    
-        WHERE 
-        dwr.is_day_closed= TRUE
-        AND dwr.dwr_type = 'farming'
-        ${where}
-        ;`;
+    
+    from 
+    
+    "Bridge_DailyTasks_DWR" bridge 
+    INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id"
+    INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+    INNER JOIN "Training" training ON dwr.training_record_id = training."id"
+
+    WHERE 
+    dwr.is_day_closed= TRUE
+    ${where}
+    ;`;
+    }
+
+    else if (operation === 'getTasks') {
+        getDwr = `
+        select bridge.dwr_id,bridge.task_id, dwr.dwr_type from 
+    "Bridge_DailyTasks_DWR" bridge
+    INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id" AND bridge.dwr_id = '${taskId}'
+    INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+        ;`
+    }
+
+    else if (operation === 'getTicketData') {
+        getDwr = `
+        select * from
+        "DWR" dwr 
+        INNER JOIN "Training" training ON dwr."training_record_id" = training."id" AND dwr.id = '${taskId}';
+        
+        select * from
+        "DWR" dwr 
+        INNER JOIN "Trainee" trainee ON dwr.trainee_record_id = trainee."id" AND dwr.id = '${taskId}';
+        
+        `
+    }
 
     return getDwr;
 }
