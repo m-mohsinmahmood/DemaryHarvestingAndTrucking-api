@@ -11,11 +11,11 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         where = `${where} AND dwr.employee_id = '${employee_id}'`;
 
     if (dateType === 'month') {
-        where = `${where} AND EXTRACT(MONTH FROM dwr.created_at) = '${month}'`
-        where = `${where} AND EXTRACT(YEAR FROM dwr.created_at) = '${year}'`
+        where = `${where} AND EXTRACT(MONTH FROM dwr_employees.created_at) = '${month}'`
+        where = `${where} AND EXTRACT(YEAR FROM dwr_employees.created_at) = '${year}'`
     }
     else {
-        where = `${where} AND CAST(created_at AS Date) = '${date}'`
+        where = `${where} AND CAST(dwr_employees.created_at AS Date) = '${date}'`
     }
 
     if (operation === 'getDWR') {
