@@ -27,4 +27,5 @@ export interface beginningOfDay {
     dwrId?: string;
     trainee_record_id: string;
     training_record_id: string;
+    trainer_record_id: string;
 }

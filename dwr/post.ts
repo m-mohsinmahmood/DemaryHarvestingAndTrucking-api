@@ -34,6 +34,9 @@ const httpTrigger: AzureFunction = async function (
       else if(order.training_record_id){
         ticket = `"training_record_id" = '${taskId}'`;
       }
+      else if(order.trainer_record_id){
+        ticket = `"trainer_record_id" = '${taskId}'`;
+      }
     }
       else if (order.module === 'main-repair')
         ticket = `"main_repair_ticket_id" = '${taskId}'`;

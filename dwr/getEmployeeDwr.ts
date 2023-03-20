@@ -40,7 +40,8 @@ const httpTrigger: AzureFunction = async function (
                 // trucking: result[1].rows
                 // training: result[0].rows
                 trainingData: result[0].rows,
-                traineeData: result[1].rows
+                traineeData: result[1].rows,
+                trainerData: result[2].rows
             };
         }
         else if (req.query.operation === 'getTasks') {
@@ -66,7 +67,8 @@ const httpTrigger: AzureFunction = async function (
 
             resp = {
                 trainingData: result[0].rows,
-                traineeData: result[1].rows
+                traineeData: result[1].rows,
+                trainerData: result[2].rows
             };
         }
 
