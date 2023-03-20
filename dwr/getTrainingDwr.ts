@@ -144,6 +144,7 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
     "Bridge_DailyTasks_DWR" bridge
     INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id" AND bridge.dwr_id = '${taskId}'
     INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+    WHERE (dwr.status IS NULL OR dwr.status = 'reassigned' OR dwr.status = '')
         ;`
     }
 

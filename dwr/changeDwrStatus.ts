@@ -1,26 +1,31 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { dwr } from "./model";
+import { beginningOfDay } from "./model";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
     req: HttpRequest
 ): Promise<void> {
     const db = new Client(config);
-    const dwr: dwr = req.body;
 
     try {
+        const updateTicket: beginningOfDay = req.body;
+       let optionalReq = ``;
+
+        if (updateTicket.notes != null) {
+            optionalReq = `${optionalReq},"notes" = '${updateTicket.notes}'`;
+        }
+
         let query = `
-        UPDATE 
-        "DWR_Employees"
-   
-        SET 
-        "is_active" = FALSE,
+    UPDATE 
+        "DWR"
+    SET 
+        "status" = '${updateTicket.status}',
         "modified_at"   = 'now()'
-   
-        WHERE 
-        "id" = '${dwr.id}' ;`;
+         ${optionalReq}
+    WHERE 
+        "id" = '${updateTicket.dwrId}' ;`
 
         console.log(query);
 
