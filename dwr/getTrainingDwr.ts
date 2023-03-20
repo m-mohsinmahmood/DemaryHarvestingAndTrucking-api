@@ -131,7 +131,7 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
 
     WHERE 
     dwr.is_day_closed= TRUE
-    AND trainee.trainer_id = '${employee_id}'
+    AND trainer_task.trainer_id = '${employee_id}'
     ${where}
     ;
 
