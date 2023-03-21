@@ -42,7 +42,7 @@ export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month:
 
     else if (operation === 'getTasks' && module === 'farming') {
         getDwr = `
-        select bridge.dwr_id,bridge.task_id, dwr.dwr_type from 
+        select bridge.dwr_id,bridge.task_id, dwr.dwr_type,dwr.status,dwr.notes from 
         "Bridge_DailyTasks_DWR" bridge
         INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id" AND bridge.dwr_id = '${taskId}'
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
