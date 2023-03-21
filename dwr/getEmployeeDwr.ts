@@ -19,10 +19,11 @@ const httpTrigger: AzureFunction = async function (
         const year: string = req.query.year;
         const role: string = req.query.role
         const taskId: string = req.query.taskId
+        const module: string = req.query.dwr_type
 
-        // const farmingDwr = GetFarmingDwr(employee_id, date, dateType, month, year, role);
+        const trainingDwr = GetTrainingDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module);
+        const farmingDwr = GetFarmingDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module);
         // const truckingDwr = GetTruckingDwr(employee_id, date, dateType, month, year, role);
-        const trainingDwr = GetTrainingDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId);
 
         let query = ``;
         let result;
@@ -30,7 +31,7 @@ const httpTrigger: AzureFunction = async function (
         let resp;
         if (req.query.operation === 'getDWR') {
 
-            query = `${trainingDwr} ${trainingDwr}`;
+            query = `${trainingDwr} ${farmingDwr}`;
             console.log(query);
             db.connect();
             result = await db.query(query);
@@ -41,12 +42,15 @@ const httpTrigger: AzureFunction = async function (
                 // training: result[0].rows
                 trainingData: result[0].rows,
                 traineeData: result[1].rows,
-                trainerData: result[2].rows
+                trainerData: result[2].rows,
+                farmingData: result[3].rows
             };
         }
         else if (req.query.operation === 'getTasks') {
-            if (trainingDwr != ``)
+            if (trainingDwr !== ``)
                 query = `${trainingDwr}`;
+            else if (farmingDwr !== ``)
+                query = `${farmingDwr}`;
 
             db.connect();
             console.log(query);
@@ -58,21 +62,32 @@ const httpTrigger: AzureFunction = async function (
         }
 
         else if (req.query.operation === 'getTicketData') {
-            if (trainingDwr != ``)
+            if (trainingDwr !== ``)
                 query = `${trainingDwr}`;
+            if (farmingDwr !== ``)
+                query = `${farmingDwr}`;
 
             db.connect();
             console.log(query);
             result = await db.query(query);
 
-            resp = {
-                trainingData: result[0].rows,
-                traineeData: result[1].rows,
-                trainerData: result[2].rows
-            };
+            console.log(result);
+            
+            if (trainingDwr !== ``) {
+                resp = {
+                    trainingData: result[0].rows,
+                    traineeData: result[1].rows,
+                    trainerData: result[2].rows
+                };
+            } else {
+                resp = {
+                    data: result.rows
+                };
+            }
         }
 
-
+        console.log(resp);
+        
         db.end();
 
         context.res = {

@@ -1,5 +1,5 @@
 
-export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month: any, year: any, role: any, operation, taskId: any) {
+export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month: any, year: any, role: any, operation, taskId: any, module: any) {
 
     let getDwr = ``;
 
@@ -138,7 +138,7 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
     `;
     }
 
-    else if (operation === 'getTasks') {
+    else if (operation === 'getTasks' && module === 'training') {
         getDwr = `
         select bridge.dwr_id,bridge.task_id, dwr.dwr_type from 
     "Bridge_DailyTasks_DWR" bridge
@@ -148,7 +148,7 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         ;`
     }
 
-    else if (operation === 'getTicketData') {
+    else if (operation === 'getTicketData' && module === 'training') {
         getDwr = `
         select * from
         "DWR" dwr 
