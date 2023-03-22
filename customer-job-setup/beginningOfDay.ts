@@ -14,7 +14,7 @@ const httpTrigger: AzureFunction = async function (
 
         console.log('Request::', req.body);
 
-        if (role === 'truck-driver') {
+        if (role.includes('Truck Driver')) {
             query = `
          UPDATE 
                  "Customer_Job_Setup"

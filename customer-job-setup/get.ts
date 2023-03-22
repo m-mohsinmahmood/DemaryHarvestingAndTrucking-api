@@ -17,7 +17,7 @@ const httpTrigger: AzureFunction = async function (
     let query = ``;
 
     // to get the opened/not-closed jobs of crew chief
-    if (entity === "crew-chief") {
+    if (entity.includes("Crew Chief")) {
       query = `
 
       select 
@@ -52,7 +52,7 @@ const httpTrigger: AzureFunction = async function (
     }
 
     // to get the opened/not-closed jobs of combine operator
-    else if (entity === "combine-operator") {
+    else if (entity.includes("Combine Operator")) {
       query = `
       select
 
@@ -87,7 +87,7 @@ const httpTrigger: AzureFunction = async function (
      `;
     }
 
-    else if (entity === "truck-driver") {
+    else if (entity.includes("Truck Driver")) {
       query = `
      select
 
@@ -122,7 +122,7 @@ const httpTrigger: AzureFunction = async function (
      `;
     }
 
-    else if (entity === "kart-operator") {
+    else if (entity.includes("Kart Operator")) {
       query = `
       select 
       
@@ -181,14 +181,14 @@ const httpTrigger: AzureFunction = async function (
     }
 
     // to get the opened/not-closed jobs of kart operator
-    // else if (entity === "kart-operator") {
+    // else if (entity === "Kart Operator") {
     //   // to get the opened/not-closed jobs of kart operator if employee is present
     //   query = `
     //     SELECT 
     //      customer."id" as "customer_id", 
     //      wo."state" as "state",
     //      wo."id" as "job_id",
-		// 		 wo."employee_id" as "employee_id",
+    // 		 wo."employee_id" as "employee_id",
     //      wo."has_employee" as "has_employee", 
     //      wo."is_close_kart" as "is_close_kart",
     //      customer."customer_name" as "customer_name",
@@ -199,18 +199,18 @@ const httpTrigger: AzureFunction = async function (
     //       field."name" as "field_name",
     //       field."id" as "field_id"
     //      FROM 
-         
+
     //      "Customer_Job_Setup" wo
-         
+
     //      INNER JOIN "Customers" customer 
     //      ON wo."customer_id" = customer."id"
-     
+
     //      INNER JOIN "Customer_Farm" farm 
     //      ON wo."farm_id" = farm."id"
-         
+
     //      INNER JOIN "Crops" crop 
     //      ON wo."crop_id" = crop."id"
-         
+
     //      INNER JOIN "Customer_Field" field 
     //      ON wo."field_id" = field."id"
     //      WHERE
@@ -222,7 +222,7 @@ const httpTrigger: AzureFunction = async function (
     //      customer."id" as "customer_id", 
     //      wo."state" as "state",
     //      wo."id" as "job_id",
-		// 		 wo."employee_id" as "employee_id",
+    // 		 wo."employee_id" as "employee_id",
     //      wo."has_employee" as "has_employee", 
     //      wo."is_close_kart" as "is_close_kart",
     //      customer."customer_name" as "customer_name",
@@ -233,18 +233,18 @@ const httpTrigger: AzureFunction = async function (
     //       field."name" as "field_name",
     //       field."id" as "field_id"
     //      FROM 
-         
+
     //      "Customer_Job_Setup" wo
-         
+
     //      INNER JOIN "Customers" customer 
     //      ON wo."customer_id" = customer."id"
-     
+
     //      INNER JOIN "Customer_Farm" farm 
     //      ON wo."farm_id" = farm."id"
-         
+
     //      INNER JOIN "Crops" crop 
     //      ON wo."crop_id" = crop."id"
-         
+
     //      INNER JOIN "Customer_Field" field 
     //      ON wo."field_id" = field."id"
     //      WHERE
