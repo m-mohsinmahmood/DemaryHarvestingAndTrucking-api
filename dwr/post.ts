@@ -18,7 +18,7 @@ const httpTrigger: AzureFunction = async function (
     let taskId = await db.query(query);
 
 
-    if (order.module === 'training' || order.module === 'main-repair') {
+    if (order.module === 'training' || order.module === 'maintenance-repair') {
       console.log("Training");
 
       let bridgeDailyTasksDwr = ``;
@@ -38,7 +38,7 @@ const httpTrigger: AzureFunction = async function (
         ticket = `"trainer_record_id" = '${taskId}'`;
       }
     }
-      else if (order.module === 'main-repair')
+      else if (order.module === 'maintenance-repair')
         ticket = `"main_repair_ticket_id" = '${taskId}'`;
 
       bridgeDailyTasksDwr = ` 
