@@ -81,6 +81,14 @@ export function createDWR(dwr: any) {
         optionalReq = `${optionalReq},"training_record_id"`;
         optionalValues = `${optionalValues},'${dwr.training_record_id}'`;
     }
+    if (dwr.trainee_record_id != null) {
+        optionalReq = `${optionalReq},"trainee_record_id"`;
+        optionalValues = `${optionalValues},'${dwr.trainee_record_id}'`;
+    }
+    if (dwr.trainer_record_id != null) {
+        optionalReq = `${optionalReq},"trainer_record_id"`;
+        optionalValues = `${optionalValues},'${dwr.trainer_record_id}'`;
+    }
     if (dwr.evaluation_type != null) {
         optionalReq = `${optionalReq},"evaluation_type"`;
         optionalValues = `${optionalValues},'${dwr.evaluation_type}'`;
@@ -94,8 +102,29 @@ export function createDWR(dwr: any) {
         optionalValues = `${optionalValues},'${dwr.role}'`;
     }
 
+    let query = ``;
 
-    let query = `
+    if (dwr.dwr_type === 'training' || dwr.dwr_type === 'maintenance-repair') {
+        query = `
+        INSERT INTO 
+                    "DWR" 
+                    ("employee_id",
+                    dwr_type,
+                    modified_at,
+                    is_day_closed
+                    ${optionalReq})
+  
+        VALUES      ('${dwr.employeeId}',
+                    '${dwr.dwr_type}',
+                    'now()',
+                    'TRUE'
+                    ${optionalValues})
+                    
+                    returning id;
+      `;
+
+    } else {
+        query = `
         INSERT INTO 
                     "DWR" 
                     ("employee_id",
@@ -104,8 +133,10 @@ export function createDWR(dwr: any) {
   
         VALUES      ('${dwr.employeeId}',
                     '${dwr.dwr_type}'
-                    ${optionalValues});
+                    ${optionalValues})
+                    ;
       `;
+    }
 
     console.log(query);
     return query;
@@ -135,16 +166,26 @@ export function updateDWR(closingOfDay: any) {
         optionalReq = `${optionalReq},"ending_odometer_miles" = '${closingOfDay.ending_odometer_miles}'`;
     }
 
+    let ticket = ``;
+
+    if (closingOfDay.workOrderId)
+        ticket = `"work_order_id" = '${closingOfDay.workOrderId}'`;
+    else if (closingOfDay.deliveryTicketId)
+        ticket = `"delivery_ticket_id" = '${closingOfDay.deliveryTicketId}'`;
+    else if (closingOfDay.jobId)
+        ticket = `"job_id" = '${closingOfDay.jobId}'`;
+
     let query = `
     UPDATE 
         "DWR"
     SET 
-        "is_day_closed" = 'true'
+        "is_day_closed" = 'true',
+        "modified_at"   = 'now()'
          ${optionalReq}
     WHERE 
-        ("work_order_id" = '${closingOfDay.workOrderId}' OR "job_id" = '${closingOfDay.workOrderId}') AND is_day_closed = 'false' 
+        ${ticket} AND is_day_closed = 'false' 
         returning id;`
 
-        console.log(query);
+    console.log(query);
     return query;
 }

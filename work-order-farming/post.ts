@@ -34,7 +34,7 @@ const httpTrigger: AzureFunction = async function (
         let query = ``;
 
         // If Tractor Driver will create a work Order then below given query will be executed.
-        if (order.role === 'dispatcher') {
+        if (order.role.includes('Dispatcher')) {
             query = `
             INSERT INTO 
                         "Farming_Work_Order" 

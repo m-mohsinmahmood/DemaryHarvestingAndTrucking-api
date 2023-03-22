@@ -25,4 +25,9 @@ export interface beginningOfDay {
     notesOther?: string;
     module?: string;
     dwrId?: string;
+    trainee_record_id: string;
+    training_record_id: string;
+    trainer_record_id: string;
+    status?:string;
+    dwr_id?:string;
 }
