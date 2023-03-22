@@ -1,14 +1,12 @@
 
-export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: any, month: any, year: any, role: any, operation, taskId: any) {
+export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: any, month: any, year: any, role: any, operation, taskId: any, module: any) {
 
     let getDwr = ``;
 
     let where = ``;
 
-    if (role === 'supervisor')
-    {
-        where = `${where} AND training.supervisor_id = '${employee_id}'`;
-        where = `${where} AND trainee.trainer_id = '${employee_id}'`;
+    if (role === 'supervisor') {
+        where = `${where} AND mr.assignedById = '${employee_id}'`;
     }
     else
         where = `${where} AND dwr.employee_id = '${employee_id}'`;
@@ -21,52 +19,42 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         where = `${where} AND CAST(dwr_employees.created_at AS Date) = '${date}'`
     }
 
-    if (operation === 'getDWR' && role !== 'supervisor') {
+    if (operation === 'getDWR') {
         getDwr = `
-    select 
-    DISTINCT dwr_employees."id" as dwr_id,
-    dwr.dwr_type,
-    dwr_employees.created_at
+        select 
+        DISTINCT dwr_employees."id" as dwr_id,
+        dwr.dwr_type,
+        dwr_employees.created_at
+        
+        from 
+        
+        "Bridge_DailyTasks_DWR" bridge 
+        INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id"
+        INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+        INNER JOIN "Maintenance_Repair" mr ON mr."id" = dwr.main_repair_ticket_id 
     
-    from 
-    
-    "Bridge_DailyTasks_DWR" bridge 
-    INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id"
-    INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
-    INNER JOIN "Training" training ON dwr.training_record_id = training."id"
-
-    WHERE 
-    dwr.is_day_closed= TRUE
-    AND dwr.employee_id = '${employee_id}'
-    ${where}
+        WHERE 
+        dwr.is_day_closed= TRUE
+        ${where}
 
     ;`;
     }
 
-    else if (operation === 'getTasks') {
+    else if (operation === 'getTasks' && module === 'maintenance-repair') {
         getDwr = `
-        select bridge.dwr_id,bridge.task_id, dwr.dwr_type from 
-    "Bridge_DailyTasks_DWR" bridge
-    INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id" AND bridge.dwr_id = '${taskId}'
-    INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
-    WHERE (dwr.status IS NULL OR dwr.status = 'reassigned' OR dwr.status = '')
+        select bridge.dwr_id,bridge.task_id, dwr.dwr_type,dwr.status,dwr.notes from 
+        "Bridge_DailyTasks_DWR" bridge
+        INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id" AND bridge.dwr_id = '${taskId}'
+        INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+        WHERE (dwr.status IS NULL OR dwr.status = 'reassigned' OR dwr.status = '')
         ;`
     }
 
-    else if (operation === 'getTicketData') {
+    else if (operation === 'getTicketData' && module === 'maintenance-repair') {
         getDwr = `
         select * from
         "DWR" dwr 
-        INNER JOIN "Training" training ON dwr."training_record_id" = training."id" AND dwr.id = '${taskId}';
-        
-        select * from
-        "DWR" dwr 
-        INNER JOIN "Trainee" trainee ON dwr.trainee_record_id = trainee."id" AND dwr.id = '${taskId}';
-        
-        select * from
-        "DWR" dwr 
-        INNER JOIN "Trainer_Training_Tasks" trainer_task ON dwr.trainer_record_id = trainer_task."id" AND dwr.id = '${taskId}';
-      
+        INNER JOIN "Farming_Work_Order" fwo ON dwr."work_order_id" = fwo."id" AND dwr.id = '${taskId}';
         `
     }
 
