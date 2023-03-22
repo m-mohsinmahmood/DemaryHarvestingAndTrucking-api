@@ -4,6 +4,7 @@ import { config } from "../services/database/database.config";
 import { GetFarmingDwr } from "./getFarmingDWR";
 import { GetTrainingDwr } from "./getTrainingDwr";
 import { GetTruckingDwr } from "./getTruckingDwr";
+import { GetMaintenanceRepairDwr } from "./getMaintenanceRepairDwr";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -23,6 +24,8 @@ const httpTrigger: AzureFunction = async function (
 
         const trainingDwr = GetTrainingDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module);
         const farmingDwr = GetFarmingDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module);
+        const maintenanceDwr = GetMaintenanceRepairDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module);
+
         // const truckingDwr = GetTruckingDwr(employee_id, date, dateType, month, year, role);
 
         let query = ``;
@@ -31,7 +34,7 @@ const httpTrigger: AzureFunction = async function (
         let resp;
         if (req.query.operation === 'getDWR') {
 
-            query = `${trainingDwr} ${farmingDwr}`;
+            query = `${trainingDwr} ${farmingDwr} ${maintenanceDwr}`;
             console.log(query);
             db.connect();
             result = await db.query(query);
@@ -43,7 +46,8 @@ const httpTrigger: AzureFunction = async function (
                 trainingData: result[0].rows,
                 traineeData: result[1].rows,
                 trainerData: result[2].rows,
-                farmingData: result[3].rows
+                farmingData: result[3].rows,
+                maintenanceRepairData: result[4].rows
             };
         }
         else if (req.query.operation === 'getTasks') {
@@ -51,6 +55,8 @@ const httpTrigger: AzureFunction = async function (
                 query = `${trainingDwr}`;
             else if (farmingDwr !== ``)
                 query = `${farmingDwr}`;
+            else if (maintenanceDwr !== ``)
+                query = `${maintenanceDwr}`;
 
             db.connect();
             console.log(query);
@@ -66,13 +72,15 @@ const httpTrigger: AzureFunction = async function (
                 query = `${trainingDwr}`;
             if (farmingDwr !== ``)
                 query = `${farmingDwr}`;
+            if (maintenanceDwr !== ``)
+                query = `${maintenanceDwr}`;
 
             db.connect();
             console.log(query);
             result = await db.query(query);
 
             console.log(result);
-            
+
             if (trainingDwr !== ``) {
                 resp = {
                     trainingData: result[0].rows,
@@ -87,7 +95,7 @@ const httpTrigger: AzureFunction = async function (
         }
 
         console.log(resp);
-        
+
         db.end();
 
         context.res = {

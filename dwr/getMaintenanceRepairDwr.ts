@@ -6,7 +6,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
     let where = ``;
 
     if (role === 'supervisor') {
-        where = `${where} AND mr.assignedById = '${employee_id}'`;
+        where = `${where} AND mr."assignedById" = '${employee_id}'`;
     }
     else
         where = `${where} AND dwr.employee_id = '${employee_id}'`;
@@ -54,7 +54,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         getDwr = `
         select * from
         "DWR" dwr 
-        INNER JOIN "Farming_Work_Order" fwo ON dwr."work_order_id" = fwo."id" AND dwr.id = '${taskId}';
+        INNER JOIN "Maintenance_Repair" mr ON dwr.main_repair_ticket_id = mr."id" AND dwr.id = '${taskId}';
         `
     }
 
