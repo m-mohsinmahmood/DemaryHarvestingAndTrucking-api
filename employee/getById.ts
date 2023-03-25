@@ -17,7 +17,8 @@ const httpTrigger: AzureFunction = async function (
       let employee_id_query = `
         SELECT 
                "id",
-               "role"
+               "role",
+               concat(first_name,' ' ,last_name)	as "employee_name"
         FROM 
                 "Employees" 
         Where fb_id = '${firebase_id}'        
@@ -84,6 +85,7 @@ const httpTrigger: AzureFunction = async function (
                 e1."reason_for_applying",	
                 e1."hear_about_dht",	
                 e1."employment_period",
+                e1."applied_job",
                 e1."modified_at",	
                 e1."created_at",	
                 e1."is_deleted",	
