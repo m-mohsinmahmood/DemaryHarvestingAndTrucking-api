@@ -52,9 +52,25 @@ export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month:
 
     else if (operation === 'getTicketData' && module === 'farming') {
         getDwr = `
-        select * from
+        select 
+        fwo."id" as id, 
+        customers.customer_name,
+        concat(dispatcher.first_name, ' ', dispatcher.last_name) as dispatcher_name,
+        concat(tractorD.first_name, ' ', tractorD.last_name) as tractor_driver_name,
+        farm."name" as farm,
+        field."name" as field,
+        dwr.hours_worked,
+        dwr.notes
+        
+        from
         "DWR" dwr 
-        INNER JOIN "Farming_Work_Order" fwo ON dwr."work_order_id" = fwo."id" AND dwr.id = '${taskId}';
+        INNER JOIN "Farming_Work_Order" fwo ON dwr."work_order_id" = fwo."id" AND dwr.id = '${taskId}'
+        INNER JOIN "Customers" customers ON customers."id" = fwo.customer_id
+		INNER JOIN "Employees" dispatcher ON dispatcher."id" = fwo.dispatcher_id
+		INNER JOIN "Employees" tractorD ON tractorD."id" = fwo.tractor_driver_id
+		INNER JOIN "Customer_Farm" farm ON farm."id" = fwo.farm_id
+		INNER JOIN "Customer_Field" field ON field."id" = fwo.field_id
+        ;
         `
     }
 
