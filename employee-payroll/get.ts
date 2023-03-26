@@ -79,9 +79,18 @@ WHERE
 
     let hours_count_query = `
     SELECT 
-    SUM(CAST(hours_worked AS FLOAT)) 
-    FROM "DWR" 
-    WHERE employee_id = '${employee_id}';
+    SUM(CAST(hours_worked AS FLOAT)),
+		emp."id",
+	emp.first_name,
+	emp.last_name,
+	emp."role"
+		
+    FROM "DWR" dwr
+			INNER JOIN "Employees" emp ON dwr.employee_id = emp."id"
+
+    WHERE employee_id = '${employee_id}'
+		GROUP BY
+		emp."id";
       `;
 
     let query = `${dwr_info_query1} ${dwr_info_query2} ${dwr_info_query3} ${hours_count_query}`;
@@ -96,7 +105,7 @@ WHERE
 
     let resp = {
       dwrTasks: tempDwrTasks,
-      total_hours: +result[3].rows[0].sum,
+      total_hours: result[3].rows[0],
 
     };
 

@@ -35,11 +35,9 @@ const httpTrigger: AzureFunction = async function (
 		( dwr.hours_worked :: NUMERIC ) AS total_hours_worked 
 	FROM
 		"DWR" dwr
-		INNER JOIN "Trucking_Delivery_Ticket" tdt ON dwr.delivery_ticket_id = tdt."id"
-		INNER JOIN "H2a_Hourly_Rate" hr ON tdt.destination_state = hr."state"
 		INNER JOIN "Employees" emp ON dwr.employee_id = emp."id" 
-		AND tdt.created_at :: DATE >= i :: DATE 
-		AND tdt.created_at :: DATE <= ( i + '13 days' :: INTERVAL ) :: DATE 
+		AND dwr.created_at :: DATE >= i :: DATE 
+		AND dwr.created_at :: DATE <= ( i + '13 days' :: INTERVAL ) :: DATE 
 		AND employee_id = '${employee_id}' 
 	ORDER BY
 		total_hours_worked DESC 
