@@ -5,14 +5,6 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
 
     let where = ``;
 
-    // if (role === 'supervisor')
-    // {
-    //     where = `${where} AND training.supervisor_id = '${employee_id}'`;
-    //     where = `${where} AND trainee.trainer_id = '${employee_id}'`;
-    // }
-    // else
-    //     where = `${where} AND dwr.employee_id = '${employee_id}'`;
-
     if (dateType === 'month') {
         where = `${where} AND EXTRACT(MONTH FROM dwr_employees.created_at) = '${month}'`
         where = `${where} AND EXTRACT(YEAR FROM dwr_employees.created_at) = '${year}'`
