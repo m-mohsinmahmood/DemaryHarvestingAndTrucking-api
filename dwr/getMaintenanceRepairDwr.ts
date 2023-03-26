@@ -1,11 +1,11 @@
 
-export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: any, month: any, year: any, role: any, operation, taskId: any, module: any) {
+export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: any, month: any, year: any, role: any, operation, taskId: any, module: any, type: any) {
 
     let getDwr = ``;
 
     let where = ``;
 
-    if (role === 'supervisor') {
+    if (type === 'getAssignedDWR') {
         where = `${where} AND mr."assignedById" = '${employee_id}'`;
     }
     else
@@ -52,9 +52,27 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
 
     else if (operation === 'getTicketData' && module === 'maintenance-repair') {
         getDwr = `
-        select * from
+        select 
+        mr."id",
+        concat(sup.first_name, ' ', sup.last_name) as supervisor_name,
+        concat(mech.first_name, ' ', mech.last_name) as mechanic_name,
+        mr.city,
+        mr."state",
+        mr."issueCategory",
+        mr."severityType",
+        mr.status,
+        mr.description,
+        mr.summary,
+        mv."id" as machinery_id,
+        mv."name" as machinery_name
+        
+        from
         "DWR" dwr 
-        INNER JOIN "Maintenance_Repair" mr ON dwr.main_repair_ticket_id = mr."id" AND dwr.id = '${taskId}';
+        INNER JOIN "Maintenance_Repair" mr ON dwr.main_repair_ticket_id = mr."id" AND dwr.id = '${taskId}'
+        INNER JOIN "Employees" sup ON sup."id" = mr."assignedById"
+        INNER JOIN "Employees" mech ON mech."id" = mr."assignedToId"
+        INNER JOIN "Machinery" mv ON mv."id" = mr."equipmentId"
+        ;
         `
     }
 

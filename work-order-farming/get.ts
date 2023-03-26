@@ -455,12 +455,12 @@ const httpTrigger: AzureFunction = async function (
 
         if(searchClause === 'getRemainingAcresofField'){
             queryGetCustomers = `
-            select SUM(total_acres) AS total_acres from "Farming_Work_Order" where field_id = '${fieldId}'
+            select SUM(acres_completed) AS total_acres from "Farming_Work_Order" where field_id = '${fieldId}'
             AND (work_order_status='pending' OR work_order_status='verified')
             GROUP BY field_id;
             `;
 
-            count_query = ` select count(total_acres) AS total_acres from "Farming_Work_Order" where field_id = '${fieldId}'
+            count_query = ` select count(acres_completed) AS total_acres from "Farming_Work_Order" where field_id = '${fieldId}'
             AND (work_order_status='pending' OR work_order_status='verified')
             GROUP BY field_id;`;
         }
