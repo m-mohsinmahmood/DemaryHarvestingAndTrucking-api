@@ -1,11 +1,11 @@
 
-export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: any, month: any, year: any, role: any, operation, taskId: any, module: any) {
+export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: any, month: any, year: any, role: any, operation, taskId: any, module: any, type: any) {
 
     let getDwr = ``;
 
     let where = ``;
 
-    if (role === 'supervisor') {
+    if (type === 'getAssignedDWR') {
         where = `${where} AND mr."assignedById" = '${employee_id}'`;
     }
     else

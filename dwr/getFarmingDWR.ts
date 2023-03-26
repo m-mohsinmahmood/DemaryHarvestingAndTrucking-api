@@ -1,11 +1,11 @@
 
-export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month: any, year: any, role: any, operation, taskId: any, module: any) {
+export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month: any, year: any, role: any, operation, taskId: any, module: any, type: any) {
 
     let getDwr = ``;
 
     let where = ``;
 
-    if (role === 'supervisor') {
+    if (type === 'getAssignedDWR') {
         where = `${where} AND fwo.dispatcher_id = '${employee_id}'`;
     }
     else
