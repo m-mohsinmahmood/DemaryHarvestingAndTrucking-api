@@ -22,12 +22,12 @@ const httpTrigger: AzureFunction = async function (
     if (isPreCHeckFilled) whereClause = ` ${whereClause}  And is_trip_check_filled=${isPreCHeckFilled}`;
 
     console.log(req.query);
-    
+
     try {
         let queryToRun = ``;
         let count_query = ``;
 
-        if (role === 'dispatcher') {
+        if (role.includes('Dispatcher')) {
             // if (ticketStatus === 'sent') {
             let from = `from "Trucking_Delivery_Ticket"  TD
            

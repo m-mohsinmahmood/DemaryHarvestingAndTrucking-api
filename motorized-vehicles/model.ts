@@ -6,7 +6,7 @@ export interface Motorized {
     color: string;
     year: string;
     odometer: string;
-    odometer_reading: string;
+    odometer_reading_end: string;
     odometer_reading_start:string;
     make: string;
     model: string;
