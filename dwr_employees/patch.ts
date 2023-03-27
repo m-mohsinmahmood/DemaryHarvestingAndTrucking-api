@@ -16,7 +16,8 @@ const httpTrigger: AzureFunction = async function (
         "DWR_Employees"
    
         SET 
-        "is_active" = FALSE
+        "is_active" = FALSE,
+        "modified_at"   = 'now()'
    
         WHERE 
         "id" = '${dwr.id}' ;`;

@@ -16,6 +16,7 @@ export interface workOrder {
     role?: string;
     completeInfo: boolean;
     totalAcres: string;
+    state: string;
 }
 
 export interface UpdateWorkOrder {

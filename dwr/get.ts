@@ -11,12 +11,7 @@ const httpTrigger: AzureFunction = async function (
     try {
         const employee_id: string = req.query.employeeId;
         const search_clause: string = req.query.searchClause;
-        const date: string = req.query.date;
-        const dateType: string = req.query.dateType;
-        const month: string = req.query.month;
-        const year: string = req.query.year;
-        const dwrType:string = req.query.type
-        const role:string = req.query.role
+        const dwrType: string = req.query.type
         console.log('Req:', req.query)
 
         let employee_info_query: string = '';
@@ -30,7 +25,8 @@ const httpTrigger: AzureFunction = async function (
 
             count_query = `
         SELECT  COUNT("id") from "DWR" where employee_id = '${employee_id}' And dwr_type='${dwrType}' And is_day_closed='false' `;
-        }        
+        }
+
         else if (search_clause === 'beginningOfDayHarvesting') {
             // Beginning of Day to check if employee has closed a day before selecting another workorder
             let from = ` from "DWR" dwr
@@ -65,60 +61,6 @@ const httpTrigger: AzureFunction = async function (
 
             count_query = `SELECT  COUNT(cjs."id") ${from} ;`;
         }
-        else if (dateType === 'month') {
-            if(!(role === 'supervisor')){
-                employee_info_query = `
-                Select * from "DWR" 
-                WHERE employee_id = '${employee_id}' 
-                AND is_day_closed='false' 
-                AND EXTRACT(MONTH FROM created_at) = '${month}'
-                AND EXTRACT(YEAR FROM created_at) = '${year}';
-              `;
-    
-                count_query = `
-                SELECT  COUNT("id") from "DWR" 
-                WHERE employee_id = '${employee_id}' 
-                AND is_day_closed='false' 
-                AND EXTRACT(MONTH FROM created_at) = '${month}'
-                AND EXTRACT(YEAR FROM created_at) = '${year}';
-                `;
-            }else{
-                employee_info_query = `
-                Select * from "DWR" 
-                WHERE supervisor_id = '${employee_id}' 
-                AND is_day_closed='false' 
-                AND EXTRACT(MONTH FROM created_at) = '${month}'
-                AND EXTRACT(YEAR FROM created_at) = '${year}';
-              `;
-    
-                count_query = `
-                SELECT  COUNT("id") from "DWR" 
-                WHERE supervisor_id = '${employee_id}' 
-                AND is_day_closed='false' 
-                AND EXTRACT(MONTH FROM created_at) = '${month}'
-                AND EXTRACT(YEAR FROM created_at) = '${year}';
-                `;
-            }
-            
-        }
-        else if (dateType === 'day') {
-            if(!(role === 'supervisor')){
-                employee_info_query = `
-                 Select * from "DWR" where employee_id = '${employee_id}' And is_day_closed='false' AND CAST(created_at AS Date) = '${date}' ;
-               `;
-    
-                count_query = `
-                 SELECT  COUNT("id") from "DWR" where employee_id = '${employee_id}' And is_day_closed='false' AND CAST(created_at AS Date) = '${date}'`;
-            }else{
-                employee_info_query = `
-                 Select * from "DWR" where supervisor_id = '${employee_id}' And is_day_closed='false' AND CAST(created_at AS Date) = '${date}' ;
-               `;
-    
-                count_query = `
-                 SELECT  COUNT("id") from "DWR" where supervisor_id = '${employee_id}' And is_day_closed='false' AND CAST(created_at AS Date) = '${date}'`;
-            }
-        }
-        
 
         let query = `${employee_info_query} ${count_query}`;
 

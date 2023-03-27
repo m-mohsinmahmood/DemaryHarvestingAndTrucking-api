@@ -5,22 +5,22 @@ import { UpdateWorkOrder } from "./model";
 import { updateDWR } from "../utilities/dwr_functions";
 
 const httpTrigger: AzureFunction = async function (
-  context: Context,
-  req: HttpRequest
+        context: Context,
+        req: HttpRequest
 ): Promise<void> {
-  const db = new Client(config);
+        const db = new Client(config);
 
-  try {
-    const workOrder: UpdateWorkOrder = req.body;
+        try {
+                const workOrder: UpdateWorkOrder = req.body;
 
-    let query = ``;
+                let query = ``;
 
-    if (workOrder.role === 'tractor-driver') {
-      // If user make a call from Existing Work Order of Tractor Driver
-      if (workOrder.searchClause === 'existingWorkOrder') {
-        console.log("Updating Existing Work Order");
+                if (workOrder.role.includes('Tractor Driver')) {
+                        // If user make a call from Existing Work Order of Tractor Driver
+                        if (workOrder.searchClause === 'existingWorkOrder') {
+                                console.log("Updating Existing Work Order");
 
-        query = `
+                                query = `
         UPDATE 
                 "Farming_Work_Order"
         SET 
@@ -43,13 +43,13 @@ const httpTrigger: AzureFunction = async function (
               
         WHERE 
                 "id" = '${workOrder.workOrderId}';`
-      }
+                        }
 
-      // If user make a call from Beginning Of Day of Tractor Driver
-      else if (workOrder.searchClause === 'submitBeginningDay') {
-        console.log("Updating Beginning Of Day");
+                        // If user make a call from Beginning Of Day of Tractor Driver
+                        else if (workOrder.searchClause === 'submitBeginningDay') {
+                                console.log("Updating Beginning Of Day");
 
-        query = `
+                                query = `
         UPDATE 
                 "Farming_Work_Order"
         SET 
@@ -59,12 +59,12 @@ const httpTrigger: AzureFunction = async function (
         WHERE 
                 "id" = '${workOrder.workOrderId}'
                 ;`
-      }
+                        }
 
-      else if (workOrder.searchClause === 'submitEndingDay') {
-        console.log("Updating Ending Of Day");
+                        else if (workOrder.searchClause === 'submitEndingDay') {
+                                console.log("Updating Ending Of Day");
 
-        let updateEndingOMR = `
+                                let updateEndingOMR = `
         UPDATE 
                 "Motorized_Vehicles"
         SET 
@@ -74,7 +74,7 @@ const httpTrigger: AzureFunction = async function (
         WHERE 
                 "id" = '${workOrder.machineryID}' ;`;
 
-        query = `
+                                query = `
         UPDATE 
                 "Farming_Work_Order"
         SET 
@@ -85,20 +85,20 @@ const httpTrigger: AzureFunction = async function (
                 "id" = '${workOrder.workOrderId}' ;
                 ${updateEndingOMR}
                 `
-      }
+                        }
 
-      else if (workOrder.searchClause === 'closeOutWorkOrder') {
-        console.log("Updating Closing Of Order");
-        let dwr = {
-          workOrderId: workOrder.workOrderId,
-          endingEngineHours: workOrder.endingEngineHours,
-          hoursWorked: workOrder.hoursWorked,
-          notes: workOrder.notes
-        }
+                        else if (workOrder.searchClause === 'closeOutWorkOrder') {
+                                console.log("Updating Closing Of Order");
+                                let dwr = {
+                                        workOrderId: workOrder.workOrderId,
+                                        endingEngineHours: workOrder.endingEngineHours,
+                                        hoursWorked: workOrder.hoursWorked,
+                                        notes: workOrder.notes
+                                }
 
-        let updateDwr = updateDWR(dwr);
+                                let updateDwr = updateDWR(dwr);
 
-        let updateEndingOMR = `
+                                let updateEndingOMR = `
         UPDATE 
                 "Motorized_Vehicles"
         SET 
@@ -108,7 +108,7 @@ const httpTrigger: AzureFunction = async function (
         WHERE 
                 "id" = '${workOrder.machineryID}' ;`;
 
-        query = `
+                                query = `
         UPDATE 
                 "Farming_Work_Order"
         SET 
@@ -128,14 +128,14 @@ const httpTrigger: AzureFunction = async function (
                 
                 ${updateDwr}
                 ${updateEndingOMR}`
-      }
-    }
+                        }
+                }
 
-    if (workOrder.role === 'dispatcher') {
-      // If user make a call from Verify Work Order of Dispatcher
-      console.log("Updating Verify Work Order");
+                if (workOrder.role.includes('Dispatcher')) {
+                        // If user make a call from Verify Work Order of Dispatcher
+                        console.log("Updating Verify Work Order");
 
-      query = `
+                        query = `
         UPDATE 
                 "Farming_Work_Order"
         SET 
@@ -146,33 +146,33 @@ const httpTrigger: AzureFunction = async function (
 
         WHERE 
                 "id" = '${workOrder.customerId}';`
-    }
+                }
 
-    db.connect();
-    console.log(query);
+                db.connect();
+                console.log(query);
 
-    let result = await db.query(query);
-    db.end();
+                let result = await db.query(query);
+                db.end();
 
-    context.res = {
-      status: 200,
-      body: {
-        message: "Close Out Work Order has been updated successfully.",
-        status: 200
-      },
-    };
-    context.done();
-    return;
-  } catch (error) {
-    db.end();
-    context.res = {
-      status: 500,
-      body: {
-        message: error.message,
-      },
-    };
-    return;
-  }
+                context.res = {
+                        status: 200,
+                        body: {
+                                message: "Close Out Work Order has been updated successfully.",
+                                status: 200
+                        },
+                };
+                context.done();
+                return;
+        } catch (error) {
+                db.end();
+                context.res = {
+                        status: 500,
+                        body: {
+                                message: error.message,
+                        },
+                };
+                return;
+        }
 };
 
 export default httpTrigger;

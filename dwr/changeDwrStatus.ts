@@ -1,41 +1,44 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
+import { beginningOfDay } from "./model";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
     req: HttpRequest
 ): Promise<void> {
     const db = new Client(config);
-    let query = ``;
+
     try {
-        const id = req.body.jobId;
-        const role = req.body.role;
+        const updateTicket: beginningOfDay = req.body;
+       let optionalReq = ``;
 
-        console.log('Request::', req.body);
-
-        if (role.includes('Truck Driver')) {
-            query = `
-         UPDATE 
-                 "Customer_Job_Setup"
-         SET 
-                "is_trip_check_filled"  = FALSE,
-                "is_dwr_made"         = TRUE,
-                "is_job_completed"      = FALSE                 
-         WHERE 
-                 "id" = '${id}';`
+        if (updateTicket.notes != null) {
+            optionalReq = `${optionalReq},"notes" = '${updateTicket.notes}'`;
         }
 
-        console.log('Query:', query)
+        let query = `
+    UPDATE 
+        "DWR"
+    SET 
+        "status" = '${updateTicket.status}',
+        "modified_at"   = 'now()'
+         ${optionalReq}
+    WHERE 
+        "id" = '${updateTicket.dwrId}' ;`
+
+        console.log(query);
+
         db.connect();
+
         let result = await db.query(query);
         db.end();
 
         context.res = {
             status: 200,
             body: {
-                message: "Day has begun successfully.",
-                status: 200,
+                message: "DWR has been updated successfully.",
+                status: 200
             },
         };
         context.done();
