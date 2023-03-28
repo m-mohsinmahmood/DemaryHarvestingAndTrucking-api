@@ -28,7 +28,8 @@ export interface beginningOfDay {
     trainee_record_id: string;
     training_record_id: string;
     trainer_record_id: string;
-    status?:string;
-    dwr_id?:string;
+    status?: string;
+    dwr_id?: string;
     employee_id: string;
+    initialyCreated?: boolean;
 }

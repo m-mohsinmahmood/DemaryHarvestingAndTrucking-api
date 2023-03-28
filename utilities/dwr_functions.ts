@@ -101,6 +101,10 @@ export function createDWR(dwr: any) {
         optionalReq = `${optionalReq},"role"`;
         optionalValues = `${optionalValues},'${dwr.role}'`;
     }
+    if (dwr.initialyCreated != null) {
+        optionalReq = `${optionalReq},"initialy_created"`;
+        optionalValues = `${optionalValues},'${dwr.initialyCreated}'`;
+    }
 
     let query = ``;
 
