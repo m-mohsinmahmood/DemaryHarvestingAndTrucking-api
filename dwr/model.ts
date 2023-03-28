@@ -30,4 +30,5 @@ export interface beginningOfDay {
     trainer_record_id: string;
     status?:string;
     dwr_id?:string;
+    employee_id: string;
 }
