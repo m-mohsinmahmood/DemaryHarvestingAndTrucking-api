@@ -8,6 +8,7 @@ const httpTrigger: AzureFunction = async function (
     req: HttpRequest
 ): Promise<void> {
     const db = new Client(config);
+    let where = ``;
 
     try {
         const updateTicket: beginningOfDay = req.body;
@@ -15,6 +16,9 @@ const httpTrigger: AzureFunction = async function (
 
         if (updateTicket.notes != null) {
             optionalReq = `${optionalReq},"notes" = '${updateTicket.notes}'`;
+        }
+        if (updateTicket.employee_id !== '') {
+            where = `${where} AND "employee_id" = '${updateTicket.employee_id}'`;
         }
 
         let query = `
@@ -25,7 +29,8 @@ const httpTrigger: AzureFunction = async function (
         "modified_at"   = 'now()'
          ${optionalReq}
     WHERE 
-        "id" = '${updateTicket.dwrId}' ;`
+        "id" = '${updateTicket.dwrId}'
+        ${where} ;`
 
         console.log(query);
 
