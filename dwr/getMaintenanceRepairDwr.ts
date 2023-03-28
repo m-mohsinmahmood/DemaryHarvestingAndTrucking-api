@@ -56,7 +56,9 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         select 
         mr."id",
         concat(sup.first_name, ' ', sup.last_name) as supervisor_name,
+        sup."id" as supervisor_id,
         concat(mech.first_name, ' ', mech.last_name) as mechanic_name,
+        mech."id" as mechanic_id,
         mr.city,
         mr."state",
         mr."issueCategory",
