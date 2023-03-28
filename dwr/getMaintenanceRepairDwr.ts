@@ -7,6 +7,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
 
     if (type === 'getAssignedDWR') {
         where = `${where} AND mr."assignedById" = '${employee_id}'`;
+        where = `${where} AND mr."iscompleted" = 'TRUE'`;
     }
     else
         where = `${where} AND dwr.employee_id = '${employee_id}'`;
