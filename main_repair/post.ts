@@ -14,6 +14,7 @@ let query = ``
     const repairTicket: repairTicket = req.body;
     const maintenanceTicket: maintenanceTicket = req.body;
     const entity = req.query.entity;
+    let result;
     console.log('REQ:',req.body)
     console.log('ENTITY:',entity)
     if(entity === 'report-issue'){
@@ -77,7 +78,9 @@ let query = ``
                    '${repairTicket.ticketType}',
                    '${repairTicket.empId}',
                    'TRUE'
-                   );
+                   )
+                   RETURNING id as record_id
+                   ;
     `;
     }
     else if(entity === 'maintenance'){
@@ -112,17 +115,20 @@ let query = ``
                    '${maintenanceTicket.ticketType}',
                    '${repairTicket.empId}',
                    'TRUE'
-                   );
+                   )
+                   RETURNING id as record_id
+                   ;
     `;
     }
     console.log('Query::',query)
     db.connect();
-    await db.query(query);
+    result = await db.query(query);
     db.end();
     context.res = {
       status: 200,
       body: {
         status: 200,
+        id:  result.rows[0],
         message: "Issue has beed reported",
       },
     };
@@ -133,6 +139,7 @@ let query = ``
     context.res = {
       status: 500,
       body: {
+    
         message: error.message,
       },
     };

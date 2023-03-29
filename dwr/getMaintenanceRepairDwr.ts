@@ -7,6 +7,9 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
 
     if (type === 'getAssignedDWR') {
         where = `${where} AND mr."assignedById" = '${employee_id}'`;
+        // where = `${where} AND mr."iscompleted" = 'TRUE'`;
+        // where = `${where} AND mr."task_type" = 'TRUE'`;
+        // where = `${where} AND mr."initialy_created" = 'TRUE'`;
     }
     else
         where = `${where} AND dwr.employee_id = '${employee_id}'`;
@@ -24,6 +27,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         select 
         DISTINCT dwr_employees."id" as dwr_id,
         dwr.dwr_type,
+        concat(e.first_name, ' ', e.last_name) as employee_name,
         dwr_employees.created_at
         
         from 
@@ -32,6 +36,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id"
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Maintenance_Repair" mr ON mr."id" = dwr.main_repair_ticket_id 
+        INNER JOIN "Employees" e ON CAST(e."id" as VARCHAR) = dwr_employees.employee_id 
     
         WHERE 
         dwr.is_day_closed= TRUE
@@ -40,22 +45,46 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
     ;`;
     }
 
-    else if (operation === 'getTasks' && module === 'maintenance-repair') {
+    else if (operation === 'getTasks' && module === 'maintenance-repair' && type === 'getMyDWR') {
         getDwr = `
-        select bridge.dwr_id,bridge.task_id, dwr.dwr_type,dwr.status,dwr.notes from 
+        select bridge.dwr_id,bridge.task_id, dwr.dwr_type,dwr.status,dwr.notes, dwr."taskType" from 
         "Bridge_DailyTasks_DWR" bridge
         INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id" AND bridge.dwr_id = '${taskId}'
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         WHERE (dwr.status IS NULL OR dwr.status = 'reassigned' OR dwr.status = '')
         ;`
     }
+    else if (operation === 'getTasks' && module === 'maintenance-repair' && type === 'getAssignedDWR') {
+        getDwr = `
+        select bridge.dwr_id,bridge.task_id, dwr.dwr_type,dwr.status,dwr.notes,dwr."taskType" from 
+        "Bridge_DailyTasks_DWR" bridge
+        INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id" AND bridge.dwr_id = '${taskId}'
+        INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+        INNER JOIN "Maintenance_Repair" mr ON  dwr.main_repair_ticket_id = mr."id"
+        WHERE (dwr.status IS NULL OR dwr.status = 'reassigned' OR dwr.status = '')
+        AND mr."assignedById" = '${employee_id}'
+        AND mr."iscompleted" = TRUE
+        ;`
+    }
+    // else if (operation === 'getTasks' && module === 'maintenance-repair') {
+    //     getDwr = `
+    //     select bridge.dwr_id,bridge.task_id, dwr.dwr_type,dwr.status,dwr.notes from 
+    //     "Bridge_DailyTasks_DWR" bridge
+    //     INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id" AND bridge.dwr_id = '${taskId}'
+    //     INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+    //     WHERE (dwr.status IS NULL OR dwr.status = 'reassigned' OR dwr.status = '')
+    //     INNER JOIN "Maintenance_Repair" mr ON mr."id" = dwr.main_repair_ticket_id 
+    //     ;`
+    // }
 
     else if (operation === 'getTicketData' && module === 'maintenance-repair') {
         getDwr = `
         select 
         mr."id",
         concat(sup.first_name, ' ', sup.last_name) as supervisor_name,
+        sup."id" as supervisor_id,
         concat(mech.first_name, ' ', mech.last_name) as mechanic_name,
+        mech."id" as mechanic_id,
         mr.city,
         mr."state",
         mr."issueCategory",
