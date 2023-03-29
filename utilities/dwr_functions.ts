@@ -105,6 +105,10 @@ export function createDWR(dwr: any) {
         optionalReq = `${optionalReq},"initialy_created"`;
         optionalValues = `${optionalValues},'${dwr.initialyCreated}'`;
     }
+    if (dwr.taskType != null) {
+        optionalReq = `${optionalReq},"taskType"`;
+        optionalValues = `${optionalValues},'${dwr.taskType}'`;
+    }
 
     let query = ``;
 
