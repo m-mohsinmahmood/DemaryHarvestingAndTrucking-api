@@ -1,6 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import * as getEmployeeDwr from "./get";
-import * as getEmployeeDwrByPeriod from "./getByPeriod";
+import * as getByPeriod from "./getByPeriod";
 
 
 
@@ -10,7 +10,8 @@ const httpTrigger: AzureFunction = async function (
   ): Promise<void> {
     switch (req.method) {
                 case "GET":
-                    await getEmployeeDwr.default(context, req);
+                if (req.query.operation === 'PayrollPeriod') await getByPeriod.default(context, req);
+                else await getEmployeeDwr.default(context, req);
                     break;
 
                 default:

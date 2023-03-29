@@ -28,6 +28,7 @@ const httpTrigger: AzureFunction = async function (
         const maintenanceDwr = GetMaintenanceRepairDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module,type);
 
         // const truckingDwr = GetTruckingDwr(employee_id, date, dateType, month, year, role);
+        // const truckingDwr = GetTruckingDwr(employee_id, date, dateType, month, year, role);
 
         let query = ``;
         let result;

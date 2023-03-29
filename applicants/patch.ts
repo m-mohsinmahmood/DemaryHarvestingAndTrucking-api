@@ -111,7 +111,9 @@ const httpTrigger: AzureFunction = async function (
                     "graduation_year",
                     "resume",
                     "employment_period",
+                    "applied_job",
                     "fb_id",
+                    "action_required",
                     "created_at"
               )
             VALUES      
@@ -176,7 +178,9 @@ const httpTrigger: AzureFunction = async function (
                     '${applicant_info.graduation_year}',
                     '${applicant_info.resume}',
                     '${applicant_info.employment_period}',
+                    '${applicant_info.applied_job}',
                     '${firebase_id}',
+                    '${true}',
                     'now()'
               )
             RETURNING id as employee_id
@@ -303,7 +307,7 @@ const httpTrigger: AzureFunction = async function (
       const connectionString = process.env["EMAIL_CONNECTION_STRING"];
       const client = new EmailClient(connectionString);
       const emailMessage: EmailMessage = {
-        sender: "recruiter@dht-usa.com",
+        senderAddress: "recruiter@dht-usa.com",
         content: {
           subject: `${email.subject}`,
           html: `${emailBody}`
@@ -311,13 +315,13 @@ const httpTrigger: AzureFunction = async function (
         recipients: {
           to: [
             {
-              email: `${email.to}`,
+              address: `${email.to}`,
             },
           ],
         },
       };
 
-      const messageId: any = await client.send(emailMessage);
+      await client.beginSend(emailMessage);
     }
 
     //#endregion

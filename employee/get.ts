@@ -44,6 +44,7 @@ const httpTrigger: AzureFunction = async function (
                 "fb_id",
                 "status",
                 "status_step",
+                "action_required",
                 "created_at"
         FROM 
                 "Employees"
