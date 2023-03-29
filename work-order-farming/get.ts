@@ -72,10 +72,10 @@ const httpTrigger: AzureFunction = async function (
             ON "field".id = wo.field_id 
 						
 			INNER JOIN "Employees" emp
-            ON "emp".id = wo.dispatcher_id AND emp."role" = 'Dispatcher'
+            ON "emp".id = wo.dispatcher_id AND emp."role" Like '%Dispatcher%'
 						
 			INNER JOIN "Employees" tractor
-            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" Like '%Tractor Driver%'
 						
     
             Where wo.work_order_is_completed = True  AND 
@@ -104,10 +104,10 @@ const httpTrigger: AzureFunction = async function (
             ON "field".id = wo.field_id 
 						
 			INNER JOIN "Employees" emp
-            ON "emp".id = wo.dispatcher_id AND emp."role" = 'Dispatcher'
+            ON "emp".id = wo.dispatcher_id AND emp."role" Like '%Dispatcher%'
 						
 			INNER JOIN "Employees" tractor
-            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" Like '%Tractor Driver%'
     
             Where wo.work_order_is_completed = True  AND 
             "work_order_status" = 'pending' And "work_order_close_out"=True And
@@ -150,10 +150,10 @@ const httpTrigger: AzureFunction = async function (
             ON "field".id = wo.field_id 
 						
 			INNER JOIN "Employees" emp
-            ON "emp".id = wo.dispatcher_id AND emp."role" = 'Dispatcher'
+            ON "emp".id = wo.dispatcher_id AND emp."role" Like '%Dispatcher%'
 						
 			INNER JOIN "Employees" tractor
-            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" Like '%Tractor Driver%'
 						
     
             Where wo.work_order_is_completed = True  AND 
@@ -182,10 +182,10 @@ const httpTrigger: AzureFunction = async function (
             ON "field".id = wo.field_id 
 						
 			INNER JOIN "Employees" emp
-            ON "emp".id = wo.dispatcher_id AND emp."role" = 'Dispatcher'
+            ON "emp".id = wo.dispatcher_id AND emp."role" Like '%Dispatcher%'
 						
 			INNER JOIN "Employees" tractor
-            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" Like '%Tractor Driver%'
     
             Where wo.work_order_is_completed = True  AND 
             "work_order_status" = 'pending' And "work_order_close_out"=True And
@@ -227,10 +227,10 @@ const httpTrigger: AzureFunction = async function (
             ON "field".id = wo.field_id 
 						
 			INNER JOIN "Employees" emp
-            ON "emp".id = wo.dispatcher_id AND emp."role" = 'Dispatcher'
+            ON "emp".id = wo.dispatcher_id AND emp."role" Like '%Dispatcher%'
 						
 			INNER JOIN "Employees" tractor
-            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" Like '%Tractor Driver%'
     
             Where wo.work_order_is_completed = True  AND 
             "work_order_status" = 'verified' And "work_order_close_out"=True And
@@ -258,10 +258,10 @@ const httpTrigger: AzureFunction = async function (
             ON "field".id = wo.field_id 
 						
 			INNER JOIN "Employees" emp
-            ON "emp".id = wo.dispatcher_id AND emp."role" = 'Dispatcher'
+            ON "emp".id = wo.dispatcher_id AND emp."role" Like '%Dispatcher%'
 						
 			INNER JOIN "Employees" tractor
-            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" Like '%Tractor Driver%'
     
             Where wo.work_order_is_completed = True  AND 
             "work_order_status" = 'verified' And "work_order_close_out"=True And
@@ -309,7 +309,7 @@ const httpTrigger: AzureFunction = async function (
             ON "field".id = wo.field_id
 
             INNER JOIN "Employees" tractor
-            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" Like '%Tractor Driver%'
 						
             Where wo.work_order_is_completed = FALSE AND 
             "work_order_status" = 'sent' AND
@@ -340,7 +340,7 @@ const httpTrigger: AzureFunction = async function (
             ON "field".id = wo.field_id
 
             INNER JOIN "Employees" tractor
-            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" Like '%Tractor Driver%'
 						
             Where wo.work_order_is_completed = FALSE AND 
             dispatcher_id='${employeeId}' AND
@@ -390,7 +390,7 @@ const httpTrigger: AzureFunction = async function (
             ON "field".id = wo.field_id
 
             INNER JOIN "Employees" tractor
-            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" Like '%Tractor Driver%'
 						
             Where wo.work_order_is_completed = FALSE AND 
             "work_order_status" = 'sent' 
@@ -420,8 +420,7 @@ const httpTrigger: AzureFunction = async function (
             ON "field".id = wo.field_id
 
             INNER JOIN "Employees" tractor
-            ON "tractor".id = wo.tractor_driver_id AND tractor."role" = 'Tractor Driver'
-						
+            ON "tractor".id = wo.tractor_driver_id AND tractor."role" Like '%Tractor Driver%'
             Where wo.work_order_is_completed = FALSE AND 
             "work_order_status" = 'sent'
             AND tractor_driver_id='${employeeId}' AND
