@@ -428,7 +428,6 @@ const httpTrigger: AzureFunction = async function (
             ${whereClause};`;
         }
 
-
         //////////////////////////////////////////////////////
         // If we make a call from Farming Close Out Work Order
         if (searchClause === 'close_out_work_order') {
