@@ -77,6 +77,7 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         select 
         DISTINCT dwr_employees."id" as dwr_id,
         dwr.dwr_type,
+        concat(e.first_name, ' ', e.last_name) as employee_name,
         dwr_employees.created_at
         
         from 
@@ -85,7 +86,8 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id"
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Training" training ON dwr.training_record_id = training."id"
-    
+        INNER JOIN "Employees" e ON CAST(e."id" as VARCHAR) = dwr_employees.employee_id 
+
         WHERE 
         dwr.is_day_closed= TRUE
         AND dwr.employee_id = '${employee_id}'
@@ -95,6 +97,7 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         select 
         DISTINCT dwr_employees."id" as dwr_id,
         dwr.dwr_type,
+        concat(e.first_name, ' ', e.last_name) as employee_name,
         dwr_employees.created_at
         
         from 
@@ -103,6 +106,8 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id"
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Trainee" trainee ON dwr.trainee_record_id = trainee."id"
+       INNER JOIN "Employees" e ON CAST(e."id" as VARCHAR) = dwr_employees.employee_id 
+
     
         WHERE 
         dwr.is_day_closed= TRUE
@@ -113,6 +118,7 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         select 
         DISTINCT dwr_employees."id" as dwr_id,
         dwr.dwr_type,
+        concat(e.first_name, ' ', e.last_name) as employee_name,
         dwr_employees.created_at
         
         from 
@@ -120,8 +126,8 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         "Bridge_DailyTasks_DWR" bridge 
         INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id"
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
-        INNER JOIN "Trainer_Training_Tasks" trainer_task ON dwr.trainer_record_id = trainer_task."id"
-    
+        INNER JOIN "Trainer_Training_Tasks" trainer_task ON dwr.trainer_record_id = trainer_task."id"              INNER JOIN "Employees" e ON CAST(e."id" as VARCHAR) = dwr_employees.employee_id 
+
         WHERE 
         dwr.is_day_closed= TRUE
         AND dwr.employee_id = '${employee_id}'

@@ -17,7 +17,7 @@ const httpTrigger: AzureFunction = async function (
         if (updateTicket.notes != null) {
             optionalReq = `${optionalReq},"notes" = '${updateTicket.notes}'`;
         }
-        if (updateTicket.employee_id !== '') {
+        if (updateTicket.employee_id !== '' &&  updateTicket.employee_id !== undefined) {
             where = `${where} AND "employee_id" = '${updateTicket.employee_id}'`;
         }
 
