@@ -100,6 +100,19 @@ const httpTrigger: AzureFunction = async function (
         "assignedToId" = '${employee_id}' AND "ticketType" = '${ticketType}' AND "isassigned" = TRUE AND "iscompleted" = FALSE AND "iscontinue" = TRUE
         ;`;
       }
+
+      // to get all ticket (pausedd & assigned)
+      else if(entity === "all"){
+        query = `
+        SELECT 
+        *
+        FROM 
+              "Maintenance_Repair"
+        WHERE 
+              "assignedToId" = '${employee_id}' AND "ticketType" = '${ticketType}' AND "isassigned" = TRUE AND "iscompleted" = FALSE
+          ;`
+      }
+
     // to get the continued ticket record
       else if (entity === "continuedTicket") {
         query = `
