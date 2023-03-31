@@ -7,9 +7,6 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
 
     if (type === 'getAssignedDWR') {
         where = `${where} AND mr."assignedById" = '${employee_id}'`;
-        // where = `${where} AND mr."iscompleted" = 'TRUE'`;
-        // where = `${where} AND mr."task_type" = 'TRUE'`;
-        // where = `${where} AND mr."initialy_created" = 'TRUE'`;
     }
     else
         where = `${where} AND dwr.employee_id = '${employee_id}'`;
@@ -20,6 +17,34 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
     }
     else {
         where = `${where} AND CAST(dwr_employees.created_at AS Date) = '${date}'`
+    }
+
+    if (operation === 'getAllEmployeesDWR') {
+        getDwr = `
+        SELECT
+        dwr_employees.employee_id,
+        COUNT ( "dwr_employees".ID ),
+        CONCAT ( employees.first_name, ' ', employees.last_name ) AS employee_name,
+        dwr_employees.created_at :: DATE,
+        SUM (
+            ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.modified_at - dwr_employees.created_at ) ) / 3600 ) AS NUMERIC ), 2 ) 
+        ) AS total_hours 
+        
+        FROM
+        "DWR_Employees" dwr_employees
+        INNER JOIN "Employees" employees ON dwr_employees.employee_id = employees.ID :: VARCHAR 
+
+        WHERE 
+        dwr_employees.is_active = FALSE
+        ${where}
+
+        GROUP BY
+	    dwr_employees.employee_id,
+	    dwr_employees.created_at :: DATE,
+	    CONCAT ( employees.first_name, ' ', employees.last_name ) 
+
+        ORDER BY created_at DESC
+    ;`;
     }
 
     if (operation === 'getDWR') {
@@ -66,16 +91,6 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         AND mr."iscompleted" = TRUE
         ;`
     }
-    // else if (operation === 'getTasks' && module === 'maintenance-repair') {
-    //     getDwr = `
-    //     select bridge.dwr_id,bridge.task_id, dwr.dwr_type,dwr.status,dwr.notes from 
-    //     "Bridge_DailyTasks_DWR" bridge
-    //     INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id" AND bridge.dwr_id = '${taskId}'
-    //     INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
-    //     WHERE (dwr.status IS NULL OR dwr.status = 'reassigned' OR dwr.status = '')
-    //     INNER JOIN "Maintenance_Repair" mr ON mr."id" = dwr.main_repair_ticket_id 
-    //     ;`
-    // }
 
     else if (operation === 'getTicketData' && module === 'maintenance-repair') {
         getDwr = `
