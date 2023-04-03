@@ -58,24 +58,25 @@ const httpTrigger: AzureFunction = async function (
                 return acc
             }, {}))
 
-            const dwr = Object.values(merged.reduce((acc, curr) => {
-                const key = curr.employee_id;
-                if (!acc[key]) {
-                    acc[key] = {
-                        key: [curr]
-                    }
+            const dwr = merged.reduce((acc, employee) => {
+                const existingEmployee = acc.find(e => e.employee_id === employee.employee_id);
+                if (existingEmployee) {
+                  existingEmployee.data.push(employee);
+                } else {
+                  acc.push({
+                    employee_id: employee.employee_id,
+                    data: [employee]
+                  });
                 }
-                acc[key].total_hours += curr.total_hours,
-                acc[key].module = curr.module
-                return acc
-            }, {}))
+                return acc;
+              }, []);
+              
 
             console.log(dwr);
 
             resp = {
                 dwrSummary: totals,
-                // dwr: merged,
-                test: dwr
+                dwr: dwr
             };
         }
         if (req.query.operation === 'getDWR') {
