@@ -5,11 +5,11 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
 
     let where = ``;
 
-    if (type === 'getAssignedDWR') {
-        where = `${where} AND mr."assignedById" = '${employee_id}'`;
-    }
-    else
-        where = `${where} AND dwr.employee_id = '${employee_id}'`;
+    // if (type === 'getAssignedDWR') {
+    //     where = `${where} AND mr."assignedById" = '${employee_id}'`;
+    // }
+    // else
+    //     where = `${where} AND dwr.employee_id = '${employee_id}'`;
 
     if (dateType === 'month') {
         where = `${where} AND EXTRACT(MONTH FROM dwr_employees.created_at) = '${month}'`
@@ -19,32 +19,57 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         where = `${where} AND CAST(dwr_employees.created_at AS Date) = '${date}'`
     }
 
-    if (operation === 'getAllEmployeesDWR') {
+    if (operation === 'getDWRToVerify') {
         getDwr = `
         SELECT
-        dwr_employees.employee_id,
-        COUNT ( "dwr_employees".ID ),
-        CONCAT ( employees.first_name, ' ', employees.last_name ) AS employee_name,
-        dwr_employees.created_at :: DATE,
+        Distinct(dwr_employees.employee_id),
+        concat(employees.first_name, ' ', employees.last_name) AS employee_name,
         SUM (
             ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.modified_at - dwr_employees.created_at ) ) / 3600 ) AS NUMERIC ), 2 ) 
-        ) AS total_hours 
+        ) AS total_hours ,
+            mr."assignedById" AS assigned_by_id,
+        concat(dispatcher.first_name, ' ', dispatcher.last_name) AS supervisor_name,
+        dwr_employees."module" AS module,
+        dwr_employees.created_at :: DATE
         
-        FROM
-        "DWR_Employees" dwr_employees
+    FROM
+        "Bridge_DailyTasks_DWR" bridge
+        INNER JOIN "DWR_Employees" dwr_employees ON dwr_employees."id" = bridge.dwr_id 
+        INNER JOIN "DWR" dwr ON dwr."id" = bridge.task_id
+        INNER JOIN "Maintenance_Repair" mr ON mr."id" = dwr.main_repair_ticket_id 
         INNER JOIN "Employees" employees ON dwr_employees.employee_id = employees.ID :: VARCHAR 
+        INNER JOIN "Employees" dispatcher ON mr."assignedById"::VARCHAR = dispatcher.ID :: VARCHAR 
 
         WHERE 
         dwr_employees.is_active = FALSE
         ${where}
-
-        GROUP BY
-	    dwr_employees.employee_id,
-	    dwr_employees.created_at :: DATE,
-	    CONCAT ( employees.first_name, ' ', employees.last_name ) 
-
-        ORDER BY created_at DESC
-    ;`;
+        AND dwr_employees.dwr_verified = FALSE
+        AND mr."assignedById" = (select mr."assignedById" 
+    
+            FROM
+            "Bridge_DailyTasks_DWR" bridge
+            INNER JOIN "DWR_Employees" dwr_employees ON dwr_employees."id" = bridge.dwr_id 
+            INNER JOIN "DWR" dwr ON dwr."id" = bridge.task_id
+            INNER JOIN "Maintenance_Repair" mr ON mr."id" = dwr.main_repair_ticket_id 
+    
+            where  
+            dwr_employees.is_active = FALSE
+            AND dwr."taskType" = 'work done' 
+            ORDER BY mr.createdat DESC LIMIT 1
+            )
+        
+            GROUP BY
+            dwr_employees.employee_id,
+            dwr_employees.created_at :: DATE,
+            concat(employees.first_name, ' ', employees.last_name),
+            concat(dispatcher.first_name, ' ', dispatcher.last_name),
+            mr."assignedById",
+            dwr_employees."module"
+        
+        ORDER BY
+            created_at DESC;
+       
+        `;
     }
 
     if (operation === 'getDWR') {

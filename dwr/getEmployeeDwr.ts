@@ -24,9 +24,9 @@ const httpTrigger: AzureFunction = async function (
         const type: string = req.query.type
         // const employee_id: string = req.query.employee_id
 
-        const trainingDwr = GetTrainingDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module,type);
-        const farmingDwr = GetFarmingDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module,type);
-        const maintenanceDwr = GetMaintenanceRepairDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module,type);
+        const trainingDwr = GetTrainingDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module, type);
+        const farmingDwr = GetFarmingDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module, type);
+        const maintenanceDwr = GetMaintenanceRepairDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module, type);
 
         // const truckingDwr = GetTruckingDwr(employee_id, date, dateType, month, year, role);
         // const truckingDwr = GetTruckingDwr(employee_id, date, dateType, month, year, role);
@@ -35,6 +35,49 @@ const httpTrigger: AzureFunction = async function (
         let result;
 
         let resp;
+        if (req.query.operation === 'getDWRToVerify') {
+
+            query = `${trainingDwr} ${farmingDwr} ${maintenanceDwr}`;
+            console.log(query);
+            db.connect();
+            result = await db.query(query);
+
+            let merged = result[0].rows.concat(result[1].rows);
+
+            const totals = Object.values(merged.reduce((acc, curr) => {
+                const key = curr.employee_id;
+                const employee_name = curr.employee_name;
+                if (!acc[key]) {
+                    acc[key] = {
+                        employee_Id: key,
+                        total_hours: 0,
+                        employee_name: employee_name
+                    }
+                }
+                acc[key].total_hours += +curr.total_hours
+                return acc
+            }, {}))
+
+            const dwr = Object.values(merged.reduce((acc, curr) => {
+                const key = curr.employee_id;
+                if (!acc[key]) {
+                    acc[key] = {
+                        key: [curr]
+                    }
+                }
+                acc[key].total_hours += curr.total_hours,
+                acc[key].module = curr.module
+                return acc
+            }, {}))
+
+            console.log(dwr);
+
+            resp = {
+                dwrSummary: totals,
+                // dwr: merged,
+                test: dwr
+            };
+        }
         if (req.query.operation === 'getDWR') {
 
             query = `${trainingDwr} ${farmingDwr} ${maintenanceDwr}`;
