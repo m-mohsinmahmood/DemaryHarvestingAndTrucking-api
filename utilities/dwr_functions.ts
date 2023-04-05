@@ -89,6 +89,10 @@ export function createDWR(dwr: any) {
         optionalReq = `${optionalReq},"trainer_record_id"`;
         optionalValues = `${optionalValues},'${dwr.trainer_record_id}'`;
     }
+    if (dwr.other_record_id != null) {
+        optionalReq = `${optionalReq},"other_record_id"`;
+        optionalValues = `${optionalValues},'${dwr.other_record_id}'`;
+    }
     if (dwr.evaluation_type != null) {
         optionalReq = `${optionalReq},"evaluation_type"`;
         optionalValues = `${optionalValues},'${dwr.evaluation_type}'`;

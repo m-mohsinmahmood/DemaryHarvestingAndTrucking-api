@@ -8,6 +8,7 @@ const httpTrigger: AzureFunction = async function (
     req: HttpRequest
 ): Promise<void> {
     const db = new Client(config);
+    let result;
 
     try {
         const data: Data = req.body;
@@ -16,6 +17,15 @@ const httpTrigger: AzureFunction = async function (
         let query = ``;
 
         query = `
+        UPDATE 
+            "DWR_Employees"
+                    
+            SET 
+            "state" = '${data.state}'
+                         
+            WHERE 
+            "id" = '${data.active_check_in_id}' ;
+
             INSERT INTO 
                         "Other" 
                         ("employee_id", 
@@ -30,28 +40,24 @@ const httpTrigger: AzureFunction = async function (
                         '${data.state}', 
                         '${data.module}', 
                         '${data.notes_other}'
-                         );
+                         )
+                         RETURNING id as record_id
+                         ;
 
 
-            UPDATE 
-            "DWR_Employees"
-                    
-            SET 
-            "state" = '${data.state}'
-                         
-            WHERE 
-            "id" = '${data.active_check_in_id}' ;
+            
           `;
 
         console.log(query);
 
         db.connect();
-        await db.query(query);
+      result =  await db.query(query);
         db.end();
 
         context.res = {
             status: 200,
             body: {
+                id:  result[1].rows[0],
                 status: 200,
                 message: "Otder Data has been created successfully",
             },
