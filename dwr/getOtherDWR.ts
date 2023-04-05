@@ -65,18 +65,18 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
             
         json_agg(
         json_build_object(
-        'ticket_id', mr.id,
+        'ticket_id', ot.id,
         'employee_id', emp.id,
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
-        'state', mr."state",
-        'supervisor_id', mr."assignedById"
+        'state', ot."state",
+        'supervisor_id', ot.supervisor_id
         )) as tickets
         
         from "DWR_Employees" dwr_employees
         
         INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employees."id" = bridge.dwr_id
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
-        INNER JOIN "Maintenance_Repair" mr ON dwr.main_repair_ticket_id = mr."id"
+        INNER JOIN "Other" ot ON dwr.other_record_id = ot."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
 
         WHERE dwr_employees.employee_id = '${employee_id}'

@@ -70,12 +70,12 @@ const httpTrigger: AzureFunction = async function (
 
         if (req.query.operation === 'getDWRDetails') {
 
-            query = `${farmingDwr} ${maintenanceDwr}`;
+            query = `${farmingDwr} ${maintenanceDwr}  ${otherDwr}`;
             console.log(query);
             db.connect();
             result = await db.query(query);
 
-            let merged = result[0].rows.concat(result[1].rows);
+            let merged = result[0].rows.concat(result[1].rows, result[2].rows);
 
             resp = {
                 dwr: merged
