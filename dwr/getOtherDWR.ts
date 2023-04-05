@@ -34,18 +34,18 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         "Bridge_DailyTasks_DWR" bridge
         INNER JOIN "DWR_Employees" dwr_employees ON dwr_employees."id" = bridge.dwr_id 
         INNER JOIN "DWR" dwr ON dwr."id" = bridge.task_id
-        INNER JOIN "Maintenance_Repair" mr ON mr."id" = dwr.main_repair_ticket_id 
+        INNER JOIN "Other" ot ON ot."id" = dwr.other_record_id 
         INNER JOIN "Employees" employees ON dwr_employees.employee_id = employees.ID :: VARCHAR 
 
         WHERE 
         dwr_employees.is_active = FALSE
         ${where}
         AND dwr_employees.dwr_verified = FALSE
-            GROUP BY
-            dwr_employees.employee_id,
-            dwr_employees.created_at :: DATE,
-            concat(employees.first_name, ' ', employees.last_name),
-            dwr_employees."module"
+        GROUP BY
+        dwr_employees.employee_id,
+        dwr_employees.created_at :: DATE,
+        concat(employees.first_name, ' ', employees.last_name),
+        dwr_employees."module"
         
         ORDER BY
             created_at DESC;
