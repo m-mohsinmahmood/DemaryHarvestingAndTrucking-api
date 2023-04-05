@@ -27,8 +27,6 @@ export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month:
         SUM (
             ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.modified_at - dwr_employees.created_at ) ) / 3600 ) AS NUMERIC ), 2 ) 
         ) AS total_hours ,
-            mr."dispatcher_id" AS assigned_by_id,
-        concat(dispatcher.first_name, ' ', dispatcher.last_name) AS supervisor_name,
         dwr_employees."module" AS module,
         dwr_employees.created_at :: DATE
         
@@ -38,36 +36,20 @@ export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month:
         INNER JOIN "DWR" dwr ON dwr."id" = bridge.task_id
         INNER JOIN "Farming_Work_Order" mr ON mr."id" = dwr.work_order_id 
         INNER JOIN "Employees" employees ON dwr_employees.employee_id = employees.ID :: VARCHAR 
-        INNER JOIN "Employees" dispatcher ON mr.dispatcher_id::VARCHAR = dispatcher.ID :: VARCHAR 
         
         WHERE 
         dwr_employees.is_active = FALSE
         ${where}
         AND dwr_employees.dwr_verified = FALSE
-        AND mr.dispatcher_id = (
-        select mr.dispatcher_id 
-    
-            FROM
-            "Bridge_DailyTasks_DWR" bridge
-            INNER JOIN "DWR_Employees" dwr_employees ON dwr_employees."id" = bridge.dwr_id 
-            INNER JOIN "DWR" dwr ON dwr."id" = bridge.task_id
-            INNER JOIN "Farming_Work_Order" mr ON mr."id" = dwr.work_order_id 
-    
-            where  
-            dwr_employees.is_active = FALSE
-            ORDER BY mr.created_at DESC LIMIT 1
-            )
-        
-            GROUP BY
-            dwr_employees.employee_id,
-            dwr_employees.created_at :: DATE,
-            concat(employees.first_name, ' ', employees.last_name),
-            concat(dispatcher.first_name, ' ', dispatcher.last_name),
-            dwr_employees."module",
-            mr.dispatcher_id
+
+        GROUP BY
+        dwr_employees.employee_id,
+        dwr_employees.created_at :: DATE,
+        concat(employees.first_name, ' ', employees.last_name),
+        dwr_employees."module"
         
         ORDER BY
-            created_at DESC
+        created_at DESC
     ;`;
     }
 

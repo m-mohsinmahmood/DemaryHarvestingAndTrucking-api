@@ -3,7 +3,7 @@ import { Client } from "pg";
 import { config } from "../services/database/database.config";
 import { GetFarmingDwr } from "./getFarmingDWR";
 import { GetTrainingDwr } from "./getTrainingDwr";
-import { GetTruckingDwr } from "./getTruckingDwr";
+// import { GetTruckingDwr } from "./getTruckingDwr";
 import { GetMaintenanceRepairDwr } from "./getMaintenanceRepairDwr";
 
 const httpTrigger: AzureFunction = async function (
@@ -47,11 +47,14 @@ const httpTrigger: AzureFunction = async function (
             const totals = Object.values(merged.reduce((acc, curr) => {
                 const key = curr.employee_id;
                 const employee_name = curr.employee_name;
+                const supervisor_name = curr.supervisor_name;
+
                 if (!acc[key]) {
                     acc[key] = {
                         employee_Id: key,
                         total_hours: 0,
-                        employee_name: employee_name
+                        employee_name: employee_name,
+                        supervisor_name:supervisor_name
                     }
                 }
                 acc[key].total_hours += +curr.total_hours
@@ -72,7 +75,7 @@ const httpTrigger: AzureFunction = async function (
               }, []);
               
 
-            console.log(dwr);
+            // console.log(dwr);
 
             resp = {
                 dwrSummary: totals,

@@ -27,8 +27,6 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         SUM (
             ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.modified_at - dwr_employees.created_at ) ) / 3600 ) AS NUMERIC ), 2 ) 
         ) AS total_hours ,
-            mr."assignedById" AS assigned_by_id,
-        concat(dispatcher.first_name, ' ', dispatcher.last_name) AS supervisor_name,
         dwr_employees."module" AS module,
         dwr_employees.created_at :: DATE
         
@@ -38,38 +36,24 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         INNER JOIN "DWR" dwr ON dwr."id" = bridge.task_id
         INNER JOIN "Maintenance_Repair" mr ON mr."id" = dwr.main_repair_ticket_id 
         INNER JOIN "Employees" employees ON dwr_employees.employee_id = employees.ID :: VARCHAR 
-        INNER JOIN "Employees" dispatcher ON mr."assignedById"::VARCHAR = dispatcher.ID :: VARCHAR 
 
         WHERE 
         dwr_employees.is_active = FALSE
         ${where}
         AND dwr_employees.dwr_verified = FALSE
-        AND mr."assignedById" = (select mr."assignedById" 
-    
-            FROM
-            "Bridge_DailyTasks_DWR" bridge
-            INNER JOIN "DWR_Employees" dwr_employees ON dwr_employees."id" = bridge.dwr_id 
-            INNER JOIN "DWR" dwr ON dwr."id" = bridge.task_id
-            INNER JOIN "Maintenance_Repair" mr ON mr."id" = dwr.main_repair_ticket_id 
-    
-            where  
-            dwr_employees.is_active = FALSE
-            AND dwr."taskType" = 'work done' 
-            ORDER BY mr.createdat DESC LIMIT 1
-            )
-        
             GROUP BY
             dwr_employees.employee_id,
             dwr_employees.created_at :: DATE,
             concat(employees.first_name, ' ', employees.last_name),
-            concat(dispatcher.first_name, ' ', dispatcher.last_name),
-            mr."assignedById",
             dwr_employees."module"
         
         ORDER BY
             created_at DESC;
-       
         `;
+    }
+
+    else if (operation === 'getDWRDetails') {
+
     }
 
     if (operation === 'getDWR') {
