@@ -54,34 +54,32 @@ const httpTrigger: AzureFunction = async function (
                         employee_Id: key,
                         total_hours: 0,
                         employee_name: employee_name,
-                        supervisor_name:supervisor_name
+                        supervisor_name: supervisor_name
                     }
                 }
                 acc[key].total_hours += +curr.total_hours
                 return acc
             }, {}))
 
-            const dwr = merged.reduce((acc, employee) => {
-                const existingEmployee = acc.find(e => e.employee_id === employee.employee_id);
-                if (existingEmployee) {
-                  existingEmployee.data.push(employee);
-                } else {
-                  acc.push({
-                    employee_id: employee.employee_id,
-                    data: [employee]
-                  });
-                }
-                return acc;
-              }, []);
-              
-
-            // console.log(dwr);
-
             resp = {
-                dwrSummary: totals,
-                dwr: dwr
+                dwrSummary: totals
             };
         }
+
+        if (req.query.operation === 'getDWRDetails') {
+
+            query = `${farmingDwr} ${maintenanceDwr}`;
+            console.log(query);
+            db.connect();
+            result = await db.query(query);
+
+            let merged = result[0].rows.concat(result[1].rows);
+
+            resp = {
+                dwr: merged
+            };
+        }
+
         if (req.query.operation === 'getDWR') {
 
             query = `${trainingDwr} ${farmingDwr} ${maintenanceDwr}`;
@@ -90,7 +88,6 @@ const httpTrigger: AzureFunction = async function (
             result = await db.query(query);
 
             resp = {
-                // farming: result[0].rows,
                 // trucking: result[1].rows
                 // training: result[0].rows
                 trainingData: result[0].rows,
