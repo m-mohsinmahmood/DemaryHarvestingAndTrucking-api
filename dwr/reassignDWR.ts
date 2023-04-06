@@ -1,7 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { beginningOfDay } from "./model";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -10,37 +9,19 @@ const httpTrigger: AzureFunction = async function (
     const db = new Client(config);
 
     try {
-        const data: beginningOfDay = req.body;
-        const date: string = req.query.date;
-        const dateType: string = req.query.dateType;
-        const month: string = req.query.month;
-        const year: string = req.query.year;
-
-        let where = ``;
+        const id: string = req.query.id;
+      
         db.connect();
-
-        if (dateType === 'month') {
-            where = `${where} AND EXTRACT(MONTH FROM created_at) = '${month}'`
-            where = `${where} AND EXTRACT(YEAR FROM created_at) = '${year}'`
-        }
-        else {
-            where = `${where} AND CAST(created_at AS Date) = '${date}'`
-        }
 
         let query = ` 
         UPDATE 
         "DWR_Employees"
         
         SET 
-        "dwr_status" = 'verified',
+        "dwr_status" = 'reassigned',
         "modified_at" = 'now()'
 
-        where 
-                        
-        is_active = FALSE
-        ${where}
-        AND employee_id = '${data.employeeId}'
-        AND dwr_status = 'pendingVerification'
+        where  id = '${id}'
             ;`;
 
         let result = await db.query(query);

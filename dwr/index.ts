@@ -5,6 +5,8 @@ import * as beginningOfDay from "./get";
 import * as getDWRById from "./getById";
 import * as getEmployeeDwr from "./getEmployeeDwr";
 import * as changeDwrStatus from "./changeDwrStatus";
+import * as verifyDWR from "./verifyDWR";
+import * as reassignDWR from "./reassignDWR";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -23,6 +25,9 @@ const httpTrigger: AzureFunction = async function (
 
         case "PATCH":
             if (req.query.operation === 'changeDwrStatus') await changeDwrStatus.default(context, req);
+            else if (req.query.operation === 'verifyDwr') await verifyDWR.default(context, req);
+            else if (req.query.operation === 'reassignDwr') await reassignDWR.default(context, req);
+
             else
                 await closeDwr.default(context, req);
             break;

@@ -1,7 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { log } from "console";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -12,27 +11,23 @@ const httpTrigger: AzureFunction = async function (
   try {
     const id: string = req.query.id;
 
-    let getById = `
+    let query = `
       SELECT 
-        *
+      *
       FROM 
-        "Trucking_Delivery_Ticket"
-      WHERE 
-        "id" = '${id}'
-    `;
+      "Trucking_Delivery_Ticket"
+      WHERE "id" = '${id}';`;
 
-    db.connect().catch(err => {
-      throw new Error(`Failed to connect to database: ${err.message}`);
-    });
 
-    console.log(getById);
-    let result = await db.query(getById);
-    let resp;
-    if (result.rows.length > 0) resp = result.rows[0];
-    else
-      resp = {
-        message: "No ticket exists with this id.",
-      };
+    console.log(query);
+
+    db.connect();
+
+    let result = await db.query(query);
+
+    let resp = {
+      ticket: result.rows[0]
+    };
 
     db.end();
 
@@ -41,13 +36,16 @@ const httpTrigger: AzureFunction = async function (
       body: resp,
     };
 
+    context.done();
     return;
+
   } catch (err) {
     db.end();
     context.res = {
       status: 500,
-      body: err.message,
+      body: err,
     };
+    context.done();
     return;
   }
 };
