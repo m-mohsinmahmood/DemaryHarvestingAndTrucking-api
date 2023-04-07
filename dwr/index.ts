@@ -15,7 +15,7 @@ const httpTrigger: AzureFunction = async function (
     switch (req.method) {
         case "GET":
             if (req.query.id) await getDWRById.default(context, req);
-            if (req.query.operation === 'getDWRDetails' || req.query.operation === 'getDWRToVerify') await getEmployeeDwr.default(context, req);
+            if (req.query.operation === 'getDWRList' || req.query.operation === 'getDWRDetails' || req.query.operation === 'getDWRToVerify') await getEmployeeDwr.default(context, req);
             else await beginningOfDay.default(context, req);
             break;
 

@@ -22,11 +22,13 @@ const httpTrigger: AzureFunction = async function (
         const taskId: string = req.query.taskId
         const module: string = req.query.dwr_type
         const type: string = req.query.type
+        const status: string = req.query.status
+        const operation: string = req.query.operation
 
         // const trainingDwr = GetTrainingDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module, type);
-        const farmingDwr = GetFarmingDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module, type);
-        const maintenanceDwr = GetMaintenanceRepairDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module, type);
-        const otherDwr = GetOtherDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module, type);
+        const farmingDwr = GetFarmingDwr(employee_id, date, dateType, month, year, operation, status);
+        const maintenanceDwr = GetMaintenanceRepairDwr(employee_id, date, dateType, month, year, operation, status);
+        const otherDwr = GetOtherDwr(employee_id, date, dateType, month, year, operation, status);
 
         let query = ``;
         let result;
@@ -64,6 +66,20 @@ const httpTrigger: AzureFunction = async function (
         }
 
         if (req.query.operation === 'getDWRDetails') {
+
+            query = `${farmingDwr} ${maintenanceDwr}  ${otherDwr}`;
+            console.log(query);
+            db.connect();
+            result = await db.query(query);
+
+            let merged = result[0].rows.concat(result[1].rows, result[2].rows);
+
+            resp = {
+                dwr: merged
+            };
+        }
+
+        if (req.query.operation === 'getDWRList') {
 
             query = `${farmingDwr} ${maintenanceDwr}  ${otherDwr}`;
             console.log(query);

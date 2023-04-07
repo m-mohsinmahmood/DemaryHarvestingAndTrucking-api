@@ -1,5 +1,5 @@
 
-export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: any, year: any, role: any, operation, taskId: any, module: any, type: any) {
+export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: any, year: any, operation, status: any) {
 
     let getDwr = ``;
 
@@ -89,6 +89,50 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         
         ORDER BY dwr_employees.created_at ASC;
         `;
+    }
+
+    else if (operation === 'getDWRList') {
+        if (status !== 'all') {
+            status = `AND dwr_employees.dwr_status = '${status}'`;
+        }
+        else
+            status = ``;
+
+        getDwr = `
+        select 
+        dwr_employees.id,
+        dwr_employees.created_at as login_time,
+        dwr_employees.modified_at as logout_time,
+        dwr_employees."module",
+            SUM (
+                ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.modified_at - dwr_employees.created_at ) ) / 3600 ) AS NUMERIC ), 2 ) 
+            ) AS total_hours,
+            
+        json_agg(
+        json_build_object(
+        'ticket_id', ot.id,
+        'employee_id', emp.id,
+        'employee_name', concat(emp.first_name, ' ', emp.last_name),
+        'state', ot."state",
+        'supervisor_id', ot.supervisor_id
+        )) as tickets
+        
+        from "DWR_Employees" dwr_employees
+        
+        INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employees."id" = bridge.dwr_id
+        INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+        INNER JOIN "Other" ot ON dwr.other_record_id = ot."id"
+        INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
+        
+        WHERE dwr_employees.employee_id = '${employee_id}'
+        ${where}
+        AND dwr_employees.is_active = FALSE
+        ${status}
+
+        GROUP BY dwr_employees.id
+
+        ORDER BY dwr_employees.created_at ASC
+        ;`;
     }
 
     return getDwr;
