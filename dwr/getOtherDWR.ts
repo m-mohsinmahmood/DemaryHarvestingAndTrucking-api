@@ -19,6 +19,12 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         where = `${where} AND CAST(dwr_employees.created_at AS Date) = '${date}'`
     }
 
+    if (status !== 'all') {
+        where = `${where} AND dwr_employees.dwr_status = '${status}'`;
+    }
+    else
+        where = `${where}`;
+
     if (operation === 'getDWRToVerify') {
         getDwr = `
         SELECT
@@ -40,7 +46,6 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         WHERE 
         dwr_employees.is_active = FALSE
         ${where}
-        AND dwr_employees.dwr_status = 'pendingVerification'
        
         GROUP BY
         dwr_employees.employee_id,
