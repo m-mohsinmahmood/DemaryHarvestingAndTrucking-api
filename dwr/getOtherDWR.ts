@@ -12,11 +12,11 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
     //     where = `${where} AND dwr.employee_id = '${employee_id}'`;
 
     if (dateType === 'month') {
-        where = `${where} AND EXTRACT(MONTH FROM dwr_employees.created_at) = '${month}'`
-        where = `${where} AND EXTRACT(YEAR FROM dwr_employees.created_at) = '${year}'`
+        where = `${where} AND EXTRACT(MONTH FROM dwr_employees.begining_day) = '${month}'`
+        where = `${where} AND EXTRACT(YEAR FROM dwr_employees.begining_day) = '${year}'`
     }
     else {
-        where = `${where} AND CAST(dwr_employees.created_at AS Date) = '${date}'`
+        where = `${where} AND CAST(dwr_employees.begining_day AS Date) = '${date}'`
     }
 
     if (status !== 'all') {
@@ -31,10 +31,10 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         Distinct(dwr_employees.employee_id),
         concat(employees.first_name, ' ', employees.last_name) AS employee_name,
         SUM (
-            ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.modified_at - dwr_employees.created_at ) ) / 3600 ) AS NUMERIC ), 2 ) 
+            ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
         ) AS total_hours ,
         dwr_employees."module" AS module,
-        dwr_employees.created_at :: DATE
+        dwr_employees.begining_day :: DATE
         
     FROM
         "Bridge_DailyTasks_DWR" bridge
@@ -49,12 +49,12 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
        
         GROUP BY
         dwr_employees.employee_id,
-        dwr_employees.created_at :: DATE,
+        dwr_employees.begining_day :: DATE,
         concat(employees.first_name, ' ', employees.last_name),
         dwr_employees."module"
         
         ORDER BY
-            created_at DESC;
+        begining_day DESC;
         `;
     }
 
@@ -62,11 +62,11 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         getDwr = `
         select 
         dwr_employees.id,
-        dwr_employees.created_at as login_time,
-        dwr_employees.modified_at as logout_time,
+        dwr_employees.begining_day as login_time,
+        dwr_employees.ending_day as logout_time,
         dwr_employees."module",
             SUM (
-                ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.modified_at - dwr_employees.created_at ) ) / 3600 ) AS NUMERIC ), 2 ) 
+                ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
             ) AS total_hours,
             
         json_agg(
@@ -91,7 +91,7 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         
         GROUP BY dwr_employees.id
         
-        ORDER BY dwr_employees.created_at ASC;
+        ORDER BY dwr_employees.begining_day ASC;
         `;
     }
 
@@ -99,11 +99,11 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         getDwr = `
         select 
         dwr_employees.id,
-        dwr_employees.created_at as login_time,
-        dwr_employees.modified_at as logout_time,
+        dwr_employees.begining_day as login_time,
+        dwr_employees.ending_day as logout_time,
         dwr_employees."module",
             SUM (
-                ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.modified_at - dwr_employees.created_at ) ) / 3600 ) AS NUMERIC ), 2 ) 
+                ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
             ) AS total_hours,
             
         json_agg(
@@ -128,7 +128,7 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
 
         GROUP BY dwr_employees.id
 
-        ORDER BY dwr_employees.created_at ASC
+        ORDER BY dwr_employees.begining_day ASC
         ;`;
     }
 
