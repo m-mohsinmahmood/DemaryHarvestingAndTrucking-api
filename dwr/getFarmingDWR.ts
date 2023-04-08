@@ -1,77 +1,135 @@
 
-export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month: any, year: any, role: any, operation, taskId: any, module: any, type: any) {
+export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month: any, year: any, operation, status: any) {
 
     let getDwr = ``;
 
     let where = ``;
 
-    if (type === 'getAssignedDWR') {
-        where = `${where} AND fwo.dispatcher_id = '${employee_id}'`;
-    }
-    else
-        where = `${where} AND dwr.employee_id = '${employee_id}'`;
+    // if (type === 'getAssignedDWR') {
+    //     where = `${where} AND fwo.dispatcher_id = '${employee_id}'`;
+    // }
+    // else
+    //     where = `${where} AND dwr.employee_id = '${employee_id}'`;
 
     if (dateType === 'month') {
-        where = `${where} AND EXTRACT(MONTH FROM dwr_employees.created_at) = '${month}'`
-        where = `${where} AND EXTRACT(YEAR FROM dwr_employees.created_at) = '${year}'`
+        where = `${where} AND EXTRACT(MONTH FROM dwr_employees.begining_day) = '${month}'`
+        where = `${where} AND EXTRACT(YEAR FROM dwr_employees.begining_day) = '${year}'`
     }
     else {
-        where = `${where} AND CAST(dwr_employees.created_at AS Date) = '${date}'`
+        where = `${where} AND CAST(dwr_employees.begining_day AS Date) = '${date}'`
     }
 
-    if (operation === 'getDWR') {
-        getDwr = `
-        select 
-        Distinct dwr_employees."id" as dwr_id,
-        dwr.dwr_type,
-        dwr_employees.created_at
-    
-        from 
-    
-        "Bridge_DailyTasks_DWR" bridge 
-        INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id"
-        INNER JOIN "DWR" dwr ON bridge .task_id = dwr."id"
-        INNER JOIN "Farming_Work_Order" fwo ON dwr.work_order_id = fwo.id
+    if (status !== 'all') {
+        where = `${where} AND dwr_employees.dwr_status = '${status}'`;
+    }
+    else
+        where = `${where}`;
 
+    if (operation === 'getDWRToVerify') {
+        getDwr = `
+        SELECT
+        Distinct(dwr_employees.employee_id),
+        concat(employees.first_name, ' ', employees.last_name) AS employee_name,
+        SUM (
+            ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
+        ) AS total_hours ,
+        dwr_employees."module" AS module,
+        dwr_employees.begining_day :: DATE
+        
+        FROM
+        "Bridge_DailyTasks_DWR" bridge
+        INNER JOIN "DWR_Employees" dwr_employees ON dwr_employees."id" = bridge.dwr_id 
+        INNER JOIN "DWR" dwr ON dwr."id" = bridge.task_id
+        INNER JOIN "Farming_Work_Order" mr ON mr."id" = dwr.work_order_id 
+        INNER JOIN "Employees" employees ON dwr_employees.employee_id = employees.ID :: VARCHAR 
+        
         WHERE 
-        dwr.is_day_closed= TRUE
+        dwr_employees.is_active = FALSE
         ${where}
 
+        GROUP BY
+        dwr_employees.employee_id,
+        dwr_employees.begining_day :: DATE,
+        concat(employees.first_name, ' ', employees.last_name),
+        dwr_employees."module"
+        
+        ORDER BY
+        begining_day DESC
     ;`;
     }
 
-    else if (operation === 'getTasks' && module === 'farming') {
-        getDwr = `
-        select bridge.dwr_id,bridge.task_id, dwr.dwr_type,dwr.status,dwr.notes from 
-        "Bridge_DailyTasks_DWR" bridge
-        INNER JOIN "DWR_Employees" dwr_employees ON bridge.dwr_id = dwr_employees."id" AND bridge.dwr_id = '${taskId}'
-        INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
-        WHERE (dwr.status IS NULL OR dwr.status = 'reassigned' OR dwr.status = '')
-        ;`
-    }
-
-    else if (operation === 'getTicketData' && module === 'farming') {
+    else if (operation === 'getDWRDetails') {
         getDwr = `
         select 
-        fwo."id" as id, 
-        customers.customer_name,
-        concat(dispatcher.first_name, ' ', dispatcher.last_name) as dispatcher_name,
-        concat(tractorD.first_name, ' ', tractorD.last_name) as tractor_driver_name,
-        farm."name" as farm,
-        field."name" as field,
-        dwr.hours_worked,
-        dwr.notes
+        dwr_employees.id,
+        dwr_employees.begining_day as login_time,
+        dwr_employees.ending_day as logout_time,
+        dwr_employees."module",
+        SUM (
+        ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 )
+        ) AS total_hours,
+      
+        json_agg(
+        json_build_object(
+        'ticket_id', fwo.id,
+        'employee_id', emp.id,
+        'employee_name', concat(emp.first_name, ' ', emp.last_name),
+        'state', fwo."state",
+        'supervisor_id', fwo."dispatcher_id"
+        )) as tickets
         
-        from
-        "DWR" dwr 
-        INNER JOIN "Farming_Work_Order" fwo ON dwr."work_order_id" = fwo."id" AND dwr.id = '${taskId}'
-        INNER JOIN "Customers" customers ON customers."id" = fwo.customer_id
-		INNER JOIN "Employees" dispatcher ON dispatcher."id" = fwo.dispatcher_id
-		INNER JOIN "Employees" tractorD ON tractorD."id" = fwo.tractor_driver_id
-		INNER JOIN "Customer_Farm" farm ON farm."id" = fwo.farm_id
-		INNER JOIN "Customer_Field" field ON field."id" = fwo.field_id
-        ;
-        `
+        from "DWR_Employees" dwr_employees
+        
+        INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employees."id" = bridge.dwr_id
+        INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+        INNER JOIN "Farming_Work_Order" fwo ON dwr.work_order_id = fwo."id"
+        INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
+        
+        WHERE dwr_employees.employee_id = '${employee_id}'
+        ${where}
+        AND dwr_employees.is_active = FALSE
+        
+        GROUP BY dwr_employees.id
+
+        ORDER BY dwr_employees.begining_day ASC
+        ;`;
+    }
+
+    else if (operation === 'getDWRList') {
+        getDwr = `
+        select 
+        dwr_employees.id,
+        dwr_employees.begining_day as login_time,
+        dwr_employees.ending_day as logout_time,
+        dwr_employees."module",
+        SUM (
+        ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 )
+        ) AS total_hours,
+      
+        json_agg(
+        json_build_object(
+        'ticket_id', fwo.id,
+        'employee_id', emp.id,
+        'employee_name', concat(emp.first_name, ' ', emp.last_name),
+        'state', fwo."state",
+        'supervisor_id', fwo."dispatcher_id"
+        )) as tickets
+        
+        from "DWR_Employees" dwr_employees
+        
+        INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employees."id" = bridge.dwr_id
+        INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+        INNER JOIN "Farming_Work_Order" fwo ON dwr.work_order_id = fwo."id"
+        INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
+        
+        WHERE dwr_employees.employee_id = '${employee_id}'
+        ${where}
+        AND dwr_employees.is_active = FALSE
+
+        GROUP BY dwr_employees.id
+
+        ORDER BY dwr_employees.begining_day ASC
+        ;`;
     }
 
     return getDwr;
