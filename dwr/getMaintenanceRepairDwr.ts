@@ -88,7 +88,6 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         WHERE dwr_employees.employee_id = '${employee_id}'
        ${where}
         AND dwr_employees.is_active = FALSE
-        AND dwr_employees.dwr_status = 'pendingVerification'
         
         GROUP BY dwr_employees.id
         
@@ -97,12 +96,6 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
     }
 
     else if (operation === 'getDWRList') {
-        if (status !== 'all') {
-            status = `AND dwr_employees.dwr_status = '${status}'`;
-        }
-        else
-            status = ``;
-
         getDwr = `
         select 
         dwr_employees.id,
@@ -132,7 +125,6 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         WHERE dwr_employees.employee_id = '${employee_id}'
         ${where}
         AND dwr_employees.is_active = FALSE
-        ${status}
 
         GROUP BY dwr_employees.id
 
