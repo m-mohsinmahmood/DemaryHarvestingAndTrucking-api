@@ -11,24 +11,23 @@ const httpTrigger: AzureFunction = async function (
   try {
     const id: string = req.query.id;
 
-    let getById = `
-        SELECT 
-        *
-        FROM 
-              "Trucking_Delivery_Ticket"
-        WHERE 
-              "id" = '${id}';
-      `;
+    let query = `
+      SELECT 
+      *
+      FROM 
+      "Trucking_Delivery_Ticket"
+      WHERE "id" = '${id}';`;
+
+
+    console.log(query);
 
     db.connect();
 
-    let result = await db.query(getById);
-    let resp;
-    if (result.rows.length > 0) resp = result.rows[0];
-    else
-      resp = {
-        message: "No ticket exists with this id.",
-      };
+    let result = await db.query(query);
+
+    let resp = {
+      ticket: result.rows[0]
+    };
 
     db.end();
 
@@ -39,6 +38,7 @@ const httpTrigger: AzureFunction = async function (
 
     context.done();
     return;
+
   } catch (err) {
     db.end();
     context.res = {

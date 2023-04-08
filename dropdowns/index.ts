@@ -12,6 +12,7 @@ import * as getMotorizedVehicles from "./getAllMotorizedVehicles";
 import * as getAllEmployeesSupervisors from "./getAllEmployeesSupervisors";
 import * as getNonMotorizedVehicles from "./getAllNonMotorizedVehicles";
 import * as getFarmingServiceType from "./getFarmingServiceType";
+import * as getEmployeesWithMultRoles from "./getEmployeesMultRoles";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -44,8 +45,11 @@ const httpTrigger: AzureFunction = async function (
           await getAllEmployeesSupervisors.default(context, req);
         else if (req.query.entity === "allNonMotorizedVehicles")
           await getNonMotorizedVehicles.default(context, req);
-          else if (req.query.entity === "getFarmingServices")
+        else if (req.query.entity === "getFarmingServices")
           await getFarmingServiceType.default(context, req);
+        else if (req.query.entity === "getEmployeesWithMultipleRoles")
+          await getEmployeesWithMultRoles.default(context, req);
+
         break;
 
       default:

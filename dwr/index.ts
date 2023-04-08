@@ -5,6 +5,9 @@ import * as beginningOfDay from "./get";
 import * as getDWRById from "./getById";
 import * as getEmployeeDwr from "./getEmployeeDwr";
 import * as changeDwrStatus from "./changeDwrStatus";
+import * as verifyDWR from "./verifyDWR";
+import * as reassignDWR from "./reassignDWR";
+import * as editDWR from "./editDWR";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -13,7 +16,7 @@ const httpTrigger: AzureFunction = async function (
     switch (req.method) {
         case "GET":
             if (req.query.id) await getDWRById.default(context, req);
-            if (req.query.operation === 'getDWR' || req.query.operation === 'getTasks' || req.query.operation === 'getTicketData') await getEmployeeDwr.default(context, req);
+            if (req.query.operation === 'getDWRList' || req.query.operation === 'getDWRDetails' || req.query.operation === 'getDWRToVerify') await getEmployeeDwr.default(context, req);
             else await beginningOfDay.default(context, req);
             break;
 
@@ -23,6 +26,10 @@ const httpTrigger: AzureFunction = async function (
 
         case "PATCH":
             if (req.query.operation === 'changeDwrStatus') await changeDwrStatus.default(context, req);
+            else if (req.query.operation === 'verifyDwr') await verifyDWR.default(context, req);
+            else if (req.query.operation === 'reassignDwr') await reassignDWR.default(context, req);
+            else if (req.query.operation === 'editDwr') await editDWR.default(context, req);
+
             else
                 await closeDwr.default(context, req);
             break;
