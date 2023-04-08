@@ -45,6 +45,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
 
         WHERE 
         dwr_employees.is_active = FALSE
+        AND dwr."taskType" = 'work done'
         ${where}
        
         GROUP BY
@@ -86,6 +87,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
 
         WHERE dwr_employees.employee_id = '${employee_id}'
+        AND dwr."taskType" = 'work done'
        ${where}
         AND dwr_employees.is_active = FALSE
         
@@ -123,6 +125,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
         
         WHERE dwr_employees.employee_id = '${employee_id}'
+        AND dwr."taskType" = 'work done'
         ${where}
         AND dwr_employees.is_active = FALSE
 
