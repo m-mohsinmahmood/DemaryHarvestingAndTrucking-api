@@ -34,8 +34,9 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
             ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
         ) AS total_hours ,
         dwr_employees."module" AS module,
-        dwr_employees.begining_day :: DATE
-        
+        dwr_employees.begining_day :: DATE,
+        dwr_employees.supervisor_id
+
     FROM
         "Bridge_DailyTasks_DWR" bridge
         INNER JOIN "DWR_Employees" dwr_employees ON dwr_employees."id" = bridge.dwr_id 
@@ -51,8 +52,9 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         dwr_employees.employee_id,
         dwr_employees.begining_day :: DATE,
         concat(employees.first_name, ' ', employees.last_name),
-        dwr_employees."module"
-        
+        dwr_employees."module",
+        dwr_employees.supervisor_id
+
         ORDER BY
         begining_day DESC;
         `;

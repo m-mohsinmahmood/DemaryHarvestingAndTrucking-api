@@ -1,16 +1,16 @@
 export interface reportEquipmentIssue {
-    empId: string,
-    equipmentId: string,
-    city: string,
-    state: string,
-    ticketType:string,
-    repairTicketId:string,
-    issueCategory: string,
-    severityType: string,
-    status: string,
-    description: string
+      empId: string,
+      equipmentId: string,
+      city: string,
+      state: string,
+      ticketType: string,
+      repairTicketId: string,
+      issueCategory: string,
+      severityType: string,
+      status: string,
+      description: string
 }
-export interface repairTicket{
+export interface repairTicket {
       repairTicketId: string,
       assignedById: string,
       assignedToId: string,
@@ -20,13 +20,13 @@ export interface repairTicket{
       issueCategory: string,
       severityType: string,
       status: string,
-    //   summary: string,
+      //   summary: string,
       description: string,
       ticketType: string,
-      empId:string
+      empId: string
 }
-export interface maintenanceTicket{
-     repairTicketId: string,
+export interface maintenanceTicket {
+      repairTicketId: string,
       assignedById: string,
       assignedToId: string,
       equipmentId: string,
@@ -35,14 +35,14 @@ export interface maintenanceTicket{
       issueCategory: string,
       severityType: string,
       status: string,
-    //   summary: string,
+      //   summary: string,
       description: string,
       ticketType: string,
-      empId:string
+      empId: string
 
 }
 export interface assignTicket {
-    repairTicketId: string,
+      repairTicketId: string,
       empModule: string,
       assignedById: string,
       assignedToId: string,
@@ -56,6 +56,7 @@ export interface assignTicket {
       description: string
 }
 export interface completeTicket {
-      summary: string,
-     
+      summary: string;
+      state: string;
+      assignedById: string;
 }
