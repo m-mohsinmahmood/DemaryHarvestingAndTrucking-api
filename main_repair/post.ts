@@ -151,10 +151,11 @@ let query = ``
       status: 200,
       body: {
         status: 200,
-        id:  result.rows[0],
+        id:  result[0].rows[0],
         message: "Issue has beed reported",
       },
     };
+
     context.done();
     return;
   } catch (error) {

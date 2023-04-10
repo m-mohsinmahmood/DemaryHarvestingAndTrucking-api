@@ -54,7 +54,7 @@ const httpTrigger: AzureFunction = async function (
                 "state" = '${completeTicket.state}'
                                      
               WHERE 
-                "id" = '${dwr_id}'  
+                "id" = '${dwr_id}'  ;
 
                 UPDATE 
               
@@ -64,7 +64,7 @@ const httpTrigger: AzureFunction = async function (
                   "taskType" = 'work done'
                                        
                 WHERE 
-                  main_repair_ticket_id = '${ticketRecordId}'
+                  main_repair_ticket_id = '${ticketRecordId}';
               `;
     }
     else if(entity === "continue"){
