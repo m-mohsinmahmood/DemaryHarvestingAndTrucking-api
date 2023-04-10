@@ -3,6 +3,7 @@ import { Client } from "pg";
 import { config } from "../services/database/database.config";
 import { UpdateWorkOrder } from "./model";
 import { updateDWR } from "../utilities/dwr_functions";
+import { log } from "console";
 
 const httpTrigger: AzureFunction = async function (
         context: Context,
@@ -80,9 +81,12 @@ const httpTrigger: AzureFunction = async function (
         SET 
                 "is_active"                    = 'false',
                 modified_at = now()
-              
+
         WHERE 
-                "id" = '${workOrder.workOrderId}' ;
+                "id" = '${workOrder.workOrderId}' 
+
+                RETURNING dispatcher_id, state;
+                ;
                 ${updateEndingOMR}
                 `
                         }
@@ -152,6 +156,30 @@ const httpTrigger: AzureFunction = async function (
                 console.log(query);
 
                 let result = await db.query(query);
+
+                if (workOrder.searchClause === 'submitEndingDay') {
+                        let supevisor_id = result[0].rows[0].dispatcher_id;
+                        let state = result[0].rows[0].state;
+
+                        console.log("SuperVisor:", supevisor_id);
+                        console.log("State :", state);
+
+                        let query = `
+                        UPDATE 
+                        "DWR_Employees"
+                                
+                        SET 
+                        "supervisor_id" = '${supevisor_id}',
+                        "state" = '${state}'
+                                     
+                        WHERE 
+                        "id" = '${workOrder.dwr_id}' ;
+                        `
+
+                let resultDwr = await db.query(query);
+
+                }
+
                 db.end();
 
                 context.res = {

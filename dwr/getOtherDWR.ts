@@ -34,8 +34,9 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
             ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
         ) AS total_hours ,
         dwr_employees."module" AS module,
-        dwr_employees.begining_day :: DATE
-        
+        dwr_employees.begining_day :: DATE,
+        dwr_employees.supervisor_id
+
     FROM
         "Bridge_DailyTasks_DWR" bridge
         INNER JOIN "DWR_Employees" dwr_employees ON dwr_employees."id" = bridge.dwr_id 
@@ -51,8 +52,9 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         dwr_employees.employee_id,
         dwr_employees.begining_day :: DATE,
         concat(employees.first_name, ' ', employees.last_name),
-        dwr_employees."module"
-        
+        dwr_employees."module",
+        dwr_employees.supervisor_id
+
         ORDER BY
         begining_day DESC;
         `;
@@ -75,7 +77,8 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         'employee_id', emp.id,
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
         'state', ot."state",
-        'supervisor_id', ot.supervisor_id
+        'supervisor_id', ot.supervisor_id,
+        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
         )) as tickets
         
         from "DWR_Employees" dwr_employees
@@ -84,6 +87,7 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Other" ot ON dwr.other_record_id = ot."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
+        INNER JOIN "Employees" supervisor ON emp."id" = supervisor."id"
 
         WHERE dwr_employees.employee_id = '${employee_id}'
        ${where}
@@ -112,7 +116,8 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         'employee_id', emp.id,
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
         'state', ot."state",
-        'supervisor_id', ot.supervisor_id
+        'supervisor_id', ot.supervisor_id,
+        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
         )) as tickets
         
         from "DWR_Employees" dwr_employees
@@ -121,7 +126,8 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Other" ot ON dwr.other_record_id = ot."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        
+        INNER JOIN "Employees" supervisor ON emp."id" = supervisor."id"
+
         WHERE dwr_employees.employee_id = '${employee_id}'
         ${where}
         AND dwr_employees.is_active = FALSE
