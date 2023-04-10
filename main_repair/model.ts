@@ -23,7 +23,8 @@ export interface repairTicket {
       //   summary: string,
       description: string,
       ticketType: string,
-      empId: string
+      empId: string;
+      dwr_id:string;
 }
 export interface maintenanceTicket {
       repairTicketId: string,
@@ -38,7 +39,8 @@ export interface maintenanceTicket {
       //   summary: string,
       description: string,
       ticketType: string,
-      empId: string
+      empId: string;
+      dwr_id:string;
 
 }
 export interface assignTicket {

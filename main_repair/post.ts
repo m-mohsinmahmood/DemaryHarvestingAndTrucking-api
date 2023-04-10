@@ -81,6 +81,17 @@ let query = ``
                    )
                    RETURNING id as record_id
                    ;
+
+                   UPDATE 
+              
+                   "DWR_Employees"
+                                     
+                   SET 
+                     "supervisor_id" = '${repairTicket.assignedById}',
+                     "state" = '${repairTicket.state}'
+                                          
+                   WHERE 
+                     "id" = '${repairTicket.dwr_id}';  
     `;
     }
     else if(entity === 'maintenance'){
@@ -118,6 +129,17 @@ let query = ``
                    )
                    RETURNING id as record_id
                    ;
+
+                   UPDATE 
+              
+                   "DWR_Employees"
+                                     
+                   SET 
+                     "supervisor_id" = '${maintenanceTicket.assignedById}',
+                     "state" = '${maintenanceTicket.state}'
+                                          
+                   WHERE 
+                     "id" = '${maintenanceTicket.dwr_id}';  
     `;
     }
     console.log('Query::',query)
