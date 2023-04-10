@@ -35,7 +35,7 @@ export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month:
         ) AS total_hours ,
         dwr_employees."module" AS module,
         dwr_employees.begining_day :: DATE,
-		dwr_employees.supervisor_id
+		dwr_employees.supervisor_id AS supervisor_id
 
         FROM
         "Bridge_DailyTasks_DWR" bridge
