@@ -88,7 +88,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Maintenance_Repair" mr ON dwr.main_repair_ticket_id = mr."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        INNER JOIN "Employees" supervisor ON emp."id" = supervisor."id"
+        INNER JOIN "Employees" supervisor ON mr."assignedById" = supervisor."id"
 
         WHERE dwr_employees.employee_id = '${employee_id}'
         AND dwr."taskType" = 'work done'
@@ -128,10 +128,10 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Maintenance_Repair" mr ON dwr.main_repair_ticket_id = mr."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        INNER JOIN "Employees" supervisor ON emp."id" = supervisor."id"
+        INNER JOIN "Employees" supervisor ON mr."assignedById" = supervisor."id"
 
-        WHERE dwr_employees.employee_id = '${employee_id}'
-        AND dwr."taskType" = 'work done'
+        WHERE
+         dwr."taskType" = 'work done'
         ${where}
         AND dwr_employees.is_active = FALSE
 

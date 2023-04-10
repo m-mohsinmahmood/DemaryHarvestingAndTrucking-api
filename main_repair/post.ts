@@ -15,6 +15,7 @@ let query = ``
     const maintenanceTicket: maintenanceTicket = req.body;
     const entity = req.query.entity;
     let result;
+    const dwr_id = req.query.dwr_id ;
     console.log('REQ:',req.body)
     console.log('ENTITY:',entity)
     if(entity === 'report-issue'){
@@ -81,6 +82,17 @@ let query = ``
                    )
                    RETURNING id as record_id
                    ;
+
+                   UPDATE 
+              
+                   "DWR_Employees"
+                                     
+                   SET 
+                     "supervisor_id" = '${repairTicket.assignedById}',
+                     "state" = '${repairTicket.state}'
+                                          
+                   WHERE 
+                     "id" = '${dwr_id}';  
     `;
     }
     else if(entity === 'maintenance'){
@@ -118,6 +130,17 @@ let query = ``
                    )
                    RETURNING id as record_id
                    ;
+
+                   UPDATE 
+              
+                   "DWR_Employees"
+                                     
+                   SET 
+                     "supervisor_id" = '${maintenanceTicket.assignedById}',
+                     "state" = '${maintenanceTicket.state}'
+                                          
+                   WHERE 
+                     "id" = '${dwr_id}';  
     `;
     }
     console.log('Query::',query)
@@ -128,10 +151,11 @@ let query = ``
       status: 200,
       body: {
         status: 200,
-        id:  result.rows[0],
+        id:  result[0].rows[0],
         message: "Issue has beed reported",
       },
     };
+
     context.done();
     return;
   } catch (error) {
