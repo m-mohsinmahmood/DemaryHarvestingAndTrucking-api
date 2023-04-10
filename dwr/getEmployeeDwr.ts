@@ -5,6 +5,7 @@ import { GetFarmingDwr } from "./getFarmingDWR";
 import { GetTrainingDwr } from "./getTrainingDwr";
 import { GetMaintenanceRepairDwr } from "./getMaintenanceRepairDwr";
 import { GetOtherDwr } from "./getOtherDWR";
+import { log } from "console";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -46,14 +47,16 @@ const httpTrigger: AzureFunction = async function (
             const totals = Object.values(merged.reduce((acc, curr) => {
                 const key = curr.employee_id;
                 const employee_name = curr.employee_name;
-                const supervisor_name = curr.supervisor_name;
+                const supervisor_id = curr.supervisor_id;
+
+                console.log(curr);
 
                 if (!acc[key]) {
                     acc[key] = {
                         employee_Id: key,
                         total_hours: 0,
                         employee_name: employee_name,
-                        supervisor_name: supervisor_name
+                        supervisor_id: supervisor_id
                     }
                 }
                 acc[key].total_hours += +curr.total_hours
