@@ -75,7 +75,8 @@ export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month:
         'employee_id', emp.id,
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
         'state', fwo."state",
-        'supervisor_id', fwo."dispatcher_id"
+        'supervisor_id', fwo."dispatcher_id",
+        'supervisor_name', concat(dispatcher.first_name, ' ', dispatcher.last_name)
         )) as tickets
         
         from "DWR_Employees" dwr_employees
@@ -84,7 +85,8 @@ export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month:
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Farming_Work_Order" fwo ON dwr.work_order_id = fwo."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        
+        INNER JOIN "Employees" dispatcher ON emp."id" = dispatcher."id" 
+
         WHERE dwr_employees.employee_id = '${employee_id}'
         ${where}
         AND dwr_employees.is_active = FALSE
@@ -112,7 +114,8 @@ export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month:
         'employee_id', emp.id,
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
         'state', fwo."state",
-        'supervisor_id', fwo."dispatcher_id"
+        'supervisor_id', fwo."dispatcher_id",
+        'supervisor_name', concat(dispatcher.first_name, ' ', dispatcher.last_name)
         )) as tickets
         
         from "DWR_Employees" dwr_employees
@@ -121,6 +124,7 @@ export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month:
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Farming_Work_Order" fwo ON dwr.work_order_id = fwo."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
+        INNER JOIN "Employees" dispatcher ON emp."id" = dispatcher."id" 
         
         WHERE dwr_employees.employee_id = '${employee_id}'
         ${where}

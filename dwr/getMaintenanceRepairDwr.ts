@@ -76,7 +76,8 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         'employee_id', emp.id,
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
         'state', mr."state",
-        'supervisor_id', mr."assignedById"
+        'supervisor_id', mr."assignedById",
+        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
         )) as tickets
         
         from "DWR_Employees" dwr_employees
@@ -85,6 +86,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Maintenance_Repair" mr ON dwr.main_repair_ticket_id = mr."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
+        INNER JOIN "Employees" supervisor ON emp."id" = supervisor."id"
 
         WHERE dwr_employees.employee_id = '${employee_id}'
         AND dwr."taskType" = 'work done'
@@ -114,7 +116,8 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         'employee_id', emp.id,
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
         'state', mr."state",
-        'supervisor_id', mr."assignedById"
+        'supervisor_id', mr."assignedById",
+        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
         )) as tickets
         
         from "DWR_Employees" dwr_employees
@@ -123,7 +126,8 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Maintenance_Repair" mr ON dwr.main_repair_ticket_id = mr."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        
+        INNER JOIN "Employees" supervisor ON emp."id" = supervisor."id"
+
         WHERE dwr_employees.employee_id = '${employee_id}'
         AND dwr."taskType" = 'work done'
         ${where}
