@@ -87,7 +87,7 @@ export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month:
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Farming_Work_Order" fwo ON dwr.work_order_id = fwo."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        INNER JOIN "Employees" dispatcher ON emp."id" = dispatcher."id" 
+        INNER JOIN "Employees" dispatcher ON fwo.dispatcher_id = dispatcher."id" 
 
         WHERE dwr_employees.employee_id = '${employee_id}'
         ${where}
@@ -126,7 +126,7 @@ export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month:
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Farming_Work_Order" fwo ON dwr.work_order_id = fwo."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        INNER JOIN "Employees" dispatcher ON emp."id" = dispatcher."id" 
+        INNER JOIN "Employees" dispatcher ON fwo.dispatcher_id = dispatcher."id" 
         
         WHERE dwr_employees.employee_id = '${employee_id}'
         ${where}

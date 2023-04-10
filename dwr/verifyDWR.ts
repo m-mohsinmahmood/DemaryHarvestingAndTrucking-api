@@ -20,11 +20,11 @@ const httpTrigger: AzureFunction = async function (
         db.connect();
 
         if (dateType === 'month') {
-            where = `${where} AND EXTRACT(MONTH FROM created_at) = '${month}'`
-            where = `${where} AND EXTRACT(YEAR FROM created_at) = '${year}'`
+            where = `${where} AND EXTRACT(MONTH FROM begining_day) = '${month}'`
+            where = `${where} AND EXTRACT(YEAR FROM begining_day) = '${year}'`
         }
         else {
-            where = `${where} AND CAST(created_at AS Date) = '${date}'`
+            where = `${where} AND CAST(begining_day AS Date) = '${date}'`
         }
 
         let query = ` 
