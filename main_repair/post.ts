@@ -15,6 +15,7 @@ let query = ``
     const maintenanceTicket: maintenanceTicket = req.body;
     const entity = req.query.entity;
     let result;
+    const dwr_id = req.query.dwr_id ;
     console.log('REQ:',req.body)
     console.log('ENTITY:',entity)
     if(entity === 'report-issue'){
@@ -91,7 +92,7 @@ let query = ``
                      "state" = '${repairTicket.state}'
                                           
                    WHERE 
-                     "id" = '${repairTicket.dwr_id}';  
+                     "id" = '${dwr_id}';  
     `;
     }
     else if(entity === 'maintenance'){
@@ -139,7 +140,7 @@ let query = ``
                      "state" = '${maintenanceTicket.state}'
                                           
                    WHERE 
-                     "id" = '${maintenanceTicket.dwr_id}';  
+                     "id" = '${dwr_id}';  
     `;
     }
     console.log('Query::',query)
