@@ -31,6 +31,7 @@ const httpTrigger: AzureFunction = async function (
                     "id" = '${ticketRecordId}';`;
     }
     else if(entity === "complete"){
+      const dwr_id = req.query.dwr_id ;
       query = `
       UPDATE 
               "Maintenance_Repair"
@@ -42,7 +43,19 @@ const httpTrigger: AzureFunction = async function (
               "completedat" = 'now()'
 
       WHERE 
-              "id" = '${ticketRecordId}';`;
+              "id" = '${ticketRecordId}';
+              
+              UPDATE 
+              
+              "DWR_Employees"
+                                
+              SET 
+                "supervisor_id" = '${completeTicket.assignedById}',
+                "state" = '${completeTicket.state}'
+                                     
+              WHERE 
+                "id" = '${dwr_id}'  
+              `;
     }
     else if(entity === "continue"){
       query = `
