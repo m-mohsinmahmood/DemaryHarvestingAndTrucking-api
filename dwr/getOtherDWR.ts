@@ -87,7 +87,7 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Other" ot ON dwr.other_record_id = ot."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        INNER JOIN "Employees" supervisor ON emp."id" = supervisor."id"
+        INNER JOIN "Employees" supervisor ON ot.supervisor_id = supervisor."id"::VARCHAR
 
         WHERE dwr_employees.employee_id = '${employee_id}'
        ${where}
@@ -126,7 +126,7 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Other" ot ON dwr.other_record_id = ot."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        INNER JOIN "Employees" supervisor ON emp."id" = supervisor."id"
+        INNER JOIN "Employees" supervisor ON ot.supervisor_id = supervisor."id"::VARCHAR
 
         WHERE dwr_employees.employee_id = '${employee_id}'
         ${where}
