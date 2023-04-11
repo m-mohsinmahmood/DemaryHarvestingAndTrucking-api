@@ -47,7 +47,7 @@ const httpTrigger: AzureFunction = async function (
           await getNonMotorizedVehicles.default(context, req);
         else if (req.query.entity === "getFarmingServices")
           await getFarmingServiceType.default(context, req);
-        else if (req.query.entity === "getEmployeesWithMultipleRoles")
+        else if (req.query.entity === "allSupervisors")
           await getEmployeesWithMultRoles.default(context, req);
 
         break;

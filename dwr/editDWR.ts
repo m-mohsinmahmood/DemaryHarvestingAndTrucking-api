@@ -12,6 +12,7 @@ const httpTrigger: AzureFunction = async function (
         const id: string = req.query.id;
         const login: string = req.query.login_time;
         const logout: string = req.query.logout_time;
+        const notes: string = req.query.employee_notes;
 
         db.connect();
 
@@ -23,7 +24,8 @@ const httpTrigger: AzureFunction = async function (
         "dwr_status" = 'pendingVerification',
         "begining_day" = '${login}',
         "ending_day" = '${logout}',
-        "modified_at" = 'now()'
+        "modified_at" = 'now()',
+        "employee_notes" = '${notes}'
 
         where  id = '${id}'
             ;`;
