@@ -10,7 +10,7 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     const search: string = req.query.search;
-    let whereClause: string = `WHERE "is_deleted" = false AND role = 'Recruiter'`;
+    let whereClause: string = `WHERE "is_deleted" = false AND position('Recruiter' in role) > 0`;
     if (search) whereClause = whereClause + ` AND LOWER(name) LIKE LOWER('%${search}%')`;
 
     let employees_dropdown_query = `

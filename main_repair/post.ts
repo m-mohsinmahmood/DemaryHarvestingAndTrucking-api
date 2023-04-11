@@ -15,6 +15,7 @@ let query = ``
     const maintenanceTicket: maintenanceTicket = req.body;
     const entity = req.query.entity;
     let result;
+    const dwr_id = req.query.dwr_id ;
     console.log('REQ:',req.body)
     console.log('ENTITY:',entity)
     if(entity === 'report-issue'){
@@ -81,6 +82,7 @@ let query = ``
                    )
                    RETURNING id as record_id
                    ;
+
     `;
     }
     else if(entity === 'maintenance'){
@@ -118,6 +120,7 @@ let query = ``
                    )
                    RETURNING id as record_id
                    ;
+
     `;
     }
     console.log('Query::',query)
@@ -132,6 +135,7 @@ let query = ``
         message: "Issue has beed reported",
       },
     };
+
     context.done();
     return;
   } catch (error) {

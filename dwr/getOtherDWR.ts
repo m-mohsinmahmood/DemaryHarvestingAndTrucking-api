@@ -1,5 +1,5 @@
 
-export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: any, month: any, year: any, operation, status: any) {
+export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: any, year: any, operation, status: any) {
 
     let getDwr = ``;
 
@@ -24,7 +24,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
     }
     else
         where = `${where}`;
-        
+
     if (operation === 'getDWRToVerify') {
         getDwr = `
         SELECT
@@ -36,17 +36,16 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         dwr_employees."module" AS module,
         dwr_employees.begining_day :: DATE,
         dwr_employees.supervisor_id
-        
+
     FROM
         "Bridge_DailyTasks_DWR" bridge
         INNER JOIN "DWR_Employees" dwr_employees ON dwr_employees."id" = bridge.dwr_id 
         INNER JOIN "DWR" dwr ON dwr."id" = bridge.task_id
-        INNER JOIN "Maintenance_Repair" mr ON mr."id" = dwr.main_repair_ticket_id 
+        INNER JOIN "Other" ot ON ot."id" = dwr.other_record_id 
         INNER JOIN "Employees" employees ON dwr_employees.employee_id = employees.ID :: VARCHAR 
 
         WHERE 
         dwr_employees.is_active = FALSE
-        AND dwr."taskType" = 'work done'
         ${where}
        
         GROUP BY
@@ -74,11 +73,11 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
             
         json_agg(
         json_build_object(
-        'ticket_id', mr.id,
+        'ticket_id', ot.id,
         'employee_id', emp.id,
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
-        'state', mr."state",
-        'supervisor_id', mr."assignedById",
+        'state', ot."state",
+        'supervisor_id', ot.supervisor_id,
         'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
         )) as tickets
         
@@ -86,12 +85,11 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         
         INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employees."id" = bridge.dwr_id
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
-        INNER JOIN "Maintenance_Repair" mr ON dwr.main_repair_ticket_id = mr."id"
+        INNER JOIN "Other" ot ON dwr.other_record_id = ot."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        INNER JOIN "Employees" supervisor ON mr."assignedById" = supervisor."id"
+        INNER JOIN "Employees" supervisor ON ot.supervisor_id = supervisor."id"::VARCHAR
 
         WHERE dwr_employees.employee_id = '${employee_id}'
-        AND dwr."taskType" = 'work done'
        ${where}
         AND dwr_employees.is_active = FALSE
         
@@ -114,11 +112,11 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
             
         json_agg(
         json_build_object(
-        'ticket_id', mr.id,
+        'ticket_id', ot.id,
         'employee_id', emp.id,
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
-        'state', mr."state",
-        'supervisor_id', mr."assignedById",
+        'state', ot."state",
+        'supervisor_id', ot.supervisor_id,
         'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
         )) as tickets
         
@@ -126,12 +124,11 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         
         INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employees."id" = bridge.dwr_id
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
-        INNER JOIN "Maintenance_Repair" mr ON dwr.main_repair_ticket_id = mr."id"
+        INNER JOIN "Other" ot ON dwr.other_record_id = ot."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        INNER JOIN "Employees" supervisor ON mr."assignedById" = supervisor."id"
+        INNER JOIN "Employees" supervisor ON ot.supervisor_id = supervisor."id"::VARCHAR
 
         WHERE dwr_employees.employee_id = '${employee_id}'
-        AND dwr."taskType" = 'work done'
         ${where}
         AND dwr_employees.is_active = FALSE
 
@@ -140,6 +137,6 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         ORDER BY dwr_employees.begining_day ASC
         ;`;
     }
-    
+
     return getDwr;
 }
