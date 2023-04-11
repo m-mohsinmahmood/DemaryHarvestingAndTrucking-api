@@ -14,33 +14,21 @@ const httpTrigger: AzureFunction = async function (
 
         if (search) whereClause = ` ${whereClause} And Lower("first_name") LIKE Lower('%${search}%')`;
 
-        let role: any = req.query.role.split(',');
-
-        if (Array.isArray(role)) {
-            role = role.map((r) => ` '%' || '${r}' || '%' `).join(" OR ");
-            whereClause = `${whereClause} AND ("role" LIKE ${role})`;
-        }
-
-        // role = role.map(r =>{
-        //     if(r)
-        // })
-
         let employees_dropdown_query = `
-        SELECT * FROM "Employees" 
-        ${whereClause}
-        ORDER BY 
-        "first_name" ASC;
+        SELECT *
+        FROM "Employees"
+        WHERE role like any (array['%Crew Chief%', '%Dispatcher%', '%Director%'])
+        ORDER BY first_name 
+        ;
       `;
 
         let employees_field_count_query = `
-      SELECT 
-              COUNT("id") from
-              "Employees" 
-              ${whereClause};`;
+        SELECT 
+        COUNT("id") from
+        "Employees"
+        WHERE role like any (array['%Crew Chief%', '%Dispatcher%', '%Director%']);`;
 
         let query = `${employees_dropdown_query} ${employees_field_count_query}`;
-
-        console.log("Get All Employees: ", query);
 
         db.connect();
 
