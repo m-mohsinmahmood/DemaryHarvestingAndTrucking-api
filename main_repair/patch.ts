@@ -18,6 +18,7 @@ const httpTrigger: AzureFunction = async function (
     console.log("REQ::", req.body);
     console.log("entity::", entity);
     if (entity === "unassign") {
+      const dwr_id = req.query.dwr_id ;
       query = `
             UPDATE 
                     "Maintenance_Repair"
@@ -28,7 +29,29 @@ const httpTrigger: AzureFunction = async function (
                     "summary"                     = '${assignTicket.summary}',
                     "isassigned" = TRUE
             WHERE 
-                    "id" = '${ticketRecordId}';`;
+                    "id" = '${ticketRecordId}';
+
+                    UPDATE 
+              
+              "DWR_Employees"
+                                
+              SET 
+                "supervisor_id" = '${assignTicket.assignedById}',
+                "state" = '${assignTicket.state}'
+                                     
+              WHERE 
+                "id" = '${dwr_id}'  ;
+
+                UPDATE 
+              
+                "DWR"
+                                  
+                SET 
+                  "taskType" = 'work done'
+                                       
+                WHERE 
+                  main_repair_ticket_id = '${ticketRecordId}';                  
+                    `;
     }
     else if(entity === "complete"){
       const dwr_id = req.query.dwr_id ;
