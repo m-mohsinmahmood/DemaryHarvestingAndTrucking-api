@@ -31,26 +31,6 @@ const httpTrigger: AzureFunction = async function (
             WHERE 
                     "id" = '${ticketRecordId}';
 
-                    UPDATE 
-              
-              "DWR_Employees"
-                                
-              SET 
-                "supervisor_id" = '${assignTicket.assignedById}',
-                "state" = '${assignTicket.state}'
-                                     
-              WHERE 
-                "id" = '${dwr_id}'  ;
-
-                UPDATE 
-              
-                "DWR"
-                                  
-                SET 
-                  "taskType" = 'work done'
-                                       
-                WHERE 
-                  main_repair_ticket_id = '${ticketRecordId}';                  
                     `;
     }
     else if(entity === "complete"){

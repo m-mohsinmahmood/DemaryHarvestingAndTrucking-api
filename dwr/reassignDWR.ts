@@ -10,7 +10,7 @@ const httpTrigger: AzureFunction = async function (
 
     try {
         const id: string = req.query.id;
-        const notes:string = req.query.supervisor_notes; 
+        const notes = req.query.supervisor_notes; 
 
         db.connect();
 
