@@ -45,6 +45,7 @@ export interface UpdateWorkOrder {
     hoursWorked?: string;
     notes?: string;
     totalAcres: string;
+    dwr_id:string;
 }
 
 export interface InvoicedWorkOrder {

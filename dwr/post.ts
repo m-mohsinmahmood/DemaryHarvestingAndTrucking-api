@@ -18,7 +18,7 @@ const httpTrigger: AzureFunction = async function (
     let taskId = await db.query(query);
 
 
-    if (order.module === 'training' || order.module === 'maintenance-repair') {
+    if (order.module === 'training' || order.module === 'maintenance-repair' || order.module === 'other') {
       console.log("Training");
 
       let bridgeDailyTasksDwr = ``;
@@ -27,19 +27,22 @@ const httpTrigger: AzureFunction = async function (
       taskId = taskId.rows[0].id;
       console.log("task Id: ", taskId);
 
-      if (order.module === 'training'){
-      if(order.trainee_record_id){
-        ticket = `"trainee_record_id" = '${taskId}'`;
+      if (order.module === 'training') {
+        if (order.trainee_record_id) {
+          ticket = `"trainee_record_id" = '${taskId}'`;
+        }
+        else if (order.training_record_id) {
+          ticket = `"training_record_id" = '${taskId}'`;
+        }
+        else if (order.trainer_record_id) {
+          ticket = `"trainer_record_id" = '${taskId}'`;
+        }
       }
-      else if(order.training_record_id){
-        ticket = `"training_record_id" = '${taskId}'`;
-      }
-      else if(order.trainer_record_id){
-        ticket = `"trainer_record_id" = '${taskId}'`;
-      }
-    }
       else if (order.module === 'maintenance-repair')
         ticket = `"main_repair_ticket_id" = '${taskId}'`;
+
+      // else if (order.module === 'other')
+      //   ticket = `"main_repair_ticket_id" = '${taskId}'`;
 
       bridgeDailyTasksDwr = ` 
         INSERT INTO 

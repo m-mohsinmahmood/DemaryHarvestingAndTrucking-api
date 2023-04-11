@@ -3,8 +3,9 @@ import { Client } from "pg";
 import { config } from "../services/database/database.config";
 import { GetFarmingDwr } from "./getFarmingDWR";
 import { GetTrainingDwr } from "./getTrainingDwr";
-import { GetTruckingDwr } from "./getTruckingDwr";
 import { GetMaintenanceRepairDwr } from "./getMaintenanceRepairDwr";
+import { GetOtherDwr } from "./getOtherDWR";
+import { log } from "console";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -22,79 +23,77 @@ const httpTrigger: AzureFunction = async function (
         const taskId: string = req.query.taskId
         const module: string = req.query.dwr_type
         const type: string = req.query.type
-        // const employee_id: string = req.query.employee_id
+        const status: string = req.query.status
+        const operation: string = req.query.operation
 
-        const trainingDwr = GetTrainingDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module,type);
-        const farmingDwr = GetFarmingDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module,type);
-        const maintenanceDwr = GetMaintenanceRepairDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module,type);
-
-        // const truckingDwr = GetTruckingDwr(employee_id, date, dateType, month, year, role);
-        // const truckingDwr = GetTruckingDwr(employee_id, date, dateType, month, year, role);
+        // const trainingDwr = GetTrainingDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module, type);
+        const farmingDwr = GetFarmingDwr(employee_id, date, dateType, month, year, operation, status);
+        const maintenanceDwr = GetMaintenanceRepairDwr(employee_id, date, dateType, month, year, operation, status);
+        const otherDwr = GetOtherDwr(employee_id, date, dateType, month, year, operation, status);
 
         let query = ``;
         let result;
 
         let resp;
-        if (req.query.operation === 'getDWR') {
+        if (req.query.operation === 'getDWRToVerify') {
 
-            query = `${trainingDwr} ${farmingDwr} ${maintenanceDwr}`;
+            query = `${farmingDwr} ${maintenanceDwr} ${otherDwr}`;
             console.log(query);
             db.connect();
             result = await db.query(query);
+
+            let merged = result[0].rows.concat(result[1].rows, result[2].rows);
+
+            const totals = Object.values(merged.reduce((acc, curr) => {
+                const key = curr.employee_id;
+                const employee_name = curr.employee_name;
+                const supervisor_id = curr.supervisor_id;
+
+                console.log(curr);
+
+                if (!acc[key]) {
+                    acc[key] = {
+                        employee_Id: key,
+                        total_hours: 0,
+                        employee_name: employee_name,
+                        supervisor_id: supervisor_id
+                    }
+                }
+                acc[key].total_hours += +curr.total_hours
+                return acc
+            }, {}))
 
             resp = {
-                // farming: result[0].rows,
-                // trucking: result[1].rows
-                // training: result[0].rows
-                trainingData: result[0].rows,
-                traineeData: result[1].rows,
-                trainerData: result[2].rows,
-                farmingData: result[3].rows,
-                maintenanceRepairData: result[4].rows
+                dwrSummary: totals
             };
         }
-        else if (req.query.operation === 'getTasks') {
-            if (trainingDwr !== ``)
-                query = `${trainingDwr}`;
-            else if (farmingDwr !== ``)
-                query = `${farmingDwr}`;
-            else if (maintenanceDwr !== ``)
-                query = `${maintenanceDwr}`;
 
-            db.connect();
+        if (req.query.operation === 'getDWRDetails') {
+
+            query = `${farmingDwr} ${maintenanceDwr}  ${otherDwr}`;
             console.log(query);
+            db.connect();
             result = await db.query(query);
+
+            let merged = result[0].rows.concat(result[1].rows, result[2].rows);
 
             resp = {
-                tasks: result.rows
+                dwr: merged
             };
         }
 
-        else if (req.query.operation === 'getTicketData') {
-            if (trainingDwr !== ``)
-                query = `${trainingDwr}`;
-            if (farmingDwr !== ``)
-                query = `${farmingDwr}`;
-            if (maintenanceDwr !== ``)
-                query = `${maintenanceDwr}`;
+        if (req.query.operation === 'getDWRList') {
 
-            db.connect();
+            query = `${farmingDwr} ${maintenanceDwr}  ${otherDwr}`;
             console.log(query);
+            db.connect();
             result = await db.query(query);
 
-            console.log(result);
+            let merged = result[0].rows.concat(result[1].rows, result[2].rows);
 
-            if (trainingDwr !== ``) {
-                resp = {
-                    trainingData: result[0].rows,
-                    traineeData: result[1].rows,
-                    trainerData: result[2].rows
-                };
-            } else {
-                resp = {
-                    data: result.rows
-                };
-            }
+            resp = {
+                dwr: merged
+            };
         }
 
         console.log(resp);

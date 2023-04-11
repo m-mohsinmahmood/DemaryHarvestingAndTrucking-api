@@ -11,7 +11,7 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
     switch (req.method) {
          case "GET":
-            if(req.query.entity === 'getEmployeeById' || req.query.entity === 'unassignedTickets' || req.query.entity === "repair" || req.query.entity === "maintenance" || req.query.entity === 'assignedTicketRecord' || req.query.entity === 'unassignedTicketRecord' || req.query.entity === 'unassignedTickets' || req.query.entity === "repair" || req.query.entity === "maintenance" || req.query.entity === 'assignedTicketRecord' || req.query.entity === 'continuedTickets' || req.query.entity === 'continuedTicket' || req.query.entity === 'completedTicket')
+            if(req.query.entity === 'getEmployeeById' || req.query.entity === 'unassignedTickets' || req.query.entity === "repair" || req.query.entity === "maintenance" || req.query.entity === 'assignedTicketRecord' || req.query.entity === 'unassignedTicketRecord' || req.query.entity === 'unassignedTickets' || req.query.entity === "repair" || req.query.entity === "maintenance" || req.query.entity === 'assignedTicketRecord' || req.query.entity === 'continuedTickets' || req.query.entity === 'continuedTicket' || req.query.entity === 'completedTicket' || req.query.entity === 'all')
        await getById.default(context, req);
        else if (req.query.operation === 'MaintenanceRepairList') await getListing.default(context, req);
        else if (req.query.operation === 'ticketById') await getByIdMainRepairTicket.default(context, req);
