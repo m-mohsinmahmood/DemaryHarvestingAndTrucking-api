@@ -10,7 +10,8 @@ const httpTrigger: AzureFunction = async function (
 
     try {
         const id: string = req.query.id;
-      
+        const notes:string = req.query.supervisor_notes; 
+
         db.connect();
 
         let query = ` 
@@ -19,7 +20,8 @@ const httpTrigger: AzureFunction = async function (
         
         SET 
         "dwr_status" = 'reassigned',
-        "modified_at" = 'now()'
+        "modified_at" = 'now()',
+        "supervisor_notes" = '${notes}'
 
         where  id = '${id}'
             ;`;
