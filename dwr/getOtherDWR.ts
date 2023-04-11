@@ -67,6 +67,8 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         dwr_employees.begining_day as login_time,
         dwr_employees.ending_day as logout_time,
         dwr_employees."module",
+        dwr_employees."supervisor_notes",
+        dwr_employees."employee_notes",
             SUM (
                 ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
             ) AS total_hours,
@@ -106,6 +108,8 @@ export function GetOtherDwr(employee_id: any, date: any, dateType: any, month: a
         dwr_employees.begining_day as login_time,
         dwr_employees.ending_day as logout_time,
         dwr_employees."module",
+        dwr_employees."supervisor_notes",
+        dwr_employees."employee_notes",
             SUM (
                 ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
             ) AS total_hours,
