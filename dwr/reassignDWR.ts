@@ -21,7 +21,7 @@ const httpTrigger: AzureFunction = async function (
         SET 
         "dwr_status" = 'reassigned',
         "modified_at" = 'now()',
-        "supervisor_notes" = '${notes}'
+        "supervisor_notes" = $$${notes}$$
 
         where  id = '${id}'
             ;`;
