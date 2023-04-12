@@ -25,7 +25,7 @@ const httpTrigger: AzureFunction = async function (
         "begining_day" = '${login}',
         "ending_day" = '${logout}',
         "modified_at" = 'now()',
-        "employee_notes" = '${notes}'
+        "employee_notes" = $$${notes}$$
 
         where  id = '${id}'
             ;`;

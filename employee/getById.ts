@@ -15,21 +15,24 @@ const httpTrigger: AzureFunction = async function (
 
     if (firebase_id) {
       let employee_id_query = `
-        SELECT 
-        "id",
-        "role",
-        concat(first_name,' ' ,last_name)	as "employee_name",
-        first_name,
-        last_name,
-        email,
-        cell_phone_number,
-        home_phone_number,
-        "state",
-        town_city,
-        avatar
-        FROM 
-                "Employees" 
-        Where fb_id = '${firebase_id}'        
+      SELECT 
+      emp."id",
+      "role",
+      concat(first_name,' ' ,last_name)	as "employee_name",
+      first_name,
+      last_name,
+      email,
+      cell_phone_number,
+      home_phone_number,
+      up."state",
+      town_city,
+      avatar
+      FROM 
+      
+      "Employees" emp
+      Left JOIN "User_Profile" up ON emp."id" = up.employee_id
+
+      Where emp.fb_id = '${firebase_id}'        
       `;
 
       db.connect();

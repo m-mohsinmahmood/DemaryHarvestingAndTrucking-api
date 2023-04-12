@@ -47,7 +47,10 @@ const httpTrigger: AzureFunction = async function (
                          ;
 
 
-            
+            INSERT INTO "User_Profile" (employee_id, state)
+            VALUES ('${data.employee_id}', '${data.state}')
+            ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
+                         
           `;
 
         console.log(query);
