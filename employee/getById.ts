@@ -30,7 +30,7 @@ const httpTrigger: AzureFunction = async function (
       FROM 
       
       "Employees" emp
-      INNER JOIN "User_Profile" up ON emp."id" = up.employee_id
+      Left JOIN "User_Profile" up ON emp."id" = up.employee_id
 
       Where emp.fb_id = '${firebase_id}'        
       `;
