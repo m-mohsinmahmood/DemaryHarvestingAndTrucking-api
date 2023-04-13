@@ -10,7 +10,7 @@ const httpTrigger: AzureFunction = async function (
 
     try {
         const search: string = req.query.search;
-        let whereClause: string = `WHERE "is_deleted" = false`;
+        let whereClause: string = `And "is_deleted" = false`;
 
         if (search) whereClause = ` ${whereClause} And Lower("first_name") LIKE Lower('%${search}%')`;
 
@@ -18,6 +18,7 @@ const httpTrigger: AzureFunction = async function (
         SELECT *
         FROM "Employees"
         WHERE role like any (array['%Crew Chief%', '%Dispatcher%', '%Director%'])
+        ${whereClause}
         ORDER BY first_name 
         ;
       `;
@@ -26,7 +27,9 @@ const httpTrigger: AzureFunction = async function (
         SELECT 
         COUNT("id") from
         "Employees"
-        WHERE role like any (array['%Crew Chief%', '%Dispatcher%', '%Director%']);`;
+        WHERE role like any (array['%Crew Chief%', '%Dispatcher%', '%Director%'])
+        ${whereClause}
+        ;`;
 
         let query = `${employees_dropdown_query} ${employees_field_count_query}`;
 
