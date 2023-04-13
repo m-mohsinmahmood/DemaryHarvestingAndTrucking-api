@@ -18,13 +18,15 @@ const httpTrigger: AzureFunction = async function (
                         ("employee_id", 
                         "role",
                         "module", 
-                        "is_active" 
+                        "is_active",
+                        "module_to_redirect" 
                         )
       
             VALUES      ('${dwr.employeeId}', 
                         '${dwr.role}', 
                         '${dwr.module}', 
-                        'TRUE'
+                        'TRUE',
+                        '${dwr.moduleToRedirect}'
                         )
           ;`;
 
