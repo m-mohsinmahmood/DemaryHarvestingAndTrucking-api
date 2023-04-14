@@ -8,6 +8,8 @@ const httpTrigger: AzureFunction = async function (
     req: HttpRequest
 ): Promise<void> {
     const db = new Client(config);
+    const moment = require('moment');
+    const formattedDate = moment.utc().format('MM/DD/YYYY hh:mm:ss A');
 
     try {
         const dwr: dwr = req.body;
@@ -19,14 +21,18 @@ const httpTrigger: AzureFunction = async function (
                         "role",
                         "module", 
                         "is_active",
-                        "module_to_redirect" 
+                        "module_to_redirect",
+                        "created_at",
+                        "begining_day" 
                         )
       
             VALUES      ('${dwr.employeeId}', 
                         '${dwr.role}', 
                         '${dwr.module}', 
                         'TRUE',
-                        '${dwr.moduleToRedirect}'
+                        '${dwr.moduleToRedirect}',
+                        '${formattedDate}',
+                        '${formattedDate}'
                         )
           ;`;
 
