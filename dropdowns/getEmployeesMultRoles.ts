@@ -27,7 +27,7 @@ const httpTrigger: AzureFunction = async function (
         SELECT 
         COUNT("id") from
         "Employees"
-        WHERE role like any (array['%Crew Chief%', '%Dispatcher%', '%Director%'])
+        WHERE role like any (array['%Crew Chief%', '%Dispatcher%', '%Director%', '%Trainer%'])
         ${whereClause}
         ;`;
 
