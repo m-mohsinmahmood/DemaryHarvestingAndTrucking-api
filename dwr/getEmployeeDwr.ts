@@ -5,7 +5,6 @@ import { GetFarmingDwr } from "./getFarmingDWR";
 import { GetTrainingDwr } from "./getTrainingDwr";
 import { GetMaintenanceRepairDwr } from "./getMaintenanceRepairDwr";
 import { GetOtherDwr } from "./getOtherDWR";
-import { log } from "console";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -26,10 +25,10 @@ const httpTrigger: AzureFunction = async function (
         const status: string = req.query.status
         const operation: string = req.query.operation
 
-        // const trainingDwr = GetTrainingDwr(employee_id, date, dateType, month, year, role, req.query.operation, taskId, module, type);
         const farmingDwr = GetFarmingDwr(employee_id, date, dateType, month, year, operation, status);
         const maintenanceDwr = GetMaintenanceRepairDwr(employee_id, date, dateType, month, year, operation, status);
         const otherDwr = GetOtherDwr(employee_id, date, dateType, month, year, operation, status);
+        const trainingDwr = GetTrainingDwr(employee_id, date, dateType, month, year, operation, status);
 
         let query = ``;
         let result;
@@ -37,12 +36,12 @@ const httpTrigger: AzureFunction = async function (
         let resp;
         if (req.query.operation === 'getDWRToVerify') {
 
-            query = `${farmingDwr} ${maintenanceDwr} ${otherDwr}`;
+            query = `${farmingDwr} ${maintenanceDwr} ${otherDwr} ${trainingDwr}`;
             console.log(query);
             db.connect();
             result = await db.query(query);
 
-            let merged = result[0].rows.concat(result[1].rows, result[2].rows);
+            let merged = result[0].rows.concat(result[1].rows, result[2].rows, result[3].rows);
 
             const totals = Object.values(merged.reduce((acc, curr) => {
                 const key = curr.employee_id;
