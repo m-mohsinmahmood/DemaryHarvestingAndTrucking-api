@@ -197,6 +197,27 @@ export interface alleyDocking {
       unSatisfactoryAlleyDocking:string,
       trainer_id: string,
 }
+export interface alleyDocking90 {
+    category: string;
+    pullUpsInput_ad90: string,
+     encroachInput_ad90: string,
+     goal_ad90: string,
+     finalPosition_ad90: string,
+     straightLineBacking_ad: string,
+     straightLineBakingInput_ad: string, //<-
+     alleyDocking_ad: string,
+     alleyDockingInput_ad: string,
+     offSetBacking_ad: string,
+     offSetBackingInput_ad: string,
+     parallelParkingBlind_ad: string,
+     parallelParkingBlindInput_ad: string,
+     coupUncoup_ad: string,
+     coupUncoupInput_ad: string,
+     comments_ad90: string,
+     satisfactoryAlleyDocking90:string,
+     unSatisfactoryAlleyDocking90:string,
+     trainer_id: string,
+}
 export interface offSetBacking {
     category: string;
     pullUps_osb: string,

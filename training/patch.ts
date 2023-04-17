@@ -2,7 +2,7 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { rawListeners } from "process";
 import { config } from "../services/database/database.config";
-import { engineCompartment, inCab, vehicleExternal,coupling,suspensionBrakes,straightLineBacking, alleyDocking, offSetBacking, parkingBlind,parkingSight, coupUncoup, roadSkillsDigital} from "./model";
+import { engineCompartment, inCab, vehicleExternal,coupling,suspensionBrakes,straightLineBacking, alleyDocking,alleyDocking90, offSetBacking, parkingBlind,parkingSight, coupUncoup, roadSkillsDigital} from "./model";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -18,6 +18,8 @@ const httpTrigger: AzureFunction = async function (
     const suspensionBrakes: suspensionBrakes = req.body;
     const straightLineBacking: straightLineBacking = req.body;
     const alleyDocking: alleyDocking = req.body;
+    const alleyDocking90: alleyDocking90 = req.body;
+
     const offSetBacking: offSetBacking = req.body;
     const parkingBlind: parkingBlind = req.body;
     const parkingSight: parkingSight = req.body;
@@ -38,7 +40,7 @@ const httpTrigger: AzureFunction = async function (
                 "airCompresseorEngine"                    = '${engineCompartment.airCompresseorEngine}',
                 "alternatorBelt"                    = '${engineCompartment.alternatorBelt}',
                 "clutchCondition"                    = '${engineCompartment.clutchCondition}',
-                "commentsEngine"                    = $$${engineCompartment.commentsEngine}$$,
+                "commentsEngine"                   = $$${engineCompartment.commentsEngine}$$,
                 "coolantLevelEngine"                    = '${engineCompartment.coolantLevelEngine}',
                 "fanShroud"                    = '${engineCompartment.fanShroud}',
                 "h20"                    = '${engineCompartment.h20}',
@@ -229,6 +231,23 @@ const httpTrigger: AzureFunction = async function (
                     WHERE trainer_id='${roadSkillsDigital.trainer_id}'  AND "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
             ;`
         }
+        else if(entity === 'basic-skills' && alleyDocking.category === 'alley-docking-90'){
+                query = `
+                UPDATE 
+                        "Training"
+                SET 
+                       "is_alley_backing90_started"                    = 'TRUE', 
+                       "pullUpsInput_ad90"                    = '${alleyDocking90.pullUpsInput_ad90}',
+                       "encroachInput_ad90"                    = '${alleyDocking90.encroachInput_ad90}',
+                       "goal_ad90"                    = '${alleyDocking90.goal_ad90}',
+                       "finalPosition_ad90"                    = '${alleyDocking90.finalPosition_ad90}',
+                        "comments_ad90"                     = $$${alleyDocking90.comments_ad90}$$,
+                        "satisfactoryAlleyDocking90"                     = '${alleyDocking90.satisfactoryAlleyDocking90}',
+                        "unSatisfactoryAlleyDocking90"                     = '${alleyDocking90.unSatisfactoryAlleyDocking90}'
+       
+                        WHERE trainer_id='${roadSkillsDigital.trainer_id}'  AND "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
+                ;`
+            }
         else if(entity === 'basic-skills' && offSetBacking.category === 'off-set-backing'){
             query = `
             UPDATE 
