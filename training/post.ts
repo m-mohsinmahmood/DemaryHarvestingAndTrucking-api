@@ -26,7 +26,7 @@ const httpTrigger: AzureFunction = async function (
   let trainee: any = (JSON.parse(fields[0].value));
   let preTripCheck: any = (JSON.parse(fields[0].value));
   let basicSkills: any = (JSON.parse(fields[0].value));
-  let roadSkills: any = (JSON.parse(fields[0].value)); ``
+  let roadSkills: any = (JSON.parse(fields[0].value)); 
   try {
 
 
@@ -418,7 +418,7 @@ RETURNING id as training_record_id
   //#region Upload
   if (files.length !== 0) {
     try {
-      record_id = result.rows[0].record_id;
+      record_id = result[0].rows[0].record_id;
       const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/training?sp=rwdl&st=2023-02-01T11:36:10Z&se=2024-12-31T19:36:10Z&spr=https&sv=2021-06-08&sr=c&sig=We3CxYtlHMyvsDa0tVag%2Fc0i%2BKniBfMoEXNRLq0qhBU%3D");
       const container = blob.getContainerClient("training");
 
@@ -602,7 +602,7 @@ RETURNING id as training_record_id
   context.res = {
     status: 200,
     body: {
-      id: result.rows[0],
+      id: result[0].rows[0],
       message: "Your details have been submitted",
       status: 200,
     },
