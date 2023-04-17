@@ -56,7 +56,18 @@ const httpTrigger: AzureFunction = async function (
                'trainee'
  )
  RETURNING id as record_id
- ;`;
+ ;
+ UPDATE 
+              
+ "DWR_Employees"
+                   
+ SET 
+ "supervisor_id" = '${trainer.trainer_id}',
+ "state" = '${trainer.state}'
+                        
+ WHERE 
+ "id" = '${trainer.dwr_id}'  ;
+ `;
     } else if (entity === 'trainer') {
       // for trainer
       query = `

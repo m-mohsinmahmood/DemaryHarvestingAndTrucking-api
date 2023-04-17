@@ -23,8 +23,8 @@ export interface preTripCheck{
     city: string;
     state: string;
     evaluation_form: string;
-    is_completed_cdl_classroom: boolean;
-    is_completed_group_practical: boolean;
+    is_completed_cdl_classroom: string;
+    is_completed_group_practical: string;
     category?: string;
 }
 export interface engineCompartment {
@@ -147,8 +147,8 @@ export interface basicSkills{
     city: string;
     state: string;
     evaluation_form: string;
-    is_completed_cdl_classroom: boolean;
-    is_completed_group_practical: boolean
+    is_completed_cdl_classroom: string;
+    is_completed_group_practical: string
     category?: string;
     clp?: string;
     odometerEndingMiles?: string;
@@ -288,8 +288,8 @@ export interface roadSkills{
     city: string;
     state: string;
     evaluation_form: string;
-    is_completed_cdl_classroom: boolean;
-    is_completed_group_practical: boolean
+    is_completed_cdl_classroom: string;
+    is_completed_group_practical: string
     category?: string;
     clp?: string;
     odometerEndingMiles?: string;
