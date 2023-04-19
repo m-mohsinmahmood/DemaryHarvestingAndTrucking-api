@@ -22,24 +22,24 @@ const httpTrigger: AzureFunction = async function (
       console.log("Training");
 
       let bridgeDailyTasksDwr = ``;
-      let ticket = ``;
+      // let ticket = ``;
 
       taskId = taskId.rows[0].id;
       console.log("task Id: ", taskId);
 
-      if (order.module === 'training') {
-        if (order.trainee_record_id) {
-          ticket = `"trainee_record_id" = '${taskId}'`;
-        }
-        else if (order.training_record_id) {
-          ticket = `"training_record_id" = '${taskId}'`;
-        }
-        else if (order.trainer_record_id) {
-          ticket = `"trainer_record_id" = '${taskId}'`;
-        }
-      }
-      else if (order.module === 'maintenance-repair')
-        ticket = `"main_repair_ticket_id" = '${taskId}'`;
+      // if (order.module === 'training') {
+      //   if (order.trainee_record_id) {
+      //     ticket = `"trainee_record_id" = '${taskId}'`;
+      //   }
+      //   else if (order.training_record_id) {
+      //     ticket = `"training_record_id" = '${taskId}'`;
+      //   }
+      //   else if (order.trainer_record_id) {
+      //     ticket = `"trainer_record_id" = '${taskId}'`;
+      //   }
+      // }
+      // else if (order.module === 'maintenance-repair')
+      //   ticket = `"main_repair_ticket_id" = '${taskId}'`;
 
       // else if (order.module === 'other')
       //   ticket = `"main_repair_ticket_id" = '${taskId}'`;
