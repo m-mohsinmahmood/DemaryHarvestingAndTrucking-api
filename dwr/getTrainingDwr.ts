@@ -4,6 +4,7 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
     let getDwr = ``;
 
     let where = ``;
+    let whereSubQuery = ``;
 
     // if (type === 'getAssignedDWR') {
     //     where = `${where} AND mr."assignedById" = '${employee_id}'`;
@@ -17,6 +18,14 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
     }
     else {
         where = `${where} AND CAST(dwr_employees.begining_day AS Date) = '${date}'`
+    }
+
+    if (dateType === 'month') {
+        whereSubQuery = `${whereSubQuery} AND EXTRACT(MONTH FROM begining_day) = '${month}'`
+        whereSubQuery = `${whereSubQuery} AND EXTRACT(YEAR FROM begining_day) = '${year}'`
+    }
+    else {
+        whereSubQuery = `${whereSubQuery} AND CAST(begining_day AS Date) = '${date}'`
     }
 
     if (status !== 'all') {
@@ -35,7 +44,19 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         ) AS total_hours ,
         dwr_employees."module" AS module,
         dwr_employees.begining_day :: DATE,
-        dwr_employees.supervisor_id
+        dwr_employees.supervisor_id,
+				 (SELECT
+       supervisor_id as last_supervisor_id
+
+    FROM
+      "DWR_Employees"
+        
+        WHERE 
+      is_active = FALSE
+        ${whereSubQuery}
+				
+				ORDER BY begining_day DESC
+				LIMIT 1)
 
     FROM
         "Bridge_DailyTasks_DWR" bridge
@@ -67,7 +88,19 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         ) AS total_hours ,
         dwr_employees."module" AS module,
         dwr_employees.begining_day :: DATE,
-        dwr_employees.supervisor_id
+        dwr_employees.supervisor_id,
+				(SELECT
+       supervisor_id as last_supervisor_id
+
+    FROM
+      "DWR_Employees"
+        
+        WHERE 
+      is_active = FALSE
+		${whereSubQuery}
+				
+				ORDER BY begining_day DESC
+				LIMIT 1)
 
     FROM
         "Bridge_DailyTasks_DWR" bridge
@@ -99,7 +132,19 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         ) AS total_hours ,
         dwr_employees."module" AS module,
         dwr_employees.begining_day :: DATE,
-        dwr_employees.supervisor_id
+        dwr_employees.supervisor_id,
+				(SELECT
+       supervisor_id as last_supervisor_id
+
+    FROM
+      "DWR_Employees"
+        
+        WHERE 
+      is_active = FALSE
+				${whereSubQuery}
+				
+				ORDER BY begining_day DESC
+				LIMIT 1)
 
     FROM
         "Bridge_DailyTasks_DWR" bridge
@@ -358,7 +403,7 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         ORDER BY dwr_employees.begining_day ASC;
 
         `;
- 
+
     }
 
     return getDwr;

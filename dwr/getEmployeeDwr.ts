@@ -32,7 +32,30 @@ const httpTrigger: AzureFunction = async function (
         let resp;
         if (req.query.operation === 'getDWRToVerify') {
 
-            query = `${farmingDwr} ${maintenanceDwr} ${otherDwr} ${trainingDwr}`;
+            let where = ``;
+            if (dateType === 'month') {
+                where = `${where} AND EXTRACT(MONTH FROM begining_day) = '${month}'`
+                where = `${where} AND EXTRACT(YEAR FROM begining_day) = '${year}'`
+            }
+            else {
+                where = `${where} AND CAST(begining_day AS Date) = '${date}'`
+            }
+
+            let getLastSupervisor = `
+            SELECT
+            supervisor_id
+     
+            FROM
+           "DWR_Employees"
+             
+            WHERE 
+            is_active = FALSE
+            ${where}
+            ORDER BY begining_day DESC
+            LIMIT 1;
+            `;
+
+            query = `${farmingDwr} ${maintenanceDwr} ${otherDwr} ${trainingDwr} ${getLastSupervisor}`;
             console.log(query);
             db.connect();
             result = await db.query(query);
@@ -40,24 +63,31 @@ const httpTrigger: AzureFunction = async function (
             // For merging of training results from 3 different tables
             let mergedTraining = [...result[3].rows, ...result[4].rows, ...result[5].rows];
             let mergedResults = result[0].rows.concat(result[1].rows, result[2].rows, mergedTraining);
+            let lastSupervisor = result[6].rows[0];
 
             const totals = Object.values(mergedResults.reduce((acc, curr) => {
                 const key = curr.employee_id;
                 const employee_name = curr.employee_name;
                 const supervisor_id = curr.supervisor_id;
+                const last_supervisor_id = curr.last_supervisor_id;
+
                 console.log(curr);
+                console.log(acc);
 
                 if (!acc[key]) {
                     acc[key] = {
                         employee_Id: key,
                         total_hours: 0,
                         employee_name: employee_name,
-                        supervisor_id: supervisor_id
+                        supervisor_id: supervisor_id,
+                        last_supervisor_id: last_supervisor_id,
+
                     }
                 }
                 acc[key].total_hours += +curr.total_hours
                 return acc
             }, {}))
+
 
             resp = {
                 dwrSummary: totals
