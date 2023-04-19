@@ -18,10 +18,6 @@ const httpTrigger: AzureFunction = async function (
         const dateType: string = req.query.dateType;
         const month: string = req.query.month;
         const year: string = req.query.year;
-        const role: string = req.query.role
-        const taskId: string = req.query.taskId
-        const module: string = req.query.dwr_type
-        const type: string = req.query.type
         const status: string = req.query.status
         const operation: string = req.query.operation
 
@@ -41,13 +37,14 @@ const httpTrigger: AzureFunction = async function (
             db.connect();
             result = await db.query(query);
 
-            let merged = result[0].rows.concat(result[1].rows, result[2].rows, result[3].rows);
+            // For merging of training results from 3 different tables
+            let mergedTraining = [...result[3].rows, ...result[4].rows, ...result[5].rows];
+            let mergedResults = result[0].rows.concat(result[1].rows, result[2].rows, mergedTraining);
 
-            const totals = Object.values(merged.reduce((acc, curr) => {
+            const totals = Object.values(mergedResults.reduce((acc, curr) => {
                 const key = curr.employee_id;
                 const employee_name = curr.employee_name;
                 const supervisor_id = curr.supervisor_id;
-
                 console.log(curr);
 
                 if (!acc[key]) {
@@ -69,12 +66,13 @@ const httpTrigger: AzureFunction = async function (
 
         if (req.query.operation === 'getDWRDetails') {
 
-            query = `${farmingDwr} ${maintenanceDwr}  ${otherDwr}`;
+            query = `${farmingDwr} ${maintenanceDwr}  ${otherDwr} ${trainingDwr}`;
             console.log(query);
             db.connect();
             result = await db.query(query);
 
-            let merged = result[0].rows.concat(result[1].rows, result[2].rows);
+            let mergedTraining = [...result[3].rows, ...result[4].rows, ...result[5].rows];
+            let merged = result[0].rows.concat(result[1].rows, result[2].rows, mergedTraining);
 
             resp = {
                 dwr: merged
@@ -83,12 +81,13 @@ const httpTrigger: AzureFunction = async function (
 
         if (req.query.operation === 'getDWRList') {
 
-            query = `${farmingDwr} ${maintenanceDwr}  ${otherDwr}`;
+            query = `${farmingDwr} ${maintenanceDwr}  ${otherDwr} ${trainingDwr}`;
             console.log(query);
             db.connect();
             result = await db.query(query);
 
-            let merged = result[0].rows.concat(result[1].rows, result[2].rows);
+            let mergedTraining = [...result[3].rows, ...result[4].rows, ...result[5].rows];
+            let merged = result[0].rows.concat(result[1].rows, result[2].rows, mergedTraining);
 
             resp = {
                 dwr: merged

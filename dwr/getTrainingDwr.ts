@@ -125,11 +125,240 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
     }
 
     else if (operation === 'getDWRDetails') {
-       
+        getDwr = `
+        select 
+        dwr_employees.id,
+        dwr_employees.begining_day as login_time,
+        dwr_employees.ending_day as logout_time,
+        dwr_employees."module",
+        dwr_employees."supervisor_notes",
+        dwr_employees."employee_notes",
+            SUM (
+                ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
+            ) AS total_hours,
+            
+        json_agg(
+        json_build_object(
+        'ticket_id', training.id,
+        'employee_id', emp.id,
+        'employee_name', concat(emp.first_name, ' ', emp.last_name),
+        'state', training."state",
+        'supervisor_id', training.supervisor_id,
+        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
+        )) as tickets
+        
+        from "DWR_Employees" dwr_employees
+        
+        INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employees."id" = bridge.dwr_id
+        INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+        INNER JOIN "Training" training ON dwr.training_record_id = training."id"
+        INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
+        INNER JOIN "Employees" supervisor ON training.supervisor_id = supervisor."id"
+
+        WHERE dwr_employees.employee_id = '${employee_id}'
+       ${where}
+        AND dwr_employees.is_active = FALSE
+        
+        GROUP BY dwr_employees.id
+        
+        ORDER BY dwr_employees.begining_day ASC;
+
+
+        select 
+        dwr_employees.id,
+        dwr_employees.begining_day as login_time,
+        dwr_employees.ending_day as logout_time,
+        dwr_employees."module",
+        dwr_employees."supervisor_notes",
+        dwr_employees."employee_notes",
+            SUM (
+                ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
+            ) AS total_hours,
+            
+        json_agg(
+        json_build_object(
+        'ticket_id', trainee.id,
+        'employee_id', emp.id,
+        'employee_name', concat(emp.first_name, ' ', emp.last_name),
+        'state', trainee."state",
+        'supervisor_id', trainee.trainer_id,
+        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
+        )) as tickets
+        
+        from "DWR_Employees" dwr_employees
+        
+        INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employees."id" = bridge.dwr_id
+        INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+        INNER JOIN "Trainee" trainee ON dwr.trainee_record_id = trainee."id"
+        INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
+        INNER JOIN "Employees" supervisor ON trainee.trainer_id = supervisor."id"
+
+        WHERE dwr_employees.employee_id = '${employee_id}'
+       ${where}
+        AND dwr_employees.is_active = FALSE
+        
+        GROUP BY dwr_employees.id
+        
+        ORDER BY dwr_employees.begining_day ASC;
+
+
+        select 
+        dwr_employees.id,
+        dwr_employees.begining_day as login_time,
+        dwr_employees.ending_day as logout_time,
+        dwr_employees."module",
+        dwr_employees."supervisor_notes",
+        dwr_employees."employee_notes",
+            SUM (
+                ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
+            ) AS total_hours,
+            
+        json_agg(
+        json_build_object(
+        'ticket_id', trainer_tasks.id,
+        'employee_id', emp.id,
+        'employee_name', concat(emp.first_name, ' ', emp.last_name),
+        'state', trainer_tasks."state",
+        'supervisor_id', trainer_tasks.supervisor_id,
+        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
+        )) as tickets
+        
+        from "DWR_Employees" dwr_employees
+        
+        INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employees."id" = bridge.dwr_id
+        INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+        INNER JOIN "Trainer_Training_Tasks" trainer_tasks ON dwr.trainer_record_id = trainer_tasks."id"
+        INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
+        INNER JOIN "Employees" supervisor ON trainer_tasks.supervisor_id = supervisor."id"
+
+        WHERE dwr_employees.employee_id = '${employee_id}'
+       ${where}
+        AND dwr_employees.is_active = FALSE
+        
+        GROUP BY dwr_employees.id
+        
+        ORDER BY dwr_employees.begining_day ASC;
+
+        `;
     }
 
     else if (operation === 'getDWRList') {
+        getDwr = `
+        select 
+        dwr_employees.id,
+        dwr_employees.begining_day as login_time,
+        dwr_employees.ending_day as logout_time,
+        dwr_employees."module",
+        dwr_employees."supervisor_notes",
+        dwr_employees."employee_notes",
+            SUM (
+                ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
+            ) AS total_hours,
+            
+        json_agg(
+        json_build_object(
+        'ticket_id', training.id,
+        'employee_id', emp.id,
+        'employee_name', concat(emp.first_name, ' ', emp.last_name),
+        'state', training."state",
+        'supervisor_id', training.supervisor_id,
+        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
+        )) as tickets
         
+        from "DWR_Employees" dwr_employees
+        
+        INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employees."id" = bridge.dwr_id
+        INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+        INNER JOIN "Training" training ON dwr.training_record_id = training."id"
+        INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
+        INNER JOIN "Employees" supervisor ON training.supervisor_id = supervisor."id"
+
+        WHERE dwr_employees.employee_id = '${employee_id}'
+       ${where}
+        AND dwr_employees.is_active = FALSE
+        
+        GROUP BY dwr_employees.id
+        
+        ORDER BY dwr_employees.begining_day ASC;
+
+
+        select 
+        dwr_employees.id,
+        dwr_employees.begining_day as login_time,
+        dwr_employees.ending_day as logout_time,
+        dwr_employees."module",
+        dwr_employees."supervisor_notes",
+        dwr_employees."employee_notes",
+            SUM (
+                ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
+            ) AS total_hours,
+            
+        json_agg(
+        json_build_object(
+        'ticket_id', trainee.id,
+        'employee_id', emp.id,
+        'employee_name', concat(emp.first_name, ' ', emp.last_name),
+        'state', trainee."state",
+        'supervisor_id', trainee.trainer_id,
+        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
+        )) as tickets
+        
+        from "DWR_Employees" dwr_employees
+        
+        INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employees."id" = bridge.dwr_id
+        INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+        INNER JOIN "Trainee" trainee ON dwr.trainee_record_id = trainee."id"
+        INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
+        INNER JOIN "Employees" supervisor ON trainee.trainer_id = supervisor."id"
+
+        WHERE dwr_employees.employee_id = '${employee_id}'
+       ${where}
+        AND dwr_employees.is_active = FALSE
+        
+        GROUP BY dwr_employees.id
+        
+        ORDER BY dwr_employees.begining_day ASC;
+
+
+        select 
+        dwr_employees.id,
+        dwr_employees.begining_day as login_time,
+        dwr_employees.ending_day as logout_time,
+        dwr_employees."module",
+        dwr_employees."supervisor_notes",
+        dwr_employees."employee_notes",
+            SUM (
+                ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
+            ) AS total_hours,
+            
+        json_agg(
+        json_build_object(
+        'ticket_id', trainer_tasks.id,
+        'employee_id', emp.id,
+        'employee_name', concat(emp.first_name, ' ', emp.last_name),
+        'state', trainer_tasks."state",
+        'supervisor_id', trainer_tasks.supervisor_id,
+        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
+        )) as tickets
+        
+        from "DWR_Employees" dwr_employees
+        
+        INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employees."id" = bridge.dwr_id
+        INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
+        INNER JOIN "Trainer_Training_Tasks" trainer_tasks ON dwr.trainer_record_id = trainer_tasks."id"
+        INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
+        INNER JOIN "Employees" supervisor ON trainer_tasks.supervisor_id = supervisor."id"
+
+        WHERE dwr_employees.employee_id = '${employee_id}'
+       ${where}
+        AND dwr_employees.is_active = FALSE
+        
+        GROUP BY dwr_employees.id
+        
+        ORDER BY dwr_employees.begining_day ASC;
+
+        `;
+ 
     }
 
     return getDwr;
