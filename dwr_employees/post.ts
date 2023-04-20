@@ -32,7 +32,7 @@ const httpTrigger: AzureFunction = async function (
                         'TRUE',
                         '${dwr.moduleToRedirect}',
                         '${formattedDate}',
-                        '${formattedDate}'
+                        CURRENT_TIMESTAMP
                         )
           ;`;
 
