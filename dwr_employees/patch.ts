@@ -19,9 +19,9 @@ const httpTrigger: AzureFunction = async function (
    
         SET 
         "is_active" = FALSE,
-        "dwr_status" = 'pendingVerification',
-        "modified_at"   = '${formattedDate}',
-        "ending_day"   = '${formattedDate}'
+        "dwr_status"    = 'pendingVerification',
+        "modified_at" = '${formattedDate}',
+        "ending_day"  = CURRENT_TIMESTAMP
         
         WHERE 
         "id" = '${dwr.id}' ;`;
