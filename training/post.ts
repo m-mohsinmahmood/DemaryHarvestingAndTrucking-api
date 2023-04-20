@@ -26,7 +26,7 @@ const httpTrigger: AzureFunction = async function (
   let trainee: any = (JSON.parse(fields[0].value));
   let preTripCheck: any = (JSON.parse(fields[0].value));
   let basicSkills: any = (JSON.parse(fields[0].value));
-  let roadSkills: any = (JSON.parse(fields[0].value)); 
+  let roadSkills: any = (JSON.parse(fields[0].value));
   try {
 
 
@@ -62,11 +62,16 @@ const httpTrigger: AzureFunction = async function (
  "DWR_Employees"
                    
  SET 
- "supervisor_id" = '${trainer.trainer_id}',
- "state" = '${trainer.state}'
+ "supervisor_id" = '${trainee.trainer_id}',
+ "state" = '${trainee.state}'
                         
  WHERE 
- "id" = '${trainer.dwr_id}'  ;
+ "id" = '${trainee.dwr_id}'  ;
+
+ INSERT INTO "User_Profile" (employee_id, state, city)
+ VALUES ('${trainee.trainee_id}', '${trainee.state}', '${trainee.city}')
+ ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
+
  `;
     } else if (entity === 'trainer') {
       // for trainer
@@ -108,6 +113,9 @@ const httpTrigger: AzureFunction = async function (
               WHERE 
               "id" = '${trainer.dwr_id}'  ;
 
+              INSERT INTO "User_Profile" (employee_id, state, city)
+ VALUES ('${trainer.trainer_id}', '${trainer.state}', '${trainer.city}')
+ ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
 
 `;
     } else if (entity === 'pre-trip' && preTripCheck.evaluation_form === 'paper-form') {
@@ -151,6 +159,10 @@ RETURNING id as record_id
                                  
               WHERE 
               "id" = '${preTripCheck.dwr_id}'  ;
+
+              INSERT INTO "User_Profile" (employee_id, state, city)
+              VALUES ('${preTripCheck.trainer_id}', '${preTripCheck.state}', '${preTripCheck.city}')
+              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
 `;
 
     } else if (entity === 'pre-trip' && preTripCheck.evaluation_form === 'digital-form') {
@@ -196,6 +208,10 @@ RETURNING id as record_id
                                  
               WHERE 
               "id" = '${preTripCheck.dwr_id}'  ;
+
+              INSERT INTO "User_Profile" (employee_id, state, city)
+              VALUES ('${preTripCheck.trainer_id}', '${preTripCheck.state}', '${preTripCheck.city}')
+              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
 `;
 
     } else if (entity === 'basic-skills' && basicSkills.evaluation_form === 'paper-form') {
@@ -248,6 +264,9 @@ RETURNING id as record_id
               WHERE 
               "id" = '${basicSkills.dwr_id}'  ;
 
+              INSERT INTO "User_Profile" (employee_id, state, city)
+              VALUES ('${basicSkills.trainer_id}', '${basicSkills.state}', '${basicSkills.city}')
+              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
 `;
 
     } else if (entity === 'basic-skills' && basicSkills.evaluation_form === 'digital-form') {
@@ -302,6 +321,10 @@ RETURNING id as training_record_id
               WHERE 
               "id" = '${basicSkills.dwr_id}'  ;
 
+              INSERT INTO "User_Profile" (employee_id, state, city)
+              VALUES ('${basicSkills.trainer_id}', '${basicSkills.state}', '${basicSkills.city}')
+              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
+
 `;
 
     } else if (entity === 'road-skills' && roadSkills.evaluation_form === 'paper-form') {
@@ -353,6 +376,10 @@ RETURNING id as record_id
                    
               WHERE 
               "id" = '${roadSkills.dwr_id}'  ;
+
+              INSERT INTO "User_Profile" (employee_id, state, city)
+              VALUES ('${roadSkills.trainer_id}', '${roadSkills.state}', '${roadSkills.city}')
+              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
 `;
 
     } else if (entity === 'road-skills' && roadSkills.evaluation_form === 'digital-form') {
@@ -406,6 +433,10 @@ RETURNING id as training_record_id
      
               WHERE 
               "id" = '${roadSkills.dwr_id}'  ;
+
+              INSERT INTO "User_Profile" (employee_id, state, city)
+              VALUES ('${roadSkills.trainer_id}', '${roadSkills.state}', '${roadSkills.city}')
+              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
 
 `;
 

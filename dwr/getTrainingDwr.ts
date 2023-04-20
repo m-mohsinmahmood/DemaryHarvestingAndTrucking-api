@@ -6,12 +6,6 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
     let where = ``;
     let whereSubQuery = ``;
 
-    // if (type === 'getAssignedDWR') {
-    //     where = `${where} AND mr."assignedById" = '${employee_id}'`;
-    // }
-    // else
-    //     where = `${where} AND dwr.employee_id = '${employee_id}'`;
-
     if (dateType === 'month') {
         where = `${where} AND EXTRACT(MONTH FROM dwr_employees.begining_day) = '${month}'`
         where = `${where} AND EXTRACT(YEAR FROM dwr_employees.begining_day) = '${year}'`
