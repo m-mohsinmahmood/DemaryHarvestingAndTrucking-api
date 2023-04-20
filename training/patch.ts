@@ -2,7 +2,7 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { rawListeners } from "process";
 import { config } from "../services/database/database.config";
-import { engineCompartment, inCab, vehicleExternal,coupling,suspensionBrakes,straightLineBacking, alleyDocking, offSetBacking, parkingBlind,parkingSight, coupUncoup, roadSkillsDigital} from "./model";
+import { engineCompartment, inCab, vehicleExternal,coupling,straightLineBacking, alleyDocking,alleyDocking90, offSetBacking, parkingBlind,parkingSight, coupUncoup, roadSkillsDigital} from "./model";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -15,9 +15,10 @@ const httpTrigger: AzureFunction = async function (
     const inCab: inCab = req.body;
     const vehicleExternal: vehicleExternal = req.body;
     const coupling: coupling = req.body;
-    const suspensionBrakes: suspensionBrakes = req.body;
     const straightLineBacking: straightLineBacking = req.body;
     const alleyDocking: alleyDocking = req.body;
+    const alleyDocking90: alleyDocking90 = req.body;
+
     const offSetBacking: offSetBacking = req.body;
     const parkingBlind: parkingBlind = req.body;
     const parkingSight: parkingSight = req.body;
@@ -35,26 +36,68 @@ const httpTrigger: AzureFunction = async function (
                  "Training"
          SET 
                 "is_engine_compartment_started"                    = 'TRUE', 
-                "airCompresseorEngine"                    = '${engineCompartment.airCompresseorEngine}',
-                "alternatorBelt"                    = '${engineCompartment.alternatorBelt}',
-                "clutchCondition"                    = '${engineCompartment.clutchCondition}',
-                "commentsEngine"                    = $$${engineCompartment.commentsEngine}$$,
-                "coolantLevelEngine"                    = '${engineCompartment.coolantLevelEngine}',
-                "fanShroud"                    = '${engineCompartment.fanShroud}',
-                "h20"                    = '${engineCompartment.h20}',
-                "hosesSteering"                    = '${engineCompartment.hosesSteering}',
-                "leaksHoses"                    = '${engineCompartment.leaksHoses}',
-                "mirror"                    = '${engineCompartment.mirror}',
-                 "oilLevel"                     = '${engineCompartment.oilLevel}',
-                 "powerSteelingLevel"                     = '${engineCompartment.powerSteelingLevel}',
+                "leans"                    = '${engineCompartment.leans}',
+                "leaks"                    = '${engineCompartment.leaks}',
+                "lights"                    = '${engineCompartment.lights}',
+                "hazards"                   = '${engineCompartment.hazards}',
+                "check_neutral"                    = '${engineCompartment.check_neutral}',
+                "parking_brakes"                    = '${engineCompartment.parking_brakes}',
+                "power_steering_level"                    = '${engineCompartment.power_steering_level}',
+                "keys_removed"                    = '${engineCompartment.keys_removed}',
+                "outside_windshield"                    = '${engineCompartment.outside_windshield}',
+                "wiper_condition"                    = '${engineCompartment.wiper_condition}',
+                 "engine_oil"                     = '${engineCompartment.engine_oil}',
+                 "power_steering_evel"                     = '${engineCompartment.power_steering_evel}',
+                 "wiring_loom"                     = '${engineCompartment.wiring_loom}',
+                 "frame_condition"                     = '${engineCompartment.frame_condition}',
+                 "hub_oil_level"                     = '${engineCompartment.hub_oil_level}',
+                 "hub_seal_outer"                     = '${engineCompartment.hub_seal_outer}',
+                 "hub_seal_inner"                     = '${engineCompartment.hub_seal_inner}',
+                 "rim"                     = '${engineCompartment.rim}',
+                 "lug_nuts"                     = '${engineCompartment.lug_nuts}',
+                 "valve_stems"                     = '${engineCompartment.valve_stems}',
+                 "side_walls"                     = '${engineCompartment.side_walls}',
+                 "tread"                     = '${engineCompartment.tread}',
+                 "brake_drum"                     = '${engineCompartment.brake_drum}',
+                 "brake_pads"                     = '${engineCompartment.brake_pads}',
+                 "slack_adjuster"                     = '${engineCompartment.slack_adjuster}',
+                 "push_rod"                     = '${engineCompartment.push_rod}',
+                 "brake_chamber"                     = '${engineCompartment.brake_chamber}',
+                 "brake_hoses"                     = '${engineCompartment.brake_hoses}',
+                 "air_compressor"                     = '${engineCompartment.air_compressor}',
+                 "steering_shaft"                     = '${engineCompartment.steering_shaft}',
+                 "universal_joints"                     = '${engineCompartment.universal_joints}',
+                 "steering_blocks"                     = '${engineCompartment.steering_blocks}',
+                 "steering_linkages"                     = '${engineCompartment.steering_linkages}',
+                 "steering_hoses"                     = '${engineCompartment.steering_hoses}',
+                 "steering_pump"                     = '${engineCompartment.steering_pump}',
+                 "suspension_mounts"                     = '${engineCompartment.suspension_mounts}',
+                 "bushings"                     = '${engineCompartment.bushings}',
+                 "leaf_springs"                     = '${engineCompartment.leaf_springs}',
+                 "u_bolts"                     = '${engineCompartment.u_bolts}',
+                 "shock_absorbers"                     = '${engineCompartment.shock_absorbers}',
+                 "clutch_condition"                     = '${engineCompartment.clutch_condition}',
+                 "inter_cooler_ducts"                     = '${engineCompartment.inter_cooler_ducts}',
                  "radiator"                     = '${engineCompartment.radiator}',
-                 "steeringBox"                     = '${engineCompartment.steeringBox}',
-                 "steeringLinkage"                     = '${engineCompartment.steeringLinkage}',
+                 "radiator_fan"                     = '${engineCompartment.radiator_fan}',
+                 "radiator_shroud"                     = '${engineCompartment.radiator_shroud}',
+                 "radiator_hoses"                     = '${engineCompartment.radiator_hoses}',
+                 "ac_pump"                     = '${engineCompartment.ac_pump}',
+                 "alternator"                     = '${engineCompartment.alternator}',
+                 "water_pump"                     = '${engineCompartment.water_pump}',
+                 "coolant_reservoir"                     = '${engineCompartment.coolant_reservoir}',
+                 "coolant_level"                     = '${engineCompartment.coolant_level}',
+                 "windshield_washer_level"                     = '${engineCompartment.windshield_washer_level}',
                  "turbo"                     = '${engineCompartment.turbo}',
-                 "windowFluid"                     = '${engineCompartment.windowFluid}',
-                 "wiring"                     = '${engineCompartment.wiring}',
+                 "exhaust_sysytem"                     = '${engineCompartment.exhaust_sysytem}',
+                 "step"                     = '${engineCompartment.step}',
+                 "battery_box"                     = '${engineCompartment.battery_box}',
+                 "mirrors"                     = '${engineCompartment.mirrors}',
+                 "hand_rail"                     = '${engineCompartment.hand_rail}',
+                 "door"                     = '${engineCompartment.door}',
+                 "hinges"                     = '${engineCompartment.hinges}',
+                 "commentsEngine"                     = $$${engineCompartment.commentsEngine}$$,
                  "percentageEngineCompartment"                     = '${engineCompartment.percentageEngineCompartment}'
-
                  WHERE trainer_id='${roadSkillsDigital.trainer_id}'  AND "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'pre-trip'
          ;`
         }
@@ -64,27 +107,39 @@ const httpTrigger: AzureFunction = async function (
                  "Training"
          SET 
                 "is_in_cab_started"                    = 'TRUE', 
-                "safetyBelt"                    = '${inCab.safetyBelt}',
-                "coolantLevelCab"                    = '${inCab.coolantLevelCab}',
-                "emergencyEquipment"                    = '${inCab.emergencyEquipment}',
-                "safeStart"                    = '${inCab.safeStart}',
-                "temperatureGauge"                    = '${inCab.temperatureGauge}',
-                "oilPressure"                    = '${inCab.oilPressure}',
-                "voltMeter"                    = '${inCab.voltMeter}',
-                "airGaugeBuCo"                    = '${inCab.airGaugeBuCo}',
-                "indicators"                    = '${inCab.indicators}',
-                "horns"                    = '${inCab.horns}',
-                 "defroster"                     = '${inCab.defroster}',
-                 "windshield"                     = '${inCab.windshield}',
-                 "wipersWash"                     = '${inCab.wipersWash}',
-                 "parkBrake"                     = '${inCab.parkBrake}',
-                 "svcBrake"                     = '${inCab.svcBrake}',
-                 "leakTest"                     = '${inCab.leakTest}',
-                 "abcLights"                     = '${inCab.abcLights}',
-                 "lightFunction"                     = '${inCab.lightFunction}',
+                "seat_belt"                    = '${inCab.seat_belt}',
+                "loose_floor"                    = '${inCab.loose_floor}',
+                "mirror_positioning"                    = '${inCab.mirror_positioning}',
+                "gear_stick_condition"                    = '${inCab.gear_stick_condition}',
+                "emergency_items"                    = '${inCab.emergency_items}',
+                "safe_start"                    = '${inCab.safe_start}',
+                "dash_lights"                    = '${inCab.dash_lights}',
+                "warning_lights"                    = '${inCab.warning_lights}',
+                "turn_signals"                    = '${inCab.turn_signals}',
+                "way_4_flashers"                    = '${inCab.way_4_flashers}',
+                 "high_beam"                     = '${inCab.high_beam}',
+                 "abs_lights"                     = '${inCab.abs_lights}',
+                 "volt_meter"                     = '${inCab.volt_meter}',
+                 "fuel_level"                     = '${inCab.fuel_level}',
+                 "oil_pressure"                     = '${inCab.oil_pressure}',
+                 "air_pressure"                     = '${inCab.air_pressure}',
+                 "coolant_temperature"                     = '${inCab.coolant_temperature}',
+                 "diff_lock_engages"                     = '${inCab.diff_lock_engages}',
+                 "heater_demister"                     = '${inCab.heater_demister}',
+                 "horn"                     = '${inCab.horn}',
+                 "wiper_washer_working"                     = '${inCab.wiper_washer_working}',
+                 "test_service_brake"                     = '${inCab.test_service_brake}',
+                 "test_trailer_park_brake"                     = '${inCab.test_trailer_park_brake}',
+                 "test_truck_park_brake"                     = '${inCab.test_truck_park_brake}',
+                 "leak_stage_1"                     = '${inCab.leak_stage_1}',
+                 "leak_stage_2"                     = '${inCab.leak_stage_2}',
+                 "leak_stage_3"                     = '${inCab.leak_stage_3}',
+                 "front_external_lights"                     = '${inCab.front_external_lights}',
+                 "trailer_lights"                     = '${inCab.trailer_lights}',
+                 "rear_external_lights"                     = '${inCab.rear_external_lights}',
                  "commentsCab"                     = $$${inCab.commentsCab}$$,
                  "percentageInCab"                     = '${inCab.percentageInCab}'
-
+                
                  WHERE trainer_id='${roadSkillsDigital.trainer_id}'  AND "evaluation_type" = 'pre-trip'
          ;`
         }
@@ -94,25 +149,57 @@ const httpTrigger: AzureFunction = async function (
                  "Training"
          SET 
                 "is_vehicle_external_started"                    = 'TRUE', 
-                "lightFunctionVehicle"                    = '${vehicleExternal.lightFunctionVehicle}',
-                "lensReflector"                    = '${vehicleExternal.lensReflector}',
-                "door"                    = '${vehicleExternal.door}',
-                "fuelTank"                    = '${vehicleExternal.fuelTank}',
-                "leaks"                    = '${vehicleExternal.leaks}',
-                "steps"                    = '${vehicleExternal.steps}',
-                "frame"                    = '${vehicleExternal.frame}',
-                "driveShaft"                    = '${vehicleExternal.driveShaft}',
-                "tires"                    = '${vehicleExternal.tires}',
-                "rims"                    = '${vehicleExternal.rims}',
-                 "lugNuts"                     = '${vehicleExternal.lugNuts}',
-                 "axelHubSeal"                     = '${vehicleExternal.axelHubSeal}',
-                 "bidSpacers"                     = '${vehicleExternal.bidSpacers}',
-                 "batteryBox"                     = '${vehicleExternal.batteryBox}',
-                 "exhaust"                     = '${vehicleExternal.exhaust}',
-                 "headerBvd"                     = '${vehicleExternal.headerBvd}',
-                 "landingGear"                     = '${vehicleExternal.landingGear}',
+                "fuel_tank_sec"                    = '${vehicleExternal.fuel_tank_sec}',
+                "fuel_tank_leaks"                    = '${vehicleExternal.fuel_tank_leaks}',
+                "head_rack"                    = '${vehicleExternal.head_rack}',
+                "cab_air_bags"                    = '${vehicleExternal.cab_air_bags}',
+                "cat_walk"                    = '${vehicleExternal.cat_walk}',
+                "cat_walk_steps"                    = '${vehicleExternal.cat_walk_steps}',
+                "air_electrical_lines_truck"                    = '${vehicleExternal.air_electrical_lines_truck}',
+                "chassis_frame"                    = '${vehicleExternal.chassis_frame}',
+                "wheel_front_fender"                    = '${vehicleExternal.wheel_front_fender}',
+                "tire_hub_oil_outer"                    = '${vehicleExternal.tire_hub_oil_outer}',
+                 "tire_hub_oil_inner"                     = '${vehicleExternal.tire_hub_oil_inner}',
+                 "tire_rim"                     = '${vehicleExternal.tire_rim}',
+                 "tire_lug_nuts"                     = '${vehicleExternal.tire_lug_nuts}',
+                 "tire_valve_stem"                     = '${vehicleExternal.tire_valve_stem}',
+                 "tire_sidewalls"                     = '${vehicleExternal.tire_sidewalls}',
+                 "tires_tread"                     = '${vehicleExternal.tires_tread}',
+                 "duals_evenly_matched"                   = '${vehicleExternal.duals_evenly_matched}',
+                 "duals_no_rim_gaps"                     = '${vehicleExternal.duals_no_rim_gaps}',
+                 "duals_not_touching"                     = '${vehicleExternal.duals_not_touching}',
+                 "duals_clear_rocks"                     = '${vehicleExternal.duals_clear_rocks}',
+                 "duals_no_mis_match"                     = '${vehicleExternal.duals_no_mis_match}',
+                 "drive_wheel_brake_drum"                     = '${vehicleExternal.drive_wheel_brake_drum}',
+                 "drive_wheel_brake_pads"                     = '${vehicleExternal.drive_wheel_brake_pads}',
+                 "drive_wheel_slack_adjuster"                     = '${vehicleExternal.drive_wheel_slack_adjuster}',
+                 "drive_wheel_push_rod"                     = '${vehicleExternal.drive_wheel_push_rod}',
+                 "drive_wheel_brake_chamber"                     = '${vehicleExternal.drive_wheel_brake_chamber}',
+                 "drive_wheel_brake_hoses"                     = '${vehicleExternal.drive_wheel_brake_hoses}',
+                 "dw_suspension_wheels"                     = '${vehicleExternal.dw_suspension_wheels}',
+                 "dw_bushings"                     = '${vehicleExternal.dw_bushings}',
+                 "dw_leaf_springs"                     = '${vehicleExternal.dw_leaf_springs}',
+                 "dw_u_bolts"                     = '${vehicleExternal.dw_u_bolts}',
+                 "dw_shock_absorbers"                     = '${vehicleExternal.dw_shock_absorbers}',
+                 "dw_airbags"                     = '${vehicleExternal.dw_airbags}',
+                 "top_plate_apron"                     = '${vehicleExternal.top_plate_apron}',
+                 "sliding_plate"                     = '${vehicleExternal.sliding_plate}',
+                 "wheel_5"                     = '${vehicleExternal.wheel_5}',
+                 "mounting_block"                     = '${vehicleExternal.mounting_block}',
+                 "sliding_frame"                     = '${vehicleExternal.sliding_frame}',
+                 "air_ram_line"                     = '${vehicleExternal.air_ram_line}',
+                 "release_liver"                     = '${vehicleExternal.release_liver}',
+                 "locking_jaws"                     = '${vehicleExternal.locking_jaws}',
+                 "locking_pins"                     = '${vehicleExternal.locking_pins}',
+                 "king_pin"                     = '${vehicleExternal.king_pin}',
+                 "wheel_positioning_5"                     = '${vehicleExternal.wheel_positioning_5}',
+                 "drive_shaft"                     = '${vehicleExternal.drive_shaft}',
+                 "torison_bars"                     = '${vehicleExternal.torison_bars}',
+                 "mud_flaps"                     = '${vehicleExternal.mud_flaps}',
+                 "rear_lights"                     = '${vehicleExternal.rear_lights}',
                  "commentsVehicle"                     = $$${vehicleExternal.commentsVehicle}$$,
                  "percentageVehicleExternal"                     = '${vehicleExternal.percentageVehicleExternal}'
+
 
                  WHERE trainer_id='${roadSkillsDigital.trainer_id}'  AND "evaluation_type" = 'pre-trip'
          ;`
@@ -122,56 +209,22 @@ const httpTrigger: AzureFunction = async function (
          UPDATE 
                  "Training"
          SET 
-                "is_coupling_started"                    = 'TRUE', 
-                "airConditioners"                    = '${coupling.airConditioners}',
-                "electricConnectors"                    = '${coupling.electricConnectors}',
-                "mountingBolts"                    = '${coupling.mountingBolts}',
-                "platformBase"                    = '${coupling.platformBase}',
-                "lockingJaws"                    = '${coupling.lockingJaws}',
-                "grease"                    = '${coupling.grease}',
-                "releaseArm"                    = '${coupling.releaseArm}',
-                "skidPlate"                    = '${coupling.skidPlate}',
-                "slidingPins"                    = '${coupling.slidingPins}',
-                "kingPin"                    = '${coupling.kingPin}',
-                 "apron"                     = '${coupling.apron}',
-                 "gap"                     = '${coupling.gap}',
-                 "airLine"                     = '${coupling.airLine}',
-                 "location"                     = '${coupling.location}',
-                 "safetyDevices"                     = '${coupling.safetyDevices}',
-                 "print"                     = '${coupling.print}',
-                 "drawBar"                     = '${coupling.drawBar}',
+               "is_digital_form_started"                    = 'FALSE',
+                "air_electrical_lines"                    = '${coupling.air_electrical_lines}',
+                "glad_hands"                    = '${coupling.glad_hands}',
+                "clearence_lights"                    = '${coupling.clearence_lights}',
+                "reflector_tape"                    = '${coupling.reflector_tape}',
+                "chain_strap_attachment_bar"                    = '${coupling.chain_strap_attachment_bar}',
+                "landing_gear"                    = '${coupling.landing_gear}',
+                "cargo_box"                    = '${coupling.cargo_box}',
+                "abs_lights"                    = '${coupling.abs_lights}',
+                "mud_flaps"                    = '${coupling.mud_flaps}',
+                 "docking_impact_frame"                     = '${coupling.docking_impact_frame}',
+                 "license_plate"                     = '${coupling.license_plate}',
                  "commentsCoupling"                     = $$${coupling.commentsCoupling}$$,
-                 "percentageCoupling"                     = '${coupling.percentageCoupling}'
-
-                 WHERE trainer_id='${roadSkillsDigital.trainer_id}'  AND "evaluation_type" = 'pre-trip'
-         ;`
-        }
-        else if(entity === 'pre-trip' && suspensionBrakes.category === 'suspension-brakes'){
-            query = `
-         UPDATE 
-                 "Training"
-         SET 
-                "is_digital_form_started"                    = 'FALSE', 
-                "springs"                    = '${suspensionBrakes.springs}',
-                "airBags"                    = '${suspensionBrakes.airBags}',
-                "shocks"                    = '${suspensionBrakes.shocks}',
-                "vBolts"                    = '${suspensionBrakes.vBolts}',
-                "mounts"                    = '${suspensionBrakes.mounts}',
-                "bushings"                    = '${suspensionBrakes.bushings}',
-                "leafSprings"                    = '${suspensionBrakes.leafSprings}',
-                "slackAdjusters"                    = '${suspensionBrakes.slackAdjusters}',
-                "crackChammber"                    = '${suspensionBrakes.crackChammber}',
-                "pushRod"                    = '${suspensionBrakes.pushRod}',
-                 "linings"                     = '${suspensionBrakes.linings}',
-                 "rotor"                     = '${suspensionBrakes.rotor}',
-                 "discPads"                     = '${suspensionBrakes.discPads}',
-                 "brakeHoses"                     = '${suspensionBrakes.brakeHoses}',
-                 "cams"                     = '${suspensionBrakes.cams}',
-                 "torqueArm"                     = '${suspensionBrakes.torqueArm}',
-                 "wheelSeals"                     = '${suspensionBrakes.wheelSeals}',
-                 "commentsSuspension"                     = $$${suspensionBrakes.commentsSuspension}$$,
-                 "percentageSuspension"                     = '${suspensionBrakes.percentageSuspension}',
+                 "percentageCoupling"                     = '${coupling.percentageCoupling}',
                  "endDatePreTrip"                     = CURRENT_TIMESTAMP
+        
 
                  WHERE trainer_id='${roadSkillsDigital.trainer_id}'  AND "evaluation_type" = 'pre-trip'
          ;`
@@ -229,6 +282,23 @@ const httpTrigger: AzureFunction = async function (
                     WHERE trainer_id='${roadSkillsDigital.trainer_id}'  AND "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
             ;`
         }
+        else if(entity === 'basic-skills' && alleyDocking.category === 'alley-docking-90'){
+                query = `
+                UPDATE 
+                        "Training"
+                SET 
+                       "is_alley_backing90_started"                    = 'TRUE', 
+                       "pullUpsInput_ad90"                    = '${alleyDocking90.pullUpsInput_ad90}',
+                       "encroachInput_ad90"                    = '${alleyDocking90.encroachInput_ad90}',
+                       "goal_ad90"                    = '${alleyDocking90.goal_ad90}',
+                       "finalPosition_ad90"                    = '${alleyDocking90.finalPosition_ad90}',
+                        "comments_ad90"                     = $$${alleyDocking90.comments_ad90}$$,
+                        "satisfactoryAlleyDocking90"                     = '${alleyDocking90.satisfactoryAlleyDocking90}',
+                        "unSatisfactoryAlleyDocking90"                     = '${alleyDocking90.unSatisfactoryAlleyDocking90}'
+       
+                        WHERE trainer_id='${roadSkillsDigital.trainer_id}'  AND "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'basic-skills'
+                ;`
+            }
         else if(entity === 'basic-skills' && offSetBacking.category === 'off-set-backing'){
             query = `
             UPDATE 
