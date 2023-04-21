@@ -10,7 +10,6 @@ const httpTrigger: AzureFunction = async function (
     const db = new Client(config);
     const dwr: dwr = req.body;
     const moment = require('moment');
-    const formattedDate = moment.utc().format('MM/DD/YYYY hh:mm:ss A');
 
     try {
         let query = `
@@ -20,7 +19,7 @@ const httpTrigger: AzureFunction = async function (
         SET 
         "is_active" = FALSE,
         "dwr_status"    = 'pendingVerification',
-        "modified_at" = '${formattedDate}',
+        "modified_at" = CURRENT_TIMESTAMP,
         "ending_day"  = CURRENT_TIMESTAMP
         
         WHERE 
