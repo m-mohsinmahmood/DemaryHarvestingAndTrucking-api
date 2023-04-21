@@ -15,8 +15,6 @@ const httpTrigger: AzureFunction = async function (
         const dateType: string = req.query.dateType;
         const month: string = req.query.month;
         const year: string = req.query.year;
-        const moment = require('moment');
-        const formattedDate = moment.utc().format('MM/DD/YYYY hh:mm:ss A');
 
         let where = ``;
         db.connect();
@@ -35,7 +33,7 @@ const httpTrigger: AzureFunction = async function (
         
         SET 
         "dwr_status" = 'verified',
-        "modified_at" = '${formattedDate}'
+        "modified_at" = CURRENT_TIMESTAMP
 
         where 
                         
