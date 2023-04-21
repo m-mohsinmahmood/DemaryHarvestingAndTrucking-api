@@ -11,8 +11,6 @@ const httpTrigger: AzureFunction = async function (
     try {
         const id: string = req.query.id;
         const notes = req.query.supervisor_notes; 
-        const moment = require('moment');
-        const formattedDate = moment.utc().format('MM/DD/YYYY hh:mm:ss A');
 
         db.connect();
 
@@ -22,7 +20,7 @@ const httpTrigger: AzureFunction = async function (
         
         SET 
         "dwr_status" = 'reassigned',
-        "modified_at" = '${formattedDate}',
+        "modified_at" = CURRENT_TIMESTAMP,
         "supervisor_notes" = $$${notes}$$
 
         where  id = '${id}'

@@ -48,8 +48,8 @@ const httpTrigger: AzureFunction = async function (
    VALUES      (
                '${trainee.trainee_id}', 
                '${trainee.trainer_id}',
-               '${trainee.state}',
                '${trainee.city}',
+               '${trainee.state}',
                '${trainee.training_type}',
                '${trainee.topic}',
                '${trainee.detail}',
