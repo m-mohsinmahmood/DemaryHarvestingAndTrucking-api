@@ -409,4 +409,6 @@ export interface roadSkillsDigital{
     satisfactoryRoadTesting:string,
       unSatisfactoryRoadTesting:string,
       trainer_id: string,
+      sumRoadSkills:string,
+      finalResultRoadSkills: string
 }
