@@ -442,6 +442,8 @@ const httpTrigger: AzureFunction = async function (
                     "eLogPracticalInput"                     = '${roadSkillsDigital.eLogPracticalInput}',
                     "satisfactoryRoadTesting"                     = '${roadSkillsDigital.satisfactoryRoadTesting}',
                     "unSatisfactoryRoadTesting"                     = '${roadSkillsDigital.unSatisfactoryRoadTesting}',
+                    "sumRoadSkills"                     = '${roadSkillsDigital.sumRoadSkills}',
+                    "finalResultRoadSkills"                     = '${roadSkillsDigital.finalResultRoadSkills}',
                     "endDateRoadSkill"                     = CURRENT_TIMESTAMP
    
                     WHERE trainer_id='${roadSkillsDigital.trainer_id}' AND "is_digital_form_started" = 'TRUE' AND "evaluation_type" = 'road-skills'
