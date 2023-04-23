@@ -31,13 +31,14 @@ let getById;
       getById = `
       SELECT 
              concat(emp.first_name,' ' ,emp.last_name)	as "trainer_name",
-              emp."id" as "trainer_id",
-              emp."town_city" as "town_city",
-              emp."state" as "state"
+             emp."id" as "trainer_id",
+             up."city" as "town_city",
+             up."state" as "state"
       FROM 
-            "Employees" emp
+             "Employees" emp INNER JOIN
+             "User_Profile" up ON emp."id" = up.employee_id
       WHERE 
-            "id" = '${trainer_id}';
+            emp."id" = '${trainer_id}';
         `;
     }
     // to get the training-records by ID having 'pre-trip' check in 'paper-form'
