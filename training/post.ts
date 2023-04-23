@@ -163,7 +163,7 @@ RETURNING id as record_id
 
               INSERT INTO "User_Profile" (employee_id, state, city)
               VALUES ('${preTripCheck.trainer_id}', '${preTripCheck.state}', '${preTripCheck.city}')
-              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
+              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state, city = EXCLUDED.city;
 `;
 
     } else if (entity === 'pre-trip' && preTripCheck.evaluation_form === 'digital-form') {
@@ -212,7 +212,7 @@ RETURNING id as record_id
 
               INSERT INTO "User_Profile" (employee_id, state, city)
               VALUES ('${preTripCheck.trainer_id}', '${preTripCheck.state}', '${preTripCheck.city}')
-              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
+              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state, city= EXCLUDED.city;
 `;
 
     } else if (entity === 'basic-skills' && basicSkills.evaluation_form === 'paper-form') {
@@ -267,7 +267,7 @@ RETURNING id as record_id
 
               INSERT INTO "User_Profile" (employee_id, state, city)
               VALUES ('${basicSkills.trainer_id}', '${basicSkills.state}', '${basicSkills.city}')
-              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
+              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state, city = EXCLUDED.city;
 `;
 
     } else if (entity === 'basic-skills' && basicSkills.evaluation_form === 'digital-form') {
@@ -324,7 +324,7 @@ RETURNING id as training_record_id
 
               INSERT INTO "User_Profile" (employee_id, state, city)
               VALUES ('${basicSkills.trainer_id}', '${basicSkills.state}', '${basicSkills.city}')
-              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
+              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state, city = EXCLUDED.city;
 
 `;
 
@@ -380,7 +380,7 @@ RETURNING id as record_id
 
               INSERT INTO "User_Profile" (employee_id, state, city)
               VALUES ('${roadSkills.trainer_id}', '${roadSkills.state}', '${roadSkills.city}')
-              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
+              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state, city = EXCLUDED.city;
 `;
 
     } else if (entity === 'road-skills' && roadSkills.evaluation_form === 'digital-form') {
@@ -437,7 +437,7 @@ RETURNING id as training_record_id
 
               INSERT INTO "User_Profile" (employee_id, state, city)
               VALUES ('${roadSkills.trainer_id}', '${roadSkills.state}', '${roadSkills.city}')
-              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
+              ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state, city = EXCLUDED.city;
 
 `;
 
