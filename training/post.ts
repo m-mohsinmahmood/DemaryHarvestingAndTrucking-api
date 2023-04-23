@@ -108,14 +108,15 @@ const httpTrigger: AzureFunction = async function (
                                 
               SET 
               "supervisor_id" = '${trainer.supervisor_id}',
-              "state" = '${trainer.state}'
+              "state" = '${trainer.state}',
+              "city" = '${trainer.city}'
                                      
               WHERE 
               "id" = '${trainer.dwr_id}'  ;
 
               INSERT INTO "User_Profile" (employee_id, state, city)
  VALUES ('${trainer.trainer_id}', '${trainer.state}', '${trainer.city}')
- ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
+ ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state, city = EXCLUDED.city;
 
 `;
     } else if (entity === 'pre-trip' && preTripCheck.evaluation_form === 'paper-form') {
