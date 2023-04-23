@@ -108,8 +108,7 @@ const httpTrigger: AzureFunction = async function (
                                 
               SET 
               "supervisor_id" = '${trainer.supervisor_id}',
-              "state" = '${trainer.state}',
-              "city" = '${trainer.city}'
+              "state" = '${trainer.state}'
                                      
               WHERE 
               "id" = '${trainer.dwr_id}'  ;
