@@ -35,7 +35,7 @@ let getById;
              up."city" as "town_city",
              up."state" as "state"
       FROM 
-             "Employees" emp INNER JOIN
+             "Employees" emp LEFT JOIN
              "User_Profile" up ON emp."id" = up.employee_id
       WHERE 
             emp."id" = '${trainer_id}';
