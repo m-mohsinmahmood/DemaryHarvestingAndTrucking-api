@@ -45,12 +45,13 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
     FROM
       "DWR_Employees"
         
-        WHERE 
+      WHERE 
       is_active = FALSE
-        ${whereSubQuery}
-				
-				ORDER BY begining_day DESC
-				LIMIT 1)
+      ${whereSubQuery}
+      AND employee_id = dwr_employees.employee_id	
+      
+      ORDER BY begining_day DESC
+      LIMIT 1)
 
     FROM
         "Bridge_DailyTasks_DWR" bridge
@@ -200,8 +201,7 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         
         GROUP BY dwr_employees.id
         
-        ORDER BY dwr_employees.begining_day ASC;
-
+        ORDER BY dwr_employees.ending_day DESC;
 
         select 
         dwr_employees.id,
@@ -238,8 +238,7 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         
         GROUP BY dwr_employees.id
         
-        ORDER BY dwr_employees.begining_day ASC;
-
+        ORDER BY dwr_employees.ending_day DESC;
 
         select 
         dwr_employees.id,
@@ -276,8 +275,7 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         
         GROUP BY dwr_employees.id
         
-        ORDER BY dwr_employees.begining_day ASC;
-
+        ORDER BY dwr_employees.ending_day DESC;
         `;
     }
 
@@ -318,8 +316,7 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         
         GROUP BY dwr_employees.id
         
-        ORDER BY dwr_employees.begining_day ASC;
-
+        ORDER BY dwr_employees.ending_day DESC;
 
         select 
         dwr_employees.id,
@@ -356,8 +353,7 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         
         GROUP BY dwr_employees.id
         
-        ORDER BY dwr_employees.begining_day ASC;
-
+        ORDER BY dwr_employees.ending_day DESC;
 
         select 
         dwr_employees.id,
@@ -394,8 +390,7 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
         
         GROUP BY dwr_employees.id
         
-        ORDER BY dwr_employees.begining_day ASC;
-
+        ORDER BY dwr_employees.ending_day DESC;
         `;
 
     }
