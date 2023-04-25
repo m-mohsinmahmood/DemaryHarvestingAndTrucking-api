@@ -48,7 +48,8 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         WHERE 
         is_active = FALSE
         ${whereSubQuery}
-       
+        AND employee_id = dwr_employees.employee_id
+
         ORDER BY begining_day DESC
         LIMIT 1)
         
@@ -114,8 +115,8 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         
         GROUP BY dwr_employees.id
         
-        ORDER BY dwr_employees.begining_day ASC;
-        `;
+        ORDER BY dwr_employees.ending_day DESC
+        ;        `;
     }
 
     else if (operation === 'getDWRList') {
@@ -156,8 +157,8 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
 
         GROUP BY dwr_employees.id
 
-        ORDER BY dwr_employees.begining_day ASC
-        ;`;
+        ORDER BY dwr_employees.ending_day DESC
+                ;`;
     }
     
     return getDwr;
