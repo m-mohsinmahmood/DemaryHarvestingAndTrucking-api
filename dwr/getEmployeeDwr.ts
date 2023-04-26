@@ -5,7 +5,6 @@ import { GetFarmingDwr } from "./getFarmingDWR";
 import { GetTrainingDwr } from "./getTrainingDwr";
 import { GetMaintenanceRepairDwr } from "./getMaintenanceRepairDwr";
 import { GetOtherDwr } from "./getOtherDWR";
-import { log } from "console";
 const fs = require('fs');
 
 const httpTrigger: AzureFunction = async function (
@@ -32,28 +31,16 @@ const httpTrigger: AzureFunction = async function (
         let result;
 
         let resp;
+
         if (req.query.operation === 'getDWRToVerify') {
             query = `${farmingDwr} ${maintenanceDwr} ${otherDwr} ${trainingDwr}`;
-            console.log("Query:...", query);
-
-            // const filePath = 'query_test.txt';
-
-            // await fs.writeFile(filePath, query, (err) => {
-            //     if (err) {
-            //         context.log.error(`Error writing data to file: ${err}`);
-
-            //     } else {
-            //         context.log(`Data written to file: ${query}`);
-            //     }
-            // })
 
             db.connect();
             result = await db.query(query);
 
             // For merging of training results from 3 different tables
             let mergedTraining = [...result[3].rows, ...result[4].rows, ...result[5].rows];
-            // let mergedResults = result[0].rows.concat(result[1].rows, result[2].rows, mergedTraining);
-            let mergedResults = mergedTraining;
+            let mergedResults = result[0].rows.concat(result[1].rows, result[2].rows, mergedTraining);
 
             const totals = Object.values(mergedResults.reduce((acc, curr) => {
                 const key = curr.employee_id;
@@ -76,10 +63,7 @@ const httpTrigger: AzureFunction = async function (
 
 
             resp = {
-                dwrSummary: totals,
-                test_0: result[3].rows,
-                test_1: result[4].rows,
-                test_2: result[5].rows
+                dwrSummary: totals
             };
         }
 

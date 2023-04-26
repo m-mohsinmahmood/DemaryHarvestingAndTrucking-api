@@ -3,7 +3,7 @@
   "Values": {
     "AzureWebJobsStorage": "",
     "FUNCTIONS_WORKER_RUNTIME": "node",
-    "PG_HOST": "dht-prod.postgres.database.azure.com",
+    "PG_HOST": "dht-dev.postgres.database.azure.com",
     "PG_USER": "dht",
     "PG_PASSWORD": "jtAMkp^h7NE!nJqD",
     "PG_PORT": "5432",
