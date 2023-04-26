@@ -91,9 +91,10 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
       "DWR_Employees"
         
         WHERE 
-      is_active = FALSE
+        is_active = FALSE
 		${whereSubQuery}
-				
+        AND employee_id = dwr_employees.employee_id	
+
 				ORDER BY begining_day DESC
 				LIMIT 1)
 
@@ -135,9 +136,10 @@ export function GetTrainingDwr(employee_id: any, date: any, dateType: any, month
       "DWR_Employees"
         
         WHERE 
-      is_active = FALSE
-				${whereSubQuery}
-				
+    is_active = FALSE
+        ${whereSubQuery}
+        AND employee_id = dwr_employees.employee_id	
+
 				ORDER BY begining_day DESC
 				LIMIT 1)
 
