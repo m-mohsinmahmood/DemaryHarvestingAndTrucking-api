@@ -5,6 +5,7 @@ import { GetFarmingDwr } from "./getFarmingDWR";
 import { GetTrainingDwr } from "./getTrainingDwr";
 import { GetMaintenanceRepairDwr } from "./getMaintenanceRepairDwr";
 import { GetOtherDwr } from "./getOtherDWR";
+const fs = require('fs');
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -30,9 +31,10 @@ const httpTrigger: AzureFunction = async function (
         let result;
 
         let resp;
+
         if (req.query.operation === 'getDWRToVerify') {
             query = `${farmingDwr} ${maintenanceDwr} ${otherDwr} ${trainingDwr}`;
-            console.log(query);
+
             db.connect();
             result = await db.query(query);
 
@@ -45,9 +47,6 @@ const httpTrigger: AzureFunction = async function (
                 const employee_name = curr.employee_name;
                 const supervisor_id = curr.supervisor_id;
                 const last_supervisor_id = curr.last_supervisor_id;
-
-                console.log(curr);
-                console.log(acc);
 
                 if (!acc[key]) {
                     acc[key] = {
@@ -97,8 +96,6 @@ const httpTrigger: AzureFunction = async function (
                 dwr: merged
             };
         }
-
-        console.log(resp);
 
         db.end();
 
