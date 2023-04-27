@@ -343,8 +343,6 @@ RETURNING id as training_record_id
               "is_completed_group_practical",
               "clp",
               "truckId",
-              "odometerEndingMiles",
-              "odometerStartingMiles",
               "evaluation_type"
               )
               
@@ -359,8 +357,6 @@ RETURNING id as training_record_id
               '${roadSkills.is_completed_group_practical}',
               '${roadSkills.clp}',
               '${basicSkills.truckId}',
-              '${roadSkills.odometerEndingMiles}',
-              '${roadSkills.odometerStartingMiles}',
               'road-skills'
 )
 RETURNING id as record_id
@@ -397,8 +393,6 @@ RETURNING id as record_id
               "is_completed_cdl_classroom",
               "is_completed_group_practical",
               "clp",
-              "odometerEndingMiles",
-              "odometerStartingMiles",
               "truckId",
               "evaluation_type",
               "is_digital_form_started"
@@ -414,8 +408,6 @@ RETURNING id as record_id
               '${roadSkills.is_completed_cdl_classroom}',
               '${roadSkills.is_completed_group_practical}',
               '${roadSkills.clp}',
-              '${roadSkills.odometerEndingMiles}',
-              '${roadSkills.odometerStartingMiles}',
               '${roadSkills.truckId}',
               'road-skills',
               'TRUE'
