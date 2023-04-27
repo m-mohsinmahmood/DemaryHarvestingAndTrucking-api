@@ -36,6 +36,7 @@ const httpTrigger: AzureFunction = async function (
             query = `${farmingDwr} ${maintenanceDwr} ${otherDwr} ${trainingDwr}`;
 
             db.connect();
+
             result = await db.query(query);
 
             // For merging of training results from 3 different tables
@@ -45,7 +46,7 @@ const httpTrigger: AzureFunction = async function (
             const totals = Object.values(mergedResults.reduce((acc, curr) => {
                 const key = curr.employee_id;
                 const employee_name = curr.employee_name;
-                const supervisor_id = curr.supervisor_id;
+                // const supervisor_id = curr.supervisor_id;
                 const last_supervisor_id = curr.last_supervisor_id;
 
                 if (!acc[key]) {
@@ -53,7 +54,7 @@ const httpTrigger: AzureFunction = async function (
                         employee_Id: key,
                         total_hours: 0,
                         employee_name: employee_name,
-                        supervisor_id: supervisor_id,
+                        // supervisor_id: supervisor_id,
                         last_supervisor_id: last_supervisor_id,
                     }
                 }
