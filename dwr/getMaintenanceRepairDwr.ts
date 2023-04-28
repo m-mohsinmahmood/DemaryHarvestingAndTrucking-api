@@ -38,7 +38,6 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         ) AS total_hours ,
         dwr_employees."module" AS module,
         dwr_employees.begining_day :: DATE,
-        dwr_employees.supervisor_id,
         (SELECT
         supervisor_id as last_supervisor_id
 
@@ -49,6 +48,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         is_active = FALSE
         ${whereSubQuery}
         AND employee_id = dwr_employees.employee_id
+        AND supervisor_id != 'null'
 
         ORDER BY begining_day DESC
         LIMIT 1)
@@ -63,6 +63,8 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         WHERE 
         dwr_employees.is_active = FALSE
         AND dwr."taskType" = 'work done'
+        AND dwr_employees.supervisor_id != 'null'
+
         ${where}
        
         GROUP BY
