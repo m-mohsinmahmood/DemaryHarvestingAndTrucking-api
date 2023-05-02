@@ -22,8 +22,8 @@ const httpTrigger: AzureFunction = async function (
         
         SET 
         "dwr_status" = 'pendingVerification',
-        "begining_day" = '${login}',
-        "ending_day" = '${logout}',
+        "begining_day" = '${login}'::timestamp,
+        "ending_day" = '${logout}'::timestamp,
         "modified_at" = CURRENT_TIMESTAMP,
         "employee_notes" = $$${notes}$$
 
