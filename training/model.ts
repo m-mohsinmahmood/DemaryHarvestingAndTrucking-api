@@ -1,6 +1,7 @@
 export interface trainee {
     trainee_id: string;
     trainer_id?: string;
+    supervisor_id: string;
     city?: string;
     state?: string;
     training_type:string;
