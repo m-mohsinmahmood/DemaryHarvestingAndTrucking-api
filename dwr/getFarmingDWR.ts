@@ -1,5 +1,5 @@
 
-export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month: any, year: any, operation, status: any) {
+export function GetFarmingDwr(employee_id: any, startDate: string, endDate: string, dateType: any, month: any, year: any, operation, status: any) {
 
     let getDwr = ``;
     let where = ``;
@@ -10,7 +10,7 @@ export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month:
         where = `${where} AND EXTRACT(YEAR FROM dwr_employees.begining_day) = '${year}'`
     }
     else {
-        where = `${where} AND CAST(dwr_employees.begining_day AS Date) = '${date}'`
+        where = `${where} AND dwr_employees.begining_day > '${startDate}'::timestamp AND dwr_employees.begining_day < '${endDate}'::timestamp`
     }
 
     if (status !== 'all') {
