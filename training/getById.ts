@@ -13,6 +13,8 @@ const httpTrigger: AzureFunction = async function (
     const trainer_id: string = req.query.trainer_id;
     const records: any = req.query;
     const record_id: any = req.query.record_id;
+    const startDate: any = req.query.startDate;
+    const endDate: any = req.query.endDate;
     console.log('REQ;',req.query)
 let getById;
     if (trainee_id && !(records.evaluation_type === 'summary')) {
@@ -261,7 +263,8 @@ INNER JOIN "Employees" emp_trainee
 WHERE trainer_id = '${records.trainer_id}'
 AND trainee_id = '${records.trainee_id}'
 AND evaluation_form = 'digital-form'
-AND CAST(training.created_at AS Date) = '${records.date}'
+AND CAST(training.created_at AS Date) BETWEEN '${startDate}' AND '${endDate}'
+ORDER BY training.created_at DESC
 `;
     }
 
