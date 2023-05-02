@@ -2,8 +2,8 @@
 export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month: any, year: any, operation, status: any) {
 
     let getDwr = ``;
-
     let where = ``;
+    let employeeWhereClause = ``;
 
     if (dateType === 'month') {
         where = `${where} AND EXTRACT(MONTH FROM dwr_employees.begining_day) = '${month}'`
@@ -18,6 +18,9 @@ export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month:
     }
     else
         where = `${where}`;
+
+    if (employee_id !== '' || employee_id !== null)
+        employeeWhereClause = `${employeeWhereClause} AND dwr_employees.employee_id = '${employee_id}'`;
 
     if (operation === 'getDWRToVerify') {
         getDwr = `
@@ -41,6 +44,7 @@ export function GetFarmingDwr(employee_id: any, date: any, dateType: any, month:
         WHERE 
         dwr_employees.is_active = FALSE
         ${where}
+        ${employeeWhereClause}
 
         GROUP BY
         dwr_employees.employee_id,

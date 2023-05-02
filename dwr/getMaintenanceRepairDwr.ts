@@ -2,9 +2,9 @@
 export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: any, month: any, year: any, operation, status: any) {
 
     let getDwr = ``;
-
     let where = ``;
     let whereSubQuery = ``;
+    let employeeWhereClause = ``;
 
     if (dateType === 'month') {
         where = `${where} AND EXTRACT(MONTH FROM dwr_employees.begining_day) = '${month}'`
@@ -27,7 +27,10 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
     }
     else
         where = `${where}`;
-        
+
+    if (employee_id !== '' || employee_id !== null)
+        employeeWhereClause = `${employeeWhereClause} AND dwr_employees.employee_id = '${employee_id}'`;
+
     if (operation === 'getDWRToVerify') {
         getDwr = `
         SELECT
@@ -47,6 +50,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         WHERE 
         is_active = FALSE
         ${whereSubQuery}
+        
         AND employee_id = dwr_employees.employee_id
         AND supervisor_id != 'null'
 
@@ -66,6 +70,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         AND dwr_employees.supervisor_id != 'null'
 
         ${where}
+        ${employeeWhereClause}
        
         GROUP BY
         dwr_employees.employee_id,
@@ -162,6 +167,6 @@ export function GetMaintenanceRepairDwr(employee_id: any, date: any, dateType: a
         ORDER BY dwr_employees.ending_day DESC
                 ;`;
     }
-    
+
     return getDwr;
 }
