@@ -1,4 +1,3 @@
-
 export function GetTrainingDwr(employee_id: any, startDate: string, endDate: string, dateType: any, month: any, year: any, operation, status: any) {
 
     let getDwr = ``;
@@ -19,7 +18,7 @@ export function GetTrainingDwr(employee_id: any, startDate: string, endDate: str
     else
         where = `${where}`;
 
-    if (employee_id !== '' || employee_id !== null)
+    if (employee_id !== '' && employee_id !== null)
         employeeWhereClause = `${employeeWhereClause} AND dwr_employees.employee_id = '${employee_id}'`;
 
     if (operation === 'getDWRToVerify') {
