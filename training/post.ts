@@ -37,22 +37,28 @@ const httpTrigger: AzureFunction = async function (
                (
                "trainee_id", 
                "trainer_id",
+               "supervisor_id",
                "city",
                "state",
                "training_type",
                "topic",
                "detail",
+               "notes",
+               "trainer_third_party",
                "user_type"
                )
                
    VALUES      (
                '${trainee.trainee_id}', 
                '${trainee.trainer_id}',
+               '${trainer.supervisor_id}',
                '${trainee.city}',
                '${trainee.state}',
                '${trainee.training_type}',
                '${trainee.topic}',
                '${trainee.detail}',
+               '${trainee.notes}',
+               '${trainee.trainer_third_party}',
                'trainee'
  )
  RETURNING id as record_id
@@ -130,6 +136,7 @@ const httpTrigger: AzureFunction = async function (
               "city",
               "state",
               "evaluation_form",
+              "clp"
               "is_completed_cdl_classroom",
               "is_completed_group_practical",
               "evaluation_type"
@@ -142,6 +149,7 @@ const httpTrigger: AzureFunction = async function (
               '${preTripCheck.city}',
               '${preTripCheck.state}',
               '${preTripCheck.evaluation_form}',
+              '${preTripCheck.clp}',
               '${preTripCheck.is_completed_cdl_classroom}',
               '${preTripCheck.is_completed_group_practical}',
               'pre-trip'
