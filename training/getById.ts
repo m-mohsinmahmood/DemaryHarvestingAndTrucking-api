@@ -104,6 +104,7 @@ WHERE id = '${record_id}';`;
 getById = `
   SELECT
     "evaluation_type",
+    "trainee_name",
     COUNT(CASE WHEN "preTripEvaluation" > 80 THEN 1 END) AS "preTripSatisfactoryCount", 
     COUNT(CASE WHEN "preTripEvaluation" < 80 THEN 1 END) AS "preTripUnSatisfactoryCount",
     COUNT(CASE WHEN "basicSkillEvaluation" <= 24 THEN 1 END) AS "basicSkillsSatisfactoryCount", 
@@ -116,7 +117,8 @@ getById = `
   FROM (
     SELECT 
       trainee_id, 
-      evaluation_type, 
+      evaluation_type,
+      CONCAT ( employee.first_name, ' ', employee.last_name ) AS "trainee_name", 
       evaluation_form,
       (
         CAST(ROUND(CAST("percentageEngineCompartment" AS NUMERIC), 2) AS NUMERIC) +
@@ -141,11 +143,12 @@ getById = `
         CAST(ROUND(CAST("encroach_cou" AS NUMERIC), 2) AS NUMERIC) 
       ) AS "basicSkillEvaluation",
       "finalResultRoadSkills",
-      ("endDatePreTrip" - "created_at") as "preTripTime",
-      ("endDateBasicSkill" - "created_at") as "basicSkillTime",
-      ("endDateRoadSkill" - "created_at") as "roadSkillTime"
+      ("endDatePreTrip" - training."created_at") AS "preTripTime",
+      ("endDateBasicSkill" - training."created_at") AS "basicSkillTime",
+      ("endDateRoadSkill" - training."created_at") AS "roadSkillTime"
     FROM 
-      "Training"
+        "Training" INNER JOIN 
+        "Employees" employee ON training."trainee_id" = employee.id
     WHERE 
       trainee_id = '${trainee_id}' AND evaluation_form = 'digital-form' AND created_at >= '${startDate}' AND created_at<= '${endDate}'
   ) AS percentages
