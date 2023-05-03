@@ -1,6 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
+import * as moment from "moment";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -162,17 +163,41 @@ getById = `
     // let resp;
     // if (result.rows.length > 0) resp = result.rows[0];
     let resp;
-    if (result.rows.length > 0) resp = result.rows;
+    if (result.rows.length > 0) resp = { summary: result.rows };
     else
       resp = {
         message: "No trainer exists with this id.",
       };
 
+    //#region Calculate Intercal sum for BTW RANGE
+    const totalDuration = resp.summary
+      .filter(duration => duration.preTripTime || duration.basicSkillTime)
+      .reduce((acc, duration) => {
+        if(duration.preTripTime != null){
+          const momentDuration = moment.duration(duration.preTripTime);
+          return acc.add(momentDuration);
+        }
+        if(duration.basicSkillTime != null){
+          const momentDuration = moment.duration(duration.basicSkillTime);
+          return acc.add(momentDuration);
+        }
+      }, moment.duration());
+    
+    let response = Object.assign(resp, {
+      "BTWRange":{
+        days: totalDuration.days(),
+        hours: totalDuration.hours(),
+        minutes: totalDuration.minutes(),
+        seconds: totalDuration.seconds()
+      }
+    });
+    //#endregion
+
     db.end();
 
     context.res = {
       status: 200,
-      body: resp,
+      body: response
     };
 
     context.done();
