@@ -407,6 +407,8 @@ export interface roadSkillsDigital{
     generalDrivingInput: string,
     eLogPractical: string,
     eLogPracticalInput: string,
+    cognizantDriving: string,
+    cognizantDrivingInput: string,
     satisfactoryRoadTesting:string,
       unSatisfactoryRoadTesting:string,
       trainer_id: string,

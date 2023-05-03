@@ -136,7 +136,7 @@ const httpTrigger: AzureFunction = async function (
               "city",
               "state",
               "evaluation_form",
-              "clp"
+              "clp",
               "is_completed_cdl_classroom",
               "is_completed_group_practical",
               "evaluation_type"
