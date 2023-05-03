@@ -147,17 +147,16 @@ getById = `
       ("endDateBasicSkill" - training."created_at") AS "basicSkillTime",
       ("endDateRoadSkill" - training."created_at") AS "roadSkillTime"
     FROM 
-        "Training" INNER JOIN 
+        "Training" training INNER JOIN 
         "Employees" employee ON training."trainee_id" = employee.id
     WHERE 
-      trainee_id = '${trainee_id}' AND evaluation_form = 'digital-form' AND created_at >= '${startDate}' AND created_at<= '${endDate}'
+      trainee_id = '${trainee_id}' AND evaluation_form = 'digital-form' AND training.created_at >= '${startDate}' AND training.created_at<= '${endDate}'
   ) AS percentages
-  GROUP BY evaluation_type, trainee_id, evaluation_type;
+  GROUP BY evaluation_type, trainee_id, evaluation_type, trainee_name;
 `;
     }
 
     db.connect();
-    console.log(getById)
 
     let result = await db.query(getById);
     // let resp;
