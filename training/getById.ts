@@ -112,9 +112,9 @@ getById = `
     COUNT(CASE WHEN "basicSkillEvaluation" > 24 THEN 1 END) AS "basicSkillsUnSatisfactoryCount",
     COUNT(CASE WHEN "finalResultRoadSkills" = 'true'  THEN 1 END) AS "roadSkillsSatisfactoryCount", 
     COUNT(CASE WHEN "finalResultRoadSkills" = 'false' THEN 1 END) AS "roadSkillsUnSatisfactoryCount",
-    SUM("preTripTime") AS "preTripTime",
-    SUM("basicSkillTime") AS "basicSkillTime",
-    SUM("roadSkillTime") AS "roadSkillTime"
+    justify_interval(SUM ("preTripTime")) AS "preTripTime",
+		justify_interval(SUM ("basicSkillTime")) AS "basicSkillTime",
+		justify_interval(SUM ("roadSkillTime")) AS "roadSkillTime"
   FROM (
     SELECT 
       trainee_id, 
