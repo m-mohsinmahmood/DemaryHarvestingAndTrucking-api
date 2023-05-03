@@ -147,7 +147,7 @@ getById = `
     FROM 
       "Training"
     WHERE 
-      trainee_id = '${records.trainee_record_id}' AND evaluation_form = 'digital-form' AND created_at >= '${startDate}' AND created_at<= '${endDate}'
+      trainee_id = '${trainee_id}' AND evaluation_form = 'digital-form' AND created_at >= '${startDate}' AND created_at<= '${endDate}'
   ) AS percentages
   GROUP BY evaluation_type, trainee_id, evaluation_type;
 `;
