@@ -16,8 +16,8 @@ const httpTrigger: AzureFunction = async function (
     const record_id: any = req.query.record_id;
     const startDate: any = req.query.startDate;
     const endDate: any = req.query.endDate;
-    console.log('REQ;',req.query)
-let getById;
+    console.log('REQ;', req.query)
+    let getById;
     if (trainee_id && !(records.evaluation_type === 'summary')) {
       getById = `
       SELECT 
@@ -29,7 +29,7 @@ let getById;
       WHERE 
             "id" = '${trainee_id}';
         `;
-    } 
+    }
     else if (trainer_id && !(records.evaluation_type === 'summary')) {
       getById = `
       SELECT 
@@ -95,14 +95,14 @@ let getById;
       AND evaluation_type = '${records.evaluation_type}'
       AND evaluation_form = 'digital-form';
       `;
-    } 
+    }
     else if (record_id) {
       getById = `
  SELECT * FROM "Training"
 WHERE id = '${record_id}';`;
     }
-    else if (records.evaluation_type === 'summary'){
-getById = `
+    else if (records.evaluation_type === 'summary') {
+      getById = `
   SELECT
     "evaluation_type",
     "trainee_name",
@@ -162,29 +162,29 @@ getById = `
     let result = await db.query(getById);
     // let resp;
     // if (result.rows.length > 0) resp = result.rows[0];
-    let resp;
-    if (result.rows.length > 0) resp = { summary: result.rows };
+    let response;
+    if (result.rows.length > 0) response = { summary: result.rows };
     else
-      resp = {
+      response = {
         message: "No trainer exists with this id.",
       };
 
     //#region Calculate Intercal sum for BTW RANGE
-    const totalDuration = resp.summary
+    const totalDuration = response.summary
       .filter(duration => duration.preTripTime || duration.basicSkillTime)
       .reduce((acc, duration) => {
-        if(duration.preTripTime != null){
+        if (duration.preTripTime != null) {
           const momentDuration = moment.duration(duration.preTripTime);
           return acc.add(momentDuration);
         }
-        if(duration.basicSkillTime != null){
+        if (duration.basicSkillTime != null) {
           const momentDuration = moment.duration(duration.basicSkillTime);
           return acc.add(momentDuration);
         }
       }, moment.duration());
-    
-    let response = Object.assign(resp, {
-      "BTWRange":{
+
+    let resp = Object.assign(response, {
+      "BTWRange": {
         days: totalDuration.days(),
         hours: totalDuration.hours(),
         minutes: totalDuration.minutes(),
