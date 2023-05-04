@@ -197,7 +197,7 @@ WHERE id = '${record_id}';`;
 
     context.res = {
       status: 200,
-      body: response
+      body: resp
     };
 
     context.done();
