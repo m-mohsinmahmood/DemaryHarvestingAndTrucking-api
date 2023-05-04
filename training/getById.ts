@@ -93,7 +93,8 @@ const httpTrigger: AzureFunction = async function (
 		  ON trn.trainer_id = emp_trainer."id"
       WHERE trainee_id = '${records.trainee_record_id}'
       AND evaluation_type = '${records.evaluation_type}'
-      AND evaluation_form = 'digital-form';
+      AND evaluation_form = 'digital-form'
+      ORDER BY trn."created_at" DESC;
       `;
     }
     else if (record_id) {
