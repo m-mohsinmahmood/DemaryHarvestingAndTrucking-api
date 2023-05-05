@@ -25,43 +25,51 @@ const httpTrigger: AzureFunction = async function (
     const employee_id: string = req.query.id;
 
     let dwr_info_query1 = `
-    Select
-hr.hourly_rate,
-tdt.destination_state as state,
-dwr.created_at as date,
-emp."id",
-emp.first_name,
-emp.last_name,
-emp."role",
-dwr.hours_worked,
-dwr.crew_chief as supervisor
-
-FROM
-"DWR" dwr
-	INNER JOIN "Trucking_Delivery_Ticket" tdt ON dwr.delivery_ticket_id = tdt."id"
-	INNER JOIN "H2a_Hourly_Rate" hr ON tdt.destination_state = hr."state"
-	INNER JOIN "Employees" emp ON dwr.employee_id = emp."id" 
-WHERE
-	dwr.employee_id = '${employee_id}' 
-  AND dwr.created_at :: DATE >= '${from}' :: DATE
-  AND dwr.created_at :: DATE <= '${to}' :: DATE; `;
-
-    let dwr_info_query2 = `
-SELECT
+    SELECT
 	hr.hourly_rate,
-	fwo.STATE as state,
-	dwr.created_at as date,
+	CONCAT ( sup.first_name, ' ', sup.last_name ) AS supervisor,
+	dwr_emp.created_at as date,
 	emp."id",
 	emp.first_name,
 	emp.last_name,
 	emp."role",
-	dwr.hours_worked,
-  dwr.supervisor_id as supervisor
+	(select SUM (ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_emp.ending_day - dwr_emp.begining_day ) ) / 3600 ) AS NUMERIC ), 2 )) AS hours_worked),
+	dwr_emp."state"
+	
 FROM
-	"DWR" dwr
-	INNER JOIN "Farming_Work_Order" fwo ON dwr.work_order_id = fwo."id"
-	INNER JOIN "H2a_Hourly_Rate" hr ON fwo."state" = hr."state"
-	INNER JOIN "Employees" emp ON dwr.employee_id = emp."id"
+	"DWR_Employees" dwr_emp
+	INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
+	INNER JOIN "Employees" emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
+	INNER JOIN "Employees" sup ON sup."id" :: VARCHAR = dwr_emp.supervisor_id
+	INNER JOIN "DWR" dwr on dwr.employee_id:: VARCHAR  = dwr_emp.employee_id:: VARCHAR 
+	
+  WHERE
+	dwr.employee_id = '${employee_id}' 
+  AND dwr.created_at :: DATE >= '${from}' :: DATE
+  AND dwr.created_at :: DATE <= '${to}' :: DATE
+
+	GROUP BY 
+	hr.hourly_rate,
+		CONCAT(sup.first_name, ' ', sup.last_name) ,
+			dwr_emp.created_at,
+				emp."id",
+						  dwr.crew_chief,	
+	dwr_emp."state"; `;
+
+    let dwr_info_query2 = `
+SELECT
+    hr.hourly_rate,
+    fwo.STATE AS STATE,
+    dwr.created_at AS DATE,
+    dwr.hours_worked,
+    CONCAT(disp.first_name, ' ', disp.last_name) as supervisor
+    
+  FROM
+    "DWR" dwr
+    INNER JOIN "Farming_Work_Order" fwo ON dwr.work_order_id = fwo."id"
+    INNER JOIN "H2a_Hourly_Rate" hr ON fwo."state" = hr."state"
+    INNER JOIN "Employees" emp ON dwr.employee_id = emp."id"
+    INNER JOIN "Employees" disp ON fwo.dispatcher_id = disp."id"
   WHERE dwr.employee_id = '${employee_id}' 
 	AND fwo.created_at :: DATE >= '${from}' :: DATE
   AND fwo.created_at :: DATE <= '${to}' :: DATE; `;

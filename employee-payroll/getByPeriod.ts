@@ -31,13 +31,13 @@ const httpTrigger: AzureFunction = async function (
 	( i + '13 days' :: INTERVAL ) :: DATE AS "PayPeriodEnd",
 
 	(
-	SELECT SUM
-		( dwr.hours_worked :: NUMERIC ) AS total_hours_worked 
+	SELECT 
+		SUM (ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr.ending_day - dwr.begining_day ) ) / 3600 ) AS NUMERIC ), 2 )) as total_hours_worked
 	FROM
-		"DWR" dwr
-		INNER JOIN "Employees" emp ON dwr.employee_id = emp."id" 
+		"DWR_Employees" dwr
+		INNER JOIN "Employees" emp ON dwr.employee_id::VARCHAR = emp."id"::VARCHAR
 		AND dwr.created_at :: DATE >= i :: DATE 
-		AND dwr.created_at :: DATE <= ( i + '13 days' :: INTERVAL ) :: DATE 
+		AND dwr.created_at :: DATE <= ( i + '13 days' :: INTERVAL ) :: DATE  
 		AND employee_id = '${employee_id}' 
 	ORDER BY
 		total_hours_worked DESC 
