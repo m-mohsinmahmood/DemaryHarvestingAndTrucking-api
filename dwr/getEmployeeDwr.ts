@@ -44,19 +44,16 @@ const httpTrigger: AzureFunction = async function (
             let mergedTraining = [...result[3].rows, ...result[4].rows, ...result[5].rows];
             let mergedResults = result[0].rows.concat(result[1].rows, result[2].rows, mergedTraining);
 
+
             const totals = Object.values(mergedResults.reduce((acc, curr) => {
                 const key = curr.employee_id;
-                const employee_name = curr.employee_name;
-                // const supervisor_id = curr.supervisor_id;
-                const last_supervisor_id = curr.last_supervisor_id;
 
                 if (!acc[key]) {
                     acc[key] = {
                         employee_Id: key,
                         total_hours: 0,
-                        employee_name: employee_name,
-                        // supervisor_id: supervisor_id,
-                        last_supervisor_id: last_supervisor_id,
+                        employee_name: curr.employee_name,
+                        last_supervisor_id: curr.last_supervisor_id,
                     }
                 }
                 acc[key].total_hours += +curr.total_hours
@@ -79,8 +76,28 @@ const httpTrigger: AzureFunction = async function (
             let mergedTraining = [...result[3].rows, ...result[4].rows, ...result[5].rows];
             let merged = result[0].rows.concat(result[1].rows, result[2].rows, mergedTraining);
 
+            const groupedData = Object.values(merged.reduce((acc, obj) => {
+                const key = obj.id;
+                if (!acc[key]) {
+                    acc[key] = {
+                        id: key,
+                        login_time: obj.login_time,
+                        logout_time: obj.logout_time,
+                        total_hours: 0,
+                        module: obj.module,
+                        supervisor_notes: obj.supervisor_notes,
+                        employee_notes: obj.employee_notes,
+                        tickets: obj.tickets
+                    }
+                }
+               
+                acc[key].total_hours += +obj.total_hours
+                
+                return acc;
+            }, {}));
+
             resp = {
-                dwr: merged
+                dwr: groupedData
             };
         }
 
@@ -94,8 +111,28 @@ const httpTrigger: AzureFunction = async function (
             let mergedTraining = [...result[3].rows, ...result[4].rows, ...result[5].rows];
             let merged = result[0].rows.concat(result[1].rows, result[2].rows, mergedTraining);
 
+            const groupedData = Object.values(merged.reduce((acc, obj) => {
+                const key = obj.id;
+                if (!acc[key]) {
+                    acc[key] = {
+                        id: key,
+                        login_time: obj.login_time,
+                        logout_time: obj.logout_time,
+                        total_hours: 0,
+                        module: obj.module,
+                        supervisor_notes: obj.supervisor_notes,
+                        employee_notes: obj.employee_notes,
+                        tickets: obj.tickets
+                    }
+                }
+               
+                acc[key].total_hours += +obj.total_hours
+                
+                return acc;
+            }, {}));
+
             resp = {
-                dwr: merged
+                dwr: groupedData
             };
         }
 

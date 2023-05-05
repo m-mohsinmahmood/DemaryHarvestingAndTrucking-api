@@ -179,7 +179,7 @@ export function GetTrainingDwr(employee_id: any, startDate: string, endDate: str
         'employee_id', emp.id,
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
         'state', trainee."state",
-        'supervisor_id', trainee.trainer_id,
+        'supervisor_id', trainee.supervisor_id,
         'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
         )) as tickets
         
@@ -294,7 +294,7 @@ export function GetTrainingDwr(employee_id: any, startDate: string, endDate: str
         'employee_id', emp.id,
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
         'state', trainee."state",
-        'supervisor_id', trainee.trainer_id,
+        'supervisor_id', trainee.supervisor_id,
         'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
         )) as tickets
         
