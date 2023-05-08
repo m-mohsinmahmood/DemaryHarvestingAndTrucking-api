@@ -23,11 +23,14 @@ const httpTrigger: AzureFunction = async function (
       SELECT 
       emp.first_name as "first_name",
               emp.last_name as "last_name",
-              emp."id" as "trainee_id"
+              emp."id" as "trainee_id",
+              up."city" as "town_city",
+             up."state" as "state"
       FROM 
-            "Employees" emp
+      "Employees" emp LEFT JOIN
+      "User_Profile" up ON emp."id" = up.employee_id
       WHERE 
-            "id" = '${trainee_id}';
+            emp."id" = '${trainee_id}';
         `;
     }
     else if (trainer_id && !(records.evaluation_type === 'summary')) {

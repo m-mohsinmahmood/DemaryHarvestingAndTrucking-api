@@ -76,7 +76,7 @@ const httpTrigger: AzureFunction = async function (
 
  INSERT INTO "User_Profile" (employee_id, state, city)
  VALUES ('${trainee.trainee_id}', '${trainee.state}', '${trainee.city}')
- ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state;
+ ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state,city = EXCLUDED.city;
 
  `;
     } else if (entity === 'trainer') {
