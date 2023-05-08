@@ -78,6 +78,7 @@ const httpTrigger: AzureFunction = async function (
 
             const groupedData = Object.values(merged.reduce((acc, obj) => {
                 const key = obj.id;
+
                 if (!acc[key]) {
                     acc[key] = {
                         id: key,
@@ -90,9 +91,12 @@ const httpTrigger: AzureFunction = async function (
                         tickets: obj.tickets
                     }
                 }
-               
+                else {
+                    acc[key].tickets = [...acc[key].tickets, ...obj.tickets];
+                }
+
                 acc[key].total_hours += +obj.total_hours
-                
+
                 return acc;
             }, {}));
 
@@ -113,6 +117,7 @@ const httpTrigger: AzureFunction = async function (
 
             const groupedData = Object.values(merged.reduce((acc, obj) => {
                 const key = obj.id;
+
                 if (!acc[key]) {
                     acc[key] = {
                         id: key,
@@ -125,9 +130,12 @@ const httpTrigger: AzureFunction = async function (
                         tickets: obj.tickets
                     }
                 }
-               
+                else {
+                    acc[key].tickets = [...acc[key].tickets, ...obj.tickets];
+                }
+
                 acc[key].total_hours += +obj.total_hours
-                
+
                 return acc;
             }, {}));
 

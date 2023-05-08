@@ -23,7 +23,7 @@ const httpTrigger: AzureFunction = async function (
             farm."id" AS farm_id,
             farm."name" AS farm_name,
             crop."id" AS crop_id,
-            crop."name" 
+            crop."name" as crop_name
         
             FROM
             "Customer_Job_Setup" cjs
