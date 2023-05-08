@@ -36,28 +36,26 @@ const httpTrigger: AzureFunction = async function (
         ;`;
         }
 
-        await db.connect();
+        db.connect();
         let result = await db.query(query);
         let resp = {
             jobs: result.rows
         };
 
-        await db.end();
+        db.end();
 
         context.res = {
             status: 200,
             body: resp
         };
     } catch (err) {
-        await db.end();
+        db.end();
         context.res = {
             status: 500,
             body: err,
         };
-    } finally {
-        db.end();
     }
-
+    context.done();
     return;
 };
 
