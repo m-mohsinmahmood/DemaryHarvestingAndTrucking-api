@@ -28,6 +28,7 @@ const httpTrigger: AzureFunction = async function (
     let assigned_roles_info_query_count = `
         Select 
 
+        id,
         first_name,
         last_name,
         "role" 

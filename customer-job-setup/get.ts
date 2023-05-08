@@ -17,42 +17,42 @@ const httpTrigger: AzureFunction = async function (
     let query = ``;
 
     // to get the opened/not-closed jobs of crew chief
-    if (entity.includes("Crew Chief")) {
-      query = `
+    // if (entity.includes("Crew Chief")) {
+    //   query = `
 
-      select 
+    //   select 
 
-      "job_setup".id,
-      "job_setup".state,
-      "job_setup".customer_id,
-      "job_setup".farm_id,
-      "job_setup".field_id,
-      job_setup.crop_id,
-      farm."name" as farm_name,
-      crop."name" as crop,
-      field."name" as field_name,
-      customers.customer_name
+    //   "job_setup".id,
+    //   "job_setup".state,
+    //   "job_setup".customer_id,
+    //   "job_setup".farm_id,
+    //   "job_setup".field_id,
+    //   job_setup.crop_id,
+    //   farm."name" as farm_name,
+    //   crop."name" as crop,
+    //   field."name" as field_name,
+    //   customers.customer_name
 
-      from "Customer_Job_Setup" job_setup
-      INNER JOIN "Customers" customers
-      on job_setup.customer_id = customers.id
+    //   from "Customer_Job_Setup" job_setup
+    //   INNER JOIN "Customers" customers
+    //   on job_setup.customer_id = customers.id
 
-      INNER JOIN "Customer_Farm" farm
-      on farm.id = job_setup.farm_id
+    //   INNER JOIN "Customer_Farm" farm
+    //   on farm.id = job_setup.farm_id
 
-      INNER JOIN "Crops" crop
-      on crop.id = job_setup.crop_id
+    //   INNER JOIN "Crops" crop
+    //   on crop.id = job_setup.crop_id
 
-      INNER JOIN "Customer_Field" field
-      on field.id = job_setup.field_id
+    //   INNER JOIN "Customer_Field" field
+    //   on field.id = job_setup.field_id
 
-      WHERE crew_chief_id = '${crew_chief_id}' AND is_job_active = true AND is_job_completed = false;
-      `;
+    //   WHERE crew_chief_id = '${crew_chief_id}' AND is_job_active = true AND is_job_completed = false;
+    //   `;
 
-    }
+    // }
 
     // to get the opened/not-closed jobs of combine operator
-    else if (entity.includes("Combine Operator")) {
+    if (entity.includes("Combine Operator")) {
       query = `
       select
 

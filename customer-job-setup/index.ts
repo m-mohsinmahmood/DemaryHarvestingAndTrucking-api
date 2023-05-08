@@ -8,6 +8,7 @@ import * as getAssignedRoles from "./getAssignedRoles";
 import * as updateCustomerJob from "./updateCustomerJob";
 import * as beginningofDay from "./beginningOfDay";
 import * as endingofDay from "./endingOfDay";
+import * as removeRole from "./removeAssignedRoles";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
   switch (req.method) {
@@ -35,6 +36,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         await endingofDay.default(context, req);
       else if (req.query.operation === 'updateCustomerJob')
         await updateCustomerJob.default(context, req);
+      else if (req.body.operation === 'removeAssignedRole')
+        await removeRole.default(context, req);
       else
         await updateJob.default(context, req);
       break;

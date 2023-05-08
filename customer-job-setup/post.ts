@@ -10,21 +10,21 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
   let query = ``;
   const job_setup: job_setup = req.body;
-  const jobId = req.body.job_id;
+  // const jobId = req.body.job_id;
 
   try {
 
     if (job_setup.combine_operator_id != null || job_setup.cart_operator_id != null) {
       // Assign Roles
-      let assign = `INSERT INTO 
-      "Customer_Job_Assigned_Roles" 
-      ("job_id", 
-      "employee_id"
-      )
-      VALUES      
-      ('${job_setup.job_id}', 
-      '${job_setup.employee_id}'
-      );`;
+      // let assign = `INSERT INTO 
+      // "Customer_Job_Assigned_Roles" 
+      // ("job_id", 
+      // "employee_id"
+      // )
+      // VALUES      
+      // ('${job_setup.job_id}', 
+      // '${job_setup.employee_id}'
+      // );`;
 
       if (job_setup.combine_operator_id) {
         query = `
@@ -35,7 +35,6 @@ const httpTrigger: AzureFunction = async function (
         WHERE 
             "id" = '${job_setup.combine_operator_id}' ;
 
-            ${assign}
             `;
       }
 
@@ -48,7 +47,6 @@ const httpTrigger: AzureFunction = async function (
         WHERE 
             "id" = '${job_setup.cart_operator_id}' ;
             
-            ${assign}
             `;
       }
     }
@@ -56,14 +54,14 @@ const httpTrigger: AzureFunction = async function (
     else {
       // Before creating new job for crew chief, close or complete the last active job of that crew chief 
 
-      if (job_setup.changeFarmFieldCrop) {
-        query = `
-        Update "Employees" Set dht_supervisor_id = '' 
-        from (SELECT assigned.employee_id from "Customer_Job_Setup" cjs 
-        INNER JOIN "Customer_Job_Assigned_Roles" assigned ON cjs."id" = assigned.job_id AND cjs."id" = '${jobId}') as query
-        where CAST("Employees"."id" as VARCHAR) = query.employee_id;
-        `;
-      }
+      // if (job_setup.changeFarmFieldCrop) {
+      //   query = `
+      //   Update "Employees" Set dht_supervisor_id = '' 
+      //   from (SELECT assigned.employee_id from "Customer_Job_Setup" cjs 
+      //   INNER JOIN "Customer_Job_Assigned_Roles" assigned ON cjs."id" = assigned.job_id AND cjs."id" = '${jobId}') as query
+      //   where CAST("Employees"."id" as VARCHAR) = query.employee_id;
+      //   `;
+      // }
 
       if (job_setup.closeJob) {
         query = `
@@ -91,7 +89,6 @@ const httpTrigger: AzureFunction = async function (
         "farm_id", 
         "crop_id", 
         "state", 
-        "field_id",
         "crew_chief_id",
         "is_job_active",
         "crop_acres",
@@ -103,7 +100,6 @@ const httpTrigger: AzureFunction = async function (
         '${job_setup.farm_id}', 
         '${job_setup.crop_id}', 
         '${job_setup.state}', 
-        '${job_setup.field_id}',
         '${job_setup.crew_chief_id}',
         'True',
         '${job_setup.total_acres}',
