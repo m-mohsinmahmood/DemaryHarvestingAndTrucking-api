@@ -16,6 +16,7 @@ export interface job_setup {
     total_gps_acres?: string;
     job_id?: string;
     employee_id?: string;
+    director_id?: string;
 }
 export interface job_update {
     id?:string,

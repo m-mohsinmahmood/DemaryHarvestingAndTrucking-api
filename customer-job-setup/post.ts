@@ -87,7 +87,8 @@ const httpTrigger: AzureFunction = async function (
         "Customer_Job_Setup" 
         ("customer_id", 
         "farm_id", 
-        "crop_id", 
+        "crop_id",
+        "director_id",
         "state", 
         "crew_chief_id",
         "is_job_active",
@@ -99,6 +100,7 @@ const httpTrigger: AzureFunction = async function (
         ('${job_setup.customer_id}', 
         '${job_setup.farm_id}', 
         '${job_setup.crop_id}', 
+        '${job_setup.director_id}',
         '${job_setup.state}', 
         '${job_setup.crew_chief_id}',
         'True',
