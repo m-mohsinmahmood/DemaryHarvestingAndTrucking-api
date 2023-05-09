@@ -28,15 +28,15 @@ const httpTrigger: AzureFunction = async function (
         }
 
         let query = `
-        Select 
-        emp."id", 
-        emp.first_name, 
-        emp.last_name, 
-        supervisor."id" as supervisor_id, 
-        concat(supervisor.first_name, ' ', supervisor.last_name) as supervisor_name
-        
-        from "Employees" emp
-        INNER JOIN "Employees" supervisor ON emp."id"::VARCHAR = supervisor.dht_supervisor_id
+       
+        SELECT 
+        emp.id,
+        emp.first_name,
+        emp.last_name,
+        emp.dht_supervisor_id AS supervisor_id,
+        CONCAT(supervisor.first_name, ' ', supervisor.last_name) AS supervisor_name
+        FROM "Employees" emp
+        LEFT JOIN "Employees" supervisor ON emp.dht_supervisor_id::VARCHAR = supervisor.id::VARCHAR
 
         ${whereClause}
         ORDER BY 
