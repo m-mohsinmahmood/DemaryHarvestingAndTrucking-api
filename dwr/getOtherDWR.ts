@@ -19,17 +19,16 @@ export function GetOtherDwr(employee_id: any, startDate: string, endDate: string
     else
         where = `${where}`;
 
-    if (employee_id !== '' || employee_id !== null)
+    if (employee_id !== '' && employee_id !== null)
         employeeWhereClause = `${employeeWhereClause} AND dwr_employees.employee_id = '${employee_id}'`;
 
     if (operation === 'getDWRToVerify') {
         getDwr = `
         SELECT
         Distinct(dwr_employees.employee_id),
+        dwr_employees.id,
         concat(employees.first_name, ' ', employees.last_name) AS employee_name,
-        SUM (
-            ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
-        ) AS total_hours ,
+        ABS(EXTRACT(EPOCH FROM dwr_employees.ending_day - dwr_employees.begining_day)/3600) as total_hours,
         dwr_employees."module" AS module,
         dwr_employees.begining_day :: DATE,
         dwr_employees.supervisor_id as last_supervisor_id
@@ -51,7 +50,9 @@ export function GetOtherDwr(employee_id: any, startDate: string, endDate: string
         dwr_employees.begining_day :: DATE,
         concat(employees.first_name, ' ', employees.last_name),
         dwr_employees."module",
-        dwr_employees.supervisor_id
+        dwr_employees.supervisor_id,
+        dwr_employees.id,
+        ABS(EXTRACT(EPOCH FROM dwr_employees.ending_day - dwr_employees.begining_day)/3600)
 
         ORDER BY
         begining_day DESC;
