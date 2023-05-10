@@ -27,7 +27,7 @@ const httpTrigger: AzureFunction = async function (
 
     let query = `${crops_dropdown_query}`;
 
-    db.connect();
+    await db.connect();
 
     let result = await db.query(query);
 

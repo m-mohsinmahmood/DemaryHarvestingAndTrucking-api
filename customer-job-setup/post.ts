@@ -69,6 +69,7 @@ const httpTrigger: AzureFunction = async function (
         ${query}
         UPDATE 
         "Customer_Job_Setup"
+        
         SET 
         "is_job_active"     = false, 
         "is_job_completed"  = true,
@@ -76,7 +77,7 @@ const httpTrigger: AzureFunction = async function (
         "crop_gps_acres" = '${job_setup.total_gps_acres}'
       
         WHERE 
-        "crew_chief_id" = '${job_setup.crew_chief_id}' AND is_job_active = TRUE AND is_job_completed = FALSE;`;
+        "id" = '${job_setup.job_id}';`;
       }
 
       if (job_setup.newJobSetup) {
@@ -113,10 +114,9 @@ const httpTrigger: AzureFunction = async function (
 
     query = `${query}`;
 
-    db.connect();
+    await db.connect();
     console.log("Query:", query); +
       await db.query(query);
-    db.end();
 
     context.res = {
       status: 200,
@@ -125,18 +125,18 @@ const httpTrigger: AzureFunction = async function (
         status: 200,
       },
     };
-
-    context.done();
-    return;
+    ;
   } catch (error) {
-    db.end();
     context.res = {
       status: 500,
       body: {
         message: error.message,
       },
     };
-    return;
+  }
+  finally {
+    db.end();
+    context.done();
   }
 };
 

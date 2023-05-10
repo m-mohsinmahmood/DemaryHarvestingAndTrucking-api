@@ -23,40 +23,46 @@ const httpTrigger: AzureFunction = async function (
             farm."id" AS farm_id,
             farm."name" AS farm_name,
             crop."id" AS crop_id,
-            crop."name" as crop_name
+            crop."name" as crop_name,
+            cjs.crew_chief_id as crew_chief_id,
+            concat(crew_chief.first_name, ' ', crew_chief.last_name) as crew_chief_name
         
             FROM
             "Customer_Job_Setup" cjs
+            
+            INNER JOIN "Employees" crew_chief ON crew_chief."id" = cjs.crew_chief_id
             INNER JOIN "Customers" customers ON cjs.customer_id = customers."id"
             INNER JOIN "Customer_Farm" farm ON cjs.farm_id = farm."id"
             INNER JOIN "Crops" crop ON cjs.crop_id = crop.ID 
         
             WHERE
             cjs.crew_chief_id = '${employeeId}'
+            AND cjs.is_job_active = TRUE
+            AND cjs.is_job_completed = FALSE
         ;`;
         }
 
-        db.connect();
+        await db.connect();
         let result = await db.query(query);
         let resp = {
             jobs: result.rows
         };
-
-        db.end();
 
         context.res = {
             status: 200,
             body: resp
         };
     } catch (err) {
-        db.end();
         context.res = {
             status: 500,
             body: err,
         };
     }
-    context.done();
-    return;
+
+    finally{
+        db.end();
+        context.done();
+    }
 };
 
 export default httpTrigger;

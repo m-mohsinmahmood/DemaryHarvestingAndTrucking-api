@@ -36,7 +36,7 @@ const httpTrigger: AzureFunction = async function (
     `;
     let query = `${customer_farm_query} ${customer_farm_count_query}`;
 
-    db.connect();
+    await db.connect();
 
     let result = await db.query(query);
 
@@ -45,23 +45,24 @@ const httpTrigger: AzureFunction = async function (
       count: +result[1].rows[0].count,
     };
 
-    db.end();
-
     context.res = {
       status: 200,
       body: resp,
     };
 
-    context.done();
-    return;
   } catch (err) {
     db.end();
     context.res = {
       status: 500,
       body: err,
     };
+    ;
+  }
+
+  finally {
+    db.end();
     context.done();
-    return;
+
   }
 };
 
