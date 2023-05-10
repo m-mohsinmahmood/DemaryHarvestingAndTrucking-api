@@ -28,6 +28,17 @@ const httpTrigger: AzureFunction = async function (
             WHERE 
             "id" = '${data.active_check_in_id}' ;
 
+            UPDATE 
+            "DWR_Employees"
+            SET 
+            "is_active" = FALSE,
+            "dwr_status"    = 'pendingVerification',
+            "modified_at" = CURRENT_TIMESTAMP,
+            "ending_day"  = CURRENT_TIMESTAMP
+            
+            WHERE 
+            "id" = '${data.active_check_in_id}' ;
+
             INSERT INTO 
                         "Other" 
                         ("employee_id", 
@@ -62,7 +73,7 @@ const httpTrigger: AzureFunction = async function (
         context.res = {
             status: 200,
             body: {
-                id:  result[1].rows[0],
+                id:  result[2].rows[0],
                 status: 200,
                 message: "Otder Data has been created successfully",
             },
