@@ -42,6 +42,33 @@ const httpTrigger: AzureFunction = async function (
         ;`;
         }
 
+        else if (role === 'Combine Operator') {
+            query = `
+            SELECT
+            cjs.created_at :: "date",
+            cjs.ID AS job_id,
+            customers."id" AS customer_id,
+            concat ( customers.customer_name ) AS customer_name,
+            cjs."state",
+            farm."id" AS farm_id,
+            farm."name" AS farm_name,
+            crop."id" AS crop_id,
+            crop."name" AS crop_name,
+            cjs.crew_chief_id AS crew_chief_id,
+            concat ( crew_chief.first_name, ' ', crew_chief.last_name ) AS crew_chief_name 
+        FROM
+            "Customer_Job_Setup" cjs
+            INNER JOIN "Employees" crew_chief ON crew_chief."id" = cjs.crew_chief_id
+            INNER JOIN "Customers" customers ON cjs.customer_id = customers."id"
+            INNER JOIN "Customer_Farm" farm ON cjs.farm_id = farm."id"
+            INNER JOIN "Crops" crop ON cjs.crop_id = crop.ID 
+        WHERE
+            cjs.crew_chief_id :: VARCHAR = ( SELECT dht_supervisor_id :: VARCHAR FROM "Employees" WHERE ID = '${employeeId}' ) 
+            AND cjs.is_job_active = TRUE 
+            AND cjs.is_job_completed = FALSE
+        ;`;
+        }
+
         await db.connect();
         let result = await db.query(query);
         let resp = {
