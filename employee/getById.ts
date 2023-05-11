@@ -15,23 +15,38 @@ const httpTrigger: AzureFunction = async function (
 
     if (firebase_id) {
       let employee_id_query = `
-      SELECT 
+      SELECT
       emp."id",
-      "role",
-      concat(first_name,' ' ,last_name)	as "employee_name",
-      first_name,
-      last_name,
-      email,
-      cell_phone_number,
-      home_phone_number,
+      emp."role",
+      concat ( emp.first_name, ' ', emp.last_name ) AS "employee_name",
+      emp.first_name,
+      emp.last_name,
+      emp.email,
+      emp.cell_phone_number,
+      emp.home_phone_number,
       up."state",
       up."city",
-      town_city,
-      avatar
-      FROM 
-      
+      up.customer_id,
+      customers.customer_name,
+      up."farm_id",
+      farm."name" AS farm_name,
+      up."field_id",
+      field."name" AS field_name,
+      up."crop_id",
+      crop."name" AS crop_name,
+      up.director_id,
+      concat ( director.first_name, ' ', director.last_name ) AS director_name,
+      emp.town_city,
+      emp.avatar 
+    
+      FROM
       "Employees" emp
-      Left JOIN "User_Profile" up ON emp."id" = up.employee_id
+      LEFT JOIN "User_Profile" up ON emp."id" = up.employee_id
+      LEFT JOIN "Customers" customers ON customers."id" = up.customer_id
+      LEFT JOIN "Customer_Farm" farm ON farm."id" = up.farm_id
+      LEFT JOIN "Customer_Field" field ON field."id" = up.field_id
+      LEFT JOIN "Crops" crop ON crop."id" = up.crop_id
+      LEFT JOIN "Employees" director ON director."id" = up.director_id 
 
       Where emp.fb_id = '${firebase_id}'        
       `;

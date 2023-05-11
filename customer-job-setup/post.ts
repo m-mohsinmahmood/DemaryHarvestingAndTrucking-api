@@ -108,7 +108,12 @@ const httpTrigger: AzureFunction = async function (
         '${job_setup.total_acres}',
         '${job_setup.total_gps_acres}'
         
-        );`;
+        );
+        
+        INSERT INTO "User_Profile" (employee_id, state, customer_id, farm_id, crop_id, director_id)
+        VALUES ('${job_setup.employee_id}', '${job_setup.state}', '${job_setup.customer_id}', '${job_setup.farm_id}', '${job_setup.crop_id}', '${job_setup.director_id}')
+        ON CONFLICT (employee_id) DO UPDATE SET state = EXCLUDED.state, customer_id = EXCLUDED.customer_id, farm_id = EXCLUDED.farm_id, crop_id = EXCLUDED.crop_id, director_id = EXCLUDED.director_id;
+        `;
       }
     }
 
