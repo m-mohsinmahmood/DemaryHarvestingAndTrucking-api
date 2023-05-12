@@ -29,32 +29,31 @@ const httpTrigger: AzureFunction = async function (
 
         else if (search_clause === 'beginningOfDayHarvesting') {
             // Beginning of Day to check if employee has closed a day before selecting another workorder
-            let from = ` from "DWR" dwr
-            INNER JOIN "Customer_Job_Setup" cjs
-            on dwr.job_id = cjs."id" 
-            
-            INNER JOIN "Customer_Farm" farm
-            on farm."id" = cjs.farm_id 
-            
-            INNER JOIN "Crops" crop
-            on crop.id = cjs.crop_id
-            
-            INNER JOIN "Customers" customers
-            on cjs.customer_id = customers."id"
+            let from = ` 
+            FROM
+            "DWR" dwr
+            INNER JOIN "Customer_Job_Setup" cjs ON dwr.job_id = cjs."id"
+            INNER JOIN "Customer_Farm" farm ON farm."id" = cjs.farm_id
+            INNER JOIN "Crops" crop ON crop.ID = cjs.crop_id
+            INNER JOIN "Customers" customers ON cjs.customer_id = customers."id"
+            INNER JOIN "Employees" crew ON crew."id" = cjs.crew_chief_id 
             
             where employee_id = '${employee_id}' And is_day_closed='false' `;
 
             employee_info_query = `
-            Select 
+            SELECT
 
-            cjs.id,
-            customers.id as customer_id,
+            cjs.ID,
+            cjs.created_at :: "date",
+            customers.ID AS customer_id,
             customers.customer_name,
-            crop."id" as crop_id,
-            crop.name as crop_name,
-            customers."state" as state,
-            farm."id" as farm_id,
-            farm."name" as farm_name
+            crop."id" AS crop_id,
+            crop.NAME AS crop_name,
+            cjs."state" AS STATE,
+            farm."id" AS farm_id,
+            farm."name" AS farm_name,
+            cjs.crew_chief_id,
+            concat ( crew.first_name, ' ', crew.last_name ) AS crew_chief_name 
             ${from}
            ;
       `;
