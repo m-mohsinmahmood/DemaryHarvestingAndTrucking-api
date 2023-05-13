@@ -27,19 +27,19 @@ const httpTrigger: AzureFunction = async function (
                 "dht_supervisor_id"= '${kartOperatorId}'
         WHERE 
                 "id" ='${driverIds}';
-                
-        INSERT INTO 
-        "Customer_Job_Assigned_Roles" 
-        ("job_id", 
-        "employee_id"
-        )
-
-        VALUES      
-        ('${job_id}', 
-        '${driverIds}'
-        ) ;
               
       `;
+
+      // INSERT INTO 
+      // "Customer_Job_Assigned_Roles" 
+      // ("job_id", 
+      // "employee_id"
+      // )
+
+      // VALUES      
+      // ('${job_id}', 
+      // '${driverIds}'
+      // ) ;
 
     console.log(query);
 
