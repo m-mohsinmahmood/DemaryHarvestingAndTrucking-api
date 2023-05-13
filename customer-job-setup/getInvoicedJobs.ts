@@ -42,7 +42,7 @@ const httpTrigger: AzureFunction = async function (
         ;`;
         }
 
-        else if (role === 'Combine Operator') {
+        else if (role === 'Combine Operator' || role === 'Cart Operator') {
             query = `
             SELECT
             cjs.created_at :: "date",
