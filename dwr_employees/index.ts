@@ -2,6 +2,7 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as addDWR from "./post";
 import * as getDWR from "./get";
 import * as updateDWR from "./patch";
+import * as getDwrCount from "./getTicketsPerDwr";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -9,7 +10,9 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
     switch (req.method) {
         case "GET":
-            await getDWR.default(context, req);
+            if (req.query.operation === 'getTicketsPerDwr') await getDwrCount.default(context, req);
+            else
+                await getDWR.default(context, req);
             break;
 
         case "POST":

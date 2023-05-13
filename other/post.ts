@@ -24,10 +24,7 @@ const httpTrigger: AzureFunction = async function (
             "state" = '${data.state}',
             "supervisor_id" = '${data.supervisor_id}',
             "module" = '${data.module}',
-            "is_active" = FALSE,
-            "dwr_status"    = 'pendingVerification',
-            "modified_at" = CURRENT_TIMESTAMP,
-            "ending_day"  = CURRENT_TIMESTAMP
+            "modified_at" = CURRENT_TIMESTAMP
                          
             WHERE 
             "id" = '${data.active_check_in_id}' ;
