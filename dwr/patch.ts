@@ -37,6 +37,8 @@ const httpTrigger: AzureFunction = async function (
             '${taskId}'
             );`;
 
+            console.log(bridgeDailyTasksDwr);
+            
             let result = await db.query(bridgeDailyTasksDwr);
         }
 
