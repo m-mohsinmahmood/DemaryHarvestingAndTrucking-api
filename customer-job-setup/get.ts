@@ -122,7 +122,7 @@ const httpTrigger: AzureFunction = async function (
      `;
     }
 
-    else if (entity.includes("Kart Operator")) {
+    else if (entity.includes("Cart Operator")) {
       query = `
       select 
       
@@ -180,9 +180,9 @@ const httpTrigger: AzureFunction = async function (
       ;`;
     }
 
-    // to get the opened/not-closed jobs of kart operator
-    // else if (entity === "Kart Operator") {
-    //   // to get the opened/not-closed jobs of kart operator if employee is present
+    // to get the opened/not-closed jobs of Cart operator
+    // else if (entity === "Cart Operator") {
+    //   // to get the opened/not-closed jobs of Cart operator if employee is present
     //   query = `
     //     SELECT 
     //      customer."id" as "customer_id", 
@@ -216,7 +216,7 @@ const httpTrigger: AzureFunction = async function (
     //      WHERE
     //      employee_id = '${employeeId}' AND "is_field_changed" = FALSE `;
 
-    //   // to get the opened/not-closed jobs of kart operator if employee is not present
+    //   // to get the opened/not-closed jobs of Cart operator if employee is not present
     //   query = `
     //     SELECT 
     //      customer."id" as "customer_id", 

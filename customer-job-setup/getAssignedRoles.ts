@@ -16,12 +16,12 @@ const httpTrigger: AzureFunction = async function (
     Select 
 
     SUM(CASE WHEN "role" Like '%Combine Operator%' THEN 1 ELSE 0 END) as combine_operator,
-    SUM(CASE WHEN "role" Like '%Kart Operator%' THEN 1 ELSE 0 END) as cart_operator
+    SUM(CASE WHEN "role" Like '%Cart Operator%' THEN 1 ELSE 0 END) as cart_operator
     
     From "Employees"
     
     Where dht_supervisor_id = '${crew_chief_id}'
-    AND (role LIKE '%Combine Operator%' OR role Like '%Kart Operator%')
+    AND (role LIKE '%Combine Operator%' OR role Like '%Cart Operator%')
     ;
       `;
 
@@ -36,7 +36,7 @@ const httpTrigger: AzureFunction = async function (
         From "Employees"
     
         Where dht_supervisor_id = '${crew_chief_id}'
-        AND (role LIKE '%Combine Operator%' OR role Like '%Kart Operator%');
+        AND (role LIKE '%Combine Operator%' OR role Like '%Cart Operator%');
       `;
 
     let query = `${assigned_roles_info_query} ${assigned_roles_info_query_count}`;
