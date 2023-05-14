@@ -36,6 +36,10 @@ const httpTrigger: AzureFunction = async function (
       crop."name" AS crop_name,
       up.director_id,
       concat ( director.first_name, ' ', director.last_name ) AS director_name,
+      up.destination AS destination,
+      up.loaded_miles AS loaded_miles,
+      up.truck_driver_id AS truck_driver_id,
+      concat ( truck_driver.first_name, ' ', truck_driver.last_name ) AS truck_driver_name,
       emp.town_city,
       emp.avatar 
     
@@ -46,7 +50,8 @@ const httpTrigger: AzureFunction = async function (
       LEFT JOIN "Customer_Farm" farm ON farm."id" = up.farm_id
       LEFT JOIN "Customer_Field" field ON field."id" = up.field_id
       LEFT JOIN "Crops" crop ON crop."id" = up.crop_id
-      LEFT JOIN "Employees" director ON director."id" = up.director_id 
+      LEFT JOIN "Employees" director ON director."id" = up.director_id
+      LEFT JOIN "Employees" truck_driver ON truck_driver."id" = up.truck_driver_id 
 
       Where emp.fb_id = '${firebase_id}'        
       `;

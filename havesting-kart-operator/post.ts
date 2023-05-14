@@ -88,6 +88,11 @@ const httpTrigger: AzureFunction = async function (
                     'sent'
                     ${optionalValues}
                     );
+
+        INSERT INTO "User_Profile" (employee_id, destination, loaded_miles, truck_driver_id)
+        VALUES ('${delivery_ticket.kartOperatorId}', '${delivery_ticket.destination}', '${delivery_ticket.loadedMiles}', '${delivery_ticket.truckDriverId}')
+        ON CONFLICT (employee_id) DO UPDATE SET destination = EXCLUDED.destination, loaded_miles = EXCLUDED.loaded_miles, truck_driver_id = EXCLUDED.truck_driver_id;
+                    ;
       `;
         }
 
