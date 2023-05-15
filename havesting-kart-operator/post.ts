@@ -27,19 +27,19 @@ const httpTrigger: AzureFunction = async function (
                 optionalValues = `${optionalValues},'${delivery_ticket.truckDriverId}'`
             }
 
-            if (delivery_ticket.customerId != null) {
+            if (delivery_ticket.customer_id != null) {
                 optionalReq = `${optionalReq},"customer_id"`;
-                optionalValues = `${optionalValues},'${delivery_ticket.customerId}'`
+                optionalValues = `${optionalValues},'${delivery_ticket.customer_id}'`
             }
 
-            if (delivery_ticket.farmId != null) {
+            if (delivery_ticket.farm_id != null) {
                 optionalReq = `${optionalReq},"farm_id"`;
-                optionalValues = `${optionalValues},'${delivery_ticket.farmId}'`
+                optionalValues = `${optionalValues},'${delivery_ticket.farm_id}'`
             }
 
-            if (delivery_ticket.cropName != null) {
-                optionalReq = `${optionalReq},"crop"`;
-                optionalValues = `${optionalValues},'${delivery_ticket.cropName}'`
+            if (delivery_ticket.crop_id != null) {
+                optionalReq = `${optionalReq},"crop_id"`;
+                optionalValues = `${optionalValues},'${delivery_ticket.crop_id}'`
             }
 
             if (delivery_ticket.state != null) {
@@ -72,10 +72,26 @@ const httpTrigger: AzureFunction = async function (
                 optionalValues = `${optionalValues},'${delivery_ticket.kartScaleWeight}'`
             }
 
-            if (delivery_ticket.truckId != null) {
-                optionalReq = `${optionalReq},"truck_id"`;
-                optionalValues = `${optionalValues},'${delivery_ticket.truckId}'`
+            if (delivery_ticket.field_load_split != null) {
+                optionalReq = `${optionalReq},"split_field_id"`;
+                optionalValues = `${optionalValues},'${delivery_ticket.field_load_split}'`
             }
+
+            if (delivery_ticket.kart_scale_weight_split != null) {
+                optionalReq = `${optionalReq},"split_cart_scale_weight"`;
+                optionalValues = `${optionalValues},'${delivery_ticket.kart_scale_weight_split}'`
+            }
+
+            if (delivery_ticket.jobId != null) {
+                optionalReq = `${optionalReq},"job_id"`;
+                optionalValues = `${optionalValues},'${delivery_ticket.jobId}'`
+            }
+
+            if (delivery_ticket.split_load_check != null) {
+                optionalReq = `${optionalReq},"split_load_check"`;
+                optionalValues = `${optionalValues},'${delivery_ticket.split_load_check}'`
+            }
+
             query = `
         INSERT INTO 
                     "Harvesting_Delivery_Ticket" 

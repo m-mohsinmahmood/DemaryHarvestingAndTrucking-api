@@ -3,14 +3,17 @@ export interface delivery_ticket {
     id?: string,
     kartOperatorId?:string,
     truckDriverId?: string;
-    customerId?: string;
-    farmId?: string;
-    cropName?:string;
+    customer_id?: string;
+    farm_id?: string;
+    crop_id?:string;
     state?:string;
     destination?:string;
     loadedMiles?:string;
     fieldId?:string;
     splitLoad?:string;
     kartScaleWeight?:string;
-    truckId?:string;
+    field_load_split?:string;
+    split_load_check?:boolean;
+    kart_scale_weight_split?:string;
+    jobId?:string;
 }
