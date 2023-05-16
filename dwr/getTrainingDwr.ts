@@ -3,6 +3,7 @@ export function GetTrainingDwr(employee_id: any, startDate: string, endDate: str
     let getDwr = ``;
     let where = ``;
     let employeeWhereClause = ``;
+    let whereSubQuery = ``;
 
     if (dateType === 'month') {
         where = `${where} AND EXTRACT(MONTH FROM dwr_employees.begining_day) = '${month}'`
@@ -10,6 +11,14 @@ export function GetTrainingDwr(employee_id: any, startDate: string, endDate: str
     }
     else {
         where = `${where} AND dwr_employees.begining_day > '${startDate}'::timestamp AND dwr_employees.begining_day < '${endDate}'::timestamp`
+    }
+
+    if (dateType === 'month') {
+        whereSubQuery = `${whereSubQuery} AND EXTRACT(MONTH FROM begining_day) = '${month}'`
+        whereSubQuery = `${whereSubQuery} AND EXTRACT(YEAR FROM begining_day) = '${year}'`
+    }
+    else {
+        whereSubQuery = `${whereSubQuery} AND begining_day > '${startDate}'::timestamp AND begining_day < '${endDate}'::timestamp`
     }
 
     if (status !== 'all') {
@@ -25,13 +34,25 @@ export function GetTrainingDwr(employee_id: any, startDate: string, endDate: str
         getDwr = `
         SELECT
         Distinct(dwr_employees.employee_id),
+        dwr_employees.id,
         concat(employees.first_name, ' ', employees.last_name) AS employee_name,
-        SUM (
-            ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
-        ) AS total_hours ,
+        ABS(EXTRACT(EPOCH FROM dwr_employees.ending_day - dwr_employees.begining_day)/3600) as total_hours,
         dwr_employees."module" AS module,
         dwr_employees.begining_day :: DATE,
-        dwr_employees.supervisor_id as last_supervisor_id
+        dwr_employees.supervisor_id as supervisor_id,
+        (SELECT
+            supervisor_id as last_supervisor_id
+     
+         FROM
+           "DWR_Employees"
+             
+           WHERE 
+           is_active = FALSE
+           ${whereSubQuery}
+           AND employee_id = dwr_employees.employee_id	
+           
+           ORDER BY begining_day DESC
+           LIMIT 1)
 
         FROM
         "Bridge_DailyTasks_DWR" bridge
@@ -50,7 +71,9 @@ export function GetTrainingDwr(employee_id: any, startDate: string, endDate: str
         dwr_employees.begining_day :: DATE,
         concat(employees.first_name, ' ', employees.last_name),
         dwr_employees."module",
-        dwr_employees.supervisor_id
+        dwr_employees.supervisor_id,
+        ABS(EXTRACT(EPOCH FROM dwr_employees.ending_day - dwr_employees.begining_day)/3600),
+        dwr_employees.id
 
         ORDER BY
         begining_day DESC;
@@ -58,13 +81,25 @@ export function GetTrainingDwr(employee_id: any, startDate: string, endDate: str
 
         SELECT
         Distinct(dwr_employees.employee_id),
+        dwr_employees.id,
         concat(employees.first_name, ' ', employees.last_name) AS employee_name,
-        SUM (
-            ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
-        ) AS total_hours ,
+        ABS(EXTRACT(EPOCH FROM dwr_employees.ending_day - dwr_employees.begining_day)/3600) as total_hours,
         dwr_employees."module" AS module,
         dwr_employees.begining_day :: DATE,
-        dwr_employees.supervisor_id as last_supervisor_id
+        dwr_employees.supervisor_id as supervisor_id,
+        (SELECT
+            supervisor_id as last_supervisor_id
+     
+         FROM
+           "DWR_Employees"
+             
+             WHERE 
+             is_active = FALSE
+             ${whereSubQuery}
+             AND employee_id = dwr_employees.employee_id	
+     
+                     ORDER BY begining_day DESC
+                     LIMIT 1)
 
         FROM
         "Bridge_DailyTasks_DWR" bridge
@@ -83,7 +118,9 @@ export function GetTrainingDwr(employee_id: any, startDate: string, endDate: str
         dwr_employees.begining_day :: DATE,
         concat(employees.first_name, ' ', employees.last_name),
         dwr_employees."module",
-        dwr_employees.supervisor_id
+        dwr_employees.supervisor_id,
+        ABS(EXTRACT(EPOCH FROM dwr_employees.ending_day - dwr_employees.begining_day)/3600),
+        dwr_employees.id
 
         ORDER BY
         begining_day DESC;
@@ -91,13 +128,25 @@ export function GetTrainingDwr(employee_id: any, startDate: string, endDate: str
 
         SELECT
         Distinct(dwr_employees.employee_id),
+        dwr_employees.id,
         concat(employees.first_name, ' ', employees.last_name) AS employee_name,
-        SUM (
-            ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_employees.ending_day - dwr_employees.begining_day ) ) / 3600 ) AS NUMERIC ), 2 ) 
-        ) AS total_hours ,
+        ABS(EXTRACT(EPOCH FROM dwr_employees.ending_day - dwr_employees.begining_day)/3600) as total_hours,
         dwr_employees."module" AS module,
         dwr_employees.begining_day :: DATE,
-        dwr_employees.supervisor_id as last_supervisor_id
+        dwr_employees.supervisor_id as supervisor_id,
+        (SELECT
+            supervisor_id as last_supervisor_id
+     
+         FROM
+           "DWR_Employees"
+             
+             WHERE 
+         is_active = FALSE
+             ${whereSubQuery}
+             AND employee_id = dwr_employees.employee_id	
+     
+                     ORDER BY begining_day DESC
+                     LIMIT 1)
 
         FROM
         "Bridge_DailyTasks_DWR" bridge
@@ -116,7 +165,9 @@ export function GetTrainingDwr(employee_id: any, startDate: string, endDate: str
         dwr_employees.begining_day :: DATE,
         concat(employees.first_name, ' ', employees.last_name),
         dwr_employees."module",
-        dwr_employees.supervisor_id
+        dwr_employees.supervisor_id,
+        ABS(EXTRACT(EPOCH FROM dwr_employees.ending_day - dwr_employees.begining_day)/3600),
+        dwr_employees.id
 
         ORDER BY
         begining_day DESC;
@@ -189,7 +240,7 @@ export function GetTrainingDwr(employee_id: any, startDate: string, endDate: str
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Trainee" trainee ON dwr.trainee_record_id = trainee."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        INNER JOIN "Employees" supervisor ON trainee.trainer_id = supervisor."id"
+        INNER JOIN "Employees" supervisor ON trainee.supervisor_id = supervisor."id"
 
         WHERE dwr_employees.employee_id = '${employee_id}'
        ${where}
@@ -304,7 +355,7 @@ export function GetTrainingDwr(employee_id: any, startDate: string, endDate: str
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Trainee" trainee ON dwr.trainee_record_id = trainee."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        INNER JOIN "Employees" supervisor ON trainee.trainer_id = supervisor."id"
+        INNER JOIN "Employees" supervisor ON trainee.supervisor_id = supervisor."id"
 
         WHERE dwr_employees.employee_id = '${employee_id}'
        ${where}

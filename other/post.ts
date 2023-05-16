@@ -23,7 +23,8 @@ const httpTrigger: AzureFunction = async function (
             SET 
             "state" = '${data.state}',
             "supervisor_id" = '${data.supervisor_id}',
-            "module" = '${data.module}'
+            "module" = '${data.module}',
+            "modified_at" = CURRENT_TIMESTAMP
                          
             WHERE 
             "id" = '${data.active_check_in_id}' ;

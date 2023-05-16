@@ -44,6 +44,9 @@ const httpTrigger: AzureFunction = async function (
             let mergedTraining = [...result[3].rows, ...result[4].rows, ...result[5].rows];
             let mergedResults = result[0].rows.concat(result[1].rows, result[2].rows, mergedTraining);
 
+            mergedResults = mergedResults.filter((obj, index, arr) => {
+                return arr.findIndex((o) => o.id === obj.id) === index;
+            });
 
             const totals = Object.values(mergedResults.reduce((acc, curr) => {
                 const key = curr.employee_id;
