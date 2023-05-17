@@ -2,6 +2,7 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
 import { beginningOfDay } from "./model";
+const fs = require('fs');
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -21,11 +22,11 @@ const httpTrigger: AzureFunction = async function (
         db.connect();
 
         if (dateType === 'month') {
-            where = `${where} AND EXTRACT(MONTH FROM dwr_employees.begining_day) = '${month}'`
-            where = `${where} AND EXTRACT(YEAR FROM dwr_employees.begining_day) = '${year}'`
+            where = `${where} AND EXTRACT(MONTH FROM begining_day) = '${month}'`
+            where = `${where} AND EXTRACT(YEAR FROM begining_day) = '${year}'`
         }
         else {
-            where = `${where} AND dwr_employees.begining_day > '${startDate}'::timestamp AND dwr_employees.begining_day < '${endDate}'::timestamp`
+            where = `${where} AND begining_day > '${startDate}'::timestamp AND begining_day < '${endDate}'::timestamp`
         }
 
         let query = ` 
