@@ -14,10 +14,25 @@ const httpTrigger: AzureFunction = async function (
         const id = req.body.jobId;
         const role = req.body.role;
         const endingEngineHours = req.body.endingEngineHours
+        const separatorsHours = req.body.separatorsHours
 
         console.log('Request::', req.body);
 
-        updateEndingOMR = `
+        if (role === 'Combine Operator' || role === 'Cart Operator') {
+            updateEndingOMR = `
+            UPDATE 
+                    "Machinery"
+            SET 
+                    "engine_hours" = '${endingEngineHours}',
+                    "separator_hours" = '${separatorsHours}',
+                    modified_at = now()
+                  
+            WHERE 
+                    "id" = '${id}' ;`;
+        }
+
+        else if (role === 'Truck Driver') {
+            updateEndingOMR = `
             UPDATE 
                     "Motorized_Vehicles"
             SET 
@@ -26,6 +41,7 @@ const httpTrigger: AzureFunction = async function (
                   
             WHERE 
                     "id" = '${id}' ;`;
+        }
 
         console.log('Query:', updateEndingOMR)
         db.connect();

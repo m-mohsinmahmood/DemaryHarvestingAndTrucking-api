@@ -10,13 +10,14 @@ const httpTrigger: AzureFunction = async function (
 
     try {
         const search: string = req.query.search;
+        const vehicleType: string = req.query.vehicleType;
 
-        let whereClause: string = ` WHERE "is_deleted" = FALSE AND "status" = TRUE`;
+        let whereClause: string = ` WHERE "is_deleted" = FALSE AND "status" = TRUE AND type = '${vehicleType}'`;
 
-        if (search) whereClause = ` ${whereClause} AND LOWER(type) LIKE LOWER('%${search}%')`;
+        if (search) whereClause = ` ${whereClause} AND LOWER(name) LIKE LOWER('%${search}%')`;
 
         let machinery_query = `
-        SELECT "id", "type","name" FROM  "Machinery"  ${whereClause} ORDER BY  "type" ASC;`;
+        SELECT "id", "type", "engine_hours" as odometer_reading_end, separator_hours ,"name" FROM  "Machinery"  ${whereClause} ORDER BY  "type" ASC;`;
 
         let machinery_count_query = `SELECT COUNT("id") FROM "Machinery" ${whereClause};`;
 

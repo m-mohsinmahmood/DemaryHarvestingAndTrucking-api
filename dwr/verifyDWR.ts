@@ -11,20 +11,21 @@ const httpTrigger: AzureFunction = async function (
 
     try {
         const data: beginningOfDay = req.body;
-        const date: string = req.query.date;
         const dateType: string = req.query.dateType;
         const month: string = req.query.month;
         const year: string = req.query.year;
+        const startDate: string = req.query.startDate;
+        const endDate: string = req.query.endDate;
 
         let where = ``;
         db.connect();
 
         if (dateType === 'month') {
-            where = `${where} AND EXTRACT(MONTH FROM begining_day) = '${month}'`
-            where = `${where} AND EXTRACT(YEAR FROM begining_day) = '${year}'`
+            where = `${where} AND EXTRACT(MONTH FROM dwr_employees.begining_day) = '${month}'`
+            where = `${where} AND EXTRACT(YEAR FROM dwr_employees.begining_day) = '${year}'`
         }
         else {
-            where = `${where} AND CAST(begining_day AS Date) = '${date}'`
+            where = `${where} AND dwr_employees.begining_day > '${startDate}'::timestamp AND dwr_employees.begining_day < '${endDate}'::timestamp`
         }
 
         let query = ` 
