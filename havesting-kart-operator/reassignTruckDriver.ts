@@ -36,6 +36,7 @@ const httpTrigger: AzureFunction = async function (
             status: 200,
             body: {
                 message: "",
+                status: 200,
             },
         };
         context.done();
