@@ -25,7 +25,7 @@ const httpTrigger: AzureFunction = async function (
       if (req.body.operation === 'addTruckDrivers')
         await setupTruckDriver.default(context, req);
       else if (req.body.operation === 'reAssignTruckDrivers')
-        await setupTruckDriver.default(context, req);
+        await reAssignTruckDriver.default(context, req);
       break;
 
     case "POST":
