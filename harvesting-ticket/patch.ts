@@ -52,10 +52,6 @@ const httpTrigger: AzureFunction = async function (
         optionalReq = `${optionalReq},"farm_id" = '${ticket_update.farmId}'`;
       }
 
-      if (ticket_update.cropName != null) {
-        optionalReq = `${optionalReq},"crop" = '${ticket_update.cropName}'`;
-      }
-
       if (ticket_update.scaleTicketWeight != null) {
         optionalReq = `${optionalReq},"scale_ticket_weight" = '${ticket_update.scaleTicketWeight}'`;
       }
