@@ -10,8 +10,8 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
   const db = new Client(config);
 
-  const driverIds: string = req.body.driverIds;
-  const kartOperatorId: string = req.body.kartOperatorId;
+  const driverIds: string = req.query.driverIds;
+  const kartOperatorId: string = req.query.kartOperatorId;
 
   try {
 
