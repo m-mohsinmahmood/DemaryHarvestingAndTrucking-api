@@ -122,40 +122,40 @@ const httpTrigger: AzureFunction = async function (
      `;
     }
 
-    else if (entity.includes("Cart Operator")) {
-      query = `
-      select 
+    // else if (entity.includes("Cart Operator")) {
+    //   query = `
+    //   select 
       
-      "job_setup".id,
-     "job_setup".state,
-     "job_setup".customer_id,
-     "job_setup".farm_id,
-      job_setup.crop_id,
-      farm."name" as farm_name,
-      crop."name" as crop,
-      customers.customer_name,
-      emp.first_name as crew_chief_name
+    //   "job_setup".id,
+    //  "job_setup".state,
+    //  "job_setup".customer_id,
+    //  "job_setup".farm_id,
+    //   job_setup.crop_id,
+    //   farm."name" as farm_name,
+    //   crop."name" as crop,
+    //   customers.customer_name,
+    //   emp.first_name as crew_chief_name
  
-      from "Customer_Job_Setup" job_setup
+    //   from "Customer_Job_Setup" job_setup
       
-      INNER JOIN "Customers" customers
-      on job_setup.customer_id = customers.id
+    //   INNER JOIN "Customers" customers
+    //   on job_setup.customer_id = customers.id
        
-      INNER JOIN "Employees" emp
-      on emp.id = job_setup.crew_chief_id
+    //   INNER JOIN "Employees" emp
+    //   on emp.id = job_setup.crew_chief_id
 
-      INNER JOIN "Customer_Farm" farm
-      on farm.id = job_setup.farm_id
+    //   INNER JOIN "Customer_Farm" farm
+    //   on farm.id = job_setup.farm_id
 
-      INNER JOIN "Crops" crop
-      on crop.id = job_setup.crop_id
+    //   INNER JOIN "Crops" crop
+    //   on crop.id = job_setup.crop_id
      
-      INNER JOIN "Customer_Job_Assigned_Roles" assigned
-      on job_setup.id = assigned.job_id AND assigned.employee_id = '${employeeId}'
+    //   INNER JOIN "Customer_Job_Assigned_Roles" assigned
+    //   on job_setup.id = assigned.job_id AND assigned.employee_id = '${employeeId}'
  
-      WHERE crew_chief_id = '${crew_chief_id}' AND is_job_active = true AND is_job_completed = false;
-     `;
-    }
+    //   WHERE crew_chief_id = '${crew_chief_id}' AND is_job_active = true AND is_job_completed = false;
+    //  `;
+    // }
 
     else if (entity === "truck-driver-active-tickets") {
       const isTicketActive: string = req.query.isTicketActive;
