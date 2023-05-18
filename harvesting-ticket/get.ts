@@ -35,8 +35,8 @@ const httpTrigger: AzureFunction = async function (
     ht."state" AS STATE,
     ht.destination AS destination,
     ht.loaded_miles, 
-    splitfield."id",
-    splitfield."name"	
+    splitfield."id" as split_field_id,
+    splitfield."name" as split_field_name	
 
     FROM
     
