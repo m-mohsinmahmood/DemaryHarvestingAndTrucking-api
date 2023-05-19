@@ -1,6 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
+const fs = require('fs');
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -19,6 +20,8 @@ const httpTrigger: AzureFunction = async function (
     if (truckDriverId) whereClause = `${whereClause} And truck_driver_id = '${truckDriverId}' `;
 
     let ticket_query = `
+    Select 
+
     ht.created_at::Date as date,
     ht."id" AS "id",
     ht.truck_driver_id,
@@ -61,6 +64,7 @@ const httpTrigger: AzureFunction = async function (
   ;`;
 
     let query = `${ticket_query}`;
+
     console.log(query);
 
     db.connect();
