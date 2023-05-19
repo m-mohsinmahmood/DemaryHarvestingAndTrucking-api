@@ -19,7 +19,7 @@ const httpTrigger: AzureFunction = async function (
     if (truckDriverId) whereClause = `${whereClause} And truck_driver_id = '${truckDriverId}' `;
 
     let ticket_query = `
-    SELECT
+    ht.created_at::Date as date,
     ht."id" AS "id",
     ht.truck_driver_id,
     ht.kart_operator_id,
@@ -35,8 +35,13 @@ const httpTrigger: AzureFunction = async function (
     ht."state" AS STATE,
     ht.destination AS destination,
     ht.loaded_miles, 
-    splitfield."id" as split_field_id,
-    splitfield."name" as split_field_name	
+    splitfield."id" as sl_field_id,
+    splitfield."name" as sl_field_name,
+		ht.split_cart_scale_weight as cart_scale_weight,
+		ht.scale_ticket_weight as scale_ticket_net_weight,
+		ht.test_weight as test_weight,
+		ht.moisture_content as moisture_content,
+		ht.protein_content as protein_content
 
     FROM
     
