@@ -107,8 +107,20 @@ const httpTrigger: AzureFunction = async function (
         'True',
         '${job_setup.total_acres}',
         '${job_setup.total_gps_acres}'
-        
-        );
+        )
+        RETURNING id as record_id
+        ;
+
+        UPDATE 
+        "DWR_Employees"
+                
+        SET 
+        "supervisor_id" = '${job_setup.director_id}',
+        "module" = 'harvesting',
+        "modified_at" = CURRENT_TIMESTAMP
+                     
+        WHERE 
+        "id" = '${job_setup.active_check_in_id}' ;
         
         INSERT INTO "User_Profile" (employee_id, state, customer_id, farm_id, crop_id, director_id)
         VALUES ('${job_setup.employee_id}', '${job_setup.state}', '${job_setup.customer_id}', '${job_setup.farm_id}', '${job_setup.crop_id}', '${job_setup.director_id}')
@@ -119,13 +131,18 @@ const httpTrigger: AzureFunction = async function (
 
     query = `${query}`;
 
-    await db.connect();
-    console.log("Query:", query); +
-      await db.query(query);
+    db.connect();
+    console.log("Query:", query);
+    let result = await db.query(query);
+
+    if (result[0]) {
+      result = result[0].rows[0]
+    }
 
     context.res = {
       status: 200,
       body: {
+        id:result,
         message: "Job has been created successfully",
         status: 200,
       },

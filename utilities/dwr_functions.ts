@@ -116,7 +116,7 @@ export function createDWR(dwr: any) {
 
     let query = ``;
 
-    if (dwr.dwr_type === 'training' || dwr.dwr_type === 'maintenance-repair' || dwr.dwr_type === 'other') {
+    if (dwr.dwr_type === 'training' || dwr.dwr_type === 'maintenance-repair' || dwr.dwr_type === 'other' || dwr.dwr_type === 'harvesting-crew-chief') {
         query = `
         INSERT INTO 
                     "DWR" 

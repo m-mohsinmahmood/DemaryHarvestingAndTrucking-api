@@ -18,7 +18,7 @@ const httpTrigger: AzureFunction = async function (
     let taskId = await db.query(query);
 
 
-    if (order.module === 'training' || order.module === 'maintenance-repair' || order.module === 'other') {
+    if (order.module === 'training' || order.module === 'maintenance-repair' || order.module === 'other' || order.module === 'harvesting-crew-chief') {
 
       let bridgeDailyTasksDwr = ``;
 

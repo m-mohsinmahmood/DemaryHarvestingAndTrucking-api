@@ -17,6 +17,7 @@ export interface job_setup {
     job_id?: string;
     employee_id?: string;
     director_id?: string;
+    active_check_in_id?:string
 }
 export interface job_update {
     id?:string,
