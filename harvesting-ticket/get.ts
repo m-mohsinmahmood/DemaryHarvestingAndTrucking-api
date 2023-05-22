@@ -54,7 +54,7 @@ const httpTrigger: AzureFunction = async function (
     INNER JOIN "Customers" CUS ON CUS."id" = ht.customer_id
     INNER JOIN "Customer_Farm" farm ON ht.farm_id = farm."id"
     INNER JOIN "Customer_Field" field ON ht.field_id = field."id" 
-    INNER JOIN "Customer_Field" splitfield ON ht.split_field_id = splitfield."id"::VARCHAR
+    LEFT JOIN "Customer_Field" splitfield ON ht.split_field_id = splitfield."id"::VARCHAR
     INNER JOIN "Crops" crops ON ht.crop_id = crops."id"::VARCHAR
   
   WHERE

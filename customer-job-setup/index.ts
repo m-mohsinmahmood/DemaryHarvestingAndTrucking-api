@@ -12,6 +12,7 @@ import * as removeRole from "./removeAssignedRoles";
 import * as getInvoicedJobs from "./getInvoicedJobs";
 import * as getCombineCartOperator from "./getCombineCartOperator";
 import * as deleteAssignedRolesJobs from "./deleteAssignedRolesJobs";
+import * as startingOfDay from "./startingOfDay";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
   switch (req.method) {
@@ -38,6 +39,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         await beginningofDay.default(context, req);
       else if (req.body.operation === 'endingOfDay')
         await endingofDay.default(context, req);
+      else if (req.body.operation === 'startingOfDay')
+        await startingOfDay.default(context, req);
       else if (req.query.operation === 'updateCustomerJob')
         await updateCustomerJob.default(context, req);
       else if (req.body.operation === 'removeAssignedRole')
