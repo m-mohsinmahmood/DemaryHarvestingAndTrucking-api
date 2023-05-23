@@ -11,6 +11,7 @@ import * as endingofDay from "./endingOfDay";
 import * as removeRole from "./removeAssignedRoles";
 import * as getInvoicedJobs from "./getInvoicedJobs";
 import * as getCombineCartOperator from "./getCombineCartOperator";
+import * as getEmployeesByJobId from "./getEmployeesByJobId";
 import * as deleteAssignedRolesJobs from "./deleteAssignedRolesJobs";
 import * as startingOfDay from "./startingOfDay";
 
@@ -20,6 +21,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
       if (req.query.job_id) await getEmployeeById.default(context, req);
       else if (req.query.operation === 'getInvoicedJobs') await getInvoicedJobs.default(context, req);
       else if (req.query.operation === 'getCombineCartOperator') await getCombineCartOperator.default(context, req);
+      else if (req.query.operation === 'getEmployeesByJobId') await getEmployeesByJobId.default(context, req);
       else if (req.query.combine_operator_id || req.query.cart_operator_id) await getAssignedRoles.default(context, req);
       else await getCreateJob.default(context, req);
       break;
