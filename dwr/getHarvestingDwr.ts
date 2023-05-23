@@ -4,6 +4,7 @@ export function GetHarvestingDwr(employee_id: any, startDate: string, endDate: s
     let getDwr = ``;
     let where = ``;
     let employeeWhereClause = ``;
+    let whereSubQuery = ``;
 
     if (dateType === 'month') {
         where = `${where} AND EXTRACT(MONTH FROM dwr_employees.begining_day) = '${month}'`
@@ -11,6 +12,14 @@ export function GetHarvestingDwr(employee_id: any, startDate: string, endDate: s
     }
     else {
         where = `${where} AND dwr_employees.begining_day > '${startDate}'::timestamp AND dwr_employees.begining_day < '${endDate}'::timestamp`
+    }
+
+    if (dateType === 'month') {
+        whereSubQuery = `${whereSubQuery} AND EXTRACT(MONTH FROM begining_day) = '${month}'`
+        whereSubQuery = `${whereSubQuery} AND EXTRACT(YEAR FROM begining_day) = '${year}'`
+    }
+    else {
+        whereSubQuery = `${whereSubQuery} AND begining_day > '${startDate}'::timestamp AND begining_day < '${endDate}'::timestamp`
     }
 
     if (status !== 'all') {
@@ -31,7 +40,21 @@ export function GetHarvestingDwr(employee_id: any, startDate: string, endDate: s
         ABS(EXTRACT(EPOCH FROM dwr_employees.ending_day - dwr_employees.begining_day)/3600) as total_hours,
         dwr_employees."module" AS module,
         dwr_employees.begining_day :: DATE,
-        dwr_employees.supervisor_id as last_supervisor_id
+       (SELECT
+        supervisor_id as last_supervisor_id
+
+        FROM
+        "DWR_Employees"
+
+        WHERE 
+        is_active = FALSE
+        ${whereSubQuery}
+        
+        AND employee_id = dwr_employees.employee_id
+        AND supervisor_id != 'null'
+
+        ORDER BY begining_day DESC
+        LIMIT 1)
 
         FROM
         "Bridge_DailyTasks_DWR" bridge
@@ -74,11 +97,11 @@ export function GetHarvestingDwr(employee_id: any, startDate: string, endDate: s
             
         json_agg(
         json_build_object(
-        'ticket_id', ot.id,
+        'ticket_id', cjs.id,
         'employee_id', emp.id,
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
-        'state', ot."state",
-        'supervisor_id', ot.supervisor_id,
+        'state', cjs."state",
+        'supervisor_id', cjs.crew_chief_id,
         'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
         )) as tickets
         
@@ -86,11 +109,12 @@ export function GetHarvestingDwr(employee_id: any, startDate: string, endDate: s
         
         INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employees."id" = bridge.dwr_id
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
-        INNER JOIN "Other" ot ON dwr.other_record_id = ot."id"
+        INNER JOIN "Customer_Job_Setup" cjs ON dwr.job_id = cjs."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        INNER JOIN "Employees" supervisor ON ot.supervisor_id = supervisor."id"::VARCHAR
+        INNER JOIN "Employees" supervisor ON cjs.crew_chief_id::VARCHAR = supervisor."id"::VARCHAR
 
-        WHERE dwr_employees.employee_id = '${employee_id}'
+        WHERE 
+        dwr_employees.employee_id = '${employee_id}'
        ${where}
         AND dwr_employees.is_active = FALSE
         
@@ -115,11 +139,11 @@ export function GetHarvestingDwr(employee_id: any, startDate: string, endDate: s
             
         json_agg(
         json_build_object(
-        'ticket_id', ot.id,
+        'ticket_id', cjs.id,
         'employee_id', emp.id,
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
-        'state', ot."state",
-        'supervisor_id', ot.supervisor_id,
+        'state', cjs."state",
+        'supervisor_id', cjs.crew_chief_id,
         'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
         )) as tickets
         
@@ -127,9 +151,9 @@ export function GetHarvestingDwr(employee_id: any, startDate: string, endDate: s
         
         INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employees."id" = bridge.dwr_id
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
-        INNER JOIN "Other" ot ON dwr.other_record_id = ot."id"
+        INNER JOIN "Customer_Job_Setup" cjs ON dwr.job_id = cjs."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        INNER JOIN "Employees" supervisor ON ot.supervisor_id = supervisor."id"::VARCHAR
+        INNER JOIN "Employees" supervisor ON cjs.crew_chief_id::VARCHAR = supervisor."id"::VARCHAR
 
         WHERE dwr_employees.employee_id = '${employee_id}'
         ${where}
