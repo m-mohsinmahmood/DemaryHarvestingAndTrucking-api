@@ -14,6 +14,9 @@ import * as getCombineCartOperator from "./getCombineCartOperator";
 import * as getEmployeesByJobId from "./getEmployeesByJobId";
 import * as deleteAssignedRolesJobs from "./deleteAssignedRolesJobs";
 import * as startingOfDay from "./startingOfDay";
+import * as getAllCrewChiefAssignedRoles from "./getAllCrewChiefAssignedRoles";
+import * as removeAllCrewChiefAssignedRoles from "./removeAllCrewChiefAssignedRoles";
+import * as getSameInvoicedJobs from "./getSameInvoicedJobs";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
   switch (req.method) {
@@ -22,6 +25,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
       else if (req.query.operation === 'getInvoicedJobs') await getInvoicedJobs.default(context, req);
       else if (req.query.operation === 'getCombineCartOperator') await getCombineCartOperator.default(context, req);
       else if (req.query.operation === 'getEmployeesByJobId') await getEmployeesByJobId.default(context, req);
+      else if (req.query.operation === 'getAllCrewChiefAssignedRoles') await getAllCrewChiefAssignedRoles.default(context, req);
+      else if (req.query.operation === 'getSameInvoicedJobs') await getSameInvoicedJobs.default(context, req);
       else if (req.query.combine_operator_id || req.query.cart_operator_id) await getAssignedRoles.default(context, req);
       else await getCreateJob.default(context, req);
       break;
@@ -54,6 +59,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     case "DELETE":
       if (req.query.operation === 'deleteAssignedRolesJobs')
         await deleteAssignedRolesJobs.default(context, req);
+      else if (req.query.operation === 'removeAllCrewChiefAssignedRoles')
+        await removeAllCrewChiefAssignedRoles.default(context, req);
       break;
 
     default:

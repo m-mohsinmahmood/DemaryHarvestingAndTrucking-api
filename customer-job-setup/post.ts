@@ -15,17 +15,6 @@ const httpTrigger: AzureFunction = async function (
   try {
 
     if (job_setup.combine_operator_id != null || job_setup.cart_operator_id != null) {
-      // Assign Roles
-      // let assign = `INSERT INTO 
-      // "Customer_Job_Assigned_Roles" 
-      // ("job_id", 
-      // "employee_id"
-      // )
-      // VALUES      
-      // ('${job_setup.job_id}', 
-      // '${job_setup.employee_id}'
-      // );`;
-
       if (job_setup.combine_operator_id) {
         query = `
         UPDATE 
@@ -35,6 +24,18 @@ const httpTrigger: AzureFunction = async function (
         WHERE 
             "id" = '${job_setup.combine_operator_id}' ;
 
+          INSERT INTO  
+            "Harvesting_Assigned_Roles"
+            ("employee_id",
+              "role",
+              "crew_chief_id"
+            )
+            
+            Values
+            ('${job_setup.combine_operator_id}',
+            'Combine Operator',
+            '${job_setup.crew_chief_id}')
+       ;
             `;
       }
 
@@ -47,22 +48,23 @@ const httpTrigger: AzureFunction = async function (
         WHERE 
             "id" = '${job_setup.cart_operator_id}' ;
             
+            INSERT INTO  
+            "Harvesting_Assigned_Roles"
+            ("employee_id",
+              "role",
+              "crew_chief_id"
+            )
+            
+            Values
+            ('${job_setup.cart_operator_id}',
+            'Cart Operator',
+            '${job_setup.crew_chief_id}')
+       ;
             `;
       }
     }
 
     else {
-      // Before creating new job for crew chief, close or complete the last active job of that crew chief 
-
-      // if (job_setup.changeFarmFieldCrop) {
-      //   query = `
-      //   Update "Employees" Set dht_supervisor_id = '' 
-      //   from (SELECT assigned.employee_id from "Customer_Job_Setup" cjs 
-      //   INNER JOIN "Customer_Job_Assigned_Roles" assigned ON cjs."id" = assigned.job_id AND cjs."id" = '${jobId}') as query
-      //   where CAST("Employees"."id" as VARCHAR) = query.employee_id;
-      //   `;
-      // }
-
       if (job_setup.closeJob) {
         query = `
       
@@ -142,7 +144,7 @@ const httpTrigger: AzureFunction = async function (
     context.res = {
       status: 200,
       body: {
-        id:result,
+        id: result,
         message: "Job has been created successfully",
         status: 200,
       },
