@@ -51,7 +51,8 @@ const httpTrigger: AzureFunction = async function (
 
                             "steering",
                             "steeringNotes",
-                            "steeringSeverity"
+                            "steeringSeverity",
+                            "beginning_at"
                           )
           
                 VALUES      ('${tripForm.truckNo}', 
@@ -86,7 +87,8 @@ const httpTrigger: AzureFunction = async function (
                           
                             '${tripForm.steering}',
                             $$${tripForm.steeringNotes}$$,
-                            '${tripForm.steeringSeverity}'
+                            '${tripForm.steeringSeverity}',
+                            CURRENT_TIMESTAMP
                             );
               `;
                 break;
@@ -98,40 +100,40 @@ const httpTrigger: AzureFunction = async function (
                             SET 
                             "is_category2_completed" = 'TRUE',
                             "gauges" = '${tripForm.gauges}',
-                            "gaugesNotes" = '${tripForm.gaugesNotes}',
+                            "gaugesNotes" = $$${tripForm.gaugesNotes}$$,
                             "gaugesSeverity" = '${tripForm.gaugesSeverity}',
                             "heater" = '${tripForm.heater}',
-                            "heaterNotes" = '${tripForm.heaterNotes}',
+                            "heaterNotes" = $$${tripForm.heaterNotes}$$,
                             "heaterSeverity" = '${tripForm.heaterSeverity}',
                             "horns" = '${tripForm.horns}',
-                            "hornsNotes" = '${tripForm.hornsNotes}',
+                            "hornsNotes" = $$${tripForm.hornsNotes}$$,
                             "hornsSeverity" = '${tripForm.hornsSeverity}',
                             "leakTest" = '${tripForm.leakTest}',
-                            "leakTestNotes" = '${tripForm.leakTestNotes}',
+                            "leakTestNotes" = $$${tripForm.leakTestNotes}$$,
                             "leakTestSeverity" = '${tripForm.leakTestSeverity}',
                             "lightsCab" = '${tripForm.lightsCab}',
-                            "lightsNotesCab" = '${tripForm.lightsNotesCab}',
+                            "lightsNotesCab" = $$${tripForm.lightsNotesCab}$$,
                             "lightsSeverityCab" = '${tripForm.lightsSeverityCab}',
                             "oilPressure" = '${tripForm.oilPressure}',
-                            "oilPressureNotes" = '${tripForm.oilPressureNotes}',
+                            "oilPressureNotes" = $$${tripForm.oilPressureNotes}$$,
                             "oilPressureSeverity" = '${tripForm.oilPressureSeverity}',
                             "pBrakes" = '${tripForm.pBrakes}',
-                            "pBrakesNotes" = '${tripForm.pBrakesNotes}',
+                            "pBrakesNotes" = $$${tripForm.pBrakesNotes}$$,
                             "pBrakesSeverity" = '${tripForm.pBrakesSeverity}',
                             "sBrakes" = '${tripForm.sBrakes}',
-                            "sBrakesNotes" = '${tripForm.sBrakesNotes}',
+                            "sBrakesNotes" = $$${tripForm.sBrakesNotes}$$,
                             "sBrakesSeverity" = '${tripForm.sBrakesSeverity}',
                             "safetyEquip" = '${tripForm.safetyEquip}',
-                            "safetyEquipNotes" = '${tripForm.safetyEquipNotes}',
+                            "safetyEquipNotes" = $$${tripForm.safetyEquipNotes}$$,
                             "safetyEquipSeverity" = '${tripForm.safetyEquipSeverity}',
                             "starter" = '${tripForm.starter}',
-                            "starterNotes" = '${tripForm.starterNotes}',
+                            "starterNotes" = $$${tripForm.starterNotes}$$,
                             "starterSeverity" = '${tripForm.starterSeverity}',
                             "windows" = '${tripForm.windows}',
-                            "windowsNotes" = '${tripForm.windowsNotes}',
+                            "windowsNotes" = $$${tripForm.windowsNotes}$$,
                             "windowsSeverity" = '${tripForm.windowsSeverity}',
                             "wipers" = '${tripForm.wipers}',
-                            "wipersNotes" = '${tripForm.wipersNotes}',
+                            "wipersNotes" = $$${tripForm.wipersNotes}$$,
                             "wipersSeverity" = '${tripForm.wipersSeverity}'
 
                             WHERE 

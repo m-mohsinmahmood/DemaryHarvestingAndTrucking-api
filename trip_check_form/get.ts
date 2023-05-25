@@ -13,18 +13,18 @@ const httpTrigger: AzureFunction = async function (
     const date: string = req.query.date;
     const month: string = req.query.month;
     const year: string = req.query.year;
+    const startDate: string = req.query.startDate;
+    const endDate: string = req.query.endDate;
+
 
     try {
-        // const limit: number = +req.query.limit ? +req.query.limit : 10;
-        //   LIMIT 
-        //   ${limit};
 
         let whereClause: string = `WHERE ptc."is_deleted" = false`;
 
         let ticket = ``;
 
         let select = `ptc."id",
-        ptc."created_at",
+        ptc."beginning_at" as created_at,
         emp.first_name as inspected_by,
                                      
         SUM(CASE WHEN ptc."airCompressorEngine" = false THEN 1 ELSE 0 END)+
@@ -87,7 +87,7 @@ const httpTrigger: AzureFunction = async function (
 
         if (requestType === 'all') {
             console.log("ALL");
-            
+
             ticket = `
             SELECT 
                   ${select}
@@ -104,7 +104,8 @@ const httpTrigger: AzureFunction = async function (
         else if (requestType === 'day') {
             console.log("Day");
             ticket = `
-            Select ${select} ${whereClause}  AND ptc."employee_id" = '${employeeId}' AND CAST(ptc."created_at" AS Date) = '${date}'
+            Select ${select} ${whereClause}  AND ptc."employee_id" = '${employeeId}' 
+            AND ptc.beginning_at > '${startDate}'::timestamp AND ptc.beginning_at < '${endDate}'::timestamp
             AND ptc.is_ticket_active=FALSE AND ptc."is_ticket_completed" = TRUE
             GROUP BY ptc."id", emp."first_name"; 
             `;
