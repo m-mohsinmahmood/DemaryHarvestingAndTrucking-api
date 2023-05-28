@@ -23,7 +23,9 @@ const httpTrigger: AzureFunction = async function (
 
         let query = `${machinery_query} ${machinery_count_query}`;
 
-        db.connect();
+        console.log(query);
+        
+        await db.connect();
 
         let result = await db.query(query);
 

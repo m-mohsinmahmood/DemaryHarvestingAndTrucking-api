@@ -14,7 +14,7 @@ const httpTrigger: AzureFunction = async function (
     const order: beginningOfDay = req.body;
 
     let query = createDWR(order);
-    db.connect();
+    await db.connect();
     let taskId = await db.query(query);
 
 

@@ -108,7 +108,7 @@ const httpTrigger: AzureFunction = async function (
 
         console.log(query);
 
-        db.connect();
+        await db.connect();
 
         let result = await db.query(query);
 
