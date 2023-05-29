@@ -30,6 +30,7 @@ const httpTrigger: AzureFunction = async function (
     AND is_job_completed = FALSE
     ;
       `;
+      
 
     let query = `${assigned_roles_info_query}`;
     console.log(query);
