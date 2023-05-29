@@ -30,8 +30,6 @@ const httpTrigger: AzureFunction = async function (
             INNER JOIN "Employees" crew_chief ON crew_chief."id" = cjs.crew_chief_id 
         WHERE
             cjs.crew_chief_id :: VARCHAR = ( SELECT dht_supervisor_id :: VARCHAR FROM "Employees" WHERE ID = '${kartOperatorId}' ) 
-            AND cjs.is_job_active = TRUE 
-            AND cjs.is_job_completed = FALSE 
         );
       `;
 
