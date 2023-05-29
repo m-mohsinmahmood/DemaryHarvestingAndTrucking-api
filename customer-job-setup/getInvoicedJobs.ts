@@ -40,6 +40,17 @@ const httpTrigger: AzureFunction = async function (
             AND cjs.is_job_active = TRUE
             AND cjs.is_job_completed = FALSE
         ;`;
+
+            await db.connect();
+            let result = await db.query(query);
+            let resp = {
+                jobs: result.rows
+            };
+
+            context.res = {
+                status: 200,
+                body: resp
+            };
         }
 
         else if (role === 'Combine Operator' || role === 'Cart Operator') {
@@ -70,11 +81,29 @@ const httpTrigger: AzureFunction = async function (
             AND cjs.is_job_active = TRUE 
             AND cjs.is_job_completed = FALSE
         ;`;
+
+            await db.connect();
+            let result = await db.query(query);
+            let resp = {
+                jobs: result.rows
+            };
+
+            context.res = {
+                status: 200,
+                body: resp
+            };
         }
 
         else if (role === 'Truck Driver') {
             query = `
-            SELECT
+            select dht_supervisor_id from "Employees" where id = '${employeeId}' ;`;
+
+            await db.connect();
+            let result = await db.query(query);
+            let CartOperator = result.rows[0].dht_supervisor_id;
+
+            if (CartOperator) {
+                query = `SELECT
             cjs.created_at :: "date",
             cjs.ID AS job_id,
             customers."id" AS customer_id,
@@ -88,31 +117,61 @@ const httpTrigger: AzureFunction = async function (
             concat ( crew_chief.first_name, ' ', crew_chief.last_name ) AS crew_chief_name 
             
             FROM
+            "Customer_Job_Setup" cjs
             
-            "Customer_Job_Assigned_Roles" assigned
-            INNER JOIN "Customer_Job_Setup" cjs ON cjs.ID = assigned.job_id
             INNER JOIN "Employees" crew_chief ON crew_chief."id" = cjs.crew_chief_id
             INNER JOIN "Customers" customers ON cjs.customer_id = customers."id"
             INNER JOIN "Customer_Farm" farm ON cjs.farm_id = farm."id"
             INNER JOIN "Crops" crop ON cjs.crop_id = crop.ID 
-        
+            
             WHERE
-            assigned.employee_id = '${employeeId}' 
+            cjs.crew_chief_id :: VARCHAR = ( SELECT dht_supervisor_id :: VARCHAR FROM "Employees" WHERE ID = '${CartOperator}' ) 
             AND cjs.is_job_active = TRUE 
-            AND cjs.is_job_completed = FALSE
-        ;`;
+            AND cjs.is_job_completed = FALSE;`;
+
+                result = await db.query(query);
+            }
+            else {
+                result = [];
+            }
+
+            let resp = {
+                jobs: result.rows
+            };
+
+            context.res = {
+                status: 200,
+                body: resp
+            };
         }
 
-        await db.connect();
-        let result = await db.query(query);
-        let resp = {
-            jobs: result.rows
-        };
+        // SELECT
+        //     cjs.created_at :: "date",
+        //     cjs.ID AS job_id,
+        //     customers."id" AS customer_id,
+        //     concat ( customers.customer_name ) AS customer_name,
+        //     cjs."state",
+        //     farm."id" AS farm_id,
+        //     farm."name" AS farm_name,
+        //     crop."id" AS crop_id,
+        //     crop."name" AS crop_name,
+        //     cjs.crew_chief_id AS crew_chief_id,
+        //     concat ( crew_chief.first_name, ' ', crew_chief.last_name ) AS crew_chief_name 
 
-        context.res = {
-            status: 200,
-            body: resp
-        };
+        //     FROM
+
+        //     "Customer_Job_Assigned_Roles" assigned
+        //     INNER JOIN "Customer_Job_Setup" cjs ON cjs.ID = assigned.job_id
+        //     INNER JOIN "Employees" crew_chief ON crew_chief."id" = cjs.crew_chief_id
+        //     INNER JOIN "Customers" customers ON cjs.customer_id = customers."id"
+        //     INNER JOIN "Customer_Farm" farm ON cjs.farm_id = farm."id"
+        //     INNER JOIN "Crops" crop ON cjs.crop_id = crop.ID 
+
+        //     WHERE
+        //     assigned.employee_id = '${employeeId}' 
+        //     AND cjs.is_job_active = TRUE 
+        //     AND cjs.is_job_completed = FALSE
+
     } catch (err) {
         context.res = {
             status: 500,

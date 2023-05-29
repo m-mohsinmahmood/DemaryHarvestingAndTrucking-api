@@ -12,9 +12,6 @@ const httpTrigger: AzureFunction = async function (
 
   const driverIds: string = req.body.driverIds;
   const kartOperatorId: string = req.body.kartOperatorId;
-  const job_id: string = req.body.job_id;
-
-  // let in_clause: string = driverIds.map(d => `'${d}'`).join(',');
 
   console.log(req.body);
   
@@ -28,7 +25,8 @@ const httpTrigger: AzureFunction = async function (
         WHERE 
                 "id" ='${driverIds}';
 
-        INSERT INTO "Customer_Job_Assigned_Roles" ( job_id, employee_id ) SELECT
+        INSERT INTO "Customer_Job_Assigned_Roles" ( job_id, employee_id ) 
+        SELECT
         cjs.ID AS job_id,
         '${driverIds}' AS employee_id 
 
@@ -42,17 +40,6 @@ const httpTrigger: AzureFunction = async function (
         AND cjs.is_job_completed = FALSE;
               
       `;
-
-      // INSERT INTO 
-      // "Customer_Job_Assigned_Roles" 
-      // ("job_id", 
-      // "employee_id"
-      // )
-
-      // VALUES      
-      // ('${job_id}', 
-      // '${driverIds}'
-      // ) ;
 
     console.log(query);
 
