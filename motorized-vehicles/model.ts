@@ -3,6 +3,8 @@ export interface Motorized {
     type: string;
     vin_number: string;
     company_id: string;
+    truck_id: string;
+    company_name: string;
     color: string;
     year: string;
     odometer: string;
