@@ -92,6 +92,11 @@ const httpTrigger: AzureFunction = async function (
                 optionalValues = `${optionalValues},'${delivery_ticket.split_load_check}'`
             }
 
+            if (delivery_ticket.deliveryTicketNumber != null) {
+                optionalReq = `${optionalReq},"delivery_ticket_number"`;
+                optionalValues = `${optionalValues},'${delivery_ticket.deliveryTicketNumber}'`
+            }
+
             query = `
         INSERT INTO 
                     "Harvesting_Delivery_Ticket" 
