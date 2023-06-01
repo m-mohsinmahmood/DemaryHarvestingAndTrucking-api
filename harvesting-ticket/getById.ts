@@ -42,7 +42,10 @@ const httpTrigger: AzureFunction = async function (
 		 wo.loaded_miles as "loaded_miles",
 		 wo.kart_scale_weight as "kart_scale_weight",
 		 wo.kart_scale_weight_split as "kart_scale_weight_split",
-		 cus.customer_name as "customer_name"
+		 cus.customer_name as "customer_name",
+     wo.split_load_check,
+     wo.delivery_ticket_number
+
     FROM 
     
 		"Harvesting_Ticket" wo
@@ -94,7 +97,10 @@ const httpTrigger: AzureFunction = async function (
      wo.split_load_check as "split_load_check",
 		 cus.customer_name as "customer_name",
      cus.id as "customer_id",
-     cus.state as "state"
+     cus.state as "state",
+     wo.split_load_check,
+     wo.delivery_ticket_number
+
     FROM 
     
 		"Harvesting_Ticket" wo
