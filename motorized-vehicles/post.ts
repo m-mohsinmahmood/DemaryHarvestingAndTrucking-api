@@ -36,6 +36,8 @@ const httpTrigger: AzureFunction = async function (
                   (
                     "type", 
                     "company_id", 
+                    "truck_id",
+                    "company_name",      
                     "color", 
                     "year", 
                     "make", 
@@ -66,6 +68,8 @@ const httpTrigger: AzureFunction = async function (
       VALUES      (
                   '${motorized.type}', 
                   '${motorized.company_id}', 
+                  '${motorized.truck_id}', 
+                  '${motorized.company_name}', 
                   '${motorized.color}', 
                   '${motorized.year}', 
                   '${motorized.make}', 

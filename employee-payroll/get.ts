@@ -43,47 +43,6 @@ FROM
 	dwr_emp."state"; `;
 
 
-    let dwr_info_query2 = `
-    SELECT
-    hr.hourly_rate,
-    fwo.STATE AS STATE,
-    dwr.created_at AS DATE,
-    dwr.hours_worked,
-    CONCAT(disp.first_name, ' ', disp.last_name) as supervisor
-    
-  FROM
-    "DWR" dwr
-    INNER JOIN "Farming_Work_Order" fwo ON dwr.work_order_id = fwo."id"
-    INNER JOIN "H2a_Hourly_Rate" hr ON fwo."state" = hr."state"
-    INNER JOIN "Employees" emp ON dwr.employee_id = emp."id"
-    INNER JOIN "Employees" disp ON fwo.dispatcher_id = disp."id"
-  WHERE dwr.employee_id = '${employee_id}' 
-	AND dwr.created_at >= now( ) - INTERVAL '14 DAYS';
-`;
-
-
-let dwr_info_query3 = `
-SELECT
-	hr.hourly_rate,
-	CONCAT ( crew.first_name , crew.last_name) as supervisor,
-	hr."state",
-	dwr.created_at,
-	emp."id",
-	emp.first_name,
-	emp.last_name,
-	emp."role",
-	dwr.hours_worked,
-  dwr.crew_chief as supervisor
-  FROM
-	"DWR" dwr
-	INNER JOIN "Customer_Job_Setup" cjs ON dwr.job_id = cjs."id"
-	INNER JOIN "H2a_Hourly_Rate" hr ON cjs."state" = hr."state"
-	INNER JOIN "Employees" emp ON dwr.employee_id = emp."id"
-	INNER JOIN "Employees" crew ON cjs.crew_chief_id = emp."id"
-WHERE
-  dwr.employee_id = '${employee_id}' 
-	AND dwr.created_at >= now( ) - INTERVAL '14 DAYS';
-`;
 
 
 
@@ -113,19 +72,29 @@ GROUP BY
     emp."role";
       `;
 
-    let query = `${dwr_info_query1} ${dwr_info_query2} ${dwr_info_query3} ${hours_count_query}`;
+
+      let hourly_rate_finder = `
+      SELECT 
+      MAX(hourly_rate) AS max_hourly_rate,
+      (SELECT hourly_rate FROM "H2a_Hourly_Rate" WHERE state = 'Arizona') AS arizona_rate
+    FROM "H2a_Hourly_Rate";
+      `;
+
+
+
+
+    let query = `${dwr_info_query1} ${hours_count_query} ${hourly_rate_finder}`;
 
     db.connect();
 
     let result = await db.query(query);
     let tempDwrTasks = [];
     tempDwrTasks.push(result[0].rows);
-    tempDwrTasks.push(result[1].rows);
-    tempDwrTasks.push(result[2].rows);
 
     let resp = {
       dwrTasks: tempDwrTasks,
-      total_hours: result[3].rows[0],
+      total_hours: result[1].rows[0],
+      hourly_rate: result[2].rows[0],
 
     };
 
