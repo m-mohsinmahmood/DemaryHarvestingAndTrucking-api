@@ -44,7 +44,9 @@ const httpTrigger: AzureFunction = async function (
 		ht.scale_ticket_weight as scale_ticket_net_weight,
 		ht.test_weight as test_weight,
 		ht.moisture_content as moisture_content,
-		ht.protein_content as protein_content
+		ht.protein_content as protein_content,
+    ht.split_load_check,
+		ht.delivery_ticket_number
 
     FROM
     
