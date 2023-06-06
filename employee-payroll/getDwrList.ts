@@ -10,7 +10,7 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
-    const supervisor_name: string = req.query.search;
+    const supervisor_name: string = req.query.supervisor_name;
     const category: string = req.query.category;
     const beg_date: string = req.query.beginning_date;
     const end_date: string = req.query.ending_date;
@@ -31,6 +31,7 @@ const httpTrigger: AzureFunction = async function (
 	hr.hourly_rate,
 	CONCAT ( sup.first_name, ' ', sup.last_name ) AS supervisor,
 	dwr_emp.created_at as date,
+  dwr_emp."module" as category,
 	emp."id",
 	emp.first_name,
 	emp.last_name,
@@ -53,6 +54,7 @@ FROM
 			dwr_emp.created_at,
 				emp."id",
 						  dwr.crew_chief,	
+              category,
 	dwr_emp."state"; `;
 
 
@@ -87,7 +89,16 @@ GROUP BY
       `;
 
 
-    let query = `${dwr_info_query1} ${hours_count_query}`;
+      let hourly_rate_finder = `
+      SELECT 
+      MAX(hourly_rate) AS max_hourly_rate,
+      (SELECT hourly_rate FROM "H2a_Hourly_Rate" WHERE state = 'Arizona') AS arizona_rate
+    FROM "H2a_Hourly_Rate";
+      `;
+
+
+
+    let query = `${dwr_info_query1} ${hours_count_query} ${hourly_rate_finder}`;
 
     db.connect();
 
@@ -96,6 +107,7 @@ GROUP BY
     let resp = {
       dwrTasks: result[0].rows,
       total_hours: result[1].rows,
+      hourly_rate: result[2].rows,
     };
 
     db.end();
