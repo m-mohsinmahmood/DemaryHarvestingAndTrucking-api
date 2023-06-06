@@ -20,7 +20,7 @@ const httpTrigger: AzureFunction = async function (
     let whereClause: string = ` WHERE dwr_emp."is_deleted" = FALSE`;
 
     if (name) whereClause = ` ${whereClause} AND LOWER("emp.first_name") LIKE LOWER('%${name}%')`;
-    if (category) whereClause = ` ${whereClause} AND LOWER("module") LIKE LOWER('%${category}%')`;
+    if (category) whereClause = ` ${whereClause} AND LOWER("dwr_emp."module"") LIKE LOWER('%${category}%')`;
     if (supervisor_name) whereClause = ` ${whereClause} AND LOWER("sup.first_name") LIKE LOWER('%${supervisor_name}%')`;
     if (beg_date) whereClause = `${whereClause} AND dwr_emp.begining_day > '${beg_date}'::timestamp AND dwr_emp.begining_day < '${end_date}'::timestamp`;
 
