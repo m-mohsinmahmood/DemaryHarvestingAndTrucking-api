@@ -113,7 +113,8 @@ GROUP BY
       FROM "DWR_Employees" dwr_emp
       INNER JOIN "Employees" emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
     INNER JOIN "Employees" sup ON sup."id" :: VARCHAR = dwr_emp.supervisor_id
-  
+    ${whereClause}
+
   
   ) AS subquery;
   `;
