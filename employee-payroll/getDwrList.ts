@@ -19,9 +19,9 @@ const httpTrigger: AzureFunction = async function (
     const employee_id: string = req.query.id;
     let whereClause: string = ` WHERE dwr_emp."is_deleted" = FALSE`;
 
-    if (name) whereClause = ` ${whereClause} AND LOWER("emp.first_name") LIKE LOWER('%${name}%')`;
-    if (category) whereClause = ` ${whereClause} AND LOWER("dwr_emp."module"") LIKE LOWER('%${category}%')`;
-    if (supervisor_name) whereClause = ` ${whereClause} AND LOWER("sup.first_name") LIKE LOWER('%${supervisor_name}%')`;
+    if (name) whereClause = ` ${whereClause} AND LOWER(emp.first_name) LIKE LOWER('%${name}%')`;
+    if (category) whereClause = ` ${whereClause} AND LOWER(dwr_emp."module") LIKE LOWER('%${category}%')`;
+    if (supervisor_name) whereClause = ` ${whereClause} AND LOWER(sup.first_name) LIKE LOWER('%${supervisor_name}%')`;
     if (beg_date) whereClause = `${whereClause} AND dwr_emp.begining_day > '${beg_date}'::timestamp AND dwr_emp.begining_day < '${end_date}'::timestamp`;
 
 
@@ -50,11 +50,11 @@ FROM
 
 	GROUP BY 
 	hr.hourly_rate,
-		CONCAT(sup.first_name, ' ', sup.last_name) ,
-			dwr_emp.created_at,
-				emp."id",
-						  dwr.crew_chief,	
-              category,
+	CONCAT(sup.first_name, ' ', sup.last_name) ,
+	dwr_emp.created_at,
+	emp."id",
+	dwr.crew_chief,	
+  category,
 	dwr_emp."state"; `;
 
 
@@ -77,6 +77,7 @@ FROM (
         ) AS total_hours_worked,
         dwr_emp.employee_id
     FROM "DWR_Employees" dwr_emp
+    INNER JOIN "Employees" emp ON emp.id::VARCHAR = dwr_emp.employee_id
     ${whereClause}
 
 ) AS subquery
@@ -89,7 +90,7 @@ GROUP BY
       `;
 
 
-      let hourly_rate_finder = `
+    let hourly_rate_finder = `
       SELECT 
       MAX(hourly_rate) AS max_hourly_rate,
       (SELECT hourly_rate FROM "H2a_Hourly_Rate" WHERE state = 'Arizona') AS arizona_rate
@@ -99,6 +100,7 @@ GROUP BY
 
 
     let query = `${dwr_info_query1} ${hours_count_query} ${hourly_rate_finder}`;
+
 
     db.connect();
 
