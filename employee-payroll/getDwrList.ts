@@ -16,6 +16,11 @@ const httpTrigger: AzureFunction = async function (
     const end_date: string = req.query.ending_date;
     const name: string = req.query.name;
     const state: string = req.query.state;
+    const page: number = +req.query.page ? +req.query.page : 1;
+    const limit: number = +req.query.limit ? +req.query.limit : 200;
+    const sort: string = `dwr_emp.created_at` ;
+    const order: string = `desc`;
+
 
     const employee_id: string = req.query.id;
     let whereClause: string = ` WHERE dwr_emp."is_deleted" = FALSE`;
@@ -50,6 +55,8 @@ FROM
 	
   ${whereClause}
 
+   
+
 	GROUP BY 
 	hr.hourly_rate,
 	CONCAT(sup.first_name, ' ', sup.last_name) ,
@@ -57,7 +64,15 @@ FROM
 	emp."id",
 	dwr.crew_chief,	
   category,
-	dwr_emp."state"; `;
+	dwr_emp."state"
+  
+  ORDER BY 
+              ${sort} ${order}
+        OFFSET 
+              ${((page - 1) * limit)}
+        LIMIT 
+              ${limit}
+              ;`;
 
 
 
@@ -127,6 +142,7 @@ GROUP BY
     db.connect();
 
     let result = await db.query(query);
+    console.log(result);
 
     let resp = {
       dwrTasks: result[0].rows,
