@@ -15,6 +15,12 @@ const httpTrigger: AzureFunction = async function (
     const beg_date: string = req.query.beginning_date;
     const end_date: string = req.query.ending_date;
     const name: string = req.query.name;
+    const state: string = req.query.state;
+    const page: number = +req.query.page ? +req.query.page : 1;
+    const limit: number = +req.query.limit ? +req.query.limit : 200;
+    const sort: string = `dwr_emp.created_at` ;
+    const order: string = `desc`;
+
 
     const employee_id: string = req.query.id;
     let whereClause: string = ` WHERE dwr_emp."is_deleted" = FALSE`;
@@ -23,6 +29,7 @@ const httpTrigger: AzureFunction = async function (
     if (category) whereClause = ` ${whereClause} AND LOWER(dwr_emp."module") LIKE LOWER('%${category}%')`;
     if (supervisor_name) whereClause = ` ${whereClause} AND LOWER(sup.first_name) LIKE LOWER('%${supervisor_name}%')`;
     if (beg_date) whereClause = `${whereClause} AND dwr_emp.begining_day > '${beg_date}'::timestamp AND dwr_emp.begining_day < '${end_date}'::timestamp`;
+    if (state) whereClause = ` ${whereClause} AND LOWER(dwr_emp."state") LIKE LOWER('%${state}%')`;
 
 
 
@@ -48,6 +55,8 @@ FROM
 	
   ${whereClause}
 
+   
+
 	GROUP BY 
 	hr.hourly_rate,
 	CONCAT(sup.first_name, ' ', sup.last_name) ,
@@ -55,7 +64,15 @@ FROM
 	emp."id",
 	dwr.crew_chief,	
   category,
-	dwr_emp."state"; `;
+	dwr_emp."state"
+  
+  ORDER BY 
+              ${sort} ${order}
+        OFFSET 
+              ${((page - 1) * limit)}
+        LIMIT 
+              ${limit}
+              ;`;
 
 
 
@@ -77,6 +94,7 @@ FROM (
         ) AS total_hours_worked,
         dwr_emp.employee_id
     FROM "DWR_Employees" dwr_emp
+    INNER JOIN "Employees" sup ON sup."id" :: VARCHAR = dwr_emp.supervisor_id
     INNER JOIN "Employees" emp ON emp.id::VARCHAR = dwr_emp.employee_id
     ${whereClause}
 
@@ -99,17 +117,38 @@ GROUP BY
 
 
 
-    let query = `${dwr_info_query1} ${hours_count_query} ${hourly_rate_finder}`;
+      let total_hours_dwrs = `SELECT 
+      SUM(total_hours_worked) AS total_hours_worked
+  FROM (
+      SELECT 
+          ROUND(
+              CAST((EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600) AS NUMERIC),
+              2
+          ) AS total_hours_worked
+      FROM "DWR_Employees" dwr_emp
+      INNER JOIN "Employees" emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
+    INNER JOIN "Employees" sup ON sup."id" :: VARCHAR = dwr_emp.supervisor_id
+    ${whereClause}
+
+  
+  ) AS subquery;
+  `;
+
+
+
+    let query = `${dwr_info_query1} ${hours_count_query} ${hourly_rate_finder} ${total_hours_dwrs}`;
 
 
     db.connect();
 
     let result = await db.query(query);
+    console.log(result);
 
     let resp = {
       dwrTasks: result[0].rows,
       total_hours: result[1].rows,
       hourly_rate: result[2].rows,
+      total_hours_sum: result[3].rows,
     };
 
     db.end();
