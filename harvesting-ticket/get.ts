@@ -46,7 +46,8 @@ const httpTrigger: AzureFunction = async function (
 		ht.moisture_content as moisture_content,
 		ht.protein_content as protein_content,
     ht.split_load_check,
-		ht.delivery_ticket_number
+		ht.delivery_ticket_number,
+    ht.delivery_ticket_name
 
     FROM
     
@@ -63,6 +64,8 @@ const httpTrigger: AzureFunction = async function (
   ht.ticket_status = '${ticketStatus}' 
 
   ${whereClause}
+
+  order by ht.created_at DESC
   ;`;
 
     let query = `${ticket_query}`;
