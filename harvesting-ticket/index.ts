@@ -3,6 +3,8 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import * as getJob from "./get";
 import * as getTicketById from "./getById";
 import * as updateTicket from "./patch";
+import * as deleteTicket from "./delete";
+
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
   switch (req.method) {
@@ -13,7 +15,11 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
       break;
 
     case "PATCH":
+      if(req.body.operation === 'deleteSentTicket')
+      await deleteTicket.default(context, req);
+      else
       await updateTicket.default(context, req);
+
       break;
 
     default:
