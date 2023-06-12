@@ -142,7 +142,7 @@ GROUP BY
     db.connect();
 
     let result = await db.query(query);
-    console.log(result);
+    // console.log(result);
 
     let resp = {
       dwrTasks: result[0].rows,
