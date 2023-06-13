@@ -47,11 +47,7 @@ const httpTrigger: AzureFunction = async function (
 		ht.protein_content as protein_content,
     ht.split_load_check,
 		ht.delivery_ticket_number,
-<<<<<<< HEAD
     ht.farmers_bin_weight
-=======
-    ht.delivery_ticket_name
->>>>>>> 6d7de22286ab96344fe1674c074a7cd6a58d8886
 
     FROM
     

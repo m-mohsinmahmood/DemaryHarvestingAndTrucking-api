@@ -73,6 +73,9 @@ const httpTrigger: AzureFunction = async function (
       if (ticket_update.moistureContent != null) {
         optionalReq = `${optionalReq},"image_2" = '${ticket_update.moistureContent}'`;
       }
+      if (ticket_update.farmers_bin_weight != null) {
+        optionalReq = `${optionalReq},"farmers_bin_weight" = '${ticket_update.farmers_bin_weight}'`;
+      }
 
       query = `
       UPDATE 
