@@ -46,8 +46,12 @@ const httpTrigger: AzureFunction = async function (
 		ht.moisture_content as moisture_content,
 		ht.protein_content as protein_content,
     ht.split_load_check,
-		ht.delivery_ticket_number,
-    ht.farmers_bin_weight
+    ht.delivery_ticket_name,
+    ht.farmers_bin_weight,
+    ht.scale_ticket_number,
+		ht.machinery_id as machinery_id,
+		mv."name" as machinery_name,
+		mv.company_name as machinery_company_name
 
     FROM
     
@@ -59,7 +63,8 @@ const httpTrigger: AzureFunction = async function (
     INNER JOIN "Customer_Field" field ON ht.field_id = field."id" 
     LEFT JOIN "Customer_Field" splitfield ON ht.split_field_id = splitfield."id"::VARCHAR
     INNER JOIN "Crops" crops ON ht.crop_id = crops."id"::VARCHAR
-  
+    LEFT JOIN "Motorized_Vehicles" mv ON ht.machinery_id = mv.id::VARCHAR
+
   WHERE
   ht.ticket_status = '${ticketStatus}' 
 
