@@ -16,12 +16,8 @@ const httpTrigger: AzureFunction = async function (
     const test_weight: string = req.body.test_weight;
     const ticket_id: string = req.body.ticket_id;
     const scale_ticket: string = req.body.scale_ticket;
-
     
-
-
-      const dwr_id = req.query.dwr_id ;
-      query = `
+    query = `
             UPDATE 
                     "Harvesting_Delivery_Ticket"
             SET 
