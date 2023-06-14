@@ -21,7 +21,7 @@ const httpTrigger: AzureFunction = async function (
   const { fields, files } = await parseMultipartFormData(req, multiPartConfig);
   const ticket_update: any = (JSON.parse(fields[0].value));
   const operation: any = fields[1].value;
-  const id: any = fields[2]?.value;  
+  const id: any = fields[2]?.value;
 
 
   try {
@@ -73,6 +73,14 @@ const httpTrigger: AzureFunction = async function (
       if (ticket_update.moistureContent != null) {
         optionalReq = `${optionalReq},"image_2" = '${ticket_update.moistureContent}'`;
       }
+      if (ticket_update.farmers_bin_weight != null) {
+        optionalReq = `${optionalReq},"farmers_bin_weight" = '${ticket_update.farmers_bin_weight}'`;
+      }
+      if (ticket_update.machineryId != null) {
+        optionalReq = `${optionalReq},"machinery_id" = '${ticket_update.machineryId}'`;
+      } if (ticket_update.scaleTicket != null) {
+        optionalReq = `${optionalReq},"scale_ticket_number" = '${ticket_update.scaleTicket}'`;
+      }
 
       query = `
       UPDATE 
@@ -97,22 +105,22 @@ const httpTrigger: AzureFunction = async function (
     };
     return;
   }
-   //#region Upload
-   if(files.length !==0){
+  //#region Upload
+  if (files.length !== 0) {
     try {
       // record_id = result.rows[0].record_id;
       const blob = new BlobServiceClient("https://dhtstorageaccountdev.blob.core.windows.net/harvesting?sp=rwdl&st=2023-02-01T11:34:13Z&se=2024-12-31T19:34:13Z&spr=https&sv=2021-06-08&sr=c&sig=bTmJLiDq8VnYd%2FieX8HO1HlxTH607WcxuRqZe0xZ50c%3D");
       const container = blob.getContainerClient("harvesting");
-     
-      if (files[0]){
+
+      if (files[0]) {
         image_1 = "image_1" + ticket_update.ticketId;
         const imageBlockBlob = container.getBlockBlobClient(image_1);
         const res = await imageBlockBlob.uploadData(files[0].bufferFile, {
           blobHTTPHeaders: { blobContentType: files[0].mimeType },
         });
       }
-      
-      if (files[1]){
+
+      if (files[1]) {
         image_2 = "image_2" + ticket_update.ticketId;
         const imageBlockBlob = container.getBlockBlobClient(image_2);
         const res = await imageBlockBlob.uploadData(files[1].bufferFile, {
@@ -132,44 +140,44 @@ const httpTrigger: AzureFunction = async function (
     }
 
   }
-//#endregion
-//#region Update Harvesting_Delivery_Ticket (Complete Ticket)
-if(operation === 'completeTicket' && files.length !==0){
-  try {
-    let update_query = `
+  //#endregion
+  //#region Update Harvesting_Delivery_Ticket (Complete Ticket)
+  if (operation === 'completeTicket' && files.length !== 0) {
+    try {
+      let update_query = `
     UPDATE "Harvesting_Delivery_Ticket"
     SET `;
 
-    if (files[0]) update_query = update_query + `"image_1" = '${'https://dhtstorageaccountdev.blob.core.windows.net/harvesting/harvesting/' + image_1}'` 
-    if (files[1]) update_query = update_query + `,"image_2" = '${'https://dhtstorageaccountdev.blob.core.windows.net/harvesting/harvesting/' + image_2}'` 
+      if (files[0]) update_query = update_query + `"image_1" = '${'https://dhtstorageaccountdev.blob.core.windows.net/harvesting/harvesting/' + image_1}'`
+      if (files[1]) update_query = update_query + `,"image_2" = '${'https://dhtstorageaccountdev.blob.core.windows.net/harvesting/harvesting/' + image_2}'`
 
-    update_query = update_query + `WHERE "id" = '${ticket_update.ticketId}';`
-    db1.connect();
-    await db1.query(update_query);
-    db1.end();
-  } catch (error) {
-    db1.end();
-    context.res = {
-      status: 400,
-      body: {
-        message: "An error occured while creating the trainerr",
-      },
-    };
-    context.done();
-    return;
+      update_query = update_query + `WHERE "id" = '${ticket_update.ticketId}';`
+      db1.connect();
+      await db1.query(update_query);
+      db1.end();
+    } catch (error) {
+      db1.end();
+      context.res = {
+        status: 400,
+        body: {
+          message: "An error occured while creating the trainerr",
+        },
+      };
+      context.done();
+      return;
+    }
   }
-}
-//#endregion
+  //#endregion
 
   context.res = {
+    status: 200,
+    body: {
+      message: "Ticket has been updated successfully.",
       status: 200,
-      body: {
-        message: "Ticket has been updated successfully.",
-        status: 200,
-      },
-    };
-    context.done();
-    return;
+    },
+  };
+  context.done();
+  return;
 };
 
 export default httpTrigger;

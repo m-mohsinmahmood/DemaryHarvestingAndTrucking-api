@@ -1,4 +1,5 @@
 export interface delivery_ticket {
+    farmers_bin_weight: any;
     // Required for Delivery Ticket of Harvesting
     id?: string,
     kartOperatorId?: string,

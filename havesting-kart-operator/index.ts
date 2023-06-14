@@ -5,6 +5,7 @@ import * as getKartOperatorTruckDrivers from "./getKartOperatorTruckDrivers";
 import * as createDeliveryTicket from "./post"
 import * as getCrewChief from "./getCrewChief";
 import * as reAssignTruckDriver from "./reassignTruckDriver";
+import * as updateTicketInfo from "./updateTicketInfo";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -24,8 +25,10 @@ const httpTrigger: AzureFunction = async function (
     case "PATCH":
       if (req.body.operation === 'addTruckDrivers')
         await setupTruckDriver.default(context, req);
-      else if (req.body.operation === 'reAssignTruckDrivers')
+        else if (req.body.operation === 'reAssignTruckDrivers')
         await reAssignTruckDriver.default(context, req);
+        else if (req.body.operation === 'updateTicketInfo')
+        await updateTicketInfo.default(context, req);
       break;
 
     case "POST":

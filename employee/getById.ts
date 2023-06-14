@@ -33,6 +33,7 @@ const httpTrigger: AzureFunction = async function (
       up."field_id",
       field."name" AS field_name,
       up."crop_id",
+      up.delivery_ticket_invoiced_job as invoiced_job,
       crop."name" AS crop_name,
       up.director_id,
       concat ( director.first_name, ' ', director.last_name ) AS director_name,
