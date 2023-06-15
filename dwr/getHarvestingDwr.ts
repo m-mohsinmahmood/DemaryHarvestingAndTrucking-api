@@ -1,5 +1,5 @@
 
-export function GetHarvestingDwr(employee_id: any, startDate: string, endDate: string, dateType: any, month: any, year: any, operation, status: any) {
+export function GetHarvestingDwr(employee_id: any, startDate: string, endDate: string, dateType: any, month: any, year: any, operation, status: any, role: any) {
 
     let getDwr = ``;
     let where = ``;
@@ -83,6 +83,15 @@ export function GetHarvestingDwr(employee_id: any, startDate: string, endDate: s
     }
 
     else if (operation === 'getDWRDetails') {
+
+        let supervisor = ``;
+        if (role == 'Crew Chief') {
+            supervisor = `INNER JOIN "Employees" supervisor ON cjs.director_id::VARCHAR = supervisor."id"::VARCHAR`;
+        }
+        else {
+            supervisor = `INNER JOIN "Employees" supervisor ON cjs.crew_chief_id::VARCHAR = supervisor."id"::VARCHAR`;
+        }
+
         getDwr = `
         select 
         dwr_employees.id,
@@ -111,7 +120,7 @@ export function GetHarvestingDwr(employee_id: any, startDate: string, endDate: s
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Customer_Job_Setup" cjs ON dwr.job_id = cjs."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        INNER JOIN "Employees" supervisor ON cjs.crew_chief_id::VARCHAR = supervisor."id"::VARCHAR
+        ${supervisor}
 
         WHERE 
         dwr_employees.employee_id = '${employee_id}'
@@ -125,6 +134,14 @@ export function GetHarvestingDwr(employee_id: any, startDate: string, endDate: s
     }
 
     else if (operation === 'getDWRList') {
+        let supervisor = ``;
+        if (role == 'Crew Chief') {
+            supervisor = `INNER JOIN "Employees" supervisor ON cjs.director_id::VARCHAR = supervisor."id"::VARCHAR`;
+        }
+        else {
+            supervisor = `INNER JOIN "Employees" supervisor ON cjs.crew_chief_id::VARCHAR = supervisor."id"::VARCHAR`;
+        }
+
         getDwr = `
         select 
         dwr_employees.id,
@@ -153,7 +170,7 @@ export function GetHarvestingDwr(employee_id: any, startDate: string, endDate: s
         INNER JOIN "DWR" dwr ON bridge.task_id = dwr."id"
         INNER JOIN "Customer_Job_Setup" cjs ON dwr.job_id = cjs."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
-        INNER JOIN "Employees" supervisor ON cjs.crew_chief_id::VARCHAR = supervisor."id"::VARCHAR
+       ${supervisor}
 
         WHERE dwr_employees.employee_id = '${employee_id}'
         ${where}

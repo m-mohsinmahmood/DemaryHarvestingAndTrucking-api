@@ -24,12 +24,13 @@ const httpTrigger: AzureFunction = async function (
         const year: string = req.query.year;
         const status: string = req.query.status
         const operation: string = req.query.operation
+        const role: string = req.query.role
 
         const farmingDwr = GetFarmingDwr(employee_id, startDate, endDate, dateType, month, year, operation, status);
         const maintenanceDwr = GetMaintenanceRepairDwr(employee_id, startDate, endDate, dateType, month, year, operation, status);
         const otherDwr = GetOtherDwr(employee_id, startDate, endDate, dateType, month, year, operation, status);
         const trainingDwr = GetTrainingDwr(employee_id, startDate, endDate, dateType, month, year, operation, status);
-        const harvestingDwr = GetHarvestingDwr(employee_id, startDate, endDate, dateType, month, year, operation, status);
+        const harvestingDwr = GetHarvestingDwr(employee_id, startDate, endDate, dateType, month, year, operation, status,role);
 
         let query = ``;
         let result;
@@ -62,6 +63,10 @@ const httpTrigger: AzureFunction = async function (
                         last_supervisor_id: curr.last_supervisor_id
                     }
                 }
+                else {
+                    acc[key].employee_name = curr.employee_name;
+                    acc[key].last_supervisor_id = curr.last_supervisor_id;
+                }
                 acc[key].total_hours += +curr.total_hours
                 return acc
             }, {}))
@@ -77,6 +82,7 @@ const httpTrigger: AzureFunction = async function (
             query = `${farmingDwr} ${maintenanceDwr}  ${otherDwr} ${trainingDwr} ${harvestingDwr}`;
             console.log(query);
             db.connect();
+
             result = await db.query(query);
 
             let mergedTraining = [...result[3].rows, ...result[4].rows, ...result[5].rows];

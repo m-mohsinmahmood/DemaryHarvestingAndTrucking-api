@@ -1,4 +1,3 @@
-
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
@@ -15,8 +14,6 @@ const httpTrigger: AzureFunction = async function (
         const role = req.body.role;
         const endingEngineHours = req.body.endingEngineHours
         const separatorsHours = req.body.separatorsHours
-
-        console.log('Request::', req.body);
 
         if (role === 'Combine Operator' || role === 'Cart Operator') {
             updateEndingOMR = `
