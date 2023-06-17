@@ -118,6 +118,7 @@ const httpTrigger: AzureFunction = async function (
                 
         SET 
         "supervisor_id" = '${job_setup.director_id}',
+        "state" = '${job_setup.state}',
         "module" = 'harvesting',
         "modified_at" = CURRENT_TIMESTAMP
                      

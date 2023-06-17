@@ -11,6 +11,7 @@ const httpTrigger: AzureFunction = async function (
     try {
         const supervisor_id = req.body.supervisor_id;
         const active_check_in_id = req.body.active_check_in_id;
+        const state = req.body.state;
 
         query = `
             UPDATE 
@@ -18,6 +19,7 @@ const httpTrigger: AzureFunction = async function (
                     
             SET 
             "supervisor_id" = '${supervisor_id}',
+            "state" = '${state}',
             "module" = 'harvesting',
             "modified_at" = CURRENT_TIMESTAMP
                          
