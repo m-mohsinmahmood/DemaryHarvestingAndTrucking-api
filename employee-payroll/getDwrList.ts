@@ -18,8 +18,8 @@ const httpTrigger: AzureFunction = async function (
     const state: string = req.query.state;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 200;
-    const sort: string = `dwr_emp.created_at` ;
-    const order: string = `desc`;
+    const sort: string = req.query.sort ? req.query.sort : `hw.employee_name` ;
+    const order: string = req.query.order ? req.query.order : `desc`;
 
 
 
@@ -27,6 +27,11 @@ const httpTrigger: AzureFunction = async function (
     let whereClause: string = ` WHERE dwr_emp."is_deleted" = FALSE`;
     let nameWhereClause: string = '';
     let stateWhereClause :string='';
+    let supervisorGroupByClause :string= supervisor_name? `supervisor.first_name,` : '';
+
+    let supervisorWhereClause :string='';
+    let supervisorJoinClause : string = '';
+    let supervisorWhereClauseHours : string = '';
     let periodRangeClause :string=`pay_periods AS (
         SELECT 
             generate_series(
@@ -44,14 +49,19 @@ const httpTrigger: AzureFunction = async function (
     if (start_date && end_date) nameWhereClause = `WHERE
     dwr_emp.begining_day >= '${start_date}'
     AND dwr_emp.ending_day <= '${end_date}'`;
+    if (supervisor_name  ) supervisorWhereClauseHours = ` ${supervisorWhereClauseHours} WHERE LOWER(supervisor.first_name) LIKE LOWER('%${supervisor_name}%')`;
 
 
     if (name && start_date && end_date) nameWhereClause = ` ${nameWhereClause} AND LOWER(emp.first_name) LIKE LOWER('%${name}%')`;
     if (name && !(start_date || end_date)) nameWhereClause = ` ${nameWhereClause} WHERE LOWER(emp.first_name) LIKE LOWER('%${name}%')`;
 
+
+    if (supervisor_name  && !(name && start_date &&  end_date) ) supervisorWhereClause = ` ${supervisorWhereClause} WHERE LOWER(supervisor.first_name) LIKE LOWER('%${supervisor_name}%')`;
+    if(supervisor_name) supervisorJoinClause = ` ${supervisorJoinClause}     INNER JOIN "Employees" supervisor ON dwr_emp.supervisor_id = supervisor."id" :: VARCHAR`;
+    if (supervisor_name && (name || start_date || end_date) ) supervisorWhereClause = ` AND LOWER(supervisor.first_name) LIKE LOWER('%${supervisor_name}%')`;
+
+
     if (state) stateWhereClause = ` ${stateWhereClause} WHERE  LOWER(state) LIKE LOWER('%${state}%')`;
-
-
     if (category) whereClause = ` ${whereClause} AND LOWER(dwr_emp."module") LIKE LOWER('%${category}%')`;
     if (supervisor_name) whereClause = ` ${whereClause} AND LOWER(sup.first_name) LIKE LOWER('%${supervisor_name}%')`;
     if (start_date) whereClause = `${whereClause} AND dwr_emp.begining_day > '${start_date}'::timestamp AND dwr_emp.begining_day < '${end_date}'::timestamp`;
@@ -91,15 +101,7 @@ FROM
 	emp."id",
 	dwr.crew_chief,	
   category,
-	dwr_emp."state"
-  
-  ORDER BY 
-              ${sort} ${order}
-        OFFSET 
-              ${((page - 1) * limit)}
-        LIMIT 
-              ${limit}
-              ;`;
+	dwr_emp."state";`;
 
 
 
@@ -172,11 +174,14 @@ hours_worked AS (
     FROM
         "DWR_Employees" dwr_emp
         INNER JOIN "Employees" emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
-    ${nameWhereClause}
+        ${supervisorJoinClause}
+        ${nameWhereClause}
+        ${supervisorWhereClause} 
 
     GROUP BY
         emp."id",
         emp.first_name,
+        ${supervisorGroupByClause}
         emp.last_name
 ),
 emp_state_hours AS (
@@ -197,6 +202,8 @@ emp_state_hours AS (
         "DWR_Employees" dwr_emp
         INNER JOIN "Employees" emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
         INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
+        ${supervisorJoinClause}
+        ${supervisorWhereClauseHours} 
 
     GROUP BY
         emp."id",
@@ -242,6 +249,8 @@ supervisors AS (
         "Employees" emp
         INNER JOIN "DWR_Employees" dwr_emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
         INNER JOIN "Employees" supervisor ON dwr_emp.supervisor_id = supervisor."id" :: VARCHAR
+        ${supervisorWhereClauseHours} 
+
     GROUP BY 
         emp."id"
 )
@@ -273,8 +282,9 @@ GROUP BY
     sp.supervisor_names
 
 		ORDER BY
-      hw.employee_name
-    OFFSET 
+        ${sort} ${order}    
+        
+        OFFSET 
               ${((page - 1) * limit)}
         LIMIT 
               ${limit}
@@ -372,8 +382,14 @@ GROUP BY
 ;
 
     let query = `${dwr_info_query1} ${hours_count_query} ${hourly_rate_finder} ${total_hours_dwrs} ${final_wages_query} ${top_ten_wages}`;
-console.log(final_wages_query);
-
+    const filePath = 'query_test.txt';
+    try {
+        await fs.promises.writeFile(filePath, query);
+        context.log(`Data written to file`);
+    }
+    catch (err) {
+        context.log.error(`Error writing data to file: ${err}`);
+    }
     db.connect();
 
     let result = await db.query(query);
