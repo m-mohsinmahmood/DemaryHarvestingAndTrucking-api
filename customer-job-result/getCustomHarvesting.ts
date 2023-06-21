@@ -14,7 +14,6 @@ const httpTrigger: AzureFunction = async function (
     const farms: string = req.query.farmsId;
     const crops: string = req.query.cropsId;
     const destinations: string = req.query.destinations;
-    const date: string = req.query.date;
     const created_at: string = req.query.created_at;
     const sort: string = req.query.sort ? req.query.sort : `ht.created_at` ;
     const order: string = req.query.order ? req.query.order : `desc`;

@@ -23,7 +23,6 @@ const httpTrigger: AzureFunction = async function (
   const operation: any = fields[1].value;
   const id: any = fields[2]?.value;
 
-
   try {
 
     if (operation === 'verifyTicket') {
@@ -31,7 +30,9 @@ const httpTrigger: AzureFunction = async function (
             UPDATE 
                     "Harvesting_Delivery_Ticket"
             SET 
-                    "ticket_status"                     = 'verified'
+                    "ticket_status"                     = 'verified',
+                    "modified_at" = CURRENT_TIMESTAMP
+
             WHERE 
                     "id" = '${id}';`
 
@@ -89,7 +90,13 @@ const httpTrigger: AzureFunction = async function (
           "ticket_status" = 'pending'
            ${optionalReq}
       WHERE 
-          "id" = '${ticket_update.ticketId}' ;`
+          "id" = '${ticket_update.ticketId}' ;
+          
+          
+      INSERT INTO "User_Profile" (employee_id, truck_id)
+      VALUES ('${ticket_update.truckDriverId}', '${ticket_update.machineryId}')
+      ON CONFLICT (employee_id) DO UPDATE SET truck_id = EXCLUDED.truck_id;
+          `
     }
 
     db.connect();

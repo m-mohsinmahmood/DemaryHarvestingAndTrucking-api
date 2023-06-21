@@ -148,25 +148,23 @@ const httpTrigger: AzureFunction = async function (
             INSERT INTO 
                         "Trucking_Delivery_Ticket" 
                         ("dispatcher_id", 
-                        "truck_driver_id", 
                         "cargo", 
                         "origin_city",
                         "destination_city", 
                         "destination_state", 
-						"customer_id",
-						"trucking_type",
-						"ticket_status",
+						            "customer_id",
+						            "trucking_type",
+						            "ticket_status",
                         "is_ticket_info_completed"
                         ${optionalReq})
       
             VALUES      ('${order.dispatcherId}', 
-                        '${order.driverId}', 
                         '${order.cargo}', 
                         '${order.originCity}', 
                         '${order.destinationCity}',
                         '${order.destinationState}', 
                         '${order.customerId}', 
-						'${order.truckingType}',
+						            '${order.truckingType}',
                         '${order.ticketStatus}',
                         '${order.isTicketInfoCompleted}'
                         ${optionalValues}
