@@ -12,8 +12,10 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
     switch (req.method) {
         case "GET":
-            if (req.query.id) await getById.default(context, req);
-            await getDeliveryTicket.default(context, req);
+            if (req.query.id)
+                await getById.default(context, req);
+            else
+                await getDeliveryTicket.default(context, req);
             break;
 
         case "POST":
@@ -23,7 +25,7 @@ const httpTrigger: AzureFunction = async function (
         case "PATCH":
             if (req.body.operation === 'updateInvoicedDeliveryTicket')
                 await updateInvoicedDeliveryTicket.default(context, req);
-            else if (req.body.operation === 'updatePaidDeliveryTicket') 
+            else if (req.body.operation === 'updatePaidDeliveryTicket')
                 await updatePaidDeliveryTicket.default(context, req);
             else await updateDeliveryTicket.default(context, req);
             break;
