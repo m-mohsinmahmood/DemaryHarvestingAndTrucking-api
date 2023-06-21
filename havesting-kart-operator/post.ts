@@ -106,12 +106,14 @@ const httpTrigger: AzureFunction = async function (
         INSERT INTO 
                     "Harvesting_Delivery_Ticket" 
                     (
-                    "ticket_status"
+                    "ticket_status",
+                    "created_at"
                     ${optionalReq}
                     )
   
         VALUES      (
-                    'sent'
+                    'sent',
+                    CURRENT_TIMESTAMP
                     ${optionalValues}
                     );
 

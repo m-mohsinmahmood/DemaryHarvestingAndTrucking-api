@@ -29,7 +29,7 @@ const httpTrigger: AzureFunction = async function (
     let ticket_query = `
     Select 
 
-    ht.created_at::Date as date,
+    ht.created_at as date,
     ht."id" AS "id",
     ht.truck_driver_id,
     ht.kart_operator_id,

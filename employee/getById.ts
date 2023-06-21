@@ -43,8 +43,7 @@ const httpTrigger: AzureFunction = async function (
       concat ( truck_driver.first_name, ' ', truck_driver.last_name ) AS truck_driver_name,
       emp.town_city,
       emp.avatar,
-      mv."id" as truck_id,
-			mv."name" as truck_name 
+      up."truck_id" as truck_id
     
       FROM
       "Employees" emp
@@ -55,7 +54,6 @@ const httpTrigger: AzureFunction = async function (
       LEFT JOIN "Crops" crop ON crop."id" = up.crop_id
       LEFT JOIN "Employees" director ON director."id" = up.director_id
       LEFT JOIN "Employees" truck_driver ON truck_driver."id" = up.truck_driver_id 
-			LEFT JOIN "Motorized_Vehicles" mv ON mv."id" = up.truck_id
 
       Where emp.fb_id = '${firebase_id}'        
       `;
