@@ -19,6 +19,13 @@ const httpTrigger: AzureFunction = async function (
     if (kartOperatorId) whereClause = `${whereClause} And kart_operator_id = '${kartOperatorId}' `;
     if (truckDriverId) whereClause = `${whereClause} And truck_driver_id = '${truckDriverId}' `;
 
+    if (ticketStatus == 'verified' && kartOperatorId) {
+      const startDate = req.query.startDate;
+      const endDate = req.query.endDate;
+
+      whereClause = `${whereClause} AND ht.modified_at > '${startDate}'::timestamp AND ht.modified_at < '${endDate}'::timestamp`
+    }
+
     let ticket_query = `
     Select 
 
@@ -70,7 +77,7 @@ const httpTrigger: AzureFunction = async function (
 
   ${whereClause}
 
-  order by ht.created_at DESC
+  order by ht.delivery_ticket_name DESC
   ;`;
 
     let query = `${ticket_query}`;
