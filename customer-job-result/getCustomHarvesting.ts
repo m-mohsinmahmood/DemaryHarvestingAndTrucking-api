@@ -43,7 +43,7 @@ const httpTrigger: AzureFunction = async function (
 FROM
 	"Harvesting_Delivery_Ticket" ht
 	INNER JOIN "Customer_Field" field ON "field".ID = ht.field_id
-	INNER JOIN "Crops" cc ON cc."name" = ht.crop 
+  INNER JOIN "Crops" cc ON cc."id" = uuid(ht.crop_id)
 	INNER JOIN "Customer_Farm" cf ON cf."id" = ht.farm_id
 
 
@@ -55,25 +55,25 @@ FROM
     `;
 
     let details_query = `
-    SELECT SUM
-	( CAST ( scale_ticket_weight AS FLOAT ) ) AS total_net_pounds,
-	SUM ( CAST ( cc.bushel_weight AS FLOAT ) ) AS total_net_bushels,
-	SUM ( CAST ( ht.loaded_miles AS FLOAT ) ) AS total_loaded_miles,
-	SUM ( CAST ( field.acres AS FLOAT ) ) AS total_acres,
-  SUM ( CAST ( ht.loaded_miles AS FLOAT ) ) AS total_loaded_miles,
-	Count ( ht."id" ) AS total_tickets
-    
-    
-  FROM
-  
-    "Harvesting_Delivery_Ticket" ht
-    INNER JOIN "Customer_Field" field ON "field".ID = ht.field_id
-    INNER JOIN "Crops" cc ON cc."name" = ht.crop
-    INNER JOIN "Customers" customers ON customers."id" = ht.customer_id
-    INNER JOIN "Customer_Farm" cf ON cf."id" = ht.farm_id
+    SELECT
+  SUM(CAST(scale_ticket_weight AS NUMERIC)) AS total_net_pounds,
+  SUM(CAST(cc.bushel_weight AS NUMERIC)) AS total_net_bushels,
+  SUM(CAST(ht.loaded_miles AS NUMERIC)) AS total_loaded_miles,
+  SUM(CAST(field.acres AS NUMERIC)) AS total_acres,
+  COUNT(ht."id") AS total_tickets
+FROM
+  "Harvesting_Delivery_Ticket" ht
+  INNER JOIN "Customer_Field" field ON field.ID = ht.field_id
+  INNER JOIN "Crops" cc ON cc."id" = uuid(ht.crop_id)
+  INNER JOIN "Customers" customers ON customers."id" = ht.customer_id
+  INNER JOIN "Customer_Farm" cf ON cf."id" = ht.farm_id
+ 
 
 
-  ${whereClause} 
+  ${whereClause}
+  AND scale_ticket_weight <> '' -- Exclude empty values
+  AND scale_ticket_weight IS NOT NULL -- Exclude NULL values
+
   GROUP BY customers.company_name ;
   `;
 
