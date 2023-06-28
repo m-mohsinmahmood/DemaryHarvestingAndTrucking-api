@@ -13,10 +13,13 @@ const httpTrigger: AzureFunction = async function (
     const customer_id: string = req.query.customer_id;
     const farms: string = req.query.farmsId;
     const crops: string = req.query.cropsId;
-    const destinations: string = req.query.destinations;
+    const fields: string = req.query.fields_id;
+    const destinations_id: string = req.query.destinations_id;
     const created_at: string = req.query.created_at;
     const sort: string = req.query.sort ? req.query.sort : `ht.created_at` ;
     const order: string = req.query.order ? req.query.order : `desc`;
+    const from_date: string = req.query.from_date;
+    const to_date: string = req.query.to_date;
 
     let whereClause: string = ` Where ht.customer_id = '${customer_id}'`;
 
@@ -25,7 +28,9 @@ const httpTrigger: AzureFunction = async function (
     if (farms) whereClause = ` ${whereClause} AND cf."id" = '${farms}'`;
     if (crops) whereClause = ` ${whereClause} AND cc.id = '${crops}'`;
     if (created_at) whereClause = ` ${whereClause} AND  extract(year from "created_at") = '${created_at}'`;
-    if (destinations) whereClause = ` ${whereClause} AND ht.destinations = '${destinations}'`; 
+    if (destinations_id) whereClause = ` ${whereClause} AND cd."id" = '${destinations_id}'`; 
+    if (fields) whereClause = ` ${whereClause} AND "field".ID = '${fields}'`; 
+    if (from_date && to_date) whereClause = ` ${whereClause} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`; 
 
 
     let info_query = `
@@ -39,12 +44,15 @@ const httpTrigger: AzureFunction = async function (
 	ht.scale_ticket_weight AS net_pounds,
 	cc.bushel_weight AS net_bushel,
 	ht.created_at AS load_date,
-	cf."id" as farm_id
+	cf."id" as farm_id,
+  cd."id" as destination_id
+
 FROM
 	"Harvesting_Delivery_Ticket" ht
 	INNER JOIN "Customer_Field" field ON "field".ID = ht.field_id
   INNER JOIN "Crops" cc ON cc."id" = uuid(ht.crop_id)
 	INNER JOIN "Customer_Farm" cf ON cf."id" = ht.farm_id
+	INNER JOIN "Customer_Destination" cd ON cd."name" = ht.destination
 
 
 
@@ -67,7 +75,7 @@ FROM
   INNER JOIN "Crops" cc ON cc."id" = uuid(ht.crop_id)
   INNER JOIN "Customers" customers ON customers."id" = ht.customer_id
   INNER JOIN "Customer_Farm" cf ON cf."id" = ht.farm_id
- 
+  INNER JOIN "Customer_Destination" cd ON cd."name" = ht.destination
 
 
   ${whereClause}
