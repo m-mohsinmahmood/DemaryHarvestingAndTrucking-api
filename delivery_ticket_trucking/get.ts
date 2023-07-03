@@ -31,51 +31,51 @@ const httpTrigger: AzureFunction = async function (
             // if (ticketStatus === 'sent') {
             let from = `from "Trucking_Delivery_Ticket"  TD
            
-            INNER JOIN "Employees" EMP
-            ON TD.truck_driver_id = EMP.id
+            INNER JOIN "Employees" EMP ON TD.truck_driver_id = EMP.id
+            INNER JOIN "Customers" CUS ON CUS."id" = TD.customer_id
+            INNER JOIN "Employees" disp ON TD.dispatcher_id = disp.id
+            INNER JOIN "Trucking_Rates" tr ON tr."id"::VARCHAR = td.rate_type
 
-            INNER JOIN "Customers" CUS
-            ON CUS."id" = TD.customer_id
-        
-            INNER JOIN "Employees" disp
-            ON TD.dispatcher_id = disp.id
-            
             where dispatcher_id = '${employeeId}' And ticket_status = '${ticketStatus}'
             And trucking_type='${truckingType}' 
             `;
 
             queryToRun = `
-            select
-
-            TD."id" as "id",
-            td.cargo as cargo,
-            td.load as load,
-            td.origin_city as originCity,
-            td.destination_city as destinationCity,
-            td.destination_state as destinationState,
-            td.truck_id as truckNo,
-            td."home_beginning_OMR" as homeOMR,
-            td."origin_beginning_OMR" as originBeginningOMR,
-            td."destination_ending_OMR" as destinationEndingOMR,
-            td.total_trip_miles as totalTripMiles,
-            td.dead_head_miles as deadHeadMiles,
-            td.truck_driver_notes as driverNotes,
-			td."home_beginning_OMR" as home_bor,
-			td."originEmptyWeight" as origin_empty_weight,
-			td.rate_type as rate_type,
-			td."destination_ending_OMR" as destination_bor,
-			td."originLoadedWeight" as origin_loaded_weight,
-			td."originWeightLoad" as origin_weight_of_load,
-			td.total_trip_miles as total_trip_miles,
-			td.dead_head_miles as dead_head_miles,
-			td.dispatcher_notes as dispatcher_notes,
-			td.total_job_miles as total_job_miles,
-		    td."destinationEmptyWeight" as destination_empty_weight,
-			td."destinationLoadedWeight" as destination_loaded_weight,
-			td."destinationDeliveryLoad" as destination_delivery_load,
-            EMP.first_name as "truckDriverName",
-            CUS.customer_name as "customerName",
-            disp.first_name as "dispatcherName"
+            SELECT
+	
+            td."id" AS "id",
+	        td.delivery_ticket_number AS delivery_ticket_number,
+	        td.load_date AS load_date,
+	        td.cargo AS cargo,
+	        td.LOAD AS LOAD,
+	        td.origin_city AS originCity,
+	        td.origin_state,
+	        td.destination_city AS destinationCity,
+	        td.destination_state AS destinationState,
+	        td.truck_id AS truckNo,
+	        td."home_beginning_OMR" AS homeOMR,
+	        td."origin_beginning_OMR" AS originBeginningOMR,
+	        td."destination_ending_OMR" AS destinationEndingOMR,
+	        td.total_trip_miles AS totalTripMiles,
+	        td.dead_head_miles AS deadHeadMiles,
+	        td.truck_driver_notes AS driverNotes,
+	        td."home_beginning_OMR" AS home_bor,
+	        td."originEmptyWeight" AS origin_empty_weight,
+	        tr.rate_type,
+	        tr.rate,
+	        td."destination_ending_OMR" AS destination_bor,
+	        td."originLoadedWeight" AS origin_loaded_weight,
+	        td."originWeightLoad" AS origin_weight_of_load,
+	        td.total_trip_miles AS total_trip_miles,
+	        td.dead_head_miles AS dead_head_miles,
+	        td.dispatcher_notes AS dispatcher_notes,
+	        td.total_job_miles AS total_job_miles,
+	        td."destinationEmptyWeight" AS destination_empty_weight,
+	        td."destinationLoadedWeight" AS destination_loaded_weight,
+	        td."destinationDeliveryLoad" AS destination_delivery_load,
+	        concat(EMP.first_name, ' ', EMP.last_name) AS "truckDriverName",
+	        CUS.customer_name AS "customerName",
+	        concat(disp.first_name, ' ', disp.last_name)  AS "dispatcherName" 
 
             ${from}
             ;`;

@@ -5,6 +5,7 @@ import * as getById from "./getById";
 import * as updateDeliveryTicket from "./patch";
 import * as updateInvoicedDeliveryTicket from "./updatedInvoicedDeliveryTicket";
 import * as updatePaidDeliveryTicket from "./updatePaidDeliveryTickets";
+import * as getMaxDeliveryTicket from "./getMaxDeliveryTicket";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -14,6 +15,8 @@ const httpTrigger: AzureFunction = async function (
         case "GET":
             if (req.query.id)
                 await getById.default(context, req);
+            else if (req.query.operation == 'getMaxDeliveryTicket')
+                await getMaxDeliveryTicket.default(context, req);
             else
                 await getDeliveryTicket.default(context, req);
             break;
