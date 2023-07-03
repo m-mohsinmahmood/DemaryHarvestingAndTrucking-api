@@ -138,10 +138,10 @@ const httpTrigger: AzureFunction = async function (
             optionalValues = `${optionalValues},'${order.destinationDeliveryLoad}'`
         }
 
-        if (order.cropId != null) {
-            optionalReq = `${optionalReq},"crop_id"`;
-            optionalValues = `${optionalValues},'${order.cropId}'`
-        }
+        if (order.driverId != null) {
+          optionalReq = `${optionalReq},"truck_driver_id"`;
+          optionalValues = `${optionalValues},'${order.driverId}'`
+      }
 
         // If Dispatcher will create a New Delivery Ticket then below given query will be executed.
         query = `
@@ -150,8 +150,10 @@ const httpTrigger: AzureFunction = async function (
                         ("dispatcher_id", 
                         "cargo", 
                         "origin_city",
+                        "origin_state",
                         "destination_city", 
-                        "destination_state", 
+                        "destination_state",
+                        "rate", 
 						            "customer_id",
 						            "trucking_type",
 						            "ticket_status",
@@ -160,9 +162,11 @@ const httpTrigger: AzureFunction = async function (
       
             VALUES      ('${order.dispatcherId}', 
                         '${order.cargo}', 
-                        '${order.originCity}', 
+                        '${order.originCity}',
+                        '${order.originState}', 
                         '${order.destinationCity}',
-                        '${order.destinationState}', 
+                        '${order.destinationState}',
+                        '${order.rate}', 
                         '${order.customerId}', 
 						            '${order.truckingType}',
                         '${order.ticketStatus}',
