@@ -32,7 +32,8 @@ export interface DeliveryTicket {
     isTicketInfoCompleted: boolean
     cropId: string;
     hoursWorked?: string;
-
+    originState: string;
+    rate: string;
 }
 
 export interface UpdateDeliveryTicket {
