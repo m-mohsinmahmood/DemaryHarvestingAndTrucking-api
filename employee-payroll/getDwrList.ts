@@ -21,13 +21,15 @@ const httpTrigger: AzureFunction = async function (
     const name: string = req.query.name;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 200;
-    const sort: string = req.query.sort ? req.query.sort : `hw.employee_name` ;
+    // const sort: string = req.query.sort ? req.query.sort : `hw.employee_name` ;
     const order: string = req.query.order ? req.query.order : `desc`;
+    const sort: string = req.query.sort ? req.query.sort : `dwr_emp.created_at` ;
 
 
 
     const employee_id: string = req.query.id;
     let whereClause: string = ` WHERE dwr_emp."is_deleted" = FALSE`;
+    let singleWhereClause: string = ` WHERE dwr_emp."is_deleted" = FALSE`;
     let nameWhereClause: string = '';
     let stateWhereClause :string='';
     let supervisorGroupByClause :string= supervisor_id? `supervisor_names,` : '';
@@ -98,40 +100,56 @@ const httpTrigger: AzureFunction = async function (
     if (state) whereClause = ` ${whereClause} AND LOWER(dwr_emp."state") LIKE LOWER('%${state}%')`;
     if (name) whereClause = ` ${whereClause} AND LOWER(emp.first_name) LIKE LOWER('%${name}%')`;
 
+    //New filters for all DWRs individual
 
+    if (state) singleWhereClause = ` ${singleWhereClause} AND  LOWER(dwr_emp."state") LIKE LOWER('%${state}%')`;
+    if (category) singleWhereClause = ` ${singleWhereClause} AND LOWER(dwr_emp."module") LIKE LOWER('%${category}%')`;
+    if (supervisor_id) singleWhereClause = ` ${singleWhereClause} AND dwr_emp.supervisor_id = '${supervisor_id}'`;
+    if (employee_wages_id) singleWhereClause = ` ${singleWhereClause} AND dwr_emp.employee_id = '${employee_wages_id}'`;
+    if(status=='verified') singleWhereClause = ` ${singleWhereClause} AND dwr_emp.dwr_status = '${status}'`;
+    if(status=='unverified') singleWhereClause = ` ${singleWhereClause} AND dwr_emp.dwr_status = 'pendingVerification'`;
+    if (start_date && end_date) singleWhereClause = `${singleWhereClause} AND dwr_emp.begining_day >= '${start_date}' AND dwr_emp.ending_day <= '${end_date}'`;
 
     let dwr_info_query1 = `
-    SELECT
-	hr.hourly_rate,
-	CONCAT ( sup.first_name, ' ', sup.last_name ) AS supervisor,
-	dwr_emp.created_at as date,
-  dwr_emp."module" as category,
-	emp."id",
-	emp.first_name,
-	emp.last_name,
-	emp."role",
-	(select SUM (ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_emp.ending_day - dwr_emp.begining_day ) ) / 3600 ) AS NUMERIC ), 2 )) AS hours_worked),
-	dwr_emp."state"
-	
+    SELECT DISTINCT
+    CASE WHEN dwr_emp."state" = 'Arizona' THEN hr.hourly_rate::numeric
+         ELSE (SELECT MAX(hourly_rate) FROM "H2a_Hourly_Rate")::numeric
+    END AS hourly_rate,
+    CONCAT(sup.first_name, ' ', sup.last_name) AS supervisor,
+    dwr_emp."module" AS category,
+    emp."id",
+    emp.first_name,
+    emp.last_name,
+    emp."role",
+    CAST(EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600 AS NUMERIC(10, 2)) AS hours_worked,
+    dwr_emp."state",
+    CAST(EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600 AS NUMERIC(10, 2)) * CASE WHEN dwr_emp."state" = 'Arizona' THEN hr.hourly_rate::numeric
+         ELSE (SELECT MAX(hourly_rate) FROM "H2a_Hourly_Rate")::numeric
+    END AS wage,
+    dwr_emp.begining_day,
+    dwr_emp.ending_day,
+    dwr_emp.created_at,
+    dwr_emp.dwr_status,
+    dwr_emp.id as ticket_id
 FROM
-	"DWR_Employees" dwr_emp
-	INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
-	INNER JOIN "Employees" emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
-	INNER JOIN "Employees" sup ON sup."id" :: VARCHAR = dwr_emp.supervisor_id
-	INNER JOIN "DWR" dwr on dwr.employee_id:: VARCHAR  = dwr_emp.employee_id:: VARCHAR 
-	
-  ${whereClause}
+    "DWR_Employees" dwr_emp
+    INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
+    INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_emp.employee_id
+    INNER JOIN "Employees" sup ON sup."id"::VARCHAR = dwr_emp.supervisor_id
+    INNER JOIN "DWR" dwr ON dwr.employee_id::VARCHAR = dwr_emp.employee_id::VARCHAR
 
-   
+    ${singleWhereClause}
 
-	GROUP BY 
-	hr.hourly_rate,
-	CONCAT(sup.first_name, ' ', sup.last_name) ,
-	dwr_emp.created_at,
-	emp."id",
-	dwr.crew_chief,	
-  category,
-	dwr_emp."state";`;
+    ORDER BY
+    ${sort} ${order}    
+    
+    OFFSET 
+          ${((page - 1) * limit)}
+    LIMIT 
+          ${limit};
+
+  
+    `;
 
 
 
@@ -310,14 +328,7 @@ GROUP BY
     hr.hourly_rates,
     sp.supervisor_names
 
-		ORDER BY
-        ${sort} ${order}    
-        
-        OFFSET 
-              ${((page - 1) * limit)}
-        LIMIT 
-              ${limit}
-							;
+			;
 
   `;
   let top_ten_wages =
@@ -413,10 +424,17 @@ GROUP BY
     let query = `${dwr_info_query1} ${hours_count_query} ${hourly_rate_finder} ${total_hours_dwrs} ${final_wages_query} ${top_ten_wages}`;
     
     db.connect();
+    // const filePath = 'query_test.txt';
+    // try {
+    //     await fs.promises.writeFile(filePath, query);
+    //     context.log(`Data written to file`);
+    // }
+    // catch (err) {
+    //     context.log.error(`Error writing data to file: ${err}`);
+    // }
 
     let result = await db.query(query);
-    // console.log(result);
-
+    
     let resp = {
       dwrTasks: result[0].rows,
       total_hours: result[1].rows,
