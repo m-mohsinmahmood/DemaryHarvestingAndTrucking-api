@@ -44,9 +44,9 @@ FROM
 	INNER JOIN "DWR" dwr on dwr.employee_id:: VARCHAR  = dwr_emp.employee_id:: VARCHAR 
 	
   WHERE
-	dwr.employee_id = '${employee_id}' 
-  AND dwr.created_at :: DATE >= '${from}' :: DATE
-  AND dwr.created_at :: DATE <= '${to}' :: DATE
+	dwr_emp.employee_id = '${employee_id}' 
+  AND dwr_emp.created_at :: DATE >= '${from}' :: DATE
+  AND dwr_emp.created_at :: DATE <= '${to}' :: DATE
 
 	GROUP BY 
 	hr.hourly_rate,

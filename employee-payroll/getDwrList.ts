@@ -130,7 +130,8 @@ const httpTrigger: AzureFunction = async function (
     dwr_emp.ending_day,
     dwr_emp.created_at,
     dwr_emp.dwr_status,
-    dwr_emp.id as ticket_id
+    dwr_emp.id as ticket_id,
+    dwr_emp.employee_notes
 FROM
     "DWR_Employees" dwr_emp
     INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
