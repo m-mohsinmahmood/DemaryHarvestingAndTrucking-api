@@ -7,16 +7,18 @@ export function GetMaintenanceRepairDwr(employee_id: any, startDate: string, end
     let employeeWhereClause = ``;
 
     if (dateType === 'month') {
-        where = `${where} AND EXTRACT(MONTH FROM dwr_employees.begining_day) = '${month}'`
-        where = `${where} AND EXTRACT(YEAR FROM dwr_employees.begining_day) = '${year}'`
+        // where = `${where} AND EXTRACT(MONTH FROM dwr_employees.begining_day) = '${month}'`
+        // where = `${where} AND EXTRACT(YEAR FROM dwr_employees.begining_day) = '${year}'`
+        where = `${where} AND dwr_employees.begining_day > '${startDate}'::timestamp AND dwr_employees.begining_day < '${endDate}'::timestamp`
     }
     else {
         where = `${where} AND dwr_employees.begining_day > '${startDate}'::timestamp AND dwr_employees.begining_day < '${endDate}'::timestamp`
     }
 
     if (dateType === 'month') {
-        whereSubQuery = `${whereSubQuery} AND EXTRACT(MONTH FROM begining_day) = '${month}'`
-        whereSubQuery = `${whereSubQuery} AND EXTRACT(YEAR FROM begining_day) = '${year}'`
+        // whereSubQuery = `${whereSubQuery} AND EXTRACT(MONTH FROM begining_day) = '${month}'`
+        // whereSubQuery = `${whereSubQuery} AND EXTRACT(YEAR FROM begining_day) = '${year}'`
+        where = `${where} AND dwr_employees.begining_day > '${startDate}'::timestamp AND dwr_employees.begining_day < '${endDate}'::timestamp`
     }
     else {
         whereSubQuery = `${whereSubQuery} AND begining_day > '${startDate}'::timestamp AND begining_day < '${endDate}'::timestamp`
