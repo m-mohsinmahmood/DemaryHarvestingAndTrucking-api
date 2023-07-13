@@ -1,6 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
+const fs = require('fs');
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -23,6 +24,38 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     const employee_id: string = req.query.id;
+
+    let dwr_detailed_query = `SELECT DISTINCT
+    CASE WHEN dwr_emp."state" = 'Arizona' THEN hr.hourly_rate::numeric
+         ELSE (SELECT MAX(hourly_rate) FROM "H2a_Hourly_Rate")::numeric
+    END AS hourly_rate,
+    CONCAT(sup.first_name, ' ', sup.last_name) AS supervisor,
+    emp."id",
+    emp.first_name,
+    emp.last_name,
+    emp."role",
+    CAST(EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600 AS NUMERIC(10, 2)) AS hours_worked,
+    dwr_emp."state",
+    CAST(EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600 AS NUMERIC(10, 2)) * CASE WHEN dwr_emp."state" = 'Arizona' THEN hr.hourly_rate::numeric
+         ELSE (SELECT MAX(hourly_rate) FROM "H2a_Hourly_Rate")::numeric
+    END AS wage,
+    dwr_emp.created_at,
+    dwr_emp.dwr_status,
+    dwr_emp.id as ticket_id
+FROM
+    "DWR_Employees" dwr_emp
+    INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
+    INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_emp.employee_id
+    INNER JOIN "Employees" sup ON sup."id"::VARCHAR = dwr_emp.supervisor_id
+    INNER JOIN "DWR" dwr ON dwr.employee_id::VARCHAR = dwr_emp.employee_id::VARCHAR
+    WHERE 
+    dwr_emp.employee_id = '${employee_id}' 
+    AND dwr_emp.created_at :: DATE >= '${from}' :: DATE
+    AND dwr_emp.created_at :: DATE <= '${to}' :: DATE
+
+    ORDER BY
+    dwr_emp.created_at desc; `;
+
 
     let dwr_info_query1 = `
     SELECT
@@ -98,9 +131,10 @@ WHERE
   AND dwr.created_at :: DATE <= '${to}' :: DATE; `;
 
 
-    let query = `${dwr_info_query1} ${dwr_info_query2} ${dwr_info_query3}`;
+    let query = ` ${dwr_info_query1} ${dwr_info_query2} ${dwr_info_query3} ${dwr_detailed_query}`;
 
     db.connect();
+
 
     let result = await db.query(query);
     let tempDwrTasks = [];
@@ -110,6 +144,7 @@ WHERE
 
     let resp = {
       dwrTasks: tempDwrTasks,
+      dwrsDetailed: result[3].rows
     };
 
     db.end();
