@@ -25,36 +25,34 @@ const httpTrigger: AzureFunction = async function (
   try {
     const employee_id: string = req.query.id;
 
-    let dwr_detailed_query = `SELECT DISTINCT
-    CASE WHEN dwr_emp."state" = 'Arizona' THEN hr.hourly_rate::numeric
-         ELSE (SELECT MAX(hourly_rate) FROM "H2a_Hourly_Rate")::numeric
-    END AS hourly_rate,
-    CONCAT(sup.first_name, ' ', sup.last_name) AS supervisor,
-    emp."id",
-    emp.first_name,
-    emp.last_name,
-    emp."role",
-    CAST(EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600 AS NUMERIC(10, 2)) AS hours_worked,
-    dwr_emp."state",
-    CAST(EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600 AS NUMERIC(10, 2)) * CASE WHEN dwr_emp."state" = 'Arizona' THEN hr.hourly_rate::numeric
-         ELSE (SELECT MAX(hourly_rate) FROM "H2a_Hourly_Rate")::numeric
-    END AS wage,
-    dwr_emp.created_at,
-    dwr_emp.dwr_status,
-    dwr_emp.id as ticket_id
-FROM
-    "DWR_Employees" dwr_emp
-    INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
-    INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_emp.employee_id
-    INNER JOIN "Employees" sup ON sup."id"::VARCHAR = dwr_emp.supervisor_id
-    INNER JOIN "DWR" dwr ON dwr.employee_id::VARCHAR = dwr_emp.employee_id::VARCHAR
-    WHERE 
-    dwr_emp.employee_id = '${employee_id}' 
-    AND dwr_emp.created_at :: DATE >= '${from}' :: DATE
-    AND dwr_emp.created_at :: DATE <= '${to}' :: DATE
+    let dwr_detailed_query = `
+    SELECT DISTINCT
+        CONCAT ( sup.first_name, ' ', sup.last_name ) AS supervisor,
+        emp."id",
+        emp.first_name,
+        emp.last_name,
+        emp."role",
+        CAST ( EXTRACT ( EPOCH FROM ( dwr_emp.ending_day - dwr_emp.begining_day ) ) / 3600 AS NUMERIC ( 10, 2 ) ) AS hours_worked,
+        dwr_emp."state",
+        dwr_emp.begining_day,
+        dwr_emp.dwr_status,
+        dwr_emp.ID AS ticket_id,
+        dwr_emp.created_at
 
-    ORDER BY
-    dwr_emp.created_at desc; `;
+        
+    FROM
+        "DWR_Employees" dwr_emp
+        INNER JOIN "DWR" dwr ON dwr.employee_id :: VARCHAR = dwr_emp.employee_id :: VARCHAR 
+        INNER JOIN "Employees" emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
+        INNER JOIN "Employees" sup ON sup."id" :: VARCHAR = dwr_emp.supervisor_id
+        
+    WHERE
+        dwr_emp.employee_id = '${employee_id}' 
+        AND dwr_emp.begining_day :: timestamp > '${from}' :: timestamp 
+        AND dwr_emp.begining_day :: timestamp < '${to}' :: timestamp 
+        AND dwr_emp.supervisor_id != 'null'
+ORDER BY
+    dwr_emp.begining_day DESC; `;
 
 
     let dwr_info_query1 = `
@@ -130,8 +128,15 @@ WHERE
 	AND dwr.created_at :: DATE >= '${from}' :: DATE
   AND dwr.created_at :: DATE <= '${to}' :: DATE; `;
 
+  let hourly_rate_finder = `
+      SELECT 
+      MAX(hourly_rate) AS max_hourly_rate,
+      (SELECT hourly_rate FROM "H2a_Hourly_Rate" WHERE state = 'Arizona') AS arizona_rate
+    FROM "H2a_Hourly_Rate";
+      `;
 
-    let query = ` ${dwr_info_query1} ${dwr_info_query2} ${dwr_info_query3} ${dwr_detailed_query}`;
+
+    let query = ` ${dwr_info_query1} ${dwr_info_query2} ${dwr_info_query3} ${dwr_detailed_query} ${hourly_rate_finder}`;
 
     db.connect();
 
@@ -144,7 +149,8 @@ WHERE
 
     let resp = {
       dwrTasks: tempDwrTasks,
-      dwrsDetailed: result[3].rows
+      dwrsDetailed: result[3].rows,
+      hourly_rates: result[4].rows
     };
 
     db.end();
