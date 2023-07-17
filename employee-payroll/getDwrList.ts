@@ -207,131 +207,7 @@ GROUP BY
   ) AS subquery;
   `;
 
-  let final_wages_query = `
-  
-WITH 
-
-hours_worked AS (
-    SELECT
-        emp."id" AS employee_id,
-        CONCAT(emp.first_name, ' ', emp.last_name) AS employee_name,
-        SUM(
-            ROUND(
-                CAST((EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600) AS NUMERIC), 2
-            )
-        ) AS hours_worked
-    FROM
-        "DWR_Employees" dwr_emp
-        INNER JOIN "Employees" emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
-        ${nameWhereClause}
-        ${statusClause1}
-        ${supervisorWhereClause} 
-
-    GROUP BY
-        emp."id",
-        emp.first_name,
-        emp.last_name
-),
-emp_state_hours AS (
-    SELECT
-        emp."id" AS employee_id,
-        dwr_emp."state",
-        SUM(
-            ROUND(CAST((EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600) AS NUMERIC), 2)
-        ) AS hours_worked,
-        SUM(
-            ROUND(CAST((EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600) AS NUMERIC), 2) *
-            (CASE 
-                WHEN dwr_emp."state" = 'Arizona' THEN hr.hourly_rate::numeric
-                ELSE (SELECT MAX(hourly_rate) FROM "H2a_Hourly_Rate" WHERE "state" != 'Arizona')::numeric
-            END)
-        ) AS wage
-    FROM
-        "DWR_Employees" dwr_emp
-        INNER JOIN "Employees" emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
-        INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
-        ${supervisorWhereClauseHours} 
-        ${statusClause2}
-
-    GROUP BY
-        emp."id",
-        dwr_emp."state"
-),
-state_summary AS (
-    SELECT
-        employee_id,
-        json_agg(
-            json_build_object(
-                'state', "state",
-                'state_hours', hours_worked,
-                'state_wage', wage
-            ) ORDER BY "state"
-        )::text AS state_details,
-        SUM(hours_worked) AS total_hours,
-        SUM(wage) AS total_wages
-    FROM
-        emp_state_hours
-        ${stateWhereClause}
-    GROUP BY
-        employee_id
-),
-hourly_rates AS (
-    SELECT
-        emp."id" AS employee_id,
-        array_agg(DISTINCT (CASE 
-                WHEN dwr_emp."state" = 'Arizona' THEN hr.hourly_rate::numeric
-                ELSE (SELECT MAX(hourly_rate) FROM "H2a_Hourly_Rate" WHERE "state" != 'Arizona')::numeric
-            END)) AS hourly_rates
-    FROM
-        "DWR_Employees" dwr_emp
-        INNER JOIN "Employees" emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
-        INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
-    GROUP BY
-        emp."id"
-),
-supervisors AS (
-    SELECT 
-        emp."id" AS employee_id,
-        array_agg(DISTINCT CONCAT(supervisor.first_name, ' ', supervisor.last_name)) AS supervisor_names
-    FROM 
-        "Employees" emp
-        INNER JOIN "DWR_Employees" dwr_emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
-        INNER JOIN "Employees" supervisor ON dwr_emp.supervisor_id = supervisor."id" :: VARCHAR
-        ${supervisorWhereClauseHours} 
-
-    GROUP BY 
-        emp."id"
-)
-SELECT 
-    json_build_object(
-        'employee_id', hw.employee_id,
-        'employee_name', hw.employee_name,
-        'state_details', ss.state_details::json,
-        'total_hours', ss.total_hours,
-        'total_wages', ss.total_wages,
-        'hourly_rates', hr.hourly_rates,
-        'supervisors', sp.supervisor_names
-    ) AS result
-FROM 
-    hours_worked hw
-LEFT JOIN 
-    state_summary ss ON hw.employee_id = ss.employee_id
-LEFT JOIN
-    hourly_rates hr ON hw.employee_id = hr.employee_id
-LEFT JOIN 
-    supervisors sp ON hw.employee_id = sp.employee_id
-GROUP BY
-    hw.employee_id,
-    hw.employee_name,
-    ss.state_details,
-    ss.total_hours,
-    ss.total_wages,
-    hr.hourly_rates,
-    sp.supervisor_names
-
-			;
-
-  `;
+ 
   let top_ten_wages =
   `WITH 
   pay_periods AS (
@@ -422,7 +298,7 @@ GROUP BY
   LIMIT 10;`
 ;
 
-    let query = `${dwr_info_query1} ${hours_count_query} ${hourly_rate_finder} ${total_hours_dwrs} ${final_wages_query} ${top_ten_wages}`;
+    let query = `${dwr_info_query1} ${hours_count_query} ${hourly_rate_finder} ${total_hours_dwrs} ${top_ten_wages}`;
     
     db.connect();
     // const filePath = 'query_test.txt';
@@ -441,8 +317,7 @@ GROUP BY
       total_hours: result[1].rows,
       hourly_rate: result[2].rows,
       total_hours_sum: result[3].rows,
-      final_wages: result[4].rows,
-      top_ten_wages: result[5].rows,
+      top_ten_wages: result[4].rows,
     };
 
     db.end();
