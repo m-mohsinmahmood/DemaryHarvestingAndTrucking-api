@@ -8,7 +8,7 @@ export function GetOtherDwr(employee_id: any, startDate: string, endDate: string
     if (dateType === 'month') {
         // where = `${where} AND EXTRACT(MONTH FROM dwr_employees.begining_day) = '${month}'`
         // where = `${where} AND EXTRACT(YEAR FROM dwr_employees.begining_day) = '${year}'`
-        where = `${where} AND dwr_employees.begining_day > '${startDate}'::timestamp AND dwr_employees.begining_day < '${endDate}'::timestamp`
+        where = `${where} AND dwr_employees.begining_day >= '${startDate}'::timestamp AND dwr_employees.begining_day <= '${endDate}'::timestamp`
     }
     else {
         where = `${where} AND dwr_employees.begining_day > '${startDate}'::timestamp AND dwr_employees.begining_day < '${endDate}'::timestamp`
