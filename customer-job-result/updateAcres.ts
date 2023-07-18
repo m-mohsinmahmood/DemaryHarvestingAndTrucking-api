@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-import { job_update, job_close } from "./model";
+import { job_update, job_close } from "../customer-job-setup/model";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -10,8 +10,8 @@ const httpTrigger: AzureFunction = async function (
     const db = new Client(config);
     let query = ``;
     try {
-        const id = req.body.id;
-        const acres = req.body.acres;
+        const id = req.body.acreData.id;
+        const acres = req.body.acreData.acres;
 
         query = `
          UPDATE 

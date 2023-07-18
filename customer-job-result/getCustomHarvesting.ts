@@ -37,28 +37,28 @@ const httpTrigger: AzureFunction = async function (
 
     let info_query = `
           
-    SELECT
+    SELECT DISTINCT
   ht.delivery_ticket_name as ticket_name,
   ht.scale_ticket_number as sl_number,
-	ht.destination AS destination,
-	ht.loaded_miles AS load_miles,
-	ht.ticket_status AS status,
-	"field".NAME AS "field_name",
-	ht.scale_ticket_weight AS net_pounds,
-	cc.bushel_weight AS net_bushel,
-	ht.created_at AS load_date,
-	cj.farm_id as farm_id,
+  ht.destination AS destination,
+  ht.loaded_miles AS load_miles,
+  ht.ticket_status AS status,
+  "field".NAME AS "field_name",
+  ht.scale_ticket_weight AS net_pounds,
+  cc.bushel_weight AS net_bushel,
+  ht.created_at AS load_date,
+  cj.farm_id as farm_id,
   cd."id" as destination_id,
-	cj.crop_acres as acres,
-	cj.crop_gps_acres as gps_acres
+  cj.crop_acres as acres,
+  cj.crop_gps_acres as gps_acres,
+  cj.id
 
-FROM
-	"Customer_Job_Setup" cj
-  LEFT JOIN "Crops" cc ON cc."id" = uuid(cj.crop_id)
-	LEFT JOIN "Customer_Farm" cf ON cf."id" = cj.farm_id
-	LEFT JOIN "Harvesting_Delivery_Ticket" ht ON ht.job_id = cj."id"
-		LEFT JOIN "Customer_Field" field ON "field".ID = ht.field_id
-	LEFT JOIN "Customer_Destination" cd ON cd."name" = ht.destination
+FROM "Customer_Job_Setup" cj
+LEFT JOIN "Crops" cc ON cc."id" = uuid(cj.crop_id)
+LEFT JOIN "Customer_Farm" cf ON cf."id" = cj.farm_id
+LEFT JOIN "Harvesting_Delivery_Ticket" ht ON ht.job_id = cj."id"
+LEFT JOIN "Customer_Field" field ON "field".ID = ht.field_id
+LEFT JOIN "Customer_Destination" cd ON cd."name" = ht.destination
 
 
 

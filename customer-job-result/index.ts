@@ -5,6 +5,7 @@ import * as getCustomHarvestingJobs from "./getCustomHarvesting";
 import * as createJobResult from "./post";
 import * as editCustomerJob from "./editTruckingJob";
 import * as editFarmingJob from "./editFarmingJob"
+import * as updateAcres from "../customer-job-result/updateAcres";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -28,6 +29,8 @@ const httpTrigger: AzureFunction = async function (
         case "PATCH":
             if (req.body.operation === 'editTruckingJobResults') await editCustomerJob.default(context, req);
             else if (req.body.operation === 'editFarmingJobResults') await editFarmingJob.default(context, req);
+            else if (req.body.operation === 'updateAcres')
+        await updateAcres.default(context, req);
             break;
         default:
             context.res = {

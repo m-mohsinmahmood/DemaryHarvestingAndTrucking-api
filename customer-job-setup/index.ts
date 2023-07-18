@@ -16,7 +16,6 @@ import * as startingOfDay from "./startingOfDay";
 import * as getAllCrewChiefAssignedRoles from "./getAllCrewChiefAssignedRoles";
 import * as removeAllCrewChiefAssignedRoles from "./removeAllCrewChiefAssignedRoles";
 import * as getSameInvoicedJobs from "./getSameInvoicedJobs";
-import * as updateAcres from "./updateAcres";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
   switch (req.method) {
@@ -50,8 +49,6 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         await startingOfDay.default(context, req);
       else if (req.body.operation === 'removeAssignedRole')
         await removeRole.default(context, req);
-      else if (req.body.operation === 'updateAcres')
-        await updateAcres.default(context, req);
       else
         await updateJob.default(context, req);
       break;
