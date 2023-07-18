@@ -38,8 +38,8 @@ const httpTrigger: AzureFunction = async function (
     let info_query = `
           
     SELECT
-    ht.delivery_ticket_name as ticket_name,
-    ht.scale_ticket_number as sl_number,
+  ht.delivery_ticket_name as ticket_name,
+  ht.scale_ticket_number as sl_number,
 	ht.destination AS destination,
 	ht.loaded_miles AS load_miles,
 	ht.ticket_status AS status,
@@ -47,15 +47,18 @@ const httpTrigger: AzureFunction = async function (
 	ht.scale_ticket_weight AS net_pounds,
 	cc.bushel_weight AS net_bushel,
 	ht.created_at AS load_date,
-	cf."id" as farm_id,
-  cd."id" as destination_id
+	cj.farm_id as farm_id,
+  cd."id" as destination_id,
+	cj.crop_acres as acres,
+	cj.crop_gps_acres as gps_acres
 
 FROM
-	"Harvesting_Delivery_Ticket" ht
-	INNER JOIN "Customer_Field" field ON "field".ID = ht.field_id
-  INNER JOIN "Crops" cc ON cc."id" = uuid(ht.crop_id)
-	INNER JOIN "Customer_Farm" cf ON cf."id" = ht.farm_id
-	INNER JOIN "Customer_Destination" cd ON cd."name" = ht.destination
+	"Customer_Job_Setup" cj
+  LEFT JOIN "Crops" cc ON cc."id" = uuid(cj.crop_id)
+	LEFT JOIN "Customer_Farm" cf ON cf."id" = cj.farm_id
+	LEFT JOIN "Harvesting_Delivery_Ticket" ht ON ht.job_id = cj."id"
+		LEFT JOIN "Customer_Field" field ON "field".ID = ht.field_id
+	LEFT JOIN "Customer_Destination" cd ON cd."name" = ht.destination
 
 
 
