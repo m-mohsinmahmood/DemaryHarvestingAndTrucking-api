@@ -2,7 +2,6 @@
 export function GetTruckingDwr(employee_id: any, date: any, dateType: any, month: any, year: any, role: any) {
 
     let getDwr;
-
     let where = ``;
 
     if (role === 'supervisor')
