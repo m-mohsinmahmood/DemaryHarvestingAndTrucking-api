@@ -37,7 +37,11 @@ const httpTrigger: AzureFunction = async function (
 
     let info_query = `
           
-    SELECT DISTINCT
+  SELECT DISTINCT
+	cj.id,
+	cj.job_setup_name,
+	cf."name" AS farm_name,
+	cc."name" AS crop_name,
   ht.delivery_ticket_name as ticket_name,
   ht.scale_ticket_number as sl_number,
   ht.destination AS destination,
@@ -50,8 +54,7 @@ const httpTrigger: AzureFunction = async function (
   cj.farm_id as farm_id,
   cd."id" as destination_id,
   cj.crop_acres as acres,
-  cj.crop_gps_acres as gps_acres,
-  cj.id
+  cj.crop_gps_acres as gps_acres
 
 FROM "Customer_Job_Setup" cj
 LEFT JOIN "Crops" cc ON cc."id" = uuid(cj.crop_id)
