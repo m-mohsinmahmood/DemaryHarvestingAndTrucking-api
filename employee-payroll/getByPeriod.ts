@@ -27,22 +27,36 @@ const httpTrigger: AzureFunction = async function (
 
     let payrollQuery = `
     SELECT
-	i :: DATE AS "PayPeroidStart",
-	( i + '13 days' :: INTERVAL ) :: DATE AS "PayPeriodEnd",
-
-	(
-	SELECT 
-		SUM (ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr.ending_day - dwr.begining_day ) ) / 3600 ) AS NUMERIC ), 2 )) as total_hours_worked
-	FROM
-		"DWR_Employees" dwr
-		where
-		dwr.created_at :: DATE >= i :: DATE 
-		AND dwr.created_at :: DATE <= ( i + '13 days' :: INTERVAL ) :: DATE
-		AND dwr."state" IS NOT NULL
-		AND dwr.employee_id = '${employee_id}' 
-	) 
-FROM
-generate_series ( ${dateRangeFrom}:: DATE, ${dateRangeTo} :: DATE, '14 days' :: INTERVAL ) AS "i";
+    PayPeriodStart as "PayPeroidStart",
+    PayPeriodEnd as "PayPeriodEnd",
+    ROUND(SUM(total_hours_worked)::NUMERIC, 2) AS total_hours_worked,
+    ROUND(SUM(wage)::NUMERIC, 2) AS wage
+FROM (
+    SELECT
+        i.i::DATE AS PayPeriodStart,
+        (i.i + '13 days'::INTERVAL)::DATE AS PayPeriodEnd,
+        CAST ( EXTRACT ( EPOCH FROM ( dwr.ending_day - dwr.begining_day ) ) / 3600 AS NUMERIC ( 10, 2 ) ) AS total_hours_worked,
+        CASE
+            WHEN dwr."state" = 'arizona' THEN COALESCE(hhr."hourly_rate"::NUMERIC, 0)
+            ELSE COALESCE(max_hr.max_hourly_rate, 0)
+        END AS "hourly_wage_rate",
+        (CAST ( EXTRACT ( EPOCH FROM ( dwr.ending_day - dwr.begining_day ) ) / 3600 AS NUMERIC ( 10, 2 ) )) * 
+        CASE
+            WHEN dwr."state" = 'arizona' THEN COALESCE(hhr."hourly_rate"::NUMERIC, 0)
+            ELSE COALESCE(max_hr.max_hourly_rate, 0)
+        END AS wage
+    FROM
+        generate_series(${dateRangeFrom}::DATE, ${dateRangeTo}::DATE, '14 days'::INTERVAL) AS i(i)
+    LEFT JOIN "DWR_Employees" dwr ON dwr.created_at::DATE >= i.i::DATE AND dwr.created_at::DATE <= (i.i + '13 days'::INTERVAL)::DATE AND dwr."state" IS NOT NULL AND dwr.employee_id = '${employee_id}'
+    LEFT JOIN "H2a_Hourly_Rate" hhr ON dwr."state" = hhr."state" AND dwr."state" = 'arizona'
+    CROSS JOIN (
+        SELECT MAX("hourly_rate"::NUMERIC) AS max_hourly_rate
+        FROM "H2a_Hourly_Rate"
+        WHERE "state" != 'arizona'
+    ) AS max_hr
+) AS subquery
+GROUP BY PayPeriodStart, PayPeriodEnd
+ORDER BY PayPeriodStart;
 `;
 
   //   let dwr_info_query1 = `
