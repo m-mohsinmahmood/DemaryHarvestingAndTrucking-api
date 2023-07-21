@@ -44,7 +44,7 @@ const httpTrigger: AzureFunction = async function (
 	cc."name" AS crop_name,
   ht.delivery_ticket_name as ticket_name,
   ht.scale_ticket_number as sl_number,
-  ht.destination AS destination,
+  cd."name" AS destination,  
   ht.loaded_miles AS load_miles,
   ht.ticket_status AS status,
   "field".NAME AS "field_name",
