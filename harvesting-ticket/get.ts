@@ -36,6 +36,7 @@ const httpTrigger: AzureFunction = async function (
     truck_driver.first_name || ' ' || truck_driver.last_name AS "truck_driver_name",
     kart_operator.first_name || ' ' || kart_operator.last_name AS "kart_operator_name",
     CUS.customer_name AS "customerName",
+    CUS.id AS "customerId",
     farm."id" AS farm_id,
     field_id AS field_id,
     farm."name" AS farm_name,

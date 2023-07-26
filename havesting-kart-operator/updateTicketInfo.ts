@@ -16,6 +16,9 @@ const httpTrigger: AzureFunction = async function (
     const test_weight: string = req.body.test_weight;
     const ticket_id: string = req.body.ticket_id;
     const scale_ticket: string = req.body.scale_ticket;
+    const fieldId: string = req.body.fieldId;
+    const loadedMiles: string = req.body.loadedMiles;
+    const destination: string = req.body.destination;
     
     query = `
             UPDATE 
@@ -25,7 +28,10 @@ const httpTrigger: AzureFunction = async function (
                    "moisture_content"                    = '${moisture_content}',
                     "protein_content"                     = '${protein_content}',
                     "scale_ticket_weight"                     = '${net_weight}', 
-                    "scale_ticket_number"                     = '${scale_ticket}'
+                    "scale_ticket_number"                     = '${scale_ticket}',
+                    "field_id"                     = '${fieldId}',
+                    "loaded_miles"                     = '${loadedMiles}',
+                    "destination"                     = '${destination}'
             WHERE 
                     "id" = '${ticket_id}';
                     `;
