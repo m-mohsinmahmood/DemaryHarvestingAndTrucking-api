@@ -19,7 +19,7 @@ const httpTrigger: AzureFunction = async function (
     if (kartOperatorId) whereClause = `${whereClause} And kart_operator_id = '${kartOperatorId}' `;
     if (truckDriverId) whereClause = `${whereClause} And truck_driver_id = '${truckDriverId}' `;
 
-    if (ticketStatus == 'verified' && kartOperatorId) {
+    if (ticketStatus == 'verified' && kartOperatorId || ticketStatus == 'verified' && truckDriverId) {
       const startDate = req.query.startDate;
       const endDate = req.query.endDate;
 
@@ -36,6 +36,7 @@ const httpTrigger: AzureFunction = async function (
     truck_driver.first_name || ' ' || truck_driver.last_name AS "truck_driver_name",
     kart_operator.first_name || ' ' || kart_operator.last_name AS "kart_operator_name",
     CUS.customer_name AS "customerName",
+    CUS.id AS "customerId",
     farm."id" AS farm_id,
     field_id AS field_id,
     farm."name" AS farm_name,
