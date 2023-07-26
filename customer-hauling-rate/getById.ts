@@ -17,7 +17,8 @@ const httpTrigger: AzureFunction = async function (
                 "rate_type",
                 "rate",
                 "base_rate",
-                "premium_rate"
+                "premium_rate",
+                "base_bushels"
         FROM 
                 "Hauling_Rates"
 

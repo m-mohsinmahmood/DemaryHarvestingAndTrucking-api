@@ -18,6 +18,7 @@ const httpTrigger: AzureFunction = async function (
                 "rate"         =  ${hauling_rate.rate ? hauling_rate.rate : 0 },
                 "base_rate"    =  ${hauling_rate.base_rate ? hauling_rate.base_rate : 0}, 
                 "premium_rate" =  ${hauling_rate.premium_rate ? hauling_rate.premium_rate : 0}
+                "base_bushels" =  ${hauling_rate.base_bushels ? hauling_rate.base_bushels : 0}
                 
         WHERE   "id"           = '${hauling_rate.id}';`
 

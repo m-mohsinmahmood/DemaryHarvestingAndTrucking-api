@@ -5,4 +5,5 @@ export interface hauling_rate{
     rate: number;
     base_rate: number;
     premium_rate: number;
+    base_bushels: number;
 }

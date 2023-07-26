@@ -11,7 +11,7 @@ const httpTrigger: AzureFunction = async function (
     const from: string = req.query.from;
 
 
-    let dateRangeFrom = `'2023-02-07'`;
+    let dateRangeFrom = `'2023-01-07'`;
     let dateRangeTo = `now()`;
 
     if (from!='' && from != undefined) {

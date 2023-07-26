@@ -13,34 +13,33 @@ const httpTrigger: AzureFunction = async function (
 
     let dwr_info_query1 = `
     SELECT
-	hr.hourly_rate,
-	CONCAT ( sup.first_name, ' ', sup.last_name ) AS supervisor,
-	dwr_emp.created_at as date,
-	emp."id",
-	emp.first_name,
-	emp.last_name,
-	emp."role",
-	(select SUM (ROUND( CAST ( ( EXTRACT ( EPOCH FROM ( dwr_emp.ending_day - dwr_emp.begining_day ) ) / 3600 ) AS NUMERIC ), 2 )) AS hours_worked),
-	dwr_emp."state"
-	
+    hr.hourly_rate,
+    CONCAT(sup.first_name, ' ', sup.last_name) AS supervisor,
+    dwr_emp.begining_day AS DATE,
+    dwr_emp.ending_day AS endday,
+    emp."id",
+    emp.first_name,
+    emp.last_name,
+    emp."role",
+    ROUND(CAST(EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600 AS NUMERIC), 2) AS hours_worked,
+    dwr_emp."state" 
 FROM
-	"DWR_Employees" dwr_emp
-	INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
-	INNER JOIN "Employees" emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
-	INNER JOIN "Employees" sup ON sup."id" :: VARCHAR = dwr_emp.supervisor_id
-	INNER JOIN "DWR" dwr on dwr.employee_id:: VARCHAR  = dwr_emp.employee_id:: VARCHAR 
-	
-  WHERE
-	dwr.employee_id = '${employee_id}' 
-	AND dwr.created_at >= now( ) - INTERVAL '14 DAYS'
-
-	GROUP BY 
-	hr.hourly_rate,
-		CONCAT(sup.first_name, ' ', sup.last_name) ,
-			dwr_emp.created_at,
-				emp."id",
-						  dwr.crew_chief,	
-	dwr_emp."state"; `;
+    "DWR_Employees" dwr_emp
+    INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
+    INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_emp.employee_id
+    INNER JOIN "Employees" sup ON sup."id"::VARCHAR = dwr_emp.supervisor_id
+    INNER JOIN "DWR" dwr ON dwr.employee_id::VARCHAR = dwr_emp.employee_id::VARCHAR 
+WHERE
+    dwr.employee_id = '${employee_id}' 
+    AND dwr_emp.begining_day >= now() - INTERVAL '10 DAYS' 
+GROUP BY
+    hr.hourly_rate,
+    CONCAT(sup.first_name, ' ', sup.last_name),
+    dwr_emp.begining_day,
+    emp."id",
+    dwr.crew_chief,
+    dwr_emp.ending_day,
+    dwr_emp."state"; `;
 
 
 

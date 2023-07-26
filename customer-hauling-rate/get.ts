@@ -21,6 +21,7 @@ const httpTrigger: AzureFunction = async function (
                 "rate",
                 "base_rate", 
                 "premium_rate", 
+                "base_bushels", 
                 "customer_id", 
                 "created_at"
         FROM
