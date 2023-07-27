@@ -12,14 +12,113 @@ const httpTrigger: AzureFunction = async function (
     try {
         const id = req.body.acreData.id;
         const acres = req.body.acreData.acres;
+        const loadDate = req.body.load_date;
+        const scaleTicket = req.body.sl_number;
+        const netPounds = req.body.net_pounds;
+        const netBushels = req.body.net_bushel;
+        const loadMiles = req.body.load_miles;
+        const status = req.body.status;
+        const crop_id = req.body.crop_id;
 
-        query = `
-         UPDATE 
-                 "Customer_Job_Setup"
-         SET 
-                "crop_acres" = '${acres}' 
-         WHERE 
-                 "id" = '${id}';`
+        let query: string = ``;
+
+        if (acres) {
+            query = `
+            ${query}
+            UPDATE 
+            "Customer_Job_Setup"
+            
+            SET 
+           "crop_acres" = '${acres}' 
+            
+           WHERE 
+            "id" = '${id}';
+            `
+        }
+
+        if (loadDate) {
+            query = `
+            ${query}
+            UPDATE 
+            "Harvesting_Delivery_Ticket"
+            
+            SET 
+           "created_at" = '${loadDate}' 
+            
+           WHERE 
+            "job_id" = '${id}';
+            `
+        }
+
+        if (scaleTicket) {
+            query = `
+            ${query}
+            UPDATE 
+            "Harvesting_Delivery_Ticket"
+            
+            SET 
+           "scale_ticket_number" = '${scaleTicket}' 
+            
+           WHERE 
+            "job_id" = '${id}';
+            `
+        }
+
+        if (netPounds) {
+            query = `
+            ${query}
+            UPDATE 
+            "Harvesting_Delivery_Ticket"
+            
+            SET 
+           "scale_ticket_weight" = '${netPounds}' 
+            
+           WHERE 
+            "job_id" = '${id}';
+            `
+        }
+
+        if (netBushels) {
+            query = `
+            ${query}
+            UPDATE 
+            "Crops"
+            
+            SET 
+           "bushel_weight" = '${netBushels}' 
+            
+           WHERE 
+            "id" = '${crop_id}';
+            `
+        }
+
+        if (loadMiles) {
+            query = `
+            ${query}
+            UPDATE 
+            "Harvesting_Delivery_Ticket"
+            
+            SET 
+           "loaded_miles" = '${loadMiles}' 
+            
+           WHERE 
+            "job_id" = '${id}';
+            `
+        }
+
+        if (status) {
+            query = `
+            ${query}
+            UPDATE 
+            "Harvesting_Delivery_Ticket"
+            
+            SET 
+           "ticket_status" = '${status}' 
+            
+           WHERE 
+            "job_id" = '${id}';
+            `
+        }
 
         console.log('Query:', query)
         db.connect();
