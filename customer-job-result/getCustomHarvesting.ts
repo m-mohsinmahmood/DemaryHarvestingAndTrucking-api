@@ -54,7 +54,9 @@ const httpTrigger: AzureFunction = async function (
   cj.farm_id as farm_id,
   cd."id" as destination_id,
   cj.crop_acres as acres,
-  cj.crop_gps_acres as gps_acres
+  cj.crop_gps_acres as gps_acres,
+  cj.crop_id as crop_id
+
 
 FROM "Customer_Job_Setup" cj
 LEFT JOIN "Crops" cc ON cc."id" = uuid(cj.crop_id)
@@ -73,23 +75,28 @@ LEFT JOIN "Customer_Destination" cd ON cd."name" = ht.destination
 
     let details_query = `
     SELECT
-  SUM(CAST(scale_ticket_weight AS NUMERIC)) AS total_net_pounds,
+  SUM(CAST(ht.scale_ticket_weight AS NUMERIC)) AS total_net_pounds,
   SUM(CAST(cc.bushel_weight AS NUMERIC)) AS total_net_bushels,
   SUM(CAST(ht.loaded_miles AS NUMERIC)) AS total_loaded_miles,
   SUM(CAST(field.acres AS NUMERIC)) AS total_acres,
+  SUM(CAST(cj.crop_acres AS FLOAT)) AS crop_acres,
   COUNT(ht."id") AS total_tickets,
   customers.customer_name
 FROM
-  "Harvesting_Delivery_Ticket" ht
-  INNER JOIN "Customer_Field" field ON field.ID = ht.field_id
-  INNER JOIN "Crops" cc ON cc."id" = uuid(ht.crop_id)
+  "Customer_Job_Setup" cj
+LEFT JOIN "Crops" cc ON cc."id" = uuid(cj.crop_id)
+LEFT JOIN "Customer_Farm" cf ON cf."id" = cj.farm_id
+LEFT JOIN "Harvesting_Delivery_Ticket" ht ON ht.job_id = cj."id"
+LEFT JOIN "Customer_Field" field ON "field".ID = ht.field_id
+LEFT JOIN "Customer_Destination" cd ON cd."name" = ht.destination
   INNER JOIN "Customers" customers ON customers."id" = ht.customer_id
-  INNER JOIN "Customer_Farm" cf ON cf."id" = ht.farm_id
-  INNER JOIN "Customer_Destination" cd ON cd."name" = ht.destination
+
 
   ${whereClause}
   AND scale_ticket_weight <> '' -- Exclude empty values
   AND scale_ticket_weight IS NOT NULL -- Exclude NULL values
+  AND cj.crop_acres <> '' -- Exclude empty values
+  AND cj.crop_acres IS NOT NULL -- Exclude NULL values
 
   GROUP BY customers.customer_name ;
   `;

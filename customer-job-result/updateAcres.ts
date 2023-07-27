@@ -12,13 +12,13 @@ const httpTrigger: AzureFunction = async function (
     try {
         const id = req.body.acreData.id;
         const acres = req.body.acreData.acres;
-        const loadDate = req.body.load_date;
-        const scaleTicket = req.body.sl_number;
-        const netPounds = req.body.net_pounds;
-        const netBushels = req.body.net_bushel;
-        const loadMiles = req.body.load_miles;
-        const status = req.body.status;
-        const crop_id = req.body.crop_id;
+        const loadDate = req.body.acreData.load_date;
+        const scaleTicket = req.body.acreData.sl_number;
+        const netPounds = req.body.acreData.net_pounds;
+        const netBushels = req.body.acreData.net_bushel;
+        const loadMiles = req.body.acreData.load_miles;
+        const status = req.body.acreData.status;
+        const crop_id = req.body.acreData.crop_id;
 
         let query: string = ``;
 
