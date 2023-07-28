@@ -19,6 +19,7 @@ const httpTrigger: AzureFunction = async function (
         const loadMiles = req.body.acreData.load_miles;
         const status = req.body.acreData.status;
         const crop_id = req.body.acreData.crop_id;
+        const ticket_name = req.body.acreData.ticket_name;
 
         let query: string = ``;
 
@@ -46,7 +47,7 @@ const httpTrigger: AzureFunction = async function (
            "created_at" = '${loadDate}' 
             
            WHERE 
-            "job_id" = '${id}';
+            "delivery_ticket_name" = '${ticket_name}';
             `
         }
 
@@ -60,7 +61,7 @@ const httpTrigger: AzureFunction = async function (
            "scale_ticket_number" = '${scaleTicket}' 
             
            WHERE 
-            "job_id" = '${id}';
+            "delivery_ticket_name" = '${ticket_name}';
             `
         }
 
@@ -74,7 +75,7 @@ const httpTrigger: AzureFunction = async function (
            "scale_ticket_weight" = '${netPounds}' 
             
            WHERE 
-            "job_id" = '${id}';
+            "delivery_ticket_name" = '${ticket_name}';
             `
         }
 
@@ -102,7 +103,7 @@ const httpTrigger: AzureFunction = async function (
            "loaded_miles" = '${loadMiles}' 
             
            WHERE 
-            "job_id" = '${id}';
+            "delivery_ticket_name" = '${ticket_name}';
             `
         }
 
@@ -116,7 +117,7 @@ const httpTrigger: AzureFunction = async function (
            "ticket_status" = '${status}' 
             
            WHERE 
-            "job_id" = '${id}';
+            "delivery_ticket_name" = '${ticket_name}';
             `
         }
 
