@@ -55,7 +55,8 @@ const httpTrigger: AzureFunction = async function (
   cd."id" as destination_id,
   cj.crop_acres as acres,
   cj.crop_gps_acres as gps_acres,
-  cj.crop_id as crop_id
+  cj.crop_id as crop_id,
+  "field".ID as field_id
 
 
 FROM "Customer_Job_Setup" cj

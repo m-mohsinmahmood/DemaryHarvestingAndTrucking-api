@@ -20,6 +20,8 @@ const httpTrigger: AzureFunction = async function (
         const status = req.body.acreData.status;
         const crop_id = req.body.acreData.crop_id;
         const ticket_name = req.body.acreData.ticket_name;
+        const field_id = req.body.acreData.field_id;
+        const destinations_id = req.body.acreData.destinations_id;
 
         let query: string = ``;
 
@@ -37,6 +39,20 @@ const httpTrigger: AzureFunction = async function (
             `
         }
 
+        if (field_id) {
+            query = `
+            ${query}
+            UPDATE 
+            "Harvesting_Delivery_Ticket"
+            
+            SET 
+           "field_id" = '${field_id}' 
+            
+           WHERE 
+            "delivery_ticket_name" = '${ticket_name}';
+            `
+        }
+
         if (loadDate) {
             query = `
             ${query}
@@ -45,6 +61,20 @@ const httpTrigger: AzureFunction = async function (
             
             SET 
            "created_at" = '${loadDate}' 
+            
+           WHERE 
+            "delivery_ticket_name" = '${ticket_name}';
+            `
+        }
+
+        if (destinations_id) {
+            query = `
+            ${query}
+            UPDATE 
+            "Harvesting_Delivery_Ticket"
+            
+            SET 
+           "destination" = '${destinations_id}' 
             
            WHERE 
             "delivery_ticket_name" = '${ticket_name}';
