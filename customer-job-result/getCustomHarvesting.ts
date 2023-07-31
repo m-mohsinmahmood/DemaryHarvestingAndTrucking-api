@@ -44,7 +44,7 @@ const httpTrigger: AzureFunction = async function (
 	cc."name" AS crop_name,
   ht.delivery_ticket_name as ticket_name,
   ht.scale_ticket_number as sl_number,
-  cd."name" AS destination,  
+  cd."name" AS destination,
   ht.loaded_miles AS load_miles,
   ht.ticket_status AS status,
   "field".NAME AS "field_name",
@@ -64,7 +64,7 @@ LEFT JOIN "Crops" cc ON cc."id" = uuid(cj.crop_id)
 LEFT JOIN "Customer_Farm" cf ON cf."id" = cj.farm_id
 LEFT JOIN "Harvesting_Delivery_Ticket" ht ON ht.job_id = cj."id"
 LEFT JOIN "Customer_Field" field ON "field".ID = ht.field_id
-LEFT JOIN "Customer_Destination" cd ON cd."name" = ht.destination
+LEFT JOIN "Customer_Destination" cd ON cd.id = ht.destination_id
 
 
 
@@ -105,12 +105,10 @@ LEFT JOIN "Customer_Destination" cd ON cd."name" = ht.destination
 
     let query = `${info_query} ${details_query}`;
 
-    console.log(query);
 
     db.connect();
 
     let result = await db.query(query);
-    console.log(result[0].rows);
 
 
 
