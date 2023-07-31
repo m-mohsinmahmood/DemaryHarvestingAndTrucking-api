@@ -18,4 +18,5 @@ export interface delivery_ticket {
     kart_scale_weight_split?: string;
     jobId?: string;
     deliveryTicketNumber?: string;
+    destinationId?: string;
 }
