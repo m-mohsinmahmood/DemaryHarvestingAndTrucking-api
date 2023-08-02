@@ -23,6 +23,7 @@ const httpTrigger: AzureFunction = async function (
     const status: string = req.query.status;
 
     let whereClause: string = ` Where ht.customer_id = '${customer_id}'`;
+    let subQueryWhereClause: string = ` Where customer_id = '${customer_id}'`;
 
 
 
@@ -79,25 +80,36 @@ LEFT JOIN "Customer_Destination" cd ON cd.id = ht.destination_id
   SUM(CAST(ht.scale_ticket_weight AS NUMERIC)) AS total_net_pounds,
   SUM(CAST(cc.bushel_weight AS NUMERIC)) AS total_net_bushels,
   SUM(CAST(ht.loaded_miles AS NUMERIC)) AS total_loaded_miles,
-  SUM(CAST(field.acres AS NUMERIC)) AS total_acres,
-  SUM(CAST(cj.crop_acres AS FLOAT)) AS crop_acres,
+  (SELECT SUM(acres)
+    FROM "Customer_Field"
+      ${subQueryWhereClause}
+
+		AND is_deleted = FALSE) AS total_acres,
+  SUM(CAST(cj.crop_acres AS FLOAT) 
+  ) AS crop_acres,
   COUNT(ht."id") AS total_tickets,
   customers.customer_name
+
 FROM
   "Customer_Job_Setup" cj
-LEFT JOIN "Crops" cc ON cc."id" = uuid(cj.crop_id)
-LEFT JOIN "Customer_Farm" cf ON cf."id" = cj.farm_id
-LEFT JOIN "Harvesting_Delivery_Ticket" ht ON ht.job_id = cj."id"
-LEFT JOIN "Customer_Field" field ON "field".ID = ht.field_id
-LEFT JOIN "Customer_Destination" cd ON cd."name" = ht.destination
-  INNER JOIN "Customers" customers ON customers."id" = ht.customer_id
+    LEFT JOIN "Crops" cc ON cc."id" = uuid(cj.crop_id)
+    LEFT JOIN "Customer_Farm" cf ON cf."id" = cj.farm_id
+    LEFT JOIN "Harvesting_Delivery_Ticket" ht ON ht.job_id = cj."id"
+    LEFT JOIN "Customer_Field" field ON "field".ID = ht.field_id
+    LEFT JOIN "Customer_Destination" cd ON cd."name" = ht.destination
+    INNER JOIN "Customers" customers ON customers."id" = ht.customer_id
 
 
-  ${whereClause}
+    ${whereClause}
+
   AND scale_ticket_weight <> '' -- Exclude empty values
   AND scale_ticket_weight IS NOT NULL -- Exclude NULL values
   AND cj.crop_acres <> '' -- Exclude empty values
   AND cj.crop_acres IS NOT NULL -- Exclude NULL values
+    AND cj.is_deleted = FALSE
+    AND cc.is_deleted = FALSE
+    AND cf.is_deleted = FALSE
+    AND ht.is_deleted = FALSE
 
   GROUP BY customers.customer_name ;
   `;
