@@ -19,19 +19,22 @@ const httpTrigger: AzureFunction = async function (
     const fieldId: string = req.body.fieldId;
     const loadedMiles: string = req.body.loadedMiles;
     const destination: string = req.body.destination;
+    const destinationId: string = req.body.destinationId;
     
     query = `
             UPDATE 
                     "Harvesting_Delivery_Ticket"
             SET 
-                   "test_weight"                    = '${test_weight}', 
-                   "moisture_content"                    = '${moisture_content}',
+                   "test_weight"                          = '${test_weight}', 
+                   "moisture_content"                     = '${moisture_content}',
                     "protein_content"                     = '${protein_content}',
-                    "scale_ticket_weight"                     = '${net_weight}', 
-                    "scale_ticket_number"                     = '${scale_ticket}',
-                    "field_id"                     = '${fieldId}',
-                    "loaded_miles"                     = '${loadedMiles}',
-                    "destination"                     = '${destination}'
+                    "scale_ticket_weight"                 = '${net_weight}', 
+                    "scale_ticket_number"                 = '${scale_ticket}',
+                    "field_id"                            = '${fieldId}',
+                    "loaded_miles"                        = '${loadedMiles}',
+                    "destination"                         = '${destination}',
+                    "destination_id"                      = '${destinationId}'
+
             WHERE 
                     "id" = '${ticket_id}';
                     `;
