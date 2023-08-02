@@ -20,7 +20,7 @@ const httpTrigger: AzureFunction = async function (
                  "Customer_Job_Setup"
          SET 
                 "is_trip_check_filled"  = FALSE,
-                "is_dwr_made"         = TRUE,
+                "is_dwr_made"           = TRUE,
                 "is_job_completed"      = FALSE                 
          WHERE 
                  "id" = '${id}';`
