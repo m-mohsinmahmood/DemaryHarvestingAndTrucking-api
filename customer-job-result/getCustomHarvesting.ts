@@ -76,20 +76,13 @@ LEFT JOIN "Customer_Destination" cd ON cd.id = ht.destination_id
     `;
 
     let details_query = `
-    SELECT
-  SUM(CAST(ht.scale_ticket_weight AS NUMERIC)) AS total_net_pounds,
+    SELECT 
+SUM(CAST(ht.scale_ticket_weight AS NUMERIC)) AS total_net_pounds,
   SUM(CAST(cc.bushel_weight AS NUMERIC)) AS total_net_bushels,
   SUM(CAST(ht.loaded_miles AS NUMERIC)) AS total_loaded_miles,
-  (SELECT SUM(acres)
-    FROM "Customer_Field"
-      ${subQueryWhereClause}
 
-		AND is_deleted = FALSE) AS total_acres,
-  SUM(CAST(cj.crop_acres AS FLOAT) 
-  ) AS crop_acres,
   COUNT(ht."id") AS total_tickets,
   customers.customer_name
-
 FROM
   "Customer_Job_Setup" cj
     LEFT JOIN "Crops" cc ON cc."id" = uuid(cj.crop_id)
@@ -99,19 +92,20 @@ FROM
     LEFT JOIN "Customer_Destination" cd ON cd."name" = ht.destination
     INNER JOIN "Customers" customers ON customers."id" = ht.customer_id
 
-
     ${whereClause}
-
-  AND scale_ticket_weight <> '' -- Exclude empty values
-  AND scale_ticket_weight IS NOT NULL -- Exclude NULL values
-  AND cj.crop_acres <> '' -- Exclude empty values
-  AND cj.crop_acres IS NOT NULL -- Exclude NULL values
+    AND scale_ticket_weight <> '' -- Exclude empty values
+    AND scale_ticket_weight IS NOT NULL -- Exclude NULL values
+    AND cj.crop_acres IS NOT NULL -- Exclude NULL values
     AND cj.is_deleted = FALSE
     AND cc.is_deleted = FALSE
     AND cf.is_deleted = FALSE
     AND ht.is_deleted = FALSE
+    AND cc.bushel_weight IS NOT NULL -- Exclude NULL values
+    AND ht.loaded_miles <> '' -- Exclude empty values
+    AND ht.loaded_miles IS NOT NULL -- Exclude NULL values
 
-  GROUP BY customers.customer_name ;
+
+    GROUP BY customers.customer_name ;
   `;
 
 
