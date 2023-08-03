@@ -148,6 +148,17 @@ export function createDWR(dwr: any) {
                     ${optionalValues})
                     ;
       `;
+
+      if(dwr.dwr_type == 'harvesting' && dwr.role == 'Cart Operator'){
+       query = `
+       ${query}
+
+       INSERT INTO "User_Profile" (employee_id, delivery_ticket_invoiced_job)
+       VALUES ('${dwr.employeeId}','${dwr.jobId}')
+       ON CONFLICT (employee_id) DO UPDATE SET delivery_ticket_invoiced_job = EXCLUDED.delivery_ticket_invoiced_job;
+       `
+        
+      }
     }
 
     console.log(query);

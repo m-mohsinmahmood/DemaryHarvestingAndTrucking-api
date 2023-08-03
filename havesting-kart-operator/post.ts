@@ -122,9 +122,9 @@ const httpTrigger: AzureFunction = async function (
                     ${optionalValues}
                     );
 
-        INSERT INTO "User_Profile" (employee_id,loaded_miles, delivery_ticket_invoiced_job)
-        VALUES ('${delivery_ticket.kartOperatorId}','${delivery_ticket.loadedMiles}', '${delivery_ticket.jobId}')
-        ON CONFLICT (employee_id) DO UPDATE SET loaded_miles = EXCLUDED.loaded_miles, delivery_ticket_invoiced_job = EXCLUDED.delivery_ticket_invoiced_job;
+        INSERT INTO "User_Profile" (employee_id,loaded_miles)
+        VALUES ('${delivery_ticket.kartOperatorId}','${delivery_ticket.loadedMiles}')
+        ON CONFLICT (employee_id) DO UPDATE SET loaded_miles = EXCLUDED.loaded_miles;
                     ;
       `;
         }
