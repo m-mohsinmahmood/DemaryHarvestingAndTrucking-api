@@ -42,6 +42,16 @@ const httpTrigger: AzureFunction = async function (
     if(fields) subQueryWhereClause = `${subQueryWhereClause} AND cj.field_id = '${fields}'`;
     if(crops) subQueryWhereClause = `${subQueryWhereClause} AND cj.crop_id = '${crops}'`;
     
+// Total Bushel Weight where clause
+let totalBushelWeightWhereClause: string = ` WHERE
+cc.is_deleted = FALSE 
+AND cc.bushel_weight IS NOT NULL 
+AND cj.is_dwr_made = TRUE`;
+if(customer_id) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND cj.customer_id = '${customer_id}'`;
+if(farms) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND cj.farm_id = '${farms}'`;
+if(fields) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND cj.field_id = '${fields}'`;
+if(crops) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND cj.crop_id = '${crops}'`;
+
 
 
 
@@ -99,10 +109,21 @@ LEFT JOIN "Customer_Destination" cd ON cd.id = ht.destination_id
     let details_query = `
     SELECT 
 SUM(CAST(ht.scale_ticket_weight AS NUMERIC)) AS total_net_pounds,
-SUM(CAST(cc.bushel_weight AS NUMERIC)) AS total_net_bushels,
 SUM(CAST(ht.loaded_miles AS NUMERIC)) AS total_loaded_miles,
 
- 
+(
+	SELECT SUM
+		( bushel_weight ) 
+	FROM
+		(
+		SELECT DISTINCT ON
+			( cj."id" ) CAST ( cc.bushel_weight AS NUMERIC ) AS bushel_weight 
+		FROM
+			"Crops" cc
+			LEFT JOIN "Customer_Job_Setup" cj ON cj.crop_id = cc."id" 
+		${totalBushelWeightWhereClause}
+		) sub 
+	) AS total_net_bushels,
 
   (SELECT SUM(crop_acres) 
    FROM (
