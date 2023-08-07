@@ -95,8 +95,7 @@ const httpTrigger: AzureFunction = async function (
         "state", 
         "crew_chief_id",
         "is_job_active",
-        "crop_acres",
-        "crop_gps_acres"
+        "created_at"
         )
         
         VALUES      
@@ -107,8 +106,7 @@ const httpTrigger: AzureFunction = async function (
         '${job_setup.state}', 
         '${job_setup.crew_chief_id}',
         'True',
-        '${job_setup.total_acres}',
-        '${job_setup.total_gps_acres}'
+        CURRENT_TIMESTAMP
         )
         RETURNING id as record_id
         ;
