@@ -45,12 +45,11 @@ const httpTrigger: AzureFunction = async function (
 // Total Bushel Weight where clause
 let totalBushelWeightWhereClause: string = ` WHERE
 cc.is_deleted = FALSE 
-AND cc.bushel_weight IS NOT NULL 
-AND cj.is_dwr_made = TRUE`;
-if(customer_id) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND cj.customer_id = '${customer_id}'`;
-if(farms) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND cj.farm_id = '${farms}'`;
-if(fields) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND cj.field_id = '${fields}'`;
-if(crops) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND cj.crop_id = '${crops}'`;
+AND cc.bushel_weight IS NOT NULL`;
+if(customer_id) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND ht.customer_id = '${customer_id}'`;
+if(farms) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND ht.farm_id = '${farms}'`;
+if(fields) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND ht.field_id = '${fields}'`;
+if(crops) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND ht.crop_id = '${crops}'`;
 
 
 
@@ -116,11 +115,10 @@ SUM(CAST(ht.loaded_miles AS NUMERIC)) AS total_loaded_miles,
 		( bushel_weight ) 
 	FROM
 		(
-		SELECT DISTINCT ON
-			( cj."id" ) CAST ( cc.bushel_weight AS NUMERIC ) AS bushel_weight 
+		SELECT SUM( cc.bushel_weight ) AS bushel_weight 
 		FROM
 			"Crops" cc
-			LEFT JOIN "Customer_Job_Setup" cj ON cj.crop_id = cc."id" 
+			LEFT JOIN "Harvesting_Delivery_Ticket" ht ON uuid(ht.crop_id) = cc."id" 
 		${totalBushelWeightWhereClause}
 		) sub 
 	) AS total_net_bushels,
@@ -133,8 +131,20 @@ SUM(CAST(ht.loaded_miles AS NUMERIC)) AS total_loaded_miles,
 
 ) sub
   ) AS total_acres,
+  (
+    SELECT count(id) AS farmers_tickets
+    from "Harvesting_Delivery_Ticket" 
+    where customer_id = '${customer_id}' 
+    AND farmers_bin_weight IS NOT NULL AND farmers_bin_weight <> ''
+    ),
+    (
+    SELECT count(id) AS total_tickets
+    from "Harvesting_Delivery_Ticket" 
+    where customer_id = '${customer_id}' 
+    AND farmers_bin_weight IS NULL OR farmers_bin_weight <> ''
+    ),
 
-COUNT(ht."id") AS total_tickets,
+
 customers.customer_name
 FROM
 "Customer_Job_Setup" cj
