@@ -41,7 +41,8 @@ const httpTrigger: AzureFunction = async function (
     if(farms) subQueryWhereClause = `${subQueryWhereClause} AND cj.farm_id = '${farms}'`;
     if(fields) subQueryWhereClause = `${subQueryWhereClause} AND cj.field_id = '${fields}'`;
     if(crops) subQueryWhereClause = `${subQueryWhereClause} AND cj.crop_id = '${crops}'`;
-    
+    if (from_date && to_date) subQueryWhereClause = ` ${subQueryWhereClause} AND cj.created_at > '${from_date}' AND cj.created_at < '${to_date}'`;
+
 // Total Bushel Weight where clause
 let totalBushelWeightWhereClause: string = ` WHERE
 cc.is_deleted = FALSE 
@@ -50,8 +51,25 @@ if(customer_id) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} 
 if(farms) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND ht.farm_id = '${farms}'`;
 if(fields) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND ht.field_id = '${fields}'`;
 if(crops) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND ht.crop_id = '${crops}'`;
+if (from_date && to_date) totalBushelWeightWhereClause = ` ${totalBushelWeightWhereClause} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
 
 
+//Farmers Tickets Where clause
+let farmersTicketsWhereClause: string = ` WHERE ht.farmers_bin_weight IS NOT NULL AND ht.farmers_bin_weight <> ''`;
+if(customer_id) farmersTicketsWhereClause = `${farmersTicketsWhereClause} AND ht.customer_id = '${customer_id}'`;
+if(farms) farmersTicketsWhereClause = `${farmersTicketsWhereClause} AND ht.farm_id = '${farms}'`;
+if(fields) farmersTicketsWhereClause = `${farmersTicketsWhereClause} AND ht.field_id = '${fields}'`;
+if(crops) farmersTicketsWhereClause = `${farmersTicketsWhereClause} AND ht.crop_id = '${crops}'`;
+if (from_date && to_date) farmersTicketsWhereClause = ` ${farmersTicketsWhereClause} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
+
+
+// Total Loads tickets
+//Farmers Tickets Where clause
+let TotalLoadsTicketsWhereClause: string = ` WHERE ht.customer_id = '${customer_id}'`;
+if(farms) TotalLoadsTicketsWhereClause = `${TotalLoadsTicketsWhereClause} AND ht.farm_id = '${farms}'`;
+if(fields) TotalLoadsTicketsWhereClause = `${TotalLoadsTicketsWhereClause} AND ht.field_id = '${fields}'`;
+if(crops) TotalLoadsTicketsWhereClause = `${TotalLoadsTicketsWhereClause} AND ht.crop_id = '${crops}'`;
+if (from_date && to_date) TotalLoadsTicketsWhereClause = ` ${TotalLoadsTicketsWhereClause} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
 
 
     if (farms) whereClause = ` ${whereClause} AND cf."id" = '${farms}'`;
@@ -133,15 +151,14 @@ SUM(CAST(ht.loaded_miles AS NUMERIC)) AS total_loaded_miles,
   ) AS total_acres,
   (
     SELECT count(id) AS farmers_tickets
-    from "Harvesting_Delivery_Ticket" 
-    where customer_id = '${customer_id}' 
-    AND farmers_bin_weight IS NOT NULL AND farmers_bin_weight <> ''
+    from "Harvesting_Delivery_Ticket" ht
+    ${farmersTicketsWhereClause}
     ),
     (
     SELECT count(id) AS total_tickets
-    from "Harvesting_Delivery_Ticket" 
-    where customer_id = '${customer_id}' 
-    AND farmers_bin_weight IS NULL OR farmers_bin_weight <> ''
+    from "Harvesting_Delivery_Ticket" ht
+    ${TotalLoadsTicketsWhereClause}
+
     ),
 
 
