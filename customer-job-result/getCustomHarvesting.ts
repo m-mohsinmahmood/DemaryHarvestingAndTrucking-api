@@ -39,7 +39,7 @@ const httpTrigger: AzureFunction = async function (
 
     if(customer_id) subQueryWhereClause = `${subQueryWhereClause} AND cj.customer_id = '${customer_id}'`;
     if(farms) subQueryWhereClause = `${subQueryWhereClause} AND cj.farm_id = '${farms}'`;
-    if(fields) subQueryWhereClause = `${subQueryWhereClause} AND cj.field_id = '${fields}'`;
+    if(fields) subQueryWhereClause = `${subQueryWhereClause} AND ht.field_id = '${fields}'`;
     if(crops) subQueryWhereClause = `${subQueryWhereClause} AND cj.crop_id = '${crops}'`;
     if (from_date && to_date) subQueryWhereClause = ` ${subQueryWhereClause} AND cj.created_at > '${from_date}' AND cj.created_at < '${to_date}'`;
 
@@ -145,6 +145,8 @@ SUM(CAST(ht.loaded_miles AS NUMERIC)) AS total_loaded_miles,
    FROM (
        SELECT DISTINCT ON (cj."id") CAST(cj.crop_acres AS NUMERIC) as crop_acres
        FROM "Customer_Job_Setup" cj 
+       LEFT JOIN "Harvesting_Delivery_Ticket" ht ON ht.job_id = cj."id"
+
       ${subQueryWhereClause}
 
 ) sub
