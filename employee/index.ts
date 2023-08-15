@@ -5,6 +5,7 @@ import * as addEmployee from "./post";
 import * as updateEmployee from "./put";
 import * as patchEmployee from "./patch";
 import * as deleteEmployee from "./delete";
+import * as addGuestEmployee from "./addGuestEmployee";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -17,7 +18,10 @@ const httpTrigger: AzureFunction = async function (
       break;
 
     case "POST":
-      await addEmployee.default(context, req);
+      if (req.body.operation == "addGuestEmployee")
+        await addGuestEmployee.default(context, req);
+      else
+        await addEmployee.default(context, req);
       break;
 
     case "PUT":
@@ -27,10 +31,10 @@ const httpTrigger: AzureFunction = async function (
     case "PATCH":
       await patchEmployee.default(context, req);
       break;
-    
+
     case "DELETE":
-    await deleteEmployee.default(context, req);
-    break;
+      await deleteEmployee.default(context, req);
+      break;
 
     default:
       context.res = {

@@ -46,7 +46,7 @@ export interface employee {
   current_employer: string,
   current_position_title: string,
   current_description_of_role: string,
-  current_employment_period_start: string, 
+  current_employment_period_start: string,
   current_employment_period_end: string,
   current_supervisor_reference: string,
   current_supervisor_phone_number: string,
@@ -68,4 +68,13 @@ export interface employee {
   previous_supervisor_country_code: string,
   cell_phone_country_code: string,
   home_phone_country_code: string,
+}
+
+export interface guestEmployee {
+  first_name: string,
+  last_name: string,
+  email: string,
+  role: string,
+  employee_company: string,
+  machinery: string
 }
