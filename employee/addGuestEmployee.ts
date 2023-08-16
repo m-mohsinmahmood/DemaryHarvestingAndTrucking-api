@@ -6,7 +6,6 @@ import { config } from "../services/database/database.config";
 const admin = require('firebase-admin');
 import { initializeFirebase } from "../utilities/initialize-firebase";
 
-
 const httpTrigger: AzureFunction = async function (
     context: Context,
     req: HttpRequest
@@ -36,40 +35,28 @@ const httpTrigger: AzureFunction = async function (
             };
 
             make_employee_query = `
-            INSERT INTO 
-            "Employees" 
-            (
-            "first_name",
-            "last_name",
-            "email",
-            "role",
-            "company"
-            )
-
-            VALUES      
-            (
-            '${emp.first_name}',
-            '${emp.last_name}',
-            '${emp.email}',
-            '${emp.role}',
-            '${emp.employee_company}'
-            );
-            
-            
-            INSERT INTO 
-            "Motorized_Vehicles" 
-            (
-            "name",
-            "type"
-            )
-
-            VALUES      
-            (
-            '${emp.machinery}',
-            'Truck IFTA'
-            )
-            RETURNING id as truck_id;
+           
+	WITH inserted_employee AS (
+        INSERT INTO "Employees" ("first_name", "last_name", "email", "role", "company", "fb_id" ,"is_guest_user")
+        VALUES ('${emp.first_name}', '${emp.last_name}', '${emp.email}', '${emp.employee_role}', '${emp.employee_company}', '${firebase_id}' ,TRUE)
+        RETURNING ID
+      ),
+    inserted_truck AS (
+        INSERT INTO "Motorized_Vehicles" ("name", "type", "status")
+        VALUES ('${emp.machinery}', 'Truck IFTA', TRUE)
+        RETURNING ID
+      )
             `;
+
+            if (emp.employee_role == 'Truck Driver') {
+                make_employee_query = `
+                ${make_employee_query}
+                INSERT INTO "User_Profile" (employee_id, truck_id)
+                VALUES ((SELECT ID FROM inserted_employee), (SELECT ID FROM inserted_truck))
+                ON CONFLICT (employee_id) DO UPDATE
+                SET truck_id = EXCLUDED.truck_id;
+                `
+            }
 
             admin.auth().setCustomUserClaims(userRecord.uid, customClaims);
         } catch (error) {

@@ -74,7 +74,7 @@ export interface guestEmployee {
   first_name: string,
   last_name: string,
   email: string,
-  role: string,
+  employee_role: string,
   employee_company: string,
   machinery: string
 }
