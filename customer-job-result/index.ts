@@ -2,7 +2,6 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as getCustomFarmingJobs from "./getCustomFarming";
 import * as getCommercialTruckingJobs from "./getCommercialTrucking";
 import * as getCustomHarvestingJobs from "./getCustomHarvesting";
-import * as getCustomerRates from "./getCustomerRates";
 import * as createJobResult from "./post";
 import * as editCustomerJob from "./editTruckingJob";
 import * as editFarmingJob from "./editFarmingJob"
@@ -21,8 +20,6 @@ const httpTrigger: AzureFunction = async function (
                 await getCommercialTruckingJobs.default(context, req);
             else if (req.query.customer_id && req.query.data == 'harvesting') 
                 await getCustomHarvestingJobs.default(context, req);
-            else if (req.query.customer_id && req.query.data == 'rates')
-                await getCustomerRates.default(context, req);
             break;
 
         case "POST":
