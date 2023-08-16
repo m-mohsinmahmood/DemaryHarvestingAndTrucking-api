@@ -42,8 +42,8 @@ const httpTrigger: AzureFunction = async function (
         RETURNING ID
       ),
     inserted_truck AS (
-        INSERT INTO "Motorized_Vehicles" ("name", "type", "status")
-        VALUES ('${emp.machinery}', 'Truck IFTA', TRUE)
+        INSERT INTO "Motorized_Vehicles" ("name", "type", "status", "guest_vehicle")
+        VALUES ('${emp.machinery}', 'Truck IFTA', TRUE, TRUE)
         RETURNING ID
       )
             `;

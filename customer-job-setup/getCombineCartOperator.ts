@@ -34,7 +34,9 @@ const httpTrigger: AzureFunction = async function (
         emp.first_name,
         emp.last_name,
         emp.dht_supervisor_id AS supervisor_id,
-        CONCAT(supervisor.first_name, ' ', supervisor.last_name) AS supervisor_name
+        CONCAT(supervisor.first_name, ' ', supervisor.last_name) AS supervisor_name,
+        emp.is_guest_user
+        
         FROM "Employees" emp
         LEFT JOIN "Employees" supervisor ON emp.dht_supervisor_id::VARCHAR = supervisor.id::VARCHAR
 

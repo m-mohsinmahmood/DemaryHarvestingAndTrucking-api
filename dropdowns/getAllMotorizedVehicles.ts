@@ -12,7 +12,7 @@ const httpTrigger: AzureFunction = async function (
         const search: string = req.query.search;
         const vehicleType: string = req.query.vehicleType;
 
-        let whereClause: string = ` WHERE "is_deleted" = FALSE AND "status" = TRUE AND type = '${vehicleType}'`;
+        let whereClause: string = ` WHERE "is_deleted" = FALSE AND "status" = TRUE AND type = '${vehicleType}' AND guest_vehicle = FALSE`;
 
         if (search) whereClause = ` ${whereClause} AND LOWER(name) LIKE LOWER('%${search}%')`;
 
