@@ -10,9 +10,14 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     const customer_id: string = req.query.customerId;
+    const rate_type: string = req.query.rateType || '';
     const sort: string = req.query.sort ? req.query.sort : `"created_at"`;
     const order: string = req.query.order ? req.query.order : `desc`;
     let whereClause: string = `WHERE "customer_id" = '${customer_id}' AND "is_deleted" = false`;
+    
+    if (rate_type) {
+      whereClause += ` AND "rate_type" = '${rate_type}'`;
+    }
 
     let hauling_rates_query = `
         SELECT 

@@ -21,7 +21,7 @@ const httpTrigger: AzureFunction = async function (
         const crop_id = req.body.acreData.crop_id;
         const ticket_name = req.body.acreData.ticket_name;
         const field_id = req.body.acreData.field_id;
-        const destinations_id = req.body.acreData.destinations_id;
+        const destination_id = req.body.acreData.destination_id.id;
 
         let query: string = ``;
 
@@ -67,14 +67,14 @@ const httpTrigger: AzureFunction = async function (
             `
         }
 
-        if (destinations_id) {
+        if (destination_id) {
             query = `
             ${query}
             UPDATE 
             "Harvesting_Delivery_Ticket"
             
             SET 
-           "destination" = '${destinations_id}' 
+           "destination_id" = '${destination_id}' 
             
            WHERE 
             "delivery_ticket_name" = '${ticket_name}';
