@@ -43,6 +43,7 @@ const httpTrigger: AzureFunction = async function (
       concat ( truck_driver.first_name, ' ', truck_driver.last_name ) AS truck_driver_name,
       emp.town_city,
       emp.avatar,
+      emp.is_guest_user,
       up."truck_id" as truck_id
     
       FROM

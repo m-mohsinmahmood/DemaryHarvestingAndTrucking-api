@@ -20,7 +20,8 @@ const httpTrigger: AzureFunction = async function (
     let truck_drivers_dropdown_query = `
         SELECT 
               "id", 
-              "first_name" || ' ' || "last_name" AS "name"
+              "first_name" || ' ' || "last_name" AS "name",
+              is_guest_user
         FROM 
               "Employees" 
         ${whereClause};
