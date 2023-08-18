@@ -37,8 +37,8 @@ const httpTrigger: AzureFunction = async function (
             make_employee_query = `
            
 	WITH inserted_employee AS (
-        INSERT INTO "Employees" ("first_name", "last_name", "email", "role", "company", "fb_id" ,"is_guest_user")
-        VALUES ('${emp.first_name}', '${emp.last_name}', '${emp.email}', '${emp.employee_role}', '${emp.employee_company}', '${firebase_id}' ,TRUE)
+        INSERT INTO "Employees" ("first_name", "last_name", "email", "role", "company", "guest_user_type", "fb_id" ,"is_guest_user")
+        VALUES ('${emp.first_name}', '${emp.last_name}', '${emp.email}', '${emp.employee_role}', '${emp.employee_company}', '${emp.user_type}' , '${firebase_id}' ,TRUE)
         RETURNING ID
       ),
     inserted_truck AS (
