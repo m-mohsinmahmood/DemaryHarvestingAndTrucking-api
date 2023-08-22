@@ -150,7 +150,8 @@ if (destinations_id) TotalLoadsTicketsWhereClause = ` ${TotalLoadsTicketsWhereCl
     cf."name" AS farm_name,
     field."name" AS field_name,
     cd."name" AS destination,
-    C.bushel_weight AS net_bushel
+    C.name AS crop_name,
+    C.bushel_weight AS bushel_weight
         
         FROM
     "Customer_Job_Setup" cj
@@ -189,7 +190,8 @@ SELECT
     cf."name" AS farm_name,
     field."name" AS field_name,
     cd."name" AS destination,
-    C.bushel_weight AS net_bushel
+    C.name AS crop_name,
+    C.bushel_weight AS bushel_weight
         
         FROM
     "Customer_Job_Setup" cj
