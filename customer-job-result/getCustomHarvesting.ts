@@ -136,7 +136,7 @@ if (destinations_id) TotalLoadsTicketsWhereClause = ` ${TotalLoadsTicketsWhereCl
     ht.scale_ticket_number AS sl_number,
     ht.loaded_miles AS load_miles,
     ht.ticket_status AS status,
-    ht.scale_ticket_weight AS net_pounds,
+    CAST ( COALESCE ( NULLIF ( ht.farmers_bin_weight, '' ), NULLIF ( ht.scale_ticket_weight, '' ) ) AS NUMERIC ) AS net_pounds,
     ht.created_at AS load_date,
     ht.protein_content AS protein,
     ht.moisture_content AS moisture,
@@ -162,9 +162,9 @@ if (destinations_id) TotalLoadsTicketsWhereClause = ` ${TotalLoadsTicketsWhereCl
             ${whereClauseJobs}
 
         
-UNION ALL
+    UNION ALL
 
-SELECT
+    SELECT
     cj."id",
     cj.job_setup_name,
     cj.farm_id AS farm_id,
@@ -175,7 +175,7 @@ SELECT
     ht.scale_ticket_number AS sl_number,
     ht.loaded_miles AS load_miles,
     ht.ticket_status AS status,
-    ht.scale_ticket_weight AS net_pounds,
+    CAST ( COALESCE ( NULLIF ( ht.scale_ticket_weight, '' ), '0' ) AS NUMERIC ) - CAST ( COALESCE ( NULLIF ( ht.split_cart_scale_weight, '' ), '0' ) AS NUMERIC ) AS net_pounds,
     ht.created_at AS load_date,
     ht.protein_content AS protein,
     ht.moisture_content AS moisture,
