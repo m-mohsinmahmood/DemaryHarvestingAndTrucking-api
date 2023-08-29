@@ -69,7 +69,70 @@ const httpTrigger: AzureFunction = async function (
         where cjs.customer_id = '${customer_id}'
         ;`;
 
-        let query = `${getHarvestingServices} ${getHaulingServices}`;
+        let getTotalByCrop = `
+        SELECT
+            combined_result.crop_id,
+            combined_result.crop_name,
+            SUM ( combined_result.revenue ) AS total_revenue,
+            SUM ( combined_result.revenue_per_acre ) AS total_revenue_per_acre 
+        FROM
+            (
+            SELECT
+                customer_id,
+                crop_id,
+                crop_name,
+                SUM ( revenue ) AS revenue,
+                SUM ( revenue_per_acre ) AS revenue_per_acre 
+            FROM
+                (-- First query
+                SELECT
+                    customer.ID AS customer_id,
+                    crop.ID AS crop_id,
+                    crop."name" AS crop_name,
+                    SUM ( ( cjs.crop_acres :: FLOAT * cr.combining_rate :: FLOAT ) ) AS revenue,
+                    SUM ( ( cjs.crop_acres :: FLOAT * cr.combining_rate :: FLOAT ) / cjs.crop_acres :: FLOAT ) AS revenue_per_acre 
+                FROM
+                    "Customer_Job_Setup" cjs
+                    INNER JOIN "Customers" customer ON cjs.customer_id = customer."id"
+                    INNER JOIN "Crops" crop ON cjs.crop_id = crop."id"
+                    INNER JOIN "Combining_Rates" cr ON cr.customer_id = cjs.customer_id 
+                    AND cr.is_deleted = FALSE 
+                WHERE
+                    cjs.customer_id = '${customer_id}' 
+                GROUP BY
+                    customer.ID,
+                    crop.ID,
+                    crop."name" UNION-- Second query
+                SELECT
+                    customer.ID AS customer_id,
+                    crop.ID AS crop_id,
+                    crop."name" AS crop_name,
+                    SUM ( ( cjs.crop_acres :: FLOAT * hr.rate :: FLOAT ) ) AS revenue,
+                    SUM ( ( cjs.crop_acres :: FLOAT * hr.rate :: FLOAT ) / cjs.crop_acres :: FLOAT ) AS revenue_per_acre 
+                FROM
+                    "Customer_Job_Setup" cjs
+                    INNER JOIN "Customers" customer ON cjs.customer_id = customer."id"
+                    INNER JOIN "Crops" crop ON cjs.crop_id = crop."id"
+                    INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id 
+                    AND hr.is_deleted = FALSE 
+                WHERE
+                    cjs.customer_id = '${customer_id}' 
+                GROUP BY
+                    customer.ID,
+                    crop.ID,
+                    crop."name" 
+                ) AS revenue_data 
+            GROUP BY
+                customer_id,
+                crop_id,
+                crop_name 
+            ) AS combined_result 
+        GROUP BY
+            combined_result.crop_id,
+            combined_result.crop_name
+        ;`
+
+        let query = `${getHarvestingServices} ${getHaulingServices} ${getTotalByCrop}`;
 
         db.connect();
 
@@ -77,7 +140,8 @@ const httpTrigger: AzureFunction = async function (
 
         let resp = {
             harvestingServices: result[0].rows,
-            haulingServices: result[1].rows
+            haulingServices: result[1].rows,
+            totalByCrop: result[2].rows
         };
 
         db.end();
