@@ -37,7 +37,7 @@ const httpTrigger: AzureFunction = async function (
         INNER JOIN "Combining_Rates" cr ON cr.customer_id = cjs.customer_id  AND cr.is_deleted = FALSE 
         -- AND cjs.farm_id = cr.farm_id AND cjs.crop_id = cr.crop_id
         
-        where cjs.customer_id = '${customer_id}'
+        where cjs.customer_id = '${customer_id}' AND cjs.is_job_completed = TRUE
         ;`;
 
         let getHaulingServices = `
@@ -66,7 +66,7 @@ const httpTrigger: AzureFunction = async function (
         INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id AND hr.is_deleted = FALSE
         
         
-        where cjs.customer_id = '${customer_id}'
+        where cjs.customer_id = '${customer_id}' AND cjs.is_job_completed = TRUE
         ;`;
 
         let getTotalByCrop = `
@@ -98,7 +98,7 @@ const httpTrigger: AzureFunction = async function (
                     INNER JOIN "Combining_Rates" cr ON cr.customer_id = cjs.customer_id 
                     AND cr.is_deleted = FALSE 
                 WHERE
-                    cjs.customer_id = '${customer_id}' 
+                    cjs.customer_id = '${customer_id}' AND cjs.is_job_completed = TRUE
                 GROUP BY
                     customer.ID,
                     crop.ID,
@@ -116,7 +116,7 @@ const httpTrigger: AzureFunction = async function (
                     INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id 
                     AND hr.is_deleted = FALSE 
                 WHERE
-                    cjs.customer_id = '${customer_id}' 
+                    cjs.customer_id = '${customer_id}' AND cjs.is_job_completed = TRUE
                 GROUP BY
                     customer.ID,
                     crop.ID,
