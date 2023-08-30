@@ -17,6 +17,7 @@ const httpTrigger: AzureFunction = async function (
                   "Combining_Rates" 
                   (
                   "customer_id", 
+                  "farm_id",
                   "crop_id",
                   "combining_rate",
                   "base_bushels",
@@ -26,6 +27,7 @@ const httpTrigger: AzureFunction = async function (
       VALUES 
                   (
                   '${combining_rate.customer_id}', 
+                  '${combining_rate.farm_id}',
                   '${combining_rate.crop_id}',
                   '${combining_rate.combining_rate}',
                    ${combining_rate.base_bushels},

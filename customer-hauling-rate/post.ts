@@ -15,7 +15,9 @@ const httpTrigger: AzureFunction = async function (
     let query = `
       INSERT INTO 
                   "Hauling_Rates" 
-                  ("customer_id", 
+                  ("customer_id",
+                  "farm_id",
+                  "crop_id", 
                   "rate_type",
                   "rate",
                   "base_rate",
@@ -25,6 +27,8 @@ const httpTrigger: AzureFunction = async function (
       VALUES 
                   (
                   '${hauling_rate.customer_id}', 
+                  '${hauling_rate.farm_id}',
+                  '${hauling_rate.crop_id}',
                   '${hauling_rate.rate_type}',
                    ${hauling_rate.rate ? hauling_rate.rate : 0 },
                    ${hauling_rate.base_rate ? hauling_rate.base_rate : 0},

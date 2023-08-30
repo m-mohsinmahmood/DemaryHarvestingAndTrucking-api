@@ -11,9 +11,13 @@ const httpTrigger: AzureFunction = async function (
   try {
     const search: string = req.query.search;
     const customer_id: string = req.query.customerId;
+    const module: string = req.query.module;
+
     let whereClause: string = `WHERE cc."is_deleted" = false AND cc."status" = true `;
 
     if (search) whereClause = ` ${whereClause} AND LOWER(c."name") LIKE LOWER('%${search}%')`;
+
+    if (module === 'CustomerRates') whereClause = ` ${whereClause} AND c."id" NOT IN (SELECT "crop_id" FROM Combining_Rates)`;
 
     let customer_crop_dropdown_query = `
         SELECT 

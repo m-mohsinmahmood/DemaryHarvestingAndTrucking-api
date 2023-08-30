@@ -132,6 +132,7 @@ if (destinations_id) TotalLoadsTicketsWhereClause = ` ${TotalLoadsTicketsWhereCl
     cj.crop_acres AS acres,
     cj.crop_gps_acres AS gps_acres,
     cj.crop_id AS crop_id,
+    ht.id as "delivery_ticket_id",
     ht.delivery_ticket_name::TEXT AS ticket_name,
     ht.scale_ticket_number AS sl_number,
     ht.loaded_miles AS load_miles,
@@ -141,16 +142,13 @@ if (destinations_id) TotalLoadsTicketsWhereClause = ` ${TotalLoadsTicketsWhereCl
     ht.protein_content AS protein,
     ht.moisture_content AS moisture,
     ht.test_weight,
-    ht.field_id,
-    ht.protein_content AS protein,
-    ht.moisture_content AS moisture,
-    ht.test_weight,
+    ht.field_id::TEXT,
     cd."id" AS destination_id,
-    "field".ID AS field_id,
     cf."name" AS farm_name,
     field."name" AS field_name,
     cd."name" AS destination,
-    C.bushel_weight AS net_bushel
+    C.name AS crop_name,
+    C.bushel_weight AS bushel_weight
         
         FROM
     "Customer_Job_Setup" cj
@@ -171,6 +169,7 @@ if (destinations_id) TotalLoadsTicketsWhereClause = ` ${TotalLoadsTicketsWhereCl
     cj.crop_acres AS acres,
     cj.crop_gps_acres AS gps_acres,
     cj.crop_id AS crop_id,
+    ht.id as "delivery_ticket_id",
     concat(ht.delivery_ticket_name, '-SL')::TEXT AS ticket_name,
     ht.scale_ticket_number AS sl_number,
     ht.loaded_miles AS load_miles,
@@ -180,22 +179,19 @@ if (destinations_id) TotalLoadsTicketsWhereClause = ` ${TotalLoadsTicketsWhereCl
     ht.protein_content AS protein,
     ht.moisture_content AS moisture,
     ht.test_weight,
-    ht.field_id,
-    ht.protein_content AS protein,
-    ht.moisture_content AS moisture,
-    ht.test_weight,
+    ht.split_field_id,
     cd."id" AS destination_id,
-    "field".ID AS field_id,
     cf."name" AS farm_name,
     field."name" AS field_name,
     cd."name" AS destination,
-    C.bushel_weight AS net_bushel
+    C.name AS crop_name,
+    C.bushel_weight AS bushel_weight
         
         FROM
     "Customer_Job_Setup" cj
     LEFT JOIN "Harvesting_Delivery_Ticket" ht ON ht.job_id = cj."id" AND ht.is_deleted != TRUE
     LEFT JOIN "Customer_Farm" cf ON cj.farm_id = cf.ID AND cf.is_deleted = FALSE AND cf.customer_id = '${customer_id}'
-    LEFT JOIN "Customer_Field" field ON ht.field_id = field."id" AND field.is_deleted = FALSE AND field.customer_id = '${customer_id}'
+    LEFT JOIN "Customer_Field" field ON CAST(ht.split_field_id AS UUID) = field."id" AND field.is_deleted = FALSE AND field.customer_id = '${customer_id}'
     LEFT JOIN "Customer_Destination" cd ON ht.destination_id = cd.ID AND cd.is_deleted = FALSE AND cd.customer_id = '${customer_id}'
     LEFT JOIN "Crops" C ON cj.crop_id = C."id"
             ${whereClauseJobs}
@@ -290,33 +286,17 @@ INNER JOIN "Customers" customers ON customers."id" = ht.customer_id
 
 ;
   `;
-
-  
-
-
     let query = `${info_query} ${details_query}`;
 
 
     db.connect();
-    // const filePath = 'query_test.txt';
-    // try {
-    //     await fs.promises.writeFile(filePath, query);
-    //     context.log(`Data written to file`);
-    // }
-    // catch (err) {
-    //     context.log.error(`Error writing data to file: ${err}`);
-    // }
-
 
     let result = await db.query(query);
-
-
 
     let resp = {
       harvestingJobs: result[0].rows,
       details: result[1].rows
     }
-
     
     db.end();
 
