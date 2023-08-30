@@ -14,6 +14,7 @@ const httpTrigger: AzureFunction = async function (
     let query = `
         UPDATE  "Combining_Rates"
         SET     "customer_id"    = '${combining_rate.customer_id}', 
+                "farm_id"        = '${combining_rate.farm_id}',
                 "crop_id"        = '${combining_rate.crop_id}',
                 "combining_rate" =  ${combining_rate.combining_rate},
                 "base_bushels"   =  ${combining_rate.base_bushels},

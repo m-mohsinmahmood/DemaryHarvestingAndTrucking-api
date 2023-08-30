@@ -13,24 +13,32 @@ const httpTrigger: AzureFunction = async function (
     const rate_type: string = req.query.rateType || '';
     const sort: string = req.query.sort ? req.query.sort : `"created_at"`;
     const order: string = req.query.order ? req.query.order : `desc`;
-    let whereClause: string = `WHERE "customer_id" = '${customer_id}' AND "is_deleted" = false`;
+    let whereClause: string = `WHERE hr."customer_id" = '${customer_id}' AND hr."is_deleted" = false`;
     
     if (rate_type) {
       whereClause += ` AND "rate_type" = '${rate_type}'`;
     }
 
     let hauling_rates_query = `
-        SELECT 
-                "id",
-                "rate_type", 
-                "rate",
-                "base_rate", 
-                "premium_rate", 
-                "base_bushels", 
-                "customer_id", 
-                "created_at"
-        FROM
-                "Hauling_Rates"
+    SELECT 
+          hr."id",
+          cf."id" AS "farm_id",
+          cf."name" AS "farm_name",
+          c."id" AS "crop_id",
+          CONCAT (c."name", ' (', c."variety", ')') AS "crop_name",
+          "rate_type", 
+          "rate",
+          "base_rate", 
+          "premium_rate", 
+          "base_bushels", 
+          hr."customer_id", 
+          hr."created_at"
+    FROM
+          "Hauling_Rates" AS hr
+            INNER JOIN "Customer_Farm" AS cf 
+              ON cf.id = hr."farm_id" AND hr."is_deleted" = FALSE AND cf."is_deleted" = FALSE
+            INNER JOIN "Crops" AS c 
+              ON c.id = hr."crop_id" AND c.is_deleted = FALSE AND cf.is_deleted = FALSE
         ${whereClause}
         ORDER BY 
               ${sort} ${order}

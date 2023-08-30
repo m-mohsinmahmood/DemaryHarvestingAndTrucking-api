@@ -10,34 +10,38 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
 
   try {
+    await db.connect();
+
     const combining_rate: combining_rate = req.body;
-
+    
     let query = `
-      INSERT INTO 
-                  "Combining_Rates" 
-                  (
-                  "customer_id", 
-                  "farm_id",
-                  "crop_id",
-                  "combining_rate",
-                  "base_bushels",
-                  "premium_rate"
-                  ) 
-       
-      VALUES 
-                  (
-                  '${combining_rate.customer_id}', 
-                  '${combining_rate.farm_id}',
-                  '${combining_rate.crop_id}',
-                  '${combining_rate.combining_rate}',
-                   ${combining_rate.base_bushels},
-                   ${combining_rate.premium_rate ? combining_rate.premium_rate : 0}
-                  );
-      `;
+      INSERT INTO "Combining_Rates" (
+        "customer_id", 
+        "farm_id",
+        "crop_id",
+        "combining_rate",
+        "base_bushels",
+        "premium_rate"
+      )
+      VALUES ($1, $2, $3, $4, $5, $6)
+      ON CONFLICT (farm_id, crop_id)
+      DO NOTHING;
+    `;
+    
+    const values = [
+      combining_rate.customer_id,
+      combining_rate.farm_id,
+      combining_rate.crop_id,
+      combining_rate.combining_rate,
+      combining_rate.base_bushels,
+      combining_rate.premium_rate ? combining_rate.premium_rate : 0
+    ];
 
-    db.connect();
-    await db.query(query);
-    db.end();
+    const result = await db.query(query, values);
+
+    if (result.rowCount === 0) {
+      throw new Error("A record with the same farm and crop already exists.");
+    }
 
     context.res = {
       status: 200,
@@ -45,18 +49,16 @@ const httpTrigger: AzureFunction = async function (
         message: "Combining Rate has been created successfully",
       },
     };
-
-    context.done();
-    return;
   } catch (error) {
-    db.end();
     context.res = {
-      status: 500,
+      status: error.message === "A rate with the same farm and crop already exists." ? 409 : 500,
       body: {
         message: error.message,
       },
     };
-    return;
+  } finally {
+    await db.end();
+    context.done();
   }
 };
 
