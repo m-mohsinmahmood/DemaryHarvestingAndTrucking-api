@@ -34,8 +34,7 @@ const httpTrigger: AzureFunction = async function (
         INNER JOIN "Customers" customer ON cjs.customer_id = customer."id"
         INNER JOIN "Customer_Farm" cf ON cjs.farm_id = cf."id" AND cf.is_deleted = FALSE 
         INNER JOIN "Crops" crop ON cjs.crop_id = crop."id"
-        INNER JOIN "Combining_Rates" cr ON cr.customer_id = cjs.customer_id  AND cr.is_deleted = FALSE 
-        -- AND cjs.farm_id = cr.farm_id AND cjs.crop_id = cr.crop_id
+        INNER JOIN "Combining_Rates" cr ON cr.customer_id = cjs.customer_id AND cjs.farm_id = cr.farm_id AND cjs.crop_id = cr.crop_id AND cr.is_deleted = FALSE 
         
         where cjs.customer_id = '${customer_id}' AND cjs.is_job_completed = TRUE
         ;`;
@@ -63,8 +62,7 @@ const httpTrigger: AzureFunction = async function (
         INNER JOIN "Customers" customer ON cjs.customer_id = customer."id"
         INNER JOIN "Customer_Farm" cf ON cjs.farm_id = cf."id" AND cf.is_deleted = FALSE 
         INNER JOIN "Crops" crop ON cjs.crop_id = crop."id"
-        INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id AND hr.is_deleted = FALSE
-        
+        INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id AND cjs.farm_id = hr.farm_id AND cjs.crop_id = hr.crop_id  AND hr.is_deleted = FALSE        
         
         where cjs.customer_id = '${customer_id}' AND cjs.is_job_completed = TRUE
         ;`;
@@ -95,7 +93,7 @@ const httpTrigger: AzureFunction = async function (
                     "Customer_Job_Setup" cjs
                     INNER JOIN "Customers" customer ON cjs.customer_id = customer."id"
                     INNER JOIN "Crops" crop ON cjs.crop_id = crop."id"
-                    INNER JOIN "Combining_Rates" cr ON cr.customer_id = cjs.customer_id 
+                    INNER JOIN "Combining_Rates" cr ON cr.customer_id = cjs.customer_id AND cjs.farm_id = cr.farm_id AND cjs.crop_id = cr.crop_id AND cr.is_deleted = FALSE 
                     AND cr.is_deleted = FALSE 
                 WHERE
                     cjs.customer_id = '${customer_id}' AND cjs.is_job_completed = TRUE
@@ -113,7 +111,7 @@ const httpTrigger: AzureFunction = async function (
                     "Customer_Job_Setup" cjs
                     INNER JOIN "Customers" customer ON cjs.customer_id = customer."id"
                     INNER JOIN "Crops" crop ON cjs.crop_id = crop."id"
-                    INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id 
+                    INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id AND cjs.farm_id = hr.farm_id AND cjs.crop_id = hr.crop_id  AND hr.is_deleted = FALSE        
                     AND hr.is_deleted = FALSE 
                 WHERE
                     cjs.customer_id = '${customer_id}' AND cjs.is_job_completed = TRUE
