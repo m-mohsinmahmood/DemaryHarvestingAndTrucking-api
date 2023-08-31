@@ -1,6 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
+const fs = require('fs');
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -40,109 +41,139 @@ const httpTrigger: AzureFunction = async function (
         ;`;
 
         let getHaulingServices = `
-        Select 
-        
-        customer.id AS customer_id,
-        customer.customer_name AS customer_name,
-        cjs.job_setup_name AS job_name,
-        cjs.farm_id AS farm_id,
-        cf."name" AS farm_name,
-        crop.id AS crop_id,
-        crop."name" AS crop_name,
-        hr.rate_type AS rate_type,
-        cjs.crop_acres AS quantity,
-        hr.rate AS rate,
-        (cjs.crop_acres::float * hr.rate::float) AS revenue,
-        (cjs.crop_acres::float * hr.rate::float)/cjs.crop_acres::float AS revenue_per_acre
-        
-        
-        from
-        
-        "Customer_Job_Setup" cjs
-        INNER JOIN "Customers" customer ON cjs.customer_id = customer."id"
-        INNER JOIN "Customer_Farm" cf ON cjs.farm_id = cf."id" AND cf.is_deleted = FALSE 
-        INNER JOIN "Crops" crop ON cjs.crop_id = crop."id"
-        INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id AND cjs.farm_id = hr.farm_id AND cjs.crop_id = hr.crop_id  AND hr.is_deleted = FALSE        
-        
-        where cjs.customer_id = '${customer_id}' AND cjs.is_job_completed = TRUE
-        ;`;
-
-        let getTotalByCrop = `
-        SELECT
-            combined_result.crop_id,
-            combined_result.crop_name,
-            SUM ( combined_result.revenue ) AS total_revenue,
-            SUM ( combined_result.revenue_per_acre ) AS total_revenue_per_acre 
-        FROM
-            (
+        WITH cte AS (
             SELECT
-                customer_id,
-                crop_id,
-                crop_name,
-                SUM ( revenue ) AS revenue,
-                SUM ( revenue_per_acre ) AS revenue_per_acre 
+                customer.id AS customer_id,
+                customer.customer_name AS customer_name,
+                cjs.job_setup_name AS job_name,
+                cjs.farm_id AS farm_id,
+                cf."name" AS farm_name,
+                crop.id AS crop_id,
+                crop."name" AS crop_name,
+                hr.rate_type AS rate_type,
+                cjs.crop_acres::float AS crop_acres,
+                CASE
+                    WHEN hr.rate_type = 'Bushels' THEN calculate_weight(cjs.id) / crop.bushel_weight
+                    WHEN hr.rate_type = 'Bushels + Excess Yields' THEN ( calculate_weight(cjs.id) / crop.bushel_weight) + ((calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_rate))
+                    WHEN hr.rate_type = 'Hundred Weight' THEN calculate_weight(cjs.id) / 100
+                    WHEN hr.rate_type = 'Miles' THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id)
+                    WHEN hr.rate_type = 'Ton Miles' THEN calculate_weight(cjs.id) / 2000
+                    WHEN hr.rate_type = 'Tons' THEN calculate_weight(cjs.id) / 2000
+                    WHEN hr.rate_type = 'Load Count' THEN (SELECT COUNT(hdt.id) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id)
+                    ELSE 0
+                END AS quantity,
+                hr.base_rate AS base_rate,
+                hr.premium_rate AS premium_rate,
+                CASE
+                    WHEN hr.rate_type = 'Bushels' THEN ( calculate_weight(cjs.id) / crop.bushel_weight) * hr.base_rate
+                    WHEN hr.rate_type = 'Bushels + Excess Yields' THEN ( ( calculate_weight(cjs.id) / crop.bushel_weight) * hr.premium_rate ) + ( ( ( calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_rate) ) * hr.premium_rate )
+                    WHEN hr.rate_type = 'Hundred Weight' THEN (calculate_weight(cjs.id) / 100) * hr.base_rate
+                    WHEN hr.rate_type = 'Miles' THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id) * hr.base_rate
+                    WHEN hr.rate_type = 'Ton Miles' THEN (SELECT (hr.premium_rate * (SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) / COUNT(hdt.id)) + hr.base_rate) * (calculate_weight(cjs.id) / 2000) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id)
+                    WHEN hr.rate_type = 'Tons' THEN (calculate_weight(cjs.id) / 2000) * hr.base_rate
+                    WHEN hr.rate_type = 'Load Count' THEN (SELECT COUNT(hdt.id) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id) * hr.base_rate
+                    ELSE 0
+                END AS revenue
             FROM
-                (-- First query
-                SELECT
-                    customer.ID AS customer_id,
-                    crop.ID AS crop_id,
-                    crop."name" AS crop_name,
-                    SUM ( ( cjs.crop_acres :: FLOAT * cr.combining_rate :: FLOAT ) ) AS revenue,
-                    SUM ( ( cjs.crop_acres :: FLOAT * cr.combining_rate :: FLOAT ) / cjs.crop_acres :: FLOAT ) AS revenue_per_acre 
-                FROM
-                    "Customer_Job_Setup" cjs
-                    INNER JOIN "Customers" customer ON cjs.customer_id = customer."id"
-                    INNER JOIN "Crops" crop ON cjs.crop_id = crop."id"
-                    INNER JOIN "Combining_Rates" cr ON cr.customer_id = cjs.customer_id AND cjs.farm_id = cr.farm_id AND cjs.crop_id = cr.crop_id AND cr.is_deleted = FALSE 
-                    AND cr.is_deleted = FALSE 
-                WHERE
-                    cjs.customer_id = '${customer_id}' AND cjs.is_job_completed = TRUE
-                GROUP BY
-                    customer.ID,
-                    crop.ID,
-                    crop."name" UNION-- Second query
-                SELECT
-                    customer.ID AS customer_id,
-                    crop.ID AS crop_id,
-                    crop."name" AS crop_name,
-                    SUM ( ( cjs.crop_acres :: FLOAT * hr.rate :: FLOAT ) ) AS revenue,
-                    SUM ( ( cjs.crop_acres :: FLOAT * hr.rate :: FLOAT ) / cjs.crop_acres :: FLOAT ) AS revenue_per_acre 
-                FROM
-                    "Customer_Job_Setup" cjs
-                    INNER JOIN "Customers" customer ON cjs.customer_id = customer."id"
-                    INNER JOIN "Crops" crop ON cjs.crop_id = crop."id"
-                    INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id AND cjs.farm_id = hr.farm_id AND cjs.crop_id = hr.crop_id  AND hr.is_deleted = FALSE        
-                    AND hr.is_deleted = FALSE 
-                WHERE
-                    cjs.customer_id = '${customer_id}' AND cjs.is_job_completed = TRUE
-                GROUP BY
-                    customer.ID,
-                    crop.ID,
-                    crop."name" 
-                ) AS revenue_data 
-            GROUP BY
-                customer_id,
-                crop_id,
-                crop_name 
-            ) AS combined_result 
-        GROUP BY
-            combined_result.crop_id,
-            combined_result.crop_name
-        ;`
+                "Customer_Job_Setup" cjs
+                INNER JOIN "Customers" customer ON cjs.customer_id = customer.ID
+                INNER JOIN "Customer_Farm" cf ON cjs.farm_id = cf.id AND cf.is_deleted = FALSE
+                INNER JOIN "Crops" crop ON cjs.crop_id = crop.ID
+                INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id AND cjs.farm_id = hr.farm_id AND cjs.crop_id = hr.crop_id AND hr.is_deleted = FALSE
+            WHERE
+                cjs.customer_id = '${customer_id}'
+                AND cjs.is_job_completed = TRUE
+        )
+        SELECT
+            *,
+            revenue / crop_acres AS revenue_per_acre
+        FROM
+            cte;
+        `;
 
-        let query = `${getHarvestingServices} ${getHaulingServices} ${getTotalByCrop}`;
+        let query = `${getHarvestingServices} ${getHaulingServices}`;
+
+        const filePath = 'query_test.txt';
+        try {
+            await fs.promises.writeFile(filePath, query);
+            context.log(`Data written to file`);
+        }
+        catch (err) {
+            context.log.error(`Error writing data to file: ${err}`);
+        }
 
         db.connect();
 
         let result = await db.query(query);
 
-        let resp = {
+        let queryResp = {
             harvestingServices: result[0].rows,
-            haulingServices: result[1].rows,
-            totalByCrop: result[2].rows
+            haulingServices: result[1].rows
         };
 
         db.end();
+
+        const data = {
+            harvestingServices: queryResp.harvestingServices,
+            haulingServices: queryResp.haulingServices
+        };
+
+        // Create an object to store the sum of revenues for each crop
+        const sumByCrop = {};
+
+        // Calculate the sum for harvesting services
+        for (const service of data.harvestingServices) {
+            const cropId = service.crop_id;
+            const revenue = service.revenue;
+            const revenuePerAcre = service.revenue_per_acre;
+
+            if (!sumByCrop[cropId]) {
+                sumByCrop[cropId] = {
+                    "crop_name": service.crop_name,
+                    "total_revenue": 0,
+                    "total_revenue_per_acre": 0
+                };
+            }
+
+            sumByCrop[cropId].total_revenue += revenue;
+            sumByCrop[cropId].total_revenue_per_acre += revenuePerAcre;
+        }
+
+        // Calculate the sum for hauling services
+        for (const service of data.haulingServices) {
+            const cropId = service.crop_id;
+            const revenue = service.revenue;
+            const revenuePerAcre = service.revenue_per_acre;
+
+            if (!sumByCrop[cropId]) {
+                sumByCrop[cropId] = {
+                    "crop_name": service.crop_name,
+                    "total_revenue": 0,
+                    "total_revenue_per_acre": 0 // As it's hauling, assuming 0 revenue per acre
+                };
+            }
+
+            sumByCrop[cropId].total_revenue += revenue;
+            sumByCrop[cropId].total_revenue_per_acre += revenuePerAcre;
+        }
+
+        // Convert the sumByCrop object to an array for easier handling
+        const sumByCropArray = Object.keys(sumByCrop).map(cropId => {
+            return {
+                "crop_id": cropId,
+                "crop_name": sumByCrop[cropId].crop_name,
+                "total_revenue": sumByCrop[cropId].total_revenue,
+                "total_revenue_per_acre": sumByCrop[cropId].total_revenue_per_acre
+            };
+        });
+
+        console.log("Total by Crop:", sumByCropArray);
+
+        let resp = {
+            harvestingServices: queryResp.harvestingServices,
+            haulingServices: queryResp.haulingServices,
+            totalByCrop: sumByCropArray
+        }
 
         context.res = {
             status: 200,
