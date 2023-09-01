@@ -1,18 +1,4 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions";
-import { Client } from "pg";
-import { config } from "../services/database/database.config";
-const fs = require('fs');
 
-const httpTrigger: AzureFunction = async function (
-    context: Context,
-    req: HttpRequest
-): Promise<void> {
-    const db = new Client(config);
-
-    try {
-        const customer_id = req.query.customer_id;
-
-        let getHarvestingServices = `
         Select 
         
         customer.id AS customer_id,
@@ -38,10 +24,8 @@ const httpTrigger: AzureFunction = async function (
         INNER JOIN "Crops" crop ON cjs.crop_id = crop."id"
         INNER JOIN "Combining_Rates" cr ON cr.customer_id = cjs.customer_id AND cjs.farm_id = cr.farm_id AND cjs.crop_id = cr.crop_id AND cr.is_deleted = FALSE 
         
-        where cjs.customer_id = '${customer_id}' AND cjs.is_job_completed = TRUE
-        ;`;
-
-        let getHaulingServices = `
+        where cjs.customer_id = 'd32ea967-77d0-48a2-9c41-1c2e2ed9f548' AND cjs.is_job_completed = TRUE
+        ; 
         WITH cte AS (
             SELECT
                 customer.id AS customer_id,
@@ -85,7 +69,7 @@ const httpTrigger: AzureFunction = async function (
                 INNER JOIN "Crops" crop ON cjs.crop_id = crop.ID
                 INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id AND cjs.farm_id = hr.farm_id AND cjs.crop_id = hr.crop_id AND hr.is_deleted = FALSE
             WHERE
-                cjs.customer_id = '${customer_id}'
+                cjs.customer_id = 'd32ea967-77d0-48a2-9c41-1c2e2ed9f548'
                 AND cjs.is_job_completed = TRUE
         )
         SELECT
@@ -95,108 +79,4 @@ const httpTrigger: AzureFunction = async function (
             
         FROM
             cte;
-        `;
-
-        let query = `${getHarvestingServices} ${getHaulingServices}`;
-
-        const filePath = 'query_test.txt';
-        try {
-            await fs.promises.writeFile(filePath, query);
-            context.log(`Data written to file`);
-        }
-        catch (err) {
-            context.log.error(`Error writing data to file: ${err}`);
-        }
-
-        db.connect();
-
-        let result = await db.query(query);
-
-        let queryResp = {
-            harvestingServices: result[0].rows,
-            haulingServices: result[1].rows
-        };
-
-        db.end();
-
-        const data = {
-            harvestingServices: queryResp.harvestingServices,
-            haulingServices: queryResp.haulingServices
-        };
-
-        // Create an object to store the sum of revenues for each crop
-        const sumByCrop = {};
-
-        // Calculate the sum for harvesting services
-        for (const service of data.harvestingServices) {
-            const cropId = service.crop_id;
-            const revenue = service.revenue;
-            const revenuePerAcre = service.revenue_per_acre;
-
-            if (!sumByCrop[cropId]) {
-                sumByCrop[cropId] = {
-                    "crop_name": service.crop_name,
-                    "total_revenue": 0,
-                    "total_revenue_per_acre": 0
-                };
-            }
-
-            sumByCrop[cropId].total_revenue += revenue;
-            sumByCrop[cropId].total_revenue_per_acre += revenuePerAcre;
-        }
-
-        // Calculate the sum for hauling services
-        for (const service of data.haulingServices) {
-            const cropId = service.crop_id;
-            const revenue = service.revenue;
-            const revenuePerAcre = service.revenue_per_acre;
-
-            if (!sumByCrop[cropId]) {
-                sumByCrop[cropId] = {
-                    "crop_name": service.crop_name,
-                    "total_revenue": 0,
-                    "total_revenue_per_acre": 0 // As it's hauling, assuming 0 revenue per acre
-                };
-            }
-
-            sumByCrop[cropId].total_revenue += revenue;
-            sumByCrop[cropId].total_revenue_per_acre += revenuePerAcre;
-        }
-
-        // Convert the sumByCrop object to an array for easier handling
-        const sumByCropArray = Object.keys(sumByCrop).map(cropId => {
-            return {
-                "crop_id": cropId,
-                "crop_name": sumByCrop[cropId].crop_name,
-                "total_revenue": sumByCrop[cropId].total_revenue,
-                "total_revenue_per_acre": sumByCrop[cropId].total_revenue_per_acre
-            };
-        });
-
-        console.log("Total by Crop:", sumByCropArray);
-
-        let resp = {
-            harvestingServices: queryResp.harvestingServices,
-            haulingServices: queryResp.haulingServices,
-            totalByCrop: sumByCropArray
-        }
-
-        context.res = {
-            status: 200,
-            body: resp,
-        };
-
-        context.done();
-        return;
-    } catch (err) {
-        db.end();
-        context.res = {
-            status: 500,
-            body: err,
-        };
-        context.done();
-        return;
-    }
-};
-
-export default httpTrigger;
+        
