@@ -1,7 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-const fs = require('fs');
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -56,7 +55,7 @@ const httpTrigger: AzureFunction = async function (
                 calculate_weight(cjs.id) / crop.bushel_weight AS revenue_per_bushel,
                 CASE
                     WHEN hr.rate_type = 'Bushels' THEN calculate_weight(cjs.id) / crop.bushel_weight
-                    WHEN hr.rate_type = 'Bushels + Excess Yields' THEN ( calculate_weight(cjs.id) / crop.bushel_weight) + ((calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_rate))
+                    WHEN hr.rate_type = 'Bushels + Excess Yield' THEN ( calculate_weight(cjs.id) / crop.bushel_weight) + ((calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_rate))
                     WHEN hr.rate_type = 'Hundred Weight' THEN calculate_weight(cjs.id) / 100
                     WHEN hr.rate_type = 'Miles' THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id)
                     WHEN hr.rate_type = 'Ton Miles' THEN calculate_weight(cjs.id) / 2000
@@ -70,7 +69,7 @@ const httpTrigger: AzureFunction = async function (
                 hr.premium_rate AS premium_rate,
                 CASE
                     WHEN hr.rate_type = 'Bushels' THEN ( calculate_weight(cjs.id) / crop.bushel_weight) * hr.rate
-                    WHEN hr.rate_type = 'Bushels + Excess Yields' THEN ( ( calculate_weight(cjs.id) / crop.bushel_weight) * hr.premium_rate ) + ( ( ( calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_bushels) ) * hr.premium_rate )
+                    WHEN hr.rate_type = 'Bushels + Excess Yield' THEN ( ( calculate_weight(cjs.id) / crop.bushel_weight) * hr.premium_rate ) + ( ( ( calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_bushels) ) * hr.premium_rate )
                     WHEN hr.rate_type = 'Hundred Weight' THEN (calculate_weight(cjs.id) / 100) * hr.rate
                     WHEN hr.rate_type = 'Miles' THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id) * hr.rate
                     WHEN hr.rate_type = 'Ton Miles' THEN (SELECT (hr.premium_rate * (SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) / COUNT(hdt.id)) + hr.base_rate) * (calculate_weight(cjs.id) / 2000) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id)
@@ -98,15 +97,6 @@ const httpTrigger: AzureFunction = async function (
         `;
 
         let query = `${getHarvestingServices} ${getHaulingServices}`;
-
-        const filePath = 'query_test.txt';
-        try {
-            await fs.promises.writeFile(filePath, query);
-            context.log(`Data written to file`);
-        }
-        catch (err) {
-            context.log.error(`Error writing data to file: ${err}`);
-        }
 
         db.connect();
 
