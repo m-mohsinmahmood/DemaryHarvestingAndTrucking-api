@@ -132,12 +132,14 @@ const httpTrigger: AzureFunction = async function (
             const cropId = service.crop_id;
             const revenue = service.revenue;
             const revenuePerAcre = service.revenue_per_acre;
+            const revenuePerBushel = service.revenue_per_bushel;
 
             if (!sumByCrop[cropId]) {
                 sumByCrop[cropId] = {
                     "crop_name": service.crop_name,
                     "total_revenue": 0,
-                    "total_revenue_per_acre": 0
+                    "total_revenue_per_acre": 0,
+                    "total_revenue_per_bushel": 0
                 };
             }
 
@@ -150,17 +152,20 @@ const httpTrigger: AzureFunction = async function (
             const cropId = service.crop_id;
             const revenue = service.revenue;
             const revenuePerAcre = service.revenue_per_acre;
+            const revenuePerBushel = service.revenue_per_bushel;
 
             if (!sumByCrop[cropId]) {
                 sumByCrop[cropId] = {
                     "crop_name": service.crop_name,
                     "total_revenue": 0,
-                    "total_revenue_per_acre": 0 // As it's hauling, assuming 0 revenue per acre
+                    "total_revenue_per_acre": 0,
+                    "total_revenue_per_bushel": 0
                 };
             }
 
             sumByCrop[cropId].total_revenue += revenue;
             sumByCrop[cropId].total_revenue_per_acre += revenuePerAcre;
+            sumByCrop[cropId].total_revenue_per_bushel += revenuePerBushel;
         }
 
         // Convert the sumByCrop object to an array for easier handling
@@ -169,7 +174,8 @@ const httpTrigger: AzureFunction = async function (
                 "crop_id": cropId,
                 "crop_name": sumByCrop[cropId].crop_name,
                 "total_revenue": sumByCrop[cropId].total_revenue,
-                "total_revenue_per_acre": sumByCrop[cropId].total_revenue_per_acre
+                "total_revenue_per_acre": sumByCrop[cropId].total_revenue_per_acre,
+                "total_revenue_per_bushel": sumByCrop[cropId].total_revenue_per_bushel
             };
         });
 
