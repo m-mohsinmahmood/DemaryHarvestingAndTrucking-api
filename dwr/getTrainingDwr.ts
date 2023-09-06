@@ -7,15 +7,10 @@ export function GetTrainingDwr(employee_id: any, startDate: string, endDate: str
 
     if (dateType === 'month') {
         where = `${where} AND dwr_employees.begining_day > '${startDate}'::timestamp AND dwr_employees.begining_day < '${endDate}'::timestamp`
+        whereSubQuery = `${whereSubQuery} AND dwr_employees.begining_day > '${startDate}'::timestamp AND dwr_employees.begining_day < '${endDate}'::timestamp`
     }
     else {
         where = `${where} AND dwr_employees.begining_day > '${startDate}'::timestamp AND dwr_employees.begining_day < '${endDate}'::timestamp`
-    }
-
-    if (dateType === 'month') {
-        whereSubQuery = `${where} AND dwr_employees.begining_day > '${startDate}'::timestamp AND dwr_employees.begining_day < '${endDate}'::timestamp`
-    }
-    else {
         whereSubQuery = `${whereSubQuery} AND begining_day > '${startDate}'::timestamp AND begining_day < '${endDate}'::timestamp`
     }
 
