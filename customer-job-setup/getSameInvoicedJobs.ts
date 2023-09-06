@@ -26,8 +26,6 @@ const httpTrigger: AzureFunction = async function (
     customer_id = '${customer_id}'
     AND farm_id = '${farm_id}'
     AND crop_id = '${crop_id}'
-    AND is_job_active = TRUE 
-    AND is_job_completed = FALSE
     ;
       `;
       
