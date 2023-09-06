@@ -108,7 +108,7 @@ const httpTrigger: AzureFunction = async function (
     if (employee_wages_id) singleWhereClause = ` ${singleWhereClause} AND dwr_emp.employee_id = '${employee_wages_id}'`;
     if(status=='verified') singleWhereClause = ` ${singleWhereClause} AND dwr_emp.dwr_status = '${status}'`;
     if(status=='unverified') singleWhereClause = ` ${singleWhereClause} AND dwr_emp.dwr_status = 'pendingVerification'`;
-    if (start_date && end_date) singleWhereClause = `${singleWhereClause} AND dwr_emp.begining_day >= '${start_date}' AND dwr_emp.ending_day <= '${end_date}'`;
+    if (start_date && end_date) singleWhereClause = `${singleWhereClause} AND dwr_emp.begining_day > '${start_date}'::timestamp AND dwr_emp.begining_day < '${end_date}'::timestamp`;
 
     let dwr_info_query1 = `
     SELECT DISTINCT
@@ -132,12 +132,15 @@ const httpTrigger: AzureFunction = async function (
     dwr_emp.dwr_status,
     dwr_emp.id as ticket_id,
     dwr_emp.employee_notes
-FROM
-    "DWR_Employees" dwr_emp
+    
+    FROM
+
+    "Bridge_DailyTasks_DWR" bridge
+    INNER JOIN "DWR_Employees" dwr_emp ON dwr_emp."id" = bridge.dwr_id 
+    INNER JOIN "DWR" dwr ON dwr."id" = bridge.task_id
     INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
     INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_emp.employee_id
     INNER JOIN "Employees" sup ON sup."id"::VARCHAR = dwr_emp.supervisor_id
-    INNER JOIN "DWR" dwr ON dwr.employee_id::VARCHAR = dwr_emp.employee_id::VARCHAR
 
     ${singleWhereClause}
 
