@@ -12,36 +12,46 @@ const httpTrigger: AzureFunction = async function (
         const customer_id = req.query.customer_id;
 
         let getHarvestingServices = `
-        Select 
-        
-        customer.id AS customer_id,
-        customer.customer_name AS customer_name,
-        cjs.job_setup_name AS job_name,
-        cjs.farm_id AS farm_id,
-        cf."name" AS farm_name,
-        crop.id AS crop_id,
-        crop."name" AS crop_name,
-        'acre' AS rate_type,
-        cjs.crop_acres AS quantity,
-        cr.combining_rate AS rate,
-        (cjs.crop_acres::float * cr.combining_rate::float) AS revenue,
-        (cjs.crop_acres::float * cr.combining_rate::float)/cjs.crop_acres::float AS revenue_per_acre,
-        calculate_weight(cjs.id) / crop.bushel_weight AS revenue_per_bushel
-        
-        
-        from
-        
-        "Customer_Job_Setup" cjs
-        INNER JOIN "Customers" customer ON cjs.customer_id = customer."id"
-        INNER JOIN "Customer_Farm" cf ON cjs.farm_id = cf."id" AND cf.is_deleted = FALSE 
-        INNER JOIN "Crops" crop ON cjs.crop_id = crop."id"
-        INNER JOIN "Combining_Rates" cr ON cr.customer_id = cjs.customer_id AND cjs.farm_id = cr.farm_id AND cjs.crop_id = cr.crop_id AND cr.is_deleted = FALSE 
-        
-        where cjs.customer_id = '${customer_id}' AND cjs.is_job_completed = TRUE
+        WITH CTE_Harvesting_Service AS (
+            Select 
+            
+                customer.id AS customer_id,
+                customer.customer_name AS customer_name,
+                cjs.job_setup_name AS job_name,
+                cjs.farm_id AS farm_id,
+                cf."name" AS farm_name,
+                crop.id AS crop_id,
+                crop."name" AS crop_name,
+                'acre' AS rate_type,
+                cjs.crop_acres AS quantity,
+                cjs.crop_acres AS crop_acres,
+                cr.combining_rate AS rate,
+                (cjs.crop_acres::float * cr.combining_rate::float) AS revenue,
+                (cjs.crop_acres::float * cr.combining_rate::float)/cjs.crop_acres::float AS revenue_per_acre,
+                calculate_weight(cjs.id) / crop.bushel_weight AS revenue_per_bushel
+                
+                from
+                
+                    "Customer_Job_Setup" cjs
+                    INNER JOIN "Customers" customer ON cjs.customer_id = customer."id"
+                    INNER JOIN "Customer_Farm" cf ON cjs.farm_id = cf."id" AND cf.is_deleted = FALSE 
+                    INNER JOIN "Crops" crop ON cjs.crop_id = crop."id"
+                    INNER JOIN "Combining_Rates" cr ON cr.customer_id = cjs.customer_id AND cjs.farm_id = cr.farm_id AND cjs.crop_id = cr.crop_id AND cr.is_deleted = FALSE 
+                
+                where 
+                    cjs.customer_id = '${customer_id}' AND cjs.is_job_completed = TRUE
+        )
+        SELECT
+            *,
+            revenue::NUMERIC / crop_acres::NUMERIC AS revenue_per_acre,
+            revenue::NUMERIC / revenue_per_bushel::NUMERIC AS revenue_per_bushel
+            
+        FROM
+            CTE_Harvesting_Service;
         ;`;
 
         let getHaulingServices = `
-        WITH cte AS (
+        WITH CTE_Hauling_Service AS (
             SELECT
                 customer.id AS customer_id,
                 customer.customer_name AS customer_name,
@@ -55,7 +65,7 @@ const httpTrigger: AzureFunction = async function (
                 calculate_weight(cjs.id) / crop.bushel_weight AS revenue_per_bushel,
                 CASE
                     WHEN hr.rate_type = 'Bushels' THEN calculate_weight(cjs.id) / crop.bushel_weight
-                    WHEN hr.rate_type = 'Bushels + Excess Yield' THEN ( calculate_weight(cjs.id) / crop.bushel_weight) + ((calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_rate))
+                    WHEN hr.rate_type = 'Bushels + Excess Yield' THEN ((calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_bushels))
                     WHEN hr.rate_type = 'Hundred Weight' THEN calculate_weight(cjs.id) / 100
                     WHEN hr.rate_type = 'Miles' THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id)
                     WHEN hr.rate_type = 'Ton Miles' THEN calculate_weight(cjs.id) / 2000
@@ -77,23 +87,25 @@ const httpTrigger: AzureFunction = async function (
                     WHEN hr.rate_type = 'Load Count' THEN (SELECT COUNT(hdt.id) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id) * hr.rate
                     ELSE 0
                 END AS revenue
+
             FROM
                 "Customer_Job_Setup" cjs
                 INNER JOIN "Customers" customer ON cjs.customer_id = customer.ID
                 INNER JOIN "Customer_Farm" cf ON cjs.farm_id = cf.id AND cf.is_deleted = FALSE
                 INNER JOIN "Crops" crop ON cjs.crop_id = crop.ID
                 INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id AND cjs.farm_id = hr.farm_id AND cjs.crop_id = hr.crop_id AND hr.is_deleted = FALSE
+
             WHERE
                 cjs.customer_id = '${customer_id}'
                 AND cjs.is_job_completed = TRUE
         )
         SELECT
             *,
-            revenue / crop_acres AS revenue_per_acre,
-            revenue_per_bushel
+            revenue::NUMERIC / crop_acres::NUMERIC AS revenue_per_acre,
+            revenue::NUMERIC / revenue_per_bushel::NUMERIC AS revenue_per_bushel
             
         FROM
-            cte;
+            CTE_Hauling_Service;
         `;
 
         let query = `${getHarvestingServices} ${getHaulingServices}`;
@@ -120,9 +132,9 @@ const httpTrigger: AzureFunction = async function (
         // Calculate the sum for harvesting services
         for (const service of data.harvestingServices) {
             const cropId = service.crop_id;
-            const revenue = service.revenue;
-            const revenuePerAcre = service.revenue_per_acre;
-            const revenuePerBushel = service.revenue_per_bushel;
+            const revenue = Number(service.revenue);  // Ensuring number type
+            const revenuePerAcre = Number(service.revenue_per_acre);  // Ensuring number type
+            const revenuePerBushel = Number(service.revenue_per_bushel);  // Ensuring number type
 
             if (!sumByCrop[cropId]) {
                 sumByCrop[cropId] = {
@@ -135,14 +147,15 @@ const httpTrigger: AzureFunction = async function (
 
             sumByCrop[cropId].total_revenue += revenue;
             sumByCrop[cropId].total_revenue_per_acre += revenuePerAcre;
+            sumByCrop[cropId].total_revenue_per_bushel += revenuePerBushel;
         }
 
         // Calculate the sum for hauling services
         for (const service of data.haulingServices) {
             const cropId = service.crop_id;
-            const revenue = service.revenue;
-            const revenuePerAcre = service.revenue_per_acre;
-            const revenuePerBushel = service.revenue_per_bushel;
+            const revenue = Number(service.revenue);  // Ensuring number type
+            const revenuePerAcre = Number(service.revenue_per_acre);  // Ensuring number type
+            const revenuePerBushel = Number(service.revenue_per_bushel);  // Ensuring number type
 
             if (!sumByCrop[cropId]) {
                 sumByCrop[cropId] = {
@@ -168,8 +181,6 @@ const httpTrigger: AzureFunction = async function (
                 "total_revenue_per_bushel": sumByCrop[cropId].total_revenue_per_bushel
             };
         });
-
-        console.log("Total by Crop:", sumByCropArray);
 
         let resp = {
             harvestingServices: queryResp.harvestingServices,
