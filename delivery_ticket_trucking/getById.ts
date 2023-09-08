@@ -15,7 +15,7 @@ const httpTrigger: AzureFunction = async function (
     SELECT
 	
     td."id" AS "id",
-    td.delivery_ticket_number AS delivery_ticket_number,
+    td.delivery_ticket_name AS delivery_ticket_number,
     td.load_date AS load_date,
     concat(EMP.first_name, ' ', EMP.last_name) AS "truckDriverName",
     CUS.customer_name AS "customerName",

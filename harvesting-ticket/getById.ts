@@ -18,7 +18,7 @@ const httpTrigger: AzureFunction = async function (
           
           SELECT * FROM "Harvesting_Ticket"
       WHERE 
-              "delivery_ticket_number" = '${ticket_id}';
+              "delivery_ticket_name" = '${ticket_id}';
           `;
     } 
     else if(entity === "verify-ticket-truck") {
@@ -35,7 +35,7 @@ const httpTrigger: AzureFunction = async function (
 		 wo.destination as "destination",
 		 wo.split_load as "split_load",
 		 wo.truck_driver_company as "truck_driver_company",
-		 wo.delivery_ticket_number as "delivery_ticket_number",
+		 wo.delivery_ticket_name as "delivery_ticket_number",
 		 wo.kart_scale_weight_split as "kart_scale_weight_split",
 		 wo.truck_id as "truck_id",
 		 wo.field_load_split as "field_load_split",
@@ -43,8 +43,7 @@ const httpTrigger: AzureFunction = async function (
 		 wo.kart_scale_weight as "kart_scale_weight",
 		 wo.kart_scale_weight_split as "kart_scale_weight_split",
 		 cus.customer_name as "customer_name",
-     wo.split_load_check,
-     wo.delivery_ticket_number
+     wo.split_load_check
 
     FROM 
     
@@ -66,7 +65,7 @@ const httpTrigger: AzureFunction = async function (
     ON wo."customer_id" = cus."id"
 		
 		WHERE             
-    "delivery_ticket_number" = '${ticket_id}';`;
+    "delivery_ticket_name" = '${ticket_id}';`;
     }else {
       ticket_info_query = `
       SELECT 
@@ -85,7 +84,7 @@ const httpTrigger: AzureFunction = async function (
 		 wo.destination as "destination",
 		 wo.split_load as "split_load",
 		 wo.truck_driver_company as "truck_driver_company",
-		 wo.delivery_ticket_number as "delivery_ticket_number",
+		 wo.delivery_ticket_name as "delivery_ticket_number",
 		 wo.kart_scale_weight_split as "kart_scale_weight_split",
 		 wo.truck_id as "truck_id",
 		 wo.field_load_split as "field_load_split",
@@ -98,8 +97,7 @@ const httpTrigger: AzureFunction = async function (
 		 cus.customer_name as "customer_name",
      cus.id as "customer_id",
      cus.state as "state",
-     wo.split_load_check,
-     wo.delivery_ticket_number
+     wo.split_load_check
 
     FROM 
     
@@ -124,7 +122,7 @@ const httpTrigger: AzureFunction = async function (
     ON wo."customer_id" = cus."id"
 		
 		WHERE             
-    "delivery_ticket_number" = '${ticket_id}';`;
+    "delivery_ticket_name" = '${ticket_id}';`;
     }
 
     db.connect();

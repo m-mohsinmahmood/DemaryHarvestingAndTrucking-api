@@ -9,7 +9,7 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     let ticket_query = `
-    Select Max(delivery_ticket_number) from "Trucking_Delivery_Ticket";`;
+    Select Max(delivery_ticket_name) from "Trucking_Delivery_Ticket";`;
 
     let query = `${ticket_query}`;
 
