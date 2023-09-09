@@ -65,7 +65,7 @@ const httpTrigger: AzureFunction = async function (
                 calculate_weight(cjs.id) / crop.bushel_weight AS revenue_per_bushel,
                 CASE
                     WHEN hr.rate_type = 'Bushels' THEN calculate_weight(cjs.id) / crop.bushel_weight
-                    WHEN hr.rate_type = 'Bushels + Excess Yield' THEN ((calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_bushels))
+                    WHEN hr.rate_type = 'Bushels + Excess Yield' THEN ( calculate_weight(cjs.id) / crop.bushel_weight) + ((calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_bushels))
                     WHEN hr.rate_type = 'Hundred Weight' THEN calculate_weight(cjs.id) / 100
                     WHEN hr.rate_type = 'Miles' THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id)
                     WHEN hr.rate_type = 'Ton Miles' THEN calculate_weight(cjs.id) / 2000
