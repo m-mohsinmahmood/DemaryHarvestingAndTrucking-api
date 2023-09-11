@@ -39,7 +39,7 @@ const httpTrigger: AzureFunction = async function (
                     INNER JOIN "Combining_Rates" cr ON cr.customer_id = cjs.customer_id AND cjs.farm_id = cr.farm_id AND cjs.crop_id = cr.crop_id AND cr.is_deleted = FALSE 
                 
                 where 
-                    cjs.customer_id = '${customer_id}' AND cjs.is_job_completed = TRUE
+                    cjs.customer_id = '${customer_id}'
         )
         SELECT
             *,
@@ -97,7 +97,6 @@ const httpTrigger: AzureFunction = async function (
 
             WHERE
                 cjs.customer_id = '${customer_id}'
-                AND cjs.is_job_completed = TRUE
         )
         SELECT
             *,
