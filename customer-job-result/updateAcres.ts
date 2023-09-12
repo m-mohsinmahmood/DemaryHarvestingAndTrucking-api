@@ -25,7 +25,7 @@ const httpTrigger: AzureFunction = async function (
 
         let query: string = ``;
 
-        if (acres) {
+        if (acres != null) {
             query = `
             ${query}
             UPDATE 
