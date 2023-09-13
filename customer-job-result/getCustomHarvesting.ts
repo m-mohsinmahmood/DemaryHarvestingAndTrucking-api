@@ -1,7 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-const fs = require('fs');
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -128,6 +127,7 @@ if (destinations_id) TotalLoadsTicketsWhereClause = ` ${TotalLoadsTicketsWhereCl
     SELECT
     cj."id",
     cj.job_setup_name,
+    emp.first_name || ' ' || emp.last_name AS cart_operator_name,
     cj.farm_id AS farm_id,
     cj.crop_acres AS acres,
     cj.crop_gps_acres AS gps_acres,
@@ -157,6 +157,7 @@ if (destinations_id) TotalLoadsTicketsWhereClause = ` ${TotalLoadsTicketsWhereCl
     LEFT JOIN "Customer_Field" field ON ht.field_id = field."id" AND field.is_deleted = FALSE AND field.customer_id = '${customer_id}'
     LEFT JOIN "Customer_Destination" cd ON ht.destination_id = cd.ID AND cd.is_deleted = FALSE AND cd.customer_id = '${customer_id}'
     LEFT JOIN "Crops" C ON cj.crop_id = C."id"
+    LEFT JOIN "Employees" emp ON emp.id = ht.kart_operator_id
             ${whereClauseJobs}
 
         
@@ -165,6 +166,7 @@ if (destinations_id) TotalLoadsTicketsWhereClause = ` ${TotalLoadsTicketsWhereCl
     SELECT
     cj."id",
     cj.job_setup_name,
+    emp.first_name || ' ' || emp.last_name AS cart_operator_name,
     cj.farm_id AS farm_id,
     cj.crop_acres AS acres,
     cj.crop_gps_acres AS gps_acres,
@@ -194,6 +196,7 @@ if (destinations_id) TotalLoadsTicketsWhereClause = ` ${TotalLoadsTicketsWhereCl
     LEFT JOIN "Customer_Field" field ON CAST(ht.split_field_id AS UUID) = field."id" AND field.is_deleted = FALSE AND field.customer_id = '${customer_id}'
     LEFT JOIN "Customer_Destination" cd ON ht.destination_id = cd.ID AND cd.is_deleted = FALSE AND cd.customer_id = '${customer_id}'
     LEFT JOIN "Crops" C ON cj.crop_id = C."id"
+    LEFT JOIN "Employees" emp ON emp.id = ht.kart_operator_id
             ${whereClauseJobs}
 
     AND ht.split_load_check = TRUE
@@ -282,12 +285,12 @@ LEFT JOIN "Customer_Field" field ON "field".ID = ht.field_id
 LEFT JOIN "Customer_Destination" cd ON cd."name" = ht.destination
 INNER JOIN "Customers" customers ON customers."id" = ht.customer_id
 
+
   ${whereClause}
 
 ;
   `;
     let query = `${info_query} ${details_query}`;
-
 
     db.connect();
 
