@@ -157,7 +157,25 @@ export function createDWR(dwr: any) {
        VALUES ('${dwr.employeeId}','${dwr.jobId}')
        ON CONFLICT (employee_id) DO UPDATE SET delivery_ticket_invoiced_job = EXCLUDED.delivery_ticket_invoiced_job;
        `
-        
+      }
+      else if(dwr.dwr_type == 'harvesting' && dwr.role == 'Truck Driver'){
+        if(dwr.state_filter != null && dwr.state_filter != ''){
+            query = `
+            ${query}
+            INSERT INTO "User_Profile" (employee_id, state_filter)
+            VALUES ('${dwr.employeeId}', '${dwr.state_filter}')
+            ON CONFLICT (employee_id) DO UPDATE SET state_filter = EXCLUDED.state_filter;
+            `
+        }
+
+        if(dwr.customer_id_filter != null && dwr.customer_id_filter != ''){
+            query = `
+            ${query}
+            INSERT INTO "User_Profile" (employee_id, customer_id_filter)
+            VALUES ('${dwr.employeeId}', '${dwr.customer_id_filter}')
+            ON CONFLICT (employee_id) DO UPDATE SET customer_id_filter = EXCLUDED.customer_id_filter;
+            `
+        }
       }
     }
 
