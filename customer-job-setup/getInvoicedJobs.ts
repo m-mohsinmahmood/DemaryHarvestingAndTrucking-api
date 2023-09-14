@@ -104,8 +104,19 @@ const httpTrigger: AzureFunction = async function (
             let result = await db.query(query);
             let CartOperator = result.rows[0].dht_supervisor_id;
 
-            if (CartOperator) {
-                query = `SELECT
+            let customer_id = req.query.customer_id_filter;
+            let state = req.query.state_filter;
+            let whereClause = ``;
+
+            if(customer_id != null && customer_id != ''){
+                whereClause += `AND cjs.customer_id = '${customer_id}'`;
+            }
+
+            if(state != null && state != ''){
+                whereClause += `AND cjs.state = '${state}'`;
+            }
+
+            query = `SELECT
             cjs.created_at :: "date",
             cjs.ID AS job_id,
             customers."id" AS customer_id,
@@ -128,15 +139,14 @@ const httpTrigger: AzureFunction = async function (
             INNER JOIN "Crops" crop ON cjs.crop_id = crop.ID 
             
             WHERE
-            cjs.crew_chief_id :: VARCHAR = ( SELECT dht_supervisor_id :: VARCHAR FROM "Employees" WHERE ID = '${CartOperator}' ) 
-            AND cjs.is_job_active = TRUE 
-            AND cjs.is_job_completed = FALSE;`;
+            -- cjs.crew_chief_id :: VARCHAR = ( SELECT dht_supervisor_id :: VARCHAR FROM "Employees" WHERE ID = '${CartOperator}' ) 
+            cjs.is_job_active = TRUE 
+            AND cjs.is_job_completed = FALSE
+            ${whereClause}
+            
+            ;`;
 
-                result = await db.query(query);
-            }
-            else {
-                result = [];
-            }
+            result = await db.query(query);
 
             let resp = {
                 jobs: result.rows
