@@ -44,6 +44,7 @@ const httpTrigger: AzureFunction = async function (
       emp.town_city,
       emp.avatar,
       emp.is_guest_user,
+      emp.is_email_provided,
       up."truck_id" as truck_id,
       up.state_filter as state_filter,
       up.customer_id_filter as customer_id_filter
