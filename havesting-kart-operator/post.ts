@@ -117,7 +117,9 @@ const httpTrigger: AzureFunction = async function (
                     )
   
         VALUES      (
-                    'sent',
+                    CASE 
+                    WHEN ${delivery_ticket.is_email_provided} = TRUE THEN 'sent'
+                    ELSE 'pending'END,
                     CURRENT_TIMESTAMP
                     ${optionalValues}
                     );
@@ -128,8 +130,6 @@ const httpTrigger: AzureFunction = async function (
                     ;
       `;
         }
-
-        console.log(query);
 
         db.connect();
         await db.query(query);

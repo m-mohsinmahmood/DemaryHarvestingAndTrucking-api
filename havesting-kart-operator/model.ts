@@ -19,4 +19,5 @@ export interface delivery_ticket {
     jobId?: string;
     deliveryTicketNumber?: string;
     destinationId?: string;
+    is_email_provided: boolean;
 }

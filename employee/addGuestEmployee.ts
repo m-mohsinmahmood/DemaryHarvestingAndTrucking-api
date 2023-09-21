@@ -18,23 +18,24 @@ const httpTrigger: AzureFunction = async function (
     try {
         const emp: guestEmployee = req.body;
 
-        // Create employee if applicant accepts offer
-        if (!admin.apps.length) {
-            initializeFirebase();
-        }
-        // Define the custom claims object
-        try {
-            // Create a new user
-            const userRecord = await admin.auth().createUser({
-                email: emp.email,
-                password: 'dht@123',
-            });
-            firebase_id = userRecord.uid;
-            const customClaims = {
-                fb_id: userRecord.uid,
-            };
+        if (emp.email != null && emp.email != '') {
+            // Create employee if applicant accepts offer
+            if (!admin.apps.length) {
+                initializeFirebase();
+            }
+            // Define the custom claims object
+            try {
+                // Create a new user
+                const userRecord = await admin.auth().createUser({
+                    email: emp.email,
+                    password: 'dht@123',
+                });
+                firebase_id = userRecord.uid;
+                const customClaims = {
+                    fb_id: userRecord.uid,
+                };
 
-            make_employee_query = `
+                make_employee_query = `
            
 	WITH inserted_employee AS (
         INSERT INTO "Employees" ("first_name", "last_name", "email", "role", "company", "guest_user_type", "fb_id" ,"is_guest_user")
@@ -48,25 +49,62 @@ const httpTrigger: AzureFunction = async function (
       )
             `;
 
-            if (emp.employee_role == 'Truck Driver') {
-                make_employee_query = `
+                if (emp.employee_role == 'Truck Driver') {
+                    make_employee_query = `
                 ${make_employee_query}
                 INSERT INTO "User_Profile" (employee_id, truck_id)
                 VALUES ((SELECT ID FROM inserted_employee), (SELECT ID FROM inserted_truck))
                 ON CONFLICT (employee_id) DO UPDATE
                 SET truck_id = EXCLUDED.truck_id;
                 `
-            }
+                }
 
-            admin.auth().setCustomUserClaims(userRecord.uid, customClaims);
-        } catch (error) {
-            context.res = {
-                status: 500,
-                body: {
-                    message: error.message,
-                },
-            };
-            return;
+                admin.auth().setCustomUserClaims(userRecord.uid, customClaims);
+            } catch (error) {
+                context.res = {
+                    status: 500,
+                    body: {
+                        message: error.message,
+                    },
+                };
+                return;
+            }
+        }
+        else {
+            try {
+                make_employee_query = `
+                INSERT INTO 
+                
+                "Employees" 
+                (
+                    "first_name", 
+                    "last_name", 
+                    "role", 
+                    "company", 
+                    "guest_user_type", 
+                    "is_guest_user",
+                    "is_email_provided"
+                )
+                VALUES 
+                (
+                    '${emp.first_name}', 
+                    '${emp.last_name}',  
+                    '${emp.employee_role}', 
+                    '${emp.employee_company}', 
+                    '${emp.user_type}',
+                    TRUE,
+                    FALSE
+                );`;
+            }
+            catch (error) {
+                context.res = {
+                    status: 500,
+                    body: {
+                        message: error.message,
+                    },
+                };
+                return;
+            }
         }
 
         let query = `${make_employee_query}`;
