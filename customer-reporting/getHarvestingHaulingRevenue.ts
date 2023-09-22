@@ -28,7 +28,7 @@ const httpTrigger: AzureFunction = async function (
                 cr.combining_rate AS rate,
                 (cjs.crop_acres::float * cr.combining_rate::float) AS revenue,
                 (cjs.crop_acres::float * cr.combining_rate::float)/cjs.crop_acres::float AS revenue_per_acre,
-                calculate_weight(cjs.id) / crop.bushel_weight AS revenue_per_bushel
+                calculate_weight(cjs.id) / crop.bushel_weight AS total_bushels
                 
                 from
                 
@@ -44,7 +44,7 @@ const httpTrigger: AzureFunction = async function (
         SELECT
             *,
             revenue::NUMERIC / crop_acres::NUMERIC AS revenue_per_acre,
-            revenue::NUMERIC / revenue_per_bushel::NUMERIC AS revenue_per_bushel
+            revenue::NUMERIC / total_bushels::NUMERIC AS revenue_per_bushel
             
         FROM
             CTE_Harvesting_Service;
@@ -62,7 +62,7 @@ const httpTrigger: AzureFunction = async function (
                 crop."name" AS crop_name,
                 hr.rate_type AS rate_type,
                 cjs.crop_acres::float AS crop_acres,
-                calculate_weight(cjs.id) / crop.bushel_weight AS revenue_per_bushel,
+                calculate_weight(cjs.id) / crop.bushel_weight AS total_bushels,
                 CASE
                     WHEN hr.rate_type = 'Bushels' THEN calculate_weight(cjs.id) / crop.bushel_weight
                     WHEN hr.rate_type = 'Bushels + Excess Yield' THEN ( calculate_weight(cjs.id) / crop.bushel_weight) + ((calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_bushels))
@@ -82,7 +82,7 @@ const httpTrigger: AzureFunction = async function (
                     WHEN hr.rate_type = 'Bushels + Excess Yield' THEN ( ( calculate_weight(cjs.id) / crop.bushel_weight) * hr.premium_rate ) + ( ( ( calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_bushels) ) * hr.premium_rate )
                     WHEN hr.rate_type = 'Hundred Weight' THEN (calculate_weight(cjs.id) / 100) * hr.rate
                     WHEN hr.rate_type = 'Miles' THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id) * hr.rate
-                    WHEN hr.rate_type = 'Ton Miles' THEN (SELECT (hr.premium_rate * (SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) / COUNT(hdt.id)) + hr.base_rate) * (calculate_weight(cjs.id) / 2000) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id)
+                    WHEN hr.rate_type = 'Ton Miles' THEN (SELECT (hr.premium_rate * (SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0))::FLOAT / COUNT(hdt.id)) + hr.base_rate) * (calculate_weight(cjs.id) / 2000) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id AND hdt.is_deleted = FALSE)
                     WHEN hr.rate_type = 'Tons' THEN (calculate_weight(cjs.id) / 2000) * hr.rate
                     WHEN hr.rate_type = 'Load Count' THEN (SELECT COUNT(hdt.id) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id) * hr.rate
                     ELSE 0
@@ -101,7 +101,7 @@ const httpTrigger: AzureFunction = async function (
         SELECT
             *,
             revenue::NUMERIC / crop_acres::NUMERIC AS revenue_per_acre,
-            revenue::NUMERIC / revenue_per_bushel::NUMERIC AS revenue_per_bushel
+            revenue::NUMERIC / total_bushels::NUMERIC AS revenue_per_bushel
             
         FROM
             CTE_Hauling_Service;
@@ -125,6 +125,7 @@ const httpTrigger: AzureFunction = async function (
             haulingServices: queryResp.haulingServices
         };
 
+        //#region Revenue by Crops
         // Create an object to store the sum of revenues for each crop
         const sumByCrop = {};
 
@@ -175,16 +176,63 @@ const httpTrigger: AzureFunction = async function (
             return {
                 "crop_id": cropId,
                 "crop_name": sumByCrop[cropId].crop_name,
-                "total_revenue": sumByCrop[cropId].total_revenue,
-                "total_revenue_per_acre": sumByCrop[cropId].total_revenue_per_acre,
-                "total_revenue_per_bushel": sumByCrop[cropId].total_revenue_per_bushel
+                "total_revenue": +sumByCrop[cropId].total_revenue,
+                "total_revenue_per_acre": +sumByCrop[cropId].total_revenue_per_acre,
+                "total_revenue_per_bushel": +sumByCrop[cropId].total_revenue_per_bushel
             };
         });
+        //#endregion
+
+        //#region Revenue by Jobs
+        const sumByJob = {};
+
+        function calculateServiceSum(service, sumObject) {
+            const jobName = service.job_name;
+            const revenue = Number(service.revenue);
+            const revenuePerAcre = Number(service.revenue_per_acre);
+            const revenuePerBushel = Number(service.revenue_per_bushel);
+
+            if (!sumObject[jobName]) {
+                sumObject[jobName] = {
+                    "job_name": service.job_name, // Assuming each service has a job_name associated with its job_id
+                    "total_revenue": 0,
+                    "total_revenue_per_acre": 0,
+                    "total_revenue_per_bushel": 0
+                };
+            }
+
+            sumObject[jobName].total_revenue += revenue;
+            sumObject[jobName].total_revenue_per_acre += revenuePerAcre;
+            sumObject[jobName].total_revenue_per_bushel += revenuePerBushel;
+        }
+
+        // Calculate the sum for harvesting services
+        for (const service of data.harvestingServices) {
+            calculateServiceSum(service, sumByJob);
+        }
+
+        // Calculate the sum for hauling services
+        for (const service of data.haulingServices) {
+            calculateServiceSum(service, sumByJob);
+        }
+
+        // Convert the sumByJob object to an array for easier handling
+        const sumByJobArray = Object.keys(sumByJob).map(jobId => {
+            return {
+                "job_name": sumByJob[jobId].job_name,
+                "total_revenue": sumByJob[jobId].total_revenue,
+                "total_revenue_per_acre": sumByJob[jobId].total_revenue_per_acre,
+                "total_revenue_per_bushel": sumByJob[jobId].total_revenue_per_bushel
+            };
+        });
+        //#endregion
+
 
         let resp = {
             harvestingServices: queryResp.harvestingServices,
             haulingServices: queryResp.haulingServices,
-            totalByCrop: sumByCropArray
+            totalByCrop: sumByCropArray,
+            totalByJob: sumByJobArray
         }
 
         context.res = {
