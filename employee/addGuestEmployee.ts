@@ -38,8 +38,8 @@ const httpTrigger: AzureFunction = async function (
                 make_employee_query = `
            
 	WITH inserted_employee AS (
-        INSERT INTO "Employees" ("first_name", "last_name", "email", "role", "company", "guest_user_type", "fb_id" ,"is_guest_user")
-        VALUES ('${emp.first_name}', '${emp.last_name}', '${emp.email}', '${emp.employee_role}', '${emp.employee_company}', '${emp.user_type}' , '${firebase_id}' ,TRUE)
+        INSERT INTO "Employees" ("first_name", "last_name", "email", "role", "company", "guest_user_type", "fb_id" ,"is_guest_user", "created_at")
+        VALUES ('${emp.first_name}', '${emp.last_name}', '${emp.email}', '${emp.employee_role}', '${emp.employee_company}', '${emp.user_type}' , '${firebase_id}' ,TRUE, 'now()')
         RETURNING ID
       ),
     inserted_truck AS (
@@ -83,7 +83,8 @@ const httpTrigger: AzureFunction = async function (
                     "company", 
                     "guest_user_type", 
                     "is_guest_user",
-                    "is_email_provided"
+                    "is_email_provided",
+                    "created_at"
                 )
                 VALUES 
                 (
@@ -93,7 +94,8 @@ const httpTrigger: AzureFunction = async function (
                     '${emp.employee_company}', 
                     '${emp.user_type}',
                     TRUE,
-                    FALSE
+                    FALSE,
+                    'now()'
                 );`;
             }
             catch (error) {
