@@ -45,7 +45,8 @@ const httpTrigger: AzureFunction = async function (
                 "status",
                 "status_step",
                 "action_required",
-                "created_at"
+                "created_at",
+                "is_guest_user"
         FROM 
                 "Employees"
         ${whereClause}
