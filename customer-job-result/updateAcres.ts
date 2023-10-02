@@ -39,7 +39,7 @@ const httpTrigger: AzureFunction = async function (
             `
         }
 
-        if (field_id) {
+        if (field_id != null) {
             query = `
             ${query}
             UPDATE 
@@ -53,7 +53,7 @@ const httpTrigger: AzureFunction = async function (
             `
         }
 
-        if (loadDate) {
+        if (loadDate != null) {
             query = `
             ${query}
             UPDATE 
@@ -67,7 +67,7 @@ const httpTrigger: AzureFunction = async function (
             `
         }
 
-        if (destination_id) {
+        if (destination_id != null) {
             query = `
             ${query}
             UPDATE 
@@ -81,7 +81,7 @@ const httpTrigger: AzureFunction = async function (
             `
         }
 
-        if (scaleTicket) {
+        if (scaleTicket != null) {
             query = `
             ${query}
             UPDATE 
@@ -95,7 +95,7 @@ const httpTrigger: AzureFunction = async function (
             `
         }
 
-        if (netPounds) {
+        if (netPounds != null) {
             query = `
             ${query}
             UPDATE 
@@ -109,7 +109,7 @@ const httpTrigger: AzureFunction = async function (
             `
         }
 
-        if (netBushels) {
+        if (netBushels != null) {
             query = `
             ${query}
             UPDATE 
@@ -123,7 +123,7 @@ const httpTrigger: AzureFunction = async function (
             `
         }
 
-        if (loadMiles) {
+        if (loadMiles != null) {
             query = `
             ${query}
             UPDATE 
@@ -137,7 +137,7 @@ const httpTrigger: AzureFunction = async function (
             `
         }
 
-        if (status) {
+        if (status != null) {
             query = `
             ${query}
             UPDATE 
