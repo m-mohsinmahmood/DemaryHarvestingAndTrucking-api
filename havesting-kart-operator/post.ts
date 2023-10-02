@@ -54,7 +54,7 @@ const httpTrigger: AzureFunction = async function (
 
             if (delivery_ticket.loadedMiles != null) {
                 optionalReq = `${optionalReq},"loaded_miles"`;
-                optionalValues = `${optionalValues},'${delivery_ticket.loadedMiles}'`
+                optionalValues = `${optionalValues},'${+delivery_ticket.loadedMiles}'`
             }
 
             if (delivery_ticket.fieldId != null) {
@@ -69,7 +69,7 @@ const httpTrigger: AzureFunction = async function (
 
             if (delivery_ticket.kartScaleWeight != null) {
                 optionalReq = `${optionalReq},"kart_scale_weight"`;
-                optionalValues = `${optionalValues},'${delivery_ticket.kartScaleWeight}'`
+                optionalValues = `${optionalValues},'${+delivery_ticket.kartScaleWeight}'`
             }
 
             if (delivery_ticket.field_load_split != null) {
@@ -79,7 +79,7 @@ const httpTrigger: AzureFunction = async function (
 
             if (delivery_ticket.kart_scale_weight_split != null) {
                 optionalReq = `${optionalReq},"split_cart_scale_weight"`;
-                optionalValues = `${optionalValues},'${delivery_ticket.kart_scale_weight_split}'`
+                optionalValues = `${optionalValues},'${+delivery_ticket.kart_scale_weight_split}'`
             }
 
             if (delivery_ticket.jobId != null) {
@@ -99,7 +99,7 @@ const httpTrigger: AzureFunction = async function (
 
             if (delivery_ticket.farmers_bin_weight != null) {
                 optionalReq = `${optionalReq},"farmers_bin_weight"`;
-                optionalValues = `${optionalValues},'${delivery_ticket.farmers_bin_weight}'`
+                optionalValues = `${optionalValues},'${+delivery_ticket.farmers_bin_weight}'`
             }
 
             if (delivery_ticket.destinationId != null) {
@@ -125,7 +125,7 @@ const httpTrigger: AzureFunction = async function (
                     );
 
         INSERT INTO "User_Profile" (employee_id,loaded_miles)
-        VALUES ('${delivery_ticket.kartOperatorId}','${delivery_ticket.loadedMiles}')
+        VALUES ('${delivery_ticket.kartOperatorId}','${+delivery_ticket.loadedMiles}')
         ON CONFLICT (employee_id) DO UPDATE SET loaded_miles = EXCLUDED.loaded_miles;
                     ;
       `;

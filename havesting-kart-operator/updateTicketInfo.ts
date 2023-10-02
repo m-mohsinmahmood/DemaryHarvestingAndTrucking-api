@@ -25,13 +25,13 @@ const httpTrigger: AzureFunction = async function (
             UPDATE 
                     "Harvesting_Delivery_Ticket"
             SET 
-                   "test_weight"                          = '${test_weight}', 
-                   "moisture_content"                     = '${moisture_content}',
-                    "protein_content"                     = '${protein_content}',
-                    "scale_ticket_weight"                 = '${net_weight}', 
-                    "scale_ticket_number"                 = '${scale_ticket}',
+                   "test_weight"                          = '${+test_weight}', 
+                   "moisture_content"                     = '${+moisture_content}',
+                    "protein_content"                     = '${+protein_content}',
+                    "scale_ticket_weight"                 = '${+net_weight}', 
+                    "scale_ticket_number"                 = '${+scale_ticket}',
                     "field_id"                            = '${fieldId}',
-                    "loaded_miles"                        = '${loadedMiles}',
+                    "loaded_miles"                        = '${+loadedMiles}',
                     "destination"                         = '${destination}',
                     "destination_id"                      = '${destinationId}'
 
