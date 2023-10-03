@@ -35,16 +35,18 @@ const httpTrigger: AzureFunction = async function (
         limit = 20;
 
         whereClause = `${whereClause} AND (ht.ticket_status = 'pending' OR ht.ticket_status = 'sent')`
+
+        if (ticket_name != null) {
+          // Search ticket to print
+          whereClause = `${whereClause} AND delivery_ticket_name = '${ticket_name}'`
+        }
       }
     }
     else {
       whereClause = `${whereClause} AND ht.ticket_status = '${ticketStatus}'`
     }
 
-    if (ticket_name != null) {
-      // Search ticket to print
-      whereClause = `${whereClause} AND (ht.ticket_status = 'pending' OR ht.ticket_status = 'sent') AND delivery_ticket_name = '${ticket_name}'`
-    }
+   
 
     let ticket_query = `
     Select 
@@ -58,7 +60,7 @@ const httpTrigger: AzureFunction = async function (
     CUS.customer_name AS "customerName",
     CUS.id AS "customerId",
     farm."id" AS farm_id,
-    field_id AS field_id,
+    ht.field_id AS field_id,
     farm."name" AS farm_name,
     field."name" AS field_name,
     ht.crop_id AS crop_id,
