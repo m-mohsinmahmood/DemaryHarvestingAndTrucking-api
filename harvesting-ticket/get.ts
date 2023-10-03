@@ -80,13 +80,17 @@ const httpTrigger: AzureFunction = async function (
     ht.scale_ticket_number,
 		ht.machinery_id as machinery_id,
 		mv."name" as machinery_name,
-		mv.company_name as machinery_company_name
+		mv.company_name as machinery_company_name,
+    crew_chief."id" AS crew_chief_id,
+    concat(crew_chief.first_name, ' ', crew_chief.last_name) AS crew_chief_name
 
     FROM
     
     "Harvesting_Delivery_Ticket" ht
+    INNER JOIN "Customer_Job_Setup" cjs ON ht.job_id = cjs."id"
     INNER JOIN "Employees" truck_driver ON ht.truck_driver_id = truck_driver.ID
     INNER JOIN "Employees" kart_operator ON ht.kart_operator_id = kart_operator.ID 
+    INNER JOIN "Employees" crew_chief ON cjs.crew_chief_id = crew_chief.id
     INNER JOIN "Customers" CUS ON CUS."id" = ht.customer_id
     INNER JOIN "Customer_Farm" farm ON ht.farm_id = farm."id"
     INNER JOIN "Customer_Field" field ON ht.field_id = field."id" 
