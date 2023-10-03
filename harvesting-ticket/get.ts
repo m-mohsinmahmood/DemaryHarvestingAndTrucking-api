@@ -13,8 +13,9 @@ const httpTrigger: AzureFunction = async function (
     const kartOperatorId = req.query.kartOperatorId;
     const truckDriverId: string = req.query.truckDriverId;
     const ticketStatus = req.query.ticketStatus;
+    let limit = null;
 
-    let whereClause: string = `AND ht.is_deleted = false`;
+    let whereClause: string = `ht.is_deleted = false`;
 
     if (kartOperatorId) whereClause = `${whereClause} And kart_operator_id = '${kartOperatorId}' `;
     if (truckDriverId) whereClause = `${whereClause} And truck_driver_id = '${truckDriverId}' `;
@@ -24,6 +25,17 @@ const httpTrigger: AzureFunction = async function (
       const endDate = req.query.endDate;
 
       whereClause = `${whereClause} AND ht.modified_at > '${startDate}'::timestamp AND ht.modified_at < '${endDate}'::timestamp`
+    }
+
+    if (ticketStatus == 'print') {
+      if (kartOperatorId) {
+        limit = 20;
+
+        whereClause = `${whereClause} AND ht.ticket_status = 'pending' OR ht.ticket_status = 'sent'`
+      }
+    }
+    else {
+      whereClause = `${whereClause} AND ht.ticket_status = '${ticketStatus}'`
     }
 
     let ticket_query = `
@@ -75,11 +87,10 @@ const httpTrigger: AzureFunction = async function (
     LEFT JOIN "Motorized_Vehicles" mv ON ht.machinery_id = mv.id::VARCHAR
 
   WHERE
-  ht.ticket_status = '${ticketStatus}' 
-
   ${whereClause}
 
   order by ht.delivery_ticket_name DESC
+  LIMIT ${limit}
   ;`;
 
     let query = `${ticket_query}`;
