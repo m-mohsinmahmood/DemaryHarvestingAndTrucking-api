@@ -13,6 +13,7 @@ const httpTrigger: AzureFunction = async function (
     const kartOperatorId = req.query.kartOperatorId;
     const truckDriverId: string = req.query.truckDriverId;
     const ticketStatus = req.query.ticketStatus;
+    const ticket_name = req.query.ticket_name;
     let limit = null;
 
     let whereClause: string = `ht.is_deleted = false`;
@@ -21,6 +22,7 @@ const httpTrigger: AzureFunction = async function (
     if (truckDriverId) whereClause = `${whereClause} And truck_driver_id = '${truckDriverId}' `;
 
     if (ticketStatus == 'verified' && kartOperatorId || ticketStatus == 'verified' && truckDriverId) {
+      // All tickets with status verified updated within 24 hours
       const startDate = req.query.startDate;
       const endDate = req.query.endDate;
 
@@ -28,14 +30,20 @@ const httpTrigger: AzureFunction = async function (
     }
 
     if (ticketStatus == 'print') {
+      // Tickets for print segment, all tickets with status either sent or pending
       if (kartOperatorId) {
         limit = 20;
 
-        whereClause = `${whereClause} AND ht.ticket_status = 'pending' OR ht.ticket_status = 'sent'`
+        whereClause = `${whereClause} AND (ht.ticket_status = 'pending' OR ht.ticket_status = 'sent')`
       }
     }
     else {
       whereClause = `${whereClause} AND ht.ticket_status = '${ticketStatus}'`
+    }
+
+    if (ticket_name != null) {
+      // Search ticket to print
+      whereClause = `${whereClause} AND (ht.ticket_status = 'pending' OR ht.ticket_status = 'sent') AND delivery_ticket_name = '${ticket_name}'`
     }
 
     let ticket_query = `
