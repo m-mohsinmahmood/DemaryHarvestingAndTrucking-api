@@ -41,45 +41,51 @@ const httpTrigger: AzureFunction = async function (
     else if (operation === 'completeTicket') {
       let optionalReq: string = ``;
 
-      if (ticket_update.fieldId != null) {
+      if (ticket_update.fieldId != null && ticket_update.fieldId != '' && ticket_update.fieldId != 'null') {
         optionalReq = `${optionalReq},"field_id" = '${ticket_update.fieldId}'`;
       }
 
-      if (ticket_update.destination != null) {
+      if (ticket_update.destination != null && ticket_update.fieldId != '' && ticket_update.fieldId != 'null') {
         optionalReq = `${optionalReq},"destination" = '${ticket_update.destination}'`;
       }
 
-      if (ticket_update.farmId != null) {
+      if (ticket_update.farmId != null && ticket_update.fieldId != '' && ticket_update.fieldId != 'null') {
         optionalReq = `${optionalReq},"farm_id" = '${ticket_update.farmId}'`;
       }
 
-      if (ticket_update.NetWeight != null) {
+      if (ticket_update.NetWeight != null && ticket_update.fieldId != '' && ticket_update.fieldId != 'null') {
         optionalReq = `${optionalReq},"scale_ticket_weight" = '${+ticket_update.NetWeight}'`;
       }
 
-      if (ticket_update.testWeight != null) {
+      if (ticket_update.testWeight != null && ticket_update.fieldId != '' && ticket_update.fieldId != 'null') {
         optionalReq = `${optionalReq},"test_weight" = '${+ticket_update.testWeight}'`;
       }
 
-      if (ticket_update.proteinContent != null) {
+      if (ticket_update.proteinContent != null && ticket_update.fieldId != '' && ticket_update.fieldId != 'null') {
         optionalReq = `${optionalReq},"protein_content" = '${+ticket_update.proteinContent}'`;
       }
 
-      if (ticket_update.moistureContent != null) {
+      if (ticket_update.moistureContent != null && ticket_update.fieldId != '' && ticket_update.fieldId != 'null') {
         optionalReq = `${optionalReq},"moisture_content" = '${+ticket_update.moistureContent}'`;
       }
-      if (ticket_update.moistureContent != null) {
+
+      if (ticket_update.moistureContent != null && ticket_update.fieldId != '' && ticket_update.fieldId != 'null') {
         optionalReq = `${optionalReq},"image_1" = '${ticket_update.moistureContent}'`;
       }
-      if (ticket_update.moistureContent != null) {
+
+      if (ticket_update.moistureContent != null && ticket_update.fieldId != '' && ticket_update.fieldId != 'null') {
         optionalReq = `${optionalReq},"image_2" = '${ticket_update.moistureContent}'`;
       }
-      if (ticket_update.farmers_bin_weight != null) {
+
+      if (ticket_update.farmers_bin_weight != null && ticket_update.fieldId != '' && ticket_update.fieldId != 'null') {
         optionalReq = `${optionalReq},"farmers_bin_weight" = '${+ticket_update.farmers_bin_weight}'`;
       }
-      if (ticket_update.machineryId != null) {
+
+      if (ticket_update.machineryId != null && ticket_update.fieldId != '' && ticket_update.fieldId != 'null') {
         optionalReq = `${optionalReq},"machinery_id" = '${ticket_update.machineryId}'`;
-      } if (ticket_update.scaleTicket != null) {
+      } 
+      
+      if (ticket_update.scaleTicket != null && ticket_update.fieldId != '' && ticket_update.fieldId != 'null') {
         optionalReq = `${optionalReq},"scale_ticket_number" = '${ticket_update.scaleTicket}'`;
       }
 

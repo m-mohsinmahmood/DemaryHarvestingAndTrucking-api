@@ -102,7 +102,7 @@ const httpTrigger: AzureFunction = async function (
             "Harvesting_Delivery_Ticket"
             
             SET 
-           "scale_ticket_weight" = '${netPounds}' 
+           "scale_ticket_weight" = '${+netPounds}' 
             
            WHERE 
             "delivery_ticket_name" = '${ticket_name}';

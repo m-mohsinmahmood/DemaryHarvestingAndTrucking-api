@@ -17,72 +17,72 @@ const httpTrigger: AzureFunction = async function (
     try {
 
         if (req.body.operation === 'createDeliveryTicket') {
-            if (delivery_ticket.kartOperatorId != null) {
+            if (delivery_ticket.kartOperatorId != null && delivery_ticket.kartOperatorId != '' && delivery_ticket.kartOperatorId != 'null') {
                 optionalReq = `${optionalReq},"kart_operator_id"`;
                 optionalValues = `${optionalValues},'${delivery_ticket.kartOperatorId}'`
             }
 
-            if (delivery_ticket.truckDriverId != null) {
+            if (delivery_ticket.truckDriverId != null && delivery_ticket.truckDriverId != '' && delivery_ticket.truckDriverId != 'null') {
                 optionalReq = `${optionalReq},"truck_driver_id"`;
                 optionalValues = `${optionalValues},'${delivery_ticket.truckDriverId}'`
             }
 
-            if (delivery_ticket.customer_id != null) {
+            if (delivery_ticket.customer_id != null && delivery_ticket.customer_id != '' && delivery_ticket.customer_id != 'null') {
                 optionalReq = `${optionalReq},"customer_id"`;
                 optionalValues = `${optionalValues},'${delivery_ticket.customer_id}'`
             }
 
-            if (delivery_ticket.farm_id != null) {
+            if (delivery_ticket.farm_id != null && delivery_ticket.farm_id != '' && delivery_ticket.farm_id != 'null') {
                 optionalReq = `${optionalReq},"farm_id"`;
                 optionalValues = `${optionalValues},'${delivery_ticket.farm_id}'`
             }
 
-            if (delivery_ticket.crop_id != null) {
+            if (delivery_ticket.crop_id != null && delivery_ticket.crop_id != '' && delivery_ticket.crop_id != 'null') {
                 optionalReq = `${optionalReq},"crop_id"`;
                 optionalValues = `${optionalValues},'${delivery_ticket.crop_id}'`
             }
 
-            if (delivery_ticket.state != null) {
+            if (delivery_ticket.state != null && delivery_ticket.state != '' && delivery_ticket.state != 'null') {
                 optionalReq = `${optionalReq},"state"`;
                 optionalValues = `${optionalValues},'${delivery_ticket.state}'`
             }
 
-            if (delivery_ticket.destination != null) {
+            if (delivery_ticket.destination != null && delivery_ticket.destination != '' && delivery_ticket.destination != 'null') {
                 optionalReq = `${optionalReq},"destination"`;
                 optionalValues = `${optionalValues},'${delivery_ticket.destination}'`
             }
 
-            if (delivery_ticket.loadedMiles != null) {
+            if (delivery_ticket.loadedMiles != null && delivery_ticket.loadedMiles != '' && delivery_ticket.loadedMiles != 'null') {
                 optionalReq = `${optionalReq},"loaded_miles"`;
                 optionalValues = `${optionalValues},'${+delivery_ticket.loadedMiles}'`
             }
 
-            if (delivery_ticket.fieldId != null) {
+            if (delivery_ticket.fieldId != null && delivery_ticket.fieldId != '' && delivery_ticket.fieldId != 'null') {
                 optionalReq = `${optionalReq},"field_id"`;
                 optionalValues = `${optionalValues},'${delivery_ticket.fieldId}'`
             }
 
-            if (delivery_ticket.splitLoad != null) {
+            if (delivery_ticket.splitLoad != null && delivery_ticket.splitLoad != '' && delivery_ticket.splitLoad != 'null') {
                 optionalReq = `${optionalReq},"split_load"`;
                 optionalValues = `${optionalValues},'${delivery_ticket.splitLoad}'`
             }
 
-            if (delivery_ticket.kartScaleWeight != null) {
+            if (delivery_ticket.kartScaleWeight != null && delivery_ticket.kartScaleWeight != '' && delivery_ticket.kartScaleWeight != 'null') {
                 optionalReq = `${optionalReq},"kart_scale_weight"`;
                 optionalValues = `${optionalValues},'${+delivery_ticket.kartScaleWeight}'`
             }
 
-            if (delivery_ticket.field_load_split != null) {
+            if (delivery_ticket.field_load_split != null && delivery_ticket.field_load_split != '' && delivery_ticket.field_load_split != 'null') {
                 optionalReq = `${optionalReq},"split_field_id"`;
                 optionalValues = `${optionalValues},'${delivery_ticket.field_load_split}'`
             }
 
-            if (delivery_ticket.kart_scale_weight_split != null) {
+            if (delivery_ticket.kart_scale_weight_split != null && delivery_ticket.kart_scale_weight_split != '' && delivery_ticket.kart_scale_weight_split != 'null') {
                 optionalReq = `${optionalReq},"split_cart_scale_weight"`;
                 optionalValues = `${optionalValues},'${+delivery_ticket.kart_scale_weight_split}'`
             }
 
-            if (delivery_ticket.jobId != null) {
+            if (delivery_ticket.jobId != null && delivery_ticket.jobId != '' && delivery_ticket.jobId != 'null') {
                 optionalReq = `${optionalReq},"job_id"`;
                 optionalValues = `${optionalValues},'${delivery_ticket.jobId}'`
             }
@@ -92,17 +92,17 @@ const httpTrigger: AzureFunction = async function (
                 optionalValues = `${optionalValues},'${delivery_ticket.split_load_check}'`
             }
 
-            if (delivery_ticket.deliveryTicketNumber != null) {
+            if (delivery_ticket.deliveryTicketNumber != null && delivery_ticket.deliveryTicketNumber != '' && delivery_ticket.deliveryTicketNumber != 'null') {
                 optionalReq = `${optionalReq},"delivery_ticket_number"`;
                 optionalValues = `${optionalValues},'${delivery_ticket.deliveryTicketNumber}'`
             }
 
-            if (delivery_ticket.farmers_bin_weight != null) {
+            if (delivery_ticket.farmers_bin_weight != null && delivery_ticket.farmers_bin_weight != '' && delivery_ticket.farmers_bin_weight != 'null') {
                 optionalReq = `${optionalReq},"farmers_bin_weight"`;
                 optionalValues = `${optionalValues},'${+delivery_ticket.farmers_bin_weight}'`
             }
 
-            if (delivery_ticket.destinationId != null) {
+            if (delivery_ticket.destinationId != null && delivery_ticket.destinationId != '' && delivery_ticket.destinationId != 'null') {
                 optionalReq = `${optionalReq},"destination_id"`;
                 optionalValues = `${optionalValues},'${delivery_ticket.destinationId}'`
             }
