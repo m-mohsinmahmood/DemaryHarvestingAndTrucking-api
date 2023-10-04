@@ -36,7 +36,7 @@ const httpTrigger: AzureFunction = async function (
 
         whereClause = `${whereClause} AND (ht.ticket_status = 'pending' OR ht.ticket_status = 'sent')`
 
-        if (ticket_name != null) {
+        if (ticket_name != null && ticket_name != 'null') {
           // Search ticket to print
           whereClause = `${whereClause} AND delivery_ticket_name = '${ticket_name}'`
         }
