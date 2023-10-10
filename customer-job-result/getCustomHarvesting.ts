@@ -2,12 +2,8 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
 
-const httpTrigger: AzureFunction = async function (
-  context: Context,
-  req: HttpRequest
-): Promise<void> {
+const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
   const db = new Client(config);
-
 
   try {
     const customer_id: string = req.query.customer_id;
@@ -21,9 +17,6 @@ const httpTrigger: AzureFunction = async function (
     const from_date: string = req.query.from_date;
     const to_date: string = req.query.to_date;
     const status: string = req.query.status;
-
-
-
 
     let subQueryWhereClause: string = ` WHERE
     cj.is_deleted = FALSE 
@@ -52,7 +45,6 @@ AND ht.scale_ticket_weight <> ''`;
     if (from_date && to_date) totalBushelWeightWhereClause = ` ${totalBushelWeightWhereClause} AND cj.created_at > '${from_date}' AND cj.created_at < '${to_date}'`;
     if (destinations_id) totalBushelWeightWhereClause = ` ${totalBushelWeightWhereClause} AND ht.destination_id = '${destinations_id}'`;
 
-
     //Farmers Tickets Where clause
     let farmersTicketsWhereClause: string = ` WHERE ht.farmers_bin_weight IS NOT NULL AND ht.farmers_bin_weight <> ''`;
     if (customer_id) farmersTicketsWhereClause = `${farmersTicketsWhereClause} AND ht.customer_id = '${customer_id}' AND ht.is_deleted != TRUE`;
@@ -61,7 +53,6 @@ AND ht.scale_ticket_weight <> ''`;
     if (crops) farmersTicketsWhereClause = `${farmersTicketsWhereClause} AND ht.crop_id = '${crops}'`;
     if (from_date && to_date) farmersTicketsWhereClause = ` ${farmersTicketsWhereClause} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
     if (destinations_id) farmersTicketsWhereClause = ` ${farmersTicketsWhereClause} AND ht.destination_id = '${destinations_id}'`;
-
 
     // Total Loads tickets
     let TotalLoadsTicketsWhereClause: string = ` WHERE ht.customer_id = '${customer_id}' AND ht.is_deleted != TRUE`;
@@ -78,7 +69,6 @@ AND ht.scale_ticket_weight <> ''`;
     AND cd.is_deleted = FALSE
     AND cc.is_deleted = FALSE`;
 
-
     if (farms) whereClause = ` ${whereClause} AND cf."id" = '${farms}'`;
     if (crops) whereClause = ` ${whereClause} AND cc.id = '${crops}'`;
     if (created_at) whereClause = ` ${whereClause} AND  extract(year from "created_at") = '${created_at}'`;
@@ -87,9 +77,7 @@ AND ht.scale_ticket_weight <> ''`;
     if (from_date && to_date) whereClause = ` ${whereClause} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
     if (status) whereClause = ` ${whereClause} AND ht.ticket_status = '${status}'`;
 
-
     let whereClauseJobs: string = `WHERE cj.customer_id = '${customer_id}'  AND cj.is_deleted = FALSE AND ht.is_deleted != TRUE`;
-
 
     if (farms) whereClauseJobs = ` ${whereClauseJobs} AND cf."id" = '${farms}'`;
     if (crops) whereClauseJobs = ` ${whereClauseJobs} AND cj.crop_id = '${crops}'`;
@@ -110,10 +98,8 @@ AND ht.scale_ticket_weight <> ''`;
     if (destinations_id) loadMileswhereClause = ` ${loadMileswhereClause} AND ht.destination_id = '${destinations_id}'`;
     if (from_date && to_date) loadMileswhereClause = ` ${loadMileswhereClause} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
 
-
-    //net pounds 
+    //net pounds
     let netPoundswhereClause: string = ` Where ht.customer_id = '${customer_id}'`;
-
 
     if (farms) netPoundswhereClause = ` ${netPoundswhereClause} AND ht.farm_id = '${farms}'`;
     if (fields) netPoundswhereClause = ` ${netPoundswhereClause} AND ht.field_id = '${fields}'`;
@@ -139,7 +125,12 @@ AND ht.scale_ticket_weight <> ''`;
     ht.scale_ticket_number AS sl_number,
     ht.loaded_miles AS load_miles,
     ht.ticket_status AS status,
-    CAST ( COALESCE ( NULLIF ( CAST(ht.farmers_bin_weight AS NUMERIC), 0 ), NULLIF ( CAST(ht.scale_ticket_weight AS NUMERIC), 0 ) ) AS NUMERIC ) AS net_pounds,
+    CAST (
+      COALESCE(
+          NULLIF(NULLIF(ht.farmers_bin_weight, ''), '0'),
+          NULLIF(NULLIF(ht.scale_ticket_weight, ''), '0')
+      ) AS NUMERIC
+  ) AS net_pounds,	
     ht.created_at AS load_date,
     ht.protein_content AS protein,
     ht.moisture_content AS moisture,
@@ -300,8 +291,8 @@ INNER JOIN "Customers" customers ON customers."id" = ht.customer_id
 
     let resp = {
       harvestingJobs: result[0].rows,
-      details: result[1].rows
-    }
+      details: result[1].rows,
+    };
 
     db.end();
 
