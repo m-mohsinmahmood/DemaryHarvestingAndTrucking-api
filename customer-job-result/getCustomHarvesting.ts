@@ -139,14 +139,7 @@ AND ht.scale_ticket_weight <> ''`;
     ht.scale_ticket_number AS sl_number,
     ht.loaded_miles AS load_miles,
     ht.ticket_status AS status,
-    CASE
-    WHEN ht.farmers_bin_weight ~ E'^\\d+\\.?\\d*$' THEN
-        COALESCE(
-            NULLIF(CAST(ht.farmers_bin_weight AS NUMERIC), 0),
-            NULLIF(CAST(ht.scale_ticket_weight AS NUMERIC), 0)
-        )
-    ELSE NULL
-    END AS net_pounds,
+    CAST ( COALESCE ( NULLIF ( CAST(ht.farmers_bin_weight AS NUMERIC), 0 ), NULLIF ( CAST(ht.scale_ticket_weight AS NUMERIC), 0 ) ) AS NUMERIC ) AS net_pounds,
     ht.created_at AS load_date,
     ht.protein_content AS protein,
     ht.moisture_content AS moisture,
@@ -189,7 +182,7 @@ AND ht.scale_ticket_weight <> ''`;
     ht.scale_ticket_number AS sl_number,
     ht.loaded_miles AS load_miles,
     ht.ticket_status AS status,
-    CAST ( COALESCE ( NULLIF ( ht.scale_ticket_weight, '' ), '0' ) AS NUMERIC ) - CAST ( COALESCE ( NULLIF ( ht.split_cart_scale_weight, '' ), '0' ) AS NUMERIC ) AS net_pounds,
+    CAST ( COALESCE ( NULLIF ( CAST(ht.scale_ticket_weight AS NUMERIC), 0 ), 0 ) AS NUMERIC ) - CAST ( COALESCE ( NULLIF ( CAST(ht.split_cart_scale_weight AS NUMERIC), 0 ), 0 ) AS NUMERIC ) AS net_pounds,
     ht.created_at AS load_date,
     ht.protein_content AS protein,
     ht.moisture_content AS moisture,
