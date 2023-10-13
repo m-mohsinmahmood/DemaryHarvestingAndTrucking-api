@@ -24,7 +24,8 @@ const httpTrigger: AzureFunction = async function (
         let result = await db.query(query);
 
         let resp = {
-            dwr: result.rows
+            dwr: result.rows,
+            status:200
         };
 
         db.end();
