@@ -17,12 +17,16 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     const from_date: string = req.query.from_date;
     const to_date: string = req.query.to_date;
     const status: string = req.query.status;
+    const portalType: any = req.query.portal_type;
+    const employee_id: any = req.query.employee_id;
 
     let subQueryWhereClause: string = ` WHERE
     cj.is_deleted = FALSE 
     AND ht.is_deleted != TRUE
     AND cj.crop_acres IS NOT NULL 
-    AND cj.crop_acres <> '' `;
+    AND cj.crop_acres <> '' 
+    AND ht.field_id IS NOT NULL
+    `;
 
     if (customer_id) subQueryWhereClause = `${subQueryWhereClause} AND cj.customer_id = '${customer_id}'`;
     if (farms) subQueryWhereClause = `${subQueryWhereClause} AND cj.farm_id = '${farms}'`;
@@ -32,21 +36,21 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     if (destinations_id) subQueryWhereClause = ` ${subQueryWhereClause} AND ht.destination_id = '${destinations_id}'`;
 
     // Total Bushel Weight where clause
-    let totalBushelWeightWhereClause: string = ` WHERE
-cj.is_deleted = FALSE
-AND ht.is_deleted != TRUE
-AND ht.scale_ticket_weight IS NOT NULL
-AND ht.scale_ticket_weight <> ''`;
+    //     let totalBushelWeightWhereClause: string = ` WHERE
+    // cj.is_deleted = FALSE
+    // AND ht.is_deleted != TRUE
+    // AND ht.scale_ticket_weight IS NOT NULL
+    // AND ht.scale_ticket_weight <> ''`;
 
-    if (customer_id) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND cj.customer_id = '${customer_id}'`;
-    if (farms) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND cj.farm_id = '${farms}'`;
-    if (fields) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND ht.field_id = '${fields}'`;
-    if (crops) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND cj.crop_id = '${crops}'`;
-    if (from_date && to_date) totalBushelWeightWhereClause = ` ${totalBushelWeightWhereClause} AND cj.created_at > '${from_date}' AND cj.created_at < '${to_date}'`;
-    if (destinations_id) totalBushelWeightWhereClause = ` ${totalBushelWeightWhereClause} AND ht.destination_id = '${destinations_id}'`;
+    // if (customer_id) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND cj.customer_id = '${customer_id}'`;
+    // if (farms) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND cj.farm_id = '${farms}'`;
+    // if (fields) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND ht.field_id = '${fields}'`;
+    // if (crops) totalBushelWeightWhereClause = `${totalBushelWeightWhereClause} AND cj.crop_id = '${crops}'`;
+    // if (from_date && to_date) totalBushelWeightWhereClause = ` ${totalBushelWeightWhereClause} AND cj.created_at > '${from_date}' AND cj.created_at < '${to_date}'`;
+    // if (destinations_id) totalBushelWeightWhereClause = ` ${totalBushelWeightWhereClause} AND ht.destination_id = '${destinations_id}'`;
 
     //Farmers Tickets Where clause
-    let farmersTicketsWhereClause: string = ` WHERE ht.farmers_bin_weight IS NOT NULL AND ht.farmers_bin_weight <> ''`;
+    let farmersTicketsWhereClause: string = ` WHERE ht.farmers_bin_weight IS NOT NULL AND ht.farmers_bin_weight <> '' AND ht.field_id IS NOT NULL`;
     if (customer_id) farmersTicketsWhereClause = `${farmersTicketsWhereClause} AND ht.customer_id = '${customer_id}' AND ht.is_deleted != TRUE`;
     if (farms) farmersTicketsWhereClause = `${farmersTicketsWhereClause} AND ht.farm_id = '${farms}'`;
     if (fields) farmersTicketsWhereClause = `${farmersTicketsWhereClause} AND ht.field_id = '${fields}'`;
@@ -55,7 +59,7 @@ AND ht.scale_ticket_weight <> ''`;
     if (destinations_id) farmersTicketsWhereClause = ` ${farmersTicketsWhereClause} AND ht.destination_id = '${destinations_id}'`;
 
     // Total Loads tickets
-    let TotalLoadsTicketsWhereClause: string = ` WHERE ht.customer_id = '${customer_id}' AND ht.is_deleted != TRUE`;
+    let TotalLoadsTicketsWhereClause: string = ` WHERE ht.customer_id = '${customer_id}' AND ht.is_deleted != TRUE AND ht.field_id IS NOT NULL`;
     if (farms) TotalLoadsTicketsWhereClause = `${TotalLoadsTicketsWhereClause} AND ht.farm_id = '${farms}'`;
     if (fields) TotalLoadsTicketsWhereClause = `${TotalLoadsTicketsWhereClause} AND ht.field_id = '${fields}'`;
     if (crops) TotalLoadsTicketsWhereClause = `${TotalLoadsTicketsWhereClause} AND ht.crop_id = '${crops}'`;
@@ -67,7 +71,16 @@ AND ht.scale_ticket_weight <> ''`;
     AND cj.is_deleted = FALSE
     AND field.is_deleted = FALSE
     AND cd.is_deleted = FALSE
-    AND cc.is_deleted = FALSE`;
+    AND cc.is_deleted = FALSE
+    AND ht.field_id IS NOT NULL
+    `;
+
+    if (portalType == 'employee-portal') {
+      whereClause = `${whereClause}
+      AND(ht.kart_operator_id = '${employee_id}' OR ht.truck_driver_id = '${employee_id}'
+	    OR cj.crew_chief_id = '${employee_id}' OR cj.director_id = '${employee_id}')
+      `
+    }
 
     if (farms) whereClause = ` ${whereClause} AND cf."id" = '${farms}'`;
     if (crops) whereClause = ` ${whereClause} AND cc.id = '${crops}'`;
@@ -77,7 +90,7 @@ AND ht.scale_ticket_weight <> ''`;
     if (from_date && to_date) whereClause = ` ${whereClause} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
     if (status) whereClause = ` ${whereClause} AND ht.ticket_status = '${status}'`;
 
-    let whereClauseJobs: string = `WHERE cj.customer_id = '${customer_id}'  AND cj.is_deleted = FALSE AND ht.is_deleted != TRUE`;
+    let whereClauseJobs: string = `WHERE cj.customer_id = '${customer_id}'  AND cj.is_deleted = FALSE AND ht.is_deleted != TRUE AND ht.field_id IS NOT NULL`;
 
     if (farms) whereClauseJobs = ` ${whereClauseJobs} AND cf."id" = '${farms}'`;
     if (crops) whereClauseJobs = ` ${whereClauseJobs} AND cj.crop_id = '${crops}'`;
@@ -87,19 +100,26 @@ AND ht.scale_ticket_weight <> ''`;
     if (from_date && to_date) whereClauseJobs = ` ${whereClauseJobs} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
     if (status) whereClauseJobs = ` ${whereClauseJobs} AND ht.ticket_status = '${status}'`;
 
+    if (portalType == 'employee-portal') {
+      whereClauseJobs = `${whereClauseJobs}
+      AND(ht.kart_operator_id = '${employee_id}' OR ht.truck_driver_id = '${employee_id}'
+	    OR cj.crew_chief_id = '${employee_id}' OR cj.director_id = '${employee_id}')
+      `
+    }
+
     //Loaded miles where clause
-    let loadMileswhereClause: string = ` Where ht.customer_id = '${customer_id}' AND ht.is_deleted != TRUE
-    AND ht.loaded_miles <> ''
-    AND ht.loaded_miles IS NOT NULL`;
-    if (farms) loadMileswhereClause = `${loadMileswhereClause} AND ht.farm_id = '${farms}'`;
-    if (fields) loadMileswhereClause = `${loadMileswhereClause} AND ht.field_id = '${fields}'`;
-    if (crops) loadMileswhereClause = `${loadMileswhereClause} AND ht.crop_id = '${crops}'`;
-    if (from_date && to_date) loadMileswhereClause = ` ${loadMileswhereClause} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
-    if (destinations_id) loadMileswhereClause = ` ${loadMileswhereClause} AND ht.destination_id = '${destinations_id}'`;
-    if (from_date && to_date) loadMileswhereClause = ` ${loadMileswhereClause} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
+    // let loadMileswhereClause: string = ` Where ht.customer_id = '${customer_id}' AND ht.is_deleted != TRUE
+    // AND ht.loaded_miles <> ''
+    // AND ht.loaded_miles IS NOT NULL`;
+    // if (farms) loadMileswhereClause = `${loadMileswhereClause} AND ht.farm_id = '${farms}'`;
+    // if (fields) loadMileswhereClause = `${loadMileswhereClause} AND ht.field_id = '${fields}'`;
+    // if (crops) loadMileswhereClause = `${loadMileswhereClause} AND ht.crop_id = '${crops}'`;
+    // if (from_date && to_date) loadMileswhereClause = ` ${loadMileswhereClause} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
+    // if (destinations_id) loadMileswhereClause = ` ${loadMileswhereClause} AND ht.destination_id = '${destinations_id}'`;
+    // if (from_date && to_date) loadMileswhereClause = ` ${loadMileswhereClause} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
 
     //net pounds
-    let netPoundswhereClause: string = ` Where ht.customer_id = '${customer_id}'`;
+    let netPoundswhereClause: string = ` Where ht.customer_id = '${customer_id}' AND ht.field_id IS NOT NULL`;
 
     if (farms) netPoundswhereClause = ` ${netPoundswhereClause} AND ht.farm_id = '${farms}'`;
     if (fields) netPoundswhereClause = ` ${netPoundswhereClause} AND ht.field_id = '${fields}'`;
@@ -116,6 +136,7 @@ AND ht.scale_ticket_weight <> ''`;
     emp_cart.first_name || ' ' || emp_cart.last_name AS cart_operator_name,
 		emp_truck.first_name || ' ' || emp_truck.last_name AS truck_driver_name,
 		emp_crew_chief.first_name || ' ' || emp_crew_chief.last_name AS crew_cheif_name,
+    up.trucking_company,
     cj.farm_id AS farm_id,
     cj.crop_acres AS acres,
     cj.crop_gps_acres AS gps_acres,
@@ -153,7 +174,8 @@ AND ht.scale_ticket_weight <> ''`;
     LEFT JOIN "Employees" emp_cart ON emp_cart.id = ht.kart_operator_id
 		LEFT JOIN "Employees" emp_truck ON emp_truck.id = ht.truck_driver_id
 		LEFT JOIN "Employees" emp_crew_chief ON emp_crew_chief.id = cj.crew_chief_id
-            ${whereClauseJobs}
+    LEFT JOIN "User_Profile" up ON up.employee_id = emp_truck."id"
+    ${whereClauseJobs}
 
         
     UNION ALL
@@ -164,6 +186,7 @@ AND ht.scale_ticket_weight <> ''`;
     emp_cart.first_name || ' ' || emp_cart.last_name AS cart_operator_name,
 		emp_truck.first_name || ' ' || emp_truck.last_name AS truck_driver_name,
 		emp_crew_chief.first_name || ' ' || emp_crew_chief.last_name AS crew_cheif_name,
+    up.trucking_company,
     cj.farm_id AS farm_id,
     cj.crop_acres AS acres,
     cj.crop_gps_acres AS gps_acres,
@@ -196,7 +219,8 @@ AND ht.scale_ticket_weight <> ''`;
     LEFT JOIN "Employees" emp_cart ON emp_cart.id = ht.kart_operator_id
 		LEFT JOIN "Employees" emp_truck ON emp_truck.id = ht.truck_driver_id
 		LEFT JOIN "Employees" emp_crew_chief ON emp_crew_chief.id = cj.crew_chief_id
-            ${whereClauseJobs}
+    LEFT JOIN "User_Profile" up ON up.employee_id = emp_truck."id"
+    ${whereClauseJobs}
 
     AND ht.split_load_check = TRUE
 
@@ -233,6 +257,8 @@ AND ht.scale_ticket_weight <> ''
           AND cj.customer_id = '${customer_id}' 
           AND cj.is_deleted = FALSE 
           AND ht.is_deleted != TRUE
+          AND ht.field_id IS NOT NULL
+
       UNION ALL
       SELECT
           CAST ( COALESCE ( NULLIF ( ht.scale_ticket_weight, '' ), '0' ) AS NUMERIC ) - CAST ( COALESCE ( NULLIF ( ht.split_cart_scale_weight, '' ), '0' ) AS NUMERIC ) AS net_pounds,
@@ -245,6 +271,7 @@ AND ht.scale_ticket_weight <> ''
           AND cj.is_deleted = FALSE 
           AND ht.is_deleted != TRUE 
           AND ht.split_load_check = TRUE
+          AND ht.field_id IS NOT NULL
   ) AS CombinedResults
 ) AS total_net_bushels,
 
@@ -276,7 +303,7 @@ LEFT JOIN "Customer_Farm" cf ON cf."id" = cj.farm_id
 LEFT JOIN "Harvesting_Delivery_Ticket" ht ON ht.job_id = cj."id"
 LEFT JOIN "Customer_Field" field ON "field".ID = ht.field_id
 LEFT JOIN "Customer_Destination" cd ON cd."name" = ht.destination
-INNER JOIN "Customers" customers ON customers."id" = ht.customer_id
+LEFT JOIN "Customers" customers ON customers."id" = ht.customer_id
 
 
   ${whereClause}

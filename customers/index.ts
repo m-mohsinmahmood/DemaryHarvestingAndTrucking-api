@@ -4,6 +4,7 @@ import * as updateCustomer from "./put";
 import * as getCustomers from "./get";
 import * as getCustomerById from "./getById";
 import * as deleteCustomer from "./delete";
+import * as getCustomersEmployeePortal from "./get-employee-portal"
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -12,6 +13,7 @@ const httpTrigger: AzureFunction = async function (
   switch (req.method) {
     case "GET":
       if (req.query.id) await getCustomerById.default(context, req);
+      else if (req.query.portal_type) await getCustomersEmployeePortal.default(context, req);
       else await getCustomers.default(context, req);
       break;
 
