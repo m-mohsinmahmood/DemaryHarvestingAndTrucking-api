@@ -77,5 +77,6 @@ export interface guestEmployee {
   employee_role: string,
   employee_company: string,
   machinery: string,
-  user_type: string
+  user_type: string,
+  machinery_company:string
 }

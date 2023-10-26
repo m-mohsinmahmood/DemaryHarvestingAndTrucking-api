@@ -112,6 +112,7 @@ const httpTrigger: AzureFunction = async function (
                     "Harvesting_Delivery_Ticket" 
                     (
                     "ticket_status",
+                    "machinery_id",
                     "created_at"
                     ${optionalReq}
                     )
@@ -120,6 +121,12 @@ const httpTrigger: AzureFunction = async function (
                     CASE 
                     WHEN ${delivery_ticket.is_email_provided} = TRUE THEN 'sent'
                     ELSE 'pending'END,
+
+                    CASE
+                    WHEN ${delivery_ticket.is_email_provided} = FALSE THEN
+                        (SELECT "truck_id" from "User_Profile" where employee_id = '${delivery_ticket.truckDriverId}')
+                    ELSE '' END,
+
                     CURRENT_TIMESTAMP
                     ${optionalValues}
                     );
@@ -139,7 +146,7 @@ const httpTrigger: AzureFunction = async function (
             status: 200,
             body: {
                 status: 200,
-                message: "Farm Work Order has been created successfully",
+                message: "Harvesting Delivery Ticket has been created successfully",
             },
         };
 
