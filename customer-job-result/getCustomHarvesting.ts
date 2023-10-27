@@ -162,7 +162,9 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     field."name" AS field_name,
     cd."name" AS destination,
     C.name AS crop_name,
-    C.bushel_weight AS bushel_weight
+    C.bushel_weight AS bushel_weight,
+    emp_truck.guest_user_type
+
         
         FROM
     "Customer_Job_Setup" cj
@@ -207,7 +209,9 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     field."name" AS field_name,
     cd."name" AS destination,
     C.name AS crop_name,
-    C.bushel_weight AS bushel_weight
+    C.bushel_weight AS bushel_weight,
+    emp_truck.guest_user_type
+
         
         FROM
     "Customer_Job_Setup" cj
