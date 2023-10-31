@@ -289,17 +289,37 @@ AND ht.scale_ticket_weight <> ''
 
 ) sub
   ) AS total_acres,
-  (
-    SELECT count(id) AS farmers_tickets
-    from "Harvesting_Delivery_Ticket" ht
-    ${farmersTicketsWhereClause}
-    ),
     (
     SELECT count(id) AS total_tickets
     from "Harvesting_Delivery_Ticket" ht 
     ${TotalLoadsTicketsWhereClause}
+    ),
 
-    )
+    (Select count(hdt.id) AS total_dht_loads 
+		from "Harvesting_Delivery_Ticket" hdt
+		LEFT JOIN "Employees" td ON td.id = hdt.truck_driver_id AND hdt.is_deleted != TRUE AND hdt.field_id IS NOT NULL 
+		WHERE hdt.customer_id = '${customer_id}' AND td.is_guest_user = FALSE
+		),
+		
+		(Select count(hdt.id) AS total_customer_loads 
+		from "Harvesting_Delivery_Ticket" hdt
+		LEFT JOIN "Employees" td ON td.id = hdt.truck_driver_id AND hdt.is_deleted != TRUE AND hdt.field_id IS NOT NULL
+		LEFT JOIN "Customers" cust ON cust.id = hdt.customer_id AND cust.is_deleted != TRUE
+		WHERE hdt.customer_id = '${customer_id}' AND td.is_guest_user = TRUE AND td.trucking_company = cust."customer_name"
+		),
+
+    (Select SUM(hdt.loaded_miles::FLOAT) AS dht_total_loaded_miles 
+		from "Harvesting_Delivery_Ticket" hdt
+		LEFT JOIN "Employees" td ON td.id = hdt.truck_driver_id AND hdt.is_deleted != TRUE AND hdt.field_id IS NOT NULL AND hdt.loaded_miles <> '' AND hdt.loaded_miles IS NOT NULL
+		WHERE hdt.customer_id = '${customer_id}' AND td.is_guest_user = FALSE
+		),
+		
+			(Select SUM(hdt.loaded_miles::FLOAT)/count(hdt.loaded_miles) AS dht_average_loaded_miles 
+		from "Harvesting_Delivery_Ticket" hdt
+		LEFT JOIN "Employees" td ON td.id = hdt.truck_driver_id AND hdt.is_deleted != TRUE AND hdt.field_id IS NOT NULL AND hdt.loaded_miles <> '' AND hdt.loaded_miles IS NOT NULL
+		WHERE hdt.customer_id = '${customer_id}' AND td.is_guest_user = FALSE
+		)
+
 FROM
 "Customer_Job_Setup" cj
 LEFT JOIN "Crops" cc ON cc."id" = uuid(cj.crop_id)
