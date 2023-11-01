@@ -81,8 +81,21 @@ const httpTrigger: AzureFunction = async function (
     ht.farmers_bin_weight,
     ht.scale_ticket_number,
 		ht.machinery_id as machinery_id,
-		mv."name" as machinery_name,
-		mv.company_name as machinery_company_name,
+		
+			CASE truck_driver.is_guest_user
+	WHEN true THEN
+		guest_mv.name
+	ELSE
+		mv.name
+END AS machinery_name,
+		
+		CASE truck_driver.is_guest_user
+	WHEN true THEN
+		truck_driver.trucking_company
+	ELSE
+		mv.name
+END AS machinery_company_name,
+
     crew_chief."id" AS crew_chief_id,
     concat(crew_chief.first_name, ' ', crew_chief.last_name) AS crew_chief_name
 
@@ -99,7 +112,8 @@ const httpTrigger: AzureFunction = async function (
     LEFT JOIN "Customer_Field" splitfield ON ht.split_field_id = splitfield."id"::VARCHAR
     INNER JOIN "Crops" crops ON ht.crop_id = crops."id"::VARCHAR
     LEFT JOIN "Motorized_Vehicles" mv ON ht.machinery_id = mv.id::VARCHAR
-
+		LEFT JOIN "User_Profile" up ON truck_driver.id = up.employee_id AND truck_driver.is_guest_user = TRUE
+		LEFT JOIN "Motorized_Vehicles" guest_mv ON up.truck_id = guest_mv.id::VARCHAR AND truck_driver.is_guest_user = TRUE
   WHERE
   ${whereClause}
 
