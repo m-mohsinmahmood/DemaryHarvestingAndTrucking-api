@@ -25,8 +25,8 @@ const httpTrigger: AzureFunction = async function (
         if (portalType == 'employee-portal') {
             from = `
       "Customers" cust
-      INNER JOIN "Harvesting_Delivery_Ticket" hdt ON hdt.customer_id = cust.ID 
-      INNER JOIN "Customer_Job_Setup" cjs ON cjs.id = hdt.job_id
+      INNER JOIN "Harvesting_Delivery_Ticket" hdt ON hdt.customer_id = cust.ID AND hdt.is_deleted = FALSE
+      INNER JOIN "Customer_Job_Setup" cjs ON cjs.id = hdt.job_id AND cjs.is_deleted = FALSE
       
       where (
       hdt.kart_operator_id = '${employee_id}' OR hdt.truck_driver_id = '${employee_id}'
