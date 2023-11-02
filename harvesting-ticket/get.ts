@@ -18,8 +18,8 @@ const httpTrigger: AzureFunction = async function (
 
     let whereClause: string = `ht.is_deleted = false`;
 
-    if (kartOperatorId) whereClause = `${whereClause} And kart_operator_id = '${kartOperatorId}' `;
-    if (truckDriverId) whereClause = `${whereClause} And truck_driver_id = '${truckDriverId}' `;
+    if (kartOperatorId) whereClause = `${whereClause} And ht.kart_operator_id = '${kartOperatorId}' `;
+    if (truckDriverId) whereClause = `${whereClause} And ht.truck_driver_id = '${truckDriverId}' `;
 
     if (ticketStatus == 'verified' && kartOperatorId || ticketStatus == 'verified' && truckDriverId) {
       // All tickets with status verified updated within 24 hours
@@ -82,20 +82,14 @@ const httpTrigger: AzureFunction = async function (
     ht.scale_ticket_number,
 		ht.machinery_id as machinery_id,
 		
-			CASE truck_driver.is_guest_user
-	WHEN true THEN
-		guest_mv.name
-	ELSE
-		mv.name
-END AS machinery_name,
-		
 		CASE truck_driver.is_guest_user
-	WHEN true THEN
-		truck_driver.trucking_company
-	ELSE
-		mv.name
-END AS machinery_company_name,
-
+	      WHEN true THEN
+		      guest_mv.name
+	      ELSE
+		      mv.name
+    END AS machinery_name,
+		
+    ht.trucking_company AS machinery_company_name,
     crew_chief."id" AS crew_chief_id,
     concat(crew_chief.first_name, ' ', crew_chief.last_name) AS crew_chief_name
 

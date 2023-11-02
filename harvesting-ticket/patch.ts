@@ -3,8 +3,6 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { BlobServiceClient } from "@azure/storage-blob";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-// import { ticket_update, ticket_update_kart, ticket_reassign } from "./model";
-import { UpdateHarvestingTicket } from "./model";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -69,14 +67,6 @@ const httpTrigger: AzureFunction = async function (
         optionalReq = `${optionalReq},"moisture_content" = '${+ticket_update.moistureContent}'`;
       }
 
-      // if (ticket_update.moistureContent != null && ticket_update.fieldId != '' && ticket_update.fieldId != 'null') {
-      //   optionalReq = `${optionalReq},"image_1" = '${ticket_update.moistureContent}'`;
-      // }
-
-      // if (ticket_update.moistureContent != null && ticket_update.fieldId != '' && ticket_update.fieldId != 'null') {
-      //   optionalReq = `${optionalReq},"image_2" = '${ticket_update.moistureContent}'`;
-      // }
-
       if (ticket_update.farmers_bin_weight != null && ticket_update.farmers_bin_weight != '' && ticket_update.farmers_bin_weight != 'null') {
         optionalReq = `${optionalReq},"farmers_bin_weight" = '${+ticket_update.farmers_bin_weight}'`;
       }
@@ -87,6 +77,10 @@ const httpTrigger: AzureFunction = async function (
       
       if (ticket_update.scaleTicket != null && ticket_update.scaleTicket != '' && ticket_update.scaleTicket != 'null') {
         optionalReq = `${optionalReq},"scale_ticket_number" = '${ticket_update.scaleTicket}'`;
+      }
+
+      if (ticket_update.trucking_company != null && ticket_update.trucking_company != '' && ticket_update.trucking_company != 'null') {
+        optionalReq = `${optionalReq},"trucking_company" = '${ticket_update.trucking_company}'`;
       }
 
       query = `

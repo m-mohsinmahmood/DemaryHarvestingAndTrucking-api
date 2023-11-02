@@ -21,6 +21,7 @@ const httpTrigger: AzureFunction = async function (
     const destination: string = req.body.destination;
     const destinationId: string = req.body.destinationId;
     const truckDriverId: string = req.body.truckDriverId;
+    const trucking_company: string = req.body.trucking_company;
     
     query = `
             UPDATE 
@@ -35,7 +36,8 @@ const httpTrigger: AzureFunction = async function (
                     "loaded_miles"                        = '${+loadedMiles}',
                     "destination"                         = '${destination}',
                     "destination_id"                      = '${destinationId}',
-                    "truck_driver_id"                     = '${truckDriverId}'
+                    "truck_driver_id"                     = '${truckDriverId}',
+                    "trucking_company"                    = '${trucking_company}'
 
             WHERE 
                     "id" = '${ticket_id}';

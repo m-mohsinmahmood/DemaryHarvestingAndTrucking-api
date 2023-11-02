@@ -20,4 +20,5 @@ export interface delivery_ticket {
     deliveryTicketNumber?: string;
     destinationId?: string;
     is_email_provided: boolean;
+    guest_user_trucking_company: string;
 }

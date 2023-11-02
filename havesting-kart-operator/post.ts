@@ -107,6 +107,11 @@ const httpTrigger: AzureFunction = async function (
                 optionalValues = `${optionalValues},'${delivery_ticket.destinationId}'`
             }
 
+            if (delivery_ticket.guest_user_trucking_company != null && delivery_ticket.guest_user_trucking_company != '' && delivery_ticket.guest_user_trucking_company != 'null') {
+                optionalReq = `${optionalReq},"trucking_company"`;
+                optionalValues = `${optionalValues},'${delivery_ticket.guest_user_trucking_company}'`
+            }
+
             query = `
         INSERT INTO 
                     "Harvesting_Delivery_Ticket" 
