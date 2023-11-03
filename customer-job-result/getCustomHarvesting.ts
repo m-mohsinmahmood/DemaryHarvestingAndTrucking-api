@@ -146,12 +146,14 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     ht.scale_ticket_number AS sl_number,
     ht.loaded_miles AS load_miles,
     ht.ticket_status AS status,
+    
     CAST (
       COALESCE(
           NULLIF(NULLIF(ht.farmers_bin_weight, ''), '0'),
           NULLIF(NULLIF(ht.scale_ticket_weight, ''), '0')
       ) AS NUMERIC
   ) AS net_pounds,	
+  
     ht.created_at AS load_date,
     ht.protein_content AS protein,
     ht.moisture_content AS moisture,
@@ -198,7 +200,13 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     ht.scale_ticket_number AS sl_number,
     ht.loaded_miles AS load_miles,
     ht.ticket_status AS status,
-    CAST ( COALESCE ( NULLIF ( CAST(ht.scale_ticket_weight AS NUMERIC), 0 ), 0 ) AS NUMERIC ) - CAST ( COALESCE ( NULLIF ( CAST(ht.split_cart_scale_weight AS NUMERIC), 0 ), 0 ) AS NUMERIC ) AS net_pounds,
+    
+    CASE
+    WHEN NULLIF(NULLIF(ht.scale_ticket_weight, '')::NUMERIC, 0) IS NULL THEN 0
+    ELSE CAST(NULLIF(NULLIF(ht.scale_ticket_weight, '')::NUMERIC, 0) AS NUMERIC)
+    - COALESCE(NULLIF(NULLIF(ht.split_cart_scale_weight, '')::NUMERIC, 0), 0)
+    END AS net_pounds,
+
     ht.created_at AS load_date,
     ht.protein_content AS protein,
     ht.moisture_content AS moisture,
@@ -237,7 +245,12 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     SELECT DISTINCT
 (
   SELECT 
-SUM(CAST(ht.scale_ticket_weight AS NUMERIC)) AS total_net_pounds
+  SUM(CAST(
+    CASE
+      WHEN ht.scale_ticket_weight = 'null' THEN 0
+      ELSE ht.scale_ticket_weight::NUMERIC
+    END AS NUMERIC
+  )) AS total_net_pounds
 FROM "Harvesting_Delivery_Ticket" ht
 ${netPoundswhereClause}
 AND ht.is_deleted != TRUE
@@ -252,7 +265,14 @@ AND ht.scale_ticket_weight <> ''
   FROM 
   (
       SELECT
-          CAST ( COALESCE ( NULLIF ( ht.farmers_bin_weight, '' ), NULLIF ( ht.scale_ticket_weight, '' ) ) AS NUMERIC ) AS net_pounds,
+    CASE
+      WHEN COALESCE(NULLIF(ht.farmers_bin_weight, ''), NULLIF(ht.scale_ticket_weight, '')) = '' THEN 0
+      ELSE
+        CASE
+          WHEN NULLIF(ht.farmers_bin_weight, '') IS NULL THEN 0
+          ELSE CAST(COALESCE(NULLIF(ht.farmers_bin_weight, ''), NULLIF(ht.scale_ticket_weight, '')) AS NUMERIC)
+        END
+    END AS net_pounds,
           C.bushel_weight
       FROM "Customer_Job_Setup" cj, "Harvesting_Delivery_Ticket" ht, "Crops" C
       WHERE 
@@ -334,6 +354,7 @@ LEFT JOIN "Customers" customers ON customers."id" = ht.customer_id
 
 ;
   `;
+  
     let query = `${info_query} ${details_query}`;
 
     db.connect();
