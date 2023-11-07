@@ -81,6 +81,7 @@ const httpTrigger: AzureFunction = async function (
     ht.farmers_bin_weight,
     ht.scale_ticket_number,
 		ht.machinery_id as machinery_id,
+    ht.trucking_company,
 		
 		CASE truck_driver.is_guest_user
 	      WHEN true THEN
