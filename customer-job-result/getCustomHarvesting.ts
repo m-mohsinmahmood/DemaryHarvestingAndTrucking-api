@@ -147,13 +147,22 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     ht.scale_ticket_number AS sl_number,
     ht.loaded_miles AS load_miles,
     ht.ticket_status AS status,
-    
+
     CAST (
-      COALESCE(
-          NULLIF(NULLIF(ht.farmers_bin_weight, ''), '0'),
-          NULLIF(NULLIF(ht.scale_ticket_weight, ''), '0')
-      ) AS NUMERIC
-  ) AS net_pounds,	
+	  COALESCE (
+		  CASE
+				
+				WHEN ht.farmers_bin_weight NOT IN ( '', '0', 'null' ) THEN
+				ht.farmers_bin_weight 
+			END,
+		  
+      CASE
+				
+				WHEN ht.scale_ticket_weight NOT IN ( '', '0', 'null' ) THEN
+				ht.scale_ticket_weight 
+				END,
+			'0'
+			) AS NUMERIC    ) AS net_pounds,	
   
     ht.created_at AS load_date,
     ht.protein_content AS protein,
@@ -355,18 +364,16 @@ LEFT JOIN "Customers" customers ON customers."id" = ht.customer_id
 
 ;
   `;
-
+  
     let query = `${info_query} ${details_query}`;
-
     const filePath = 'query_test.txt';
     try {
-      await fs.promises.writeFile(filePath, query);
-      context.log(`Data written to file`);
+        await fs.promises.writeFile(filePath, query);
+        context.log(`Data written to file`);
     }
     catch (err) {
-      context.log.error(`Error writing data to file: ${err}`);
+        context.log.error(`Error writing data to file: ${err}`);
     }
-
     db.connect();
 
     let result = await db.query(query);
