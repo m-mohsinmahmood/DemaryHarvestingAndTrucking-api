@@ -73,14 +73,10 @@ const httpTrigger: AzureFunction = async function (
 
       if (ticket_update.machineryId != null && ticket_update.machineryId != '' && ticket_update.machineryId != 'null') {
         optionalReq = `${optionalReq},"machinery_id" = '${ticket_update.machineryId}'`;
-      } 
-      
-      if (ticket_update.scaleTicket != null && ticket_update.scaleTicket != '' && ticket_update.scaleTicket != 'null') {
-        optionalReq = `${optionalReq},"scale_ticket_number" = '${ticket_update.scaleTicket}'`;
       }
 
-      if (ticket_update.trucking_company != null && ticket_update.trucking_company != '' && ticket_update.trucking_company != 'null') {
-        optionalReq = `${optionalReq},"trucking_company" = '${ticket_update.trucking_company}'`;
+      if (ticket_update.scaleTicket != null && ticket_update.scaleTicket != '' && ticket_update.scaleTicket != 'null') {
+        optionalReq = `${optionalReq},"scale_ticket_number" = '${ticket_update.scaleTicket}'`;
       }
 
       query = `
