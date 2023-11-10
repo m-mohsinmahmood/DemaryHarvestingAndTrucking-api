@@ -20,6 +20,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     const status: string = req.query.status;
     const portalType: any = req.query.portal_type;
     const employee_id: any = req.query.employee_id;
+    const trucking_company: any = req.query.trucking_company;
 
     let subQueryWhereClause: string = ` WHERE
     cj.is_deleted = FALSE 
@@ -35,6 +36,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     if (crops) subQueryWhereClause = `${subQueryWhereClause} AND cj.crop_id = '${crops}'`;
     if (from_date && to_date) subQueryWhereClause = ` ${subQueryWhereClause} AND cj.created_at > '${from_date}' AND cj.created_at < '${to_date}'`;
     if (destinations_id) subQueryWhereClause = ` ${subQueryWhereClause} AND ht.destination_id = '${destinations_id}'`;
+    if (trucking_company) subQueryWhereClause = ` ${subQueryWhereClause} AND ht.trucking_company = '${trucking_company}'`;
 
     // Total Bushel Weight where clause
     //     let totalBushelWeightWhereClause: string = ` WHERE
@@ -66,6 +68,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     if (crops) TotalLoadsTicketsWhereClause = `${TotalLoadsTicketsWhereClause} AND ht.crop_id = '${crops}'`;
     if (from_date && to_date) TotalLoadsTicketsWhereClause = ` ${TotalLoadsTicketsWhereClause} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
     if (destinations_id) TotalLoadsTicketsWhereClause = ` ${TotalLoadsTicketsWhereClause} AND ht.destination_id = '${destinations_id}'`;
+    if (trucking_company) TotalLoadsTicketsWhereClause = ` ${TotalLoadsTicketsWhereClause} AND ht.trucking_company = '${trucking_company}'`;
 
     let whereClause: string = ` Where ht.customer_id = '${customer_id}'
     AND ht.is_deleted != TRUE
@@ -100,6 +103,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     if (fields) whereClauseJobs = ` ${whereClauseJobs} AND "field".ID = '${fields}'`;
     if (from_date && to_date) whereClauseJobs = ` ${whereClauseJobs} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
     if (status) whereClauseJobs = ` ${whereClauseJobs} AND ht.ticket_status = '${status}'`;
+    if (trucking_company) whereClauseJobs = ` ${whereClauseJobs} AND ht.trucking_company = '${trucking_company}'`;
 
     if (portalType == 'employee-portal') {
       whereClauseJobs = `${whereClauseJobs}
@@ -128,6 +132,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     if (from_date && to_date) netPoundswhereClause = ` ${netPoundswhereClause} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
     if (status) netPoundswhereClause = ` ${netPoundswhereClause} AND ht.ticket_status = '${status}'`;
     if (destinations_id) netPoundswhereClause = ` ${netPoundswhereClause} AND ht.destination_id = '${destinations_id}'`;
+    if (trucking_company) netPoundswhereClause = ` ${netPoundswhereClause} AND ht.trucking_company = '${trucking_company}'`;
 
     let info_query = `
           
@@ -137,7 +142,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     emp_cart.first_name || ' ' || emp_cart.last_name AS cart_operator_name,
 		emp_truck.first_name || ' ' || emp_truck.last_name AS truck_driver_name,
 		emp_crew_chief.first_name || ' ' || emp_crew_chief.last_name AS crew_cheif_name,
-    up.trucking_company,
+    ht.trucking_company,
     cj.farm_id AS farm_id,
     cj.crop_acres AS acres,
     cj.crop_gps_acres AS gps_acres,
@@ -177,8 +182,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     C.bushel_weight AS bushel_weight,
     emp_truck.guest_user_type
 
-        
-        FROM
+    FROM
     "Customer_Job_Setup" cj
     LEFT JOIN "Harvesting_Delivery_Ticket" ht ON ht.job_id = cj."id" AND ht.is_deleted != TRUE
     LEFT JOIN "Customer_Farm" cf ON cj.farm_id = cf.ID AND cf.is_deleted = FALSE AND cf.customer_id = '${customer_id}'
@@ -188,7 +192,6 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     LEFT JOIN "Employees" emp_cart ON emp_cart.id = ht.kart_operator_id
 		LEFT JOIN "Employees" emp_truck ON emp_truck.id = ht.truck_driver_id
 		LEFT JOIN "Employees" emp_crew_chief ON emp_crew_chief.id = cj.crew_chief_id
-    LEFT JOIN "User_Profile" up ON up.employee_id = emp_truck."id"
     ${whereClauseJobs}
 
         
@@ -200,7 +203,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     emp_cart.first_name || ' ' || emp_cart.last_name AS cart_operator_name,
 		emp_truck.first_name || ' ' || emp_truck.last_name AS truck_driver_name,
 		emp_crew_chief.first_name || ' ' || emp_crew_chief.last_name AS crew_cheif_name,
-    up.trucking_company,
+    ht.trucking_company,
     cj.farm_id AS farm_id,
     cj.crop_acres AS acres,
     cj.crop_gps_acres AS gps_acres,
@@ -241,7 +244,6 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     LEFT JOIN "Employees" emp_cart ON emp_cart.id = ht.kart_operator_id
 		LEFT JOIN "Employees" emp_truck ON emp_truck.id = ht.truck_driver_id
 		LEFT JOIN "Employees" emp_crew_chief ON emp_crew_chief.id = cj.crew_chief_id
-    LEFT JOIN "User_Profile" up ON up.employee_id = emp_truck."id"
     ${whereClauseJobs}
 
     AND ht.split_load_check = TRUE
@@ -358,21 +360,19 @@ LEFT JOIN "Harvesting_Delivery_Ticket" ht ON ht.job_id = cj."id"
 LEFT JOIN "Customer_Field" field ON "field".ID = ht.field_id
 LEFT JOIN "Customer_Destination" cd ON cd."name" = ht.destination
 LEFT JOIN "Customers" customers ON customers."id" = ht.customer_id
-
-
   ${whereClause}
 
 ;
   `;
-  
+
     let query = `${info_query} ${details_query}`;
     const filePath = 'query_test.txt';
     try {
-        await fs.promises.writeFile(filePath, query);
-        context.log(`Data written to file`);
+      await fs.promises.writeFile(filePath, query);
+      context.log(`Data written to file`);
     }
     catch (err) {
-        context.log.error(`Error writing data to file: ${err}`);
+      context.log.error(`Error writing data to file: ${err}`);
     }
     db.connect();
 
