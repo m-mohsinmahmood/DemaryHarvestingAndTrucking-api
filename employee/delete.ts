@@ -4,7 +4,6 @@ import { config } from "../services/database/database.config";
 const admin = require('firebase-admin');
 import { initializeFirebase } from "../utilities/initialize-firebase";
 
-
 const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
@@ -14,11 +13,15 @@ const httpTrigger: AzureFunction = async function (
   try {
     const employee_id: string = req.query.id;
     const firebase_id: string = req.query.fb_id;
+    const email: string = req.query.email;
+
     if (!admin.apps.length) {
       initializeFirebase();
     }
     try {
-      await admin.auth().deleteUser(firebase_id);
+      if (email == 'true')
+        await admin.auth().deleteUser(firebase_id);
+
       let query = `
           UPDATE "Employees" 
           SET "is_deleted"  = TRUE, 

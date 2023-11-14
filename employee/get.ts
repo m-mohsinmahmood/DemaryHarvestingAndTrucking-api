@@ -7,24 +7,24 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest
 ): Promise<void> {
   const db = new Client(config);
-    try {
+  try {
     const search: string = req.query.search;
     const status: string = req.query.status;
     const role: string = req.query.role;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 10;
-    const sort: string = req.query.sort ? req.query.sort : `created_at` ;
+    const sort: string = req.query.sort ? req.query.sort : `created_at`;
     const order: string = req.query.order ? req.query.order : `desc`;
     let whereClause: string = ` WHERE "is_deleted" = FALSE`;
 
-    if (search) whereClause = ` ${whereClause} AND LOWER("last_name") LIKE LOWER('%${search}%') OR LOWER("first_name") LIKE LOWER('%${search}%')`;
+    if (search) whereClause = ` ${whereClause} AND (LOWER("last_name") LIKE LOWER('%${search}%') OR LOWER("first_name") LIKE LOWER('%${search}%'))`;
     if (status) whereClause = ` ${whereClause} AND "status" = ${(status === 'true')}`;
     if (role) {
       let types = role.split(",");
       types.forEach((type, index) => {
-        if(index === 0)
+        if (index === 0)
           whereClause = ` ${whereClause} AND ( "role" LIKE '%' || '${type}' || '%'`;
-        else if (index > 0)  
+        else if (index > 0)
           whereClause = ` ${whereClause} OR "role" LIKE '%' || '${type}' || '%'`;
       });
       whereClause = ` ${whereClause} )`
