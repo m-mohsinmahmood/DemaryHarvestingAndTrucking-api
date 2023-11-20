@@ -15,10 +15,18 @@ const httpTrigger: AzureFunction = async function (
     const limit: number = +req.query.limit ? +req.query.limit : 10;
     const sort: string = req.query.sort ? req.query.sort : `created_at`;
     const order: string = req.query.order ? req.query.order : `desc`;
+    const country: string = req.query.country;
+    const employment_period: string = req.query.employment_period;
+    const year: string = req.query.year;
+
     let whereClause: string = ` WHERE "is_deleted" = FALSE`;
 
     if (search) whereClause = ` ${whereClause} AND (LOWER("last_name") LIKE LOWER('%${search}%') OR LOWER("first_name") LIKE LOWER('%${search}%'))`;
     if (status) whereClause = ` ${whereClause} AND "status" = ${(status === 'true')}`;
+    if (country) whereClause = ` ${whereClause} AND "country" = '${country}'`;
+    if (employment_period) whereClause = ` ${whereClause} AND "employment_period" = '${employment_period}'`;
+    if (year) whereClause = ` ${whereClause} AND EXTRACT(YEAR from created_at) = '${year}'`;
+
     if (role) {
       let types = role.split(",");
       types.forEach((type, index) => {
