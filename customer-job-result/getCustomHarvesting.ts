@@ -313,7 +313,8 @@ AND ht.scale_ticket_weight <> ''
 
   (SELECT SUM(crop_acres) 
    FROM (
-       SELECT DISTINCT ON (cj."id") CAST(cj.crop_acres AS NUMERIC) as crop_acres
+       SELECT DISTINCT ON (cj."id")
+       CAST(NULLIF(cj.crop_acres, 'null') AS NUMERIC) as crop_acres
        FROM "Customer_Job_Setup" cj 
        LEFT JOIN "Harvesting_Delivery_Ticket" ht ON ht.job_id = cj."id"
 
