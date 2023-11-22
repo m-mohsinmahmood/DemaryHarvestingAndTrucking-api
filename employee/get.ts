@@ -13,19 +13,19 @@ const httpTrigger: AzureFunction = async function (
     const role: string = req.query.role;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 10;
-    const sort: string = req.query.sort ? req.query.sort : `created_at`;
+    const sort: string = req.query.sort ? req.query.sort : `emp.created_at`;
     const order: string = req.query.order ? req.query.order : `desc`;
     const country: string = req.query.country;
     const employment_period: string = req.query.employment_period;
     const year: string = req.query.year;
 
-    let whereClause: string = ` WHERE "is_deleted" = FALSE`;
+    let whereClause: string = ` WHERE emp."is_deleted" = FALSE`;
 
     if (search) whereClause = ` ${whereClause} AND (LOWER("last_name") LIKE LOWER('%${search}%') OR LOWER("first_name") LIKE LOWER('%${search}%'))`;
     if (status) whereClause = ` ${whereClause} AND "status" = ${(status === 'true')}`;
     if (country) whereClause = ` ${whereClause} AND "country" = '${country}'`;
     if (employment_period) whereClause = ` ${whereClause} AND "employment_period" = '${employment_period}'`;
-    if (year) whereClause = ` ${whereClause} AND EXTRACT(YEAR from created_at) = '${year}'`;
+    if (year) whereClause = ` ${whereClause} AND EXTRACT(YEAR from emp.created_at) = '${year}'`;
 
     if (role) {
       let types = role.split(",");
@@ -40,23 +40,30 @@ const httpTrigger: AzureFunction = async function (
 
     let employee_query = `
         SELECT 
-                "id",
-                "first_name",
-                "last_name",
-                "role",
-                "email",
-                "country",
-                "employment_period",
-                "cell_phone_number",
-                "cell_phone_country_code",
-                "fb_id",
-                "status",
-                "status_step",
-                "action_required",
-                "created_at",
-                "is_guest_user"
+        emp."id",
+        "first_name",
+        "last_name",
+        "role",
+        "email",
+        "country",
+        "employment_period",
+        "cell_phone_number",
+        "cell_phone_country_code",
+        "fb_id",
+        "status",
+        "status_step",
+        "action_required",
+        emp."created_at",
+        "is_guest_user",
+        emp_docs.passport_number, 
+        emp_docs.visa_control_number, 
+        emp_docs.cert_arrival_date
+
         FROM 
-                "Employees"
+                
+        "Employees" emp
+				INNER JOIN "Employee_Documents" emp_docs ON emp.id = emp_docs.employee_id
+
         ${whereClause}
         ORDER BY 
               ${sort} ${order}
@@ -70,7 +77,9 @@ const httpTrigger: AzureFunction = async function (
         SELECT 
               COUNT("id")
         FROM 
-              "Employees"
+        
+        "Employees" emp
+				INNER JOIN "Employee_Documents" emp_docs ON emp.id = emp_docs.employee_id
         ${whereClause};
       `;
 
