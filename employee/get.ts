@@ -75,7 +75,7 @@ const httpTrigger: AzureFunction = async function (
 
     let employee_count_query = `
         SELECT 
-              COUNT(emp"id")
+              COUNT(emp."id")
         FROM 
         
         "Employees" emp
