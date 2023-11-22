@@ -7,6 +7,9 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
   const db = new Client(config);
 
   try {
+    const page: number = +req.query.page ? +req.query.page : 1;
+    const limit: number = +req.query.limit ? +req.query.limit : 10;
+
     const customer_id: string = req.query.customer_id;
     const farms: string = req.query.farmsId;
     const crops: string = req.query.cropsId;
@@ -250,6 +253,11 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
     ORDER BY 
               ${sort} ${order}
+
+              OFFSET 
+              ${((page - 1) * limit)}
+        LIMIT 
+              ${limit};
     ;
     `;
 

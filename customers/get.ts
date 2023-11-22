@@ -49,7 +49,8 @@ const httpTrigger: AzureFunction = async function (
               "country", 
               "email", 
               "customer_type", 
-              "status"
+              "status",
+              "created_at"
         FROM 
               "Customers"
         ${whereClause}
