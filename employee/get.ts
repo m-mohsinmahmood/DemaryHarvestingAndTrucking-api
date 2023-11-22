@@ -62,7 +62,7 @@ const httpTrigger: AzureFunction = async function (
         FROM 
                 
         "Employees" emp
-				INNER JOIN "Employee_Documents" emp_docs ON emp.id = emp_docs.employee_id
+				LEFT JOIN "Employee_Documents" emp_docs ON emp.id = emp_docs.employee_id
 
         ${whereClause}
         ORDER BY 
@@ -79,7 +79,7 @@ const httpTrigger: AzureFunction = async function (
         FROM 
         
         "Employees" emp
-				INNER JOIN "Employee_Documents" emp_docs ON emp.id = emp_docs.employee_id
+				LEFT JOIN "Employee_Documents" emp_docs ON emp.id = emp_docs.employee_id
         ${whereClause};
       `;
 
