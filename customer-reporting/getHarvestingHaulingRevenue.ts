@@ -10,6 +10,11 @@ const httpTrigger: AzureFunction = async function (
 
     try {
         const customer_id = req.query.customer_id;
+        const year: string = req.query.year;
+
+        let whereClause: string = ``;
+
+        if (year) whereClause = ` ${whereClause} AND EXTRACT(YEAR from cjs.created_at) = '${year}'`;
 
         let getHarvestingServices = `
         WITH CTE_Harvesting_Service AS (
@@ -28,8 +33,9 @@ const httpTrigger: AzureFunction = async function (
                 cr.combining_rate AS rate,
                 (cjs.crop_acres::float * cr.combining_rate::float) AS revenue,
                 (cjs.crop_acres::float * cr.combining_rate::float)/cjs.crop_acres::float AS revenue_per_acre,
-                calculate_weight(cjs.id) / crop.bushel_weight AS total_bushels
-                
+                calculate_weight(cjs.id) / crop.bushel_weight AS total_bushels,
+                cjs.created_at
+
                 from
                 
                     "Customer_Job_Setup" cjs
@@ -40,6 +46,7 @@ const httpTrigger: AzureFunction = async function (
                 
                 where 
                     cjs.customer_id = '${customer_id}'
+                    ${whereClause}
         )
         SELECT
             *,
@@ -63,6 +70,7 @@ const httpTrigger: AzureFunction = async function (
                 hr.rate_type AS rate_type,
                 cjs.crop_acres::float AS crop_acres,
                 calculate_weight(cjs.id) / crop.bushel_weight AS total_bushels,
+                cjs.created_at,
                 CASE
                     WHEN hr.rate_type = 'Bushels' THEN calculate_weight(cjs.id) / crop.bushel_weight
                     WHEN hr.rate_type = 'Bushels + Excess Yield' THEN ( calculate_weight(cjs.id) / crop.bushel_weight) + ((calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_bushels))
@@ -97,6 +105,7 @@ const httpTrigger: AzureFunction = async function (
 
             WHERE
                 cjs.customer_id = '${customer_id}'
+                ${whereClause}
         )
         SELECT
             *,

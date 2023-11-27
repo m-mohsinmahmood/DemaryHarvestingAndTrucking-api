@@ -2,13 +2,12 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
 const fs = require('fs');
-
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
   const db = new Client(config);
 
   try {
-    const page: number = +req.query.page ? +req.query.page : 1;
-    const limit: number = +req.query.limit ? +req.query.limit : 10;
+    const page: number = +req.query.page ? +req.query.page : 0;
+    const limit: number = +req.query.limit ? +req.query.limit : 20;
 
     const customer_id: string = req.query.customer_id;
     const farms: string = req.query.farmsId;
@@ -253,11 +252,13 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
     ORDER BY 
               ${sort} ${order}
-
              
         LIMIT 
-              ${limit};
-    ;
+              ${limit}
+              
+              OFFSET ${page}
+              ;
+    
     `;
 
     let details_query = `
@@ -374,14 +375,7 @@ LEFT JOIN "Customers" customers ON customers."id" = ht.customer_id
   `;
 
     let query = `${info_query} ${details_query}`;
-    const filePath = 'query_test.txt';
-    try {
-      await fs.promises.writeFile(filePath, query);
-      context.log(`Data written to file`);
-    }
-    catch (err) {
-      context.log.error(`Error writing data to file: ${err}`);
-    }
+
     db.connect();
 
     let result = await db.query(query);
