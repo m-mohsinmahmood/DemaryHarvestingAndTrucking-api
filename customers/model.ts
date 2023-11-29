@@ -16,5 +16,6 @@ export interface customer{
     city: string,
     zip_code: string,
     website: string,
-    linkedin: string
+    linkedin: string,
+    notes:string
 }
