@@ -57,7 +57,20 @@ const httpTrigger: AzureFunction = async function (
         "is_guest_user",
         emp_docs.passport_number, 
         emp_docs.visa_control_number, 
-        emp_docs.cert_arrival_date
+        emp_docs.cert_arrival_date,
+        emp_docs.visa_issue_date,
+				emp_docs.visa_expiration_date,
+				emp_docs.visa_red_stamped_no,
+				emp.date_of_birth,
+				emp_docs.contract_date,
+				emp_docs.b797_number,
+				emp_docs.visa_interview_date,
+				emp_docs.foreign_driver_license_number,
+				emp_docs.american_license_number,
+				emp_docs.american_license_state,
+				emp_docs.american_license_issue_date,
+				emp_docs.american_license_type,
+				emp_docs.social_sec_number
 
         FROM 
                 
