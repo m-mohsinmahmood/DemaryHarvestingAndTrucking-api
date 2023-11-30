@@ -91,5 +91,6 @@ export interface applicant {
   graduation_year: string,
   resume: string,
   applied_job: string,
-  whatsapp_number: string
+  whatsapp_number: string,
+  whatsapp_country_code: string
 }
