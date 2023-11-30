@@ -121,7 +121,8 @@ const httpTrigger: AzureFunction = async function (
                   "resume",
                   "employment_period",
                   "applied_job",
-                  "created_at"
+                  "created_at",
+                  "whatsapp_number"
                 )
       VALUES      
                 (
@@ -188,7 +189,8 @@ const httpTrigger: AzureFunction = async function (
                   $$${applicant.resume}$$,
                   $$${applicant.employment_period}$$,
                   $$${applicant.applied_job}$$,
-                  'now()'
+                  'now()',
+                  $$${applicant.whatsapp_number}$$
                 )
                 RETURNING id as applicant_id
     `;
