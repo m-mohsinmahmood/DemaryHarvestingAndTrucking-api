@@ -111,7 +111,10 @@ const httpTrigger: AzureFunction = async function (
               a."resume",                  
               a."created_at",
               a."whatsapp_country_code",
-              a."whatsapp_number"        
+              a."whatsapp_number",
+              a."equipments_experience_description",
+              a."device_info"        
+
         FROM                   
               "Applicants" a 
               LEFT JOIN "Employees" e ON e."id" = first_interviewer_id and a."id" = '${applicant_id}' 

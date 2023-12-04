@@ -92,5 +92,7 @@ export interface applicant {
   resume: string,
   applied_job: string,
   whatsapp_number: string,
-  whatsapp_country_code: string
+  whatsapp_country_code: string,
+  equipments_experience_description: string,
+  device_info: string
 }
