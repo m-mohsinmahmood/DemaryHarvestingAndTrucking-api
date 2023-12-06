@@ -1,6 +1,8 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as addCustomer from "./post";
 import * as updateCustomer from "./put";
+import * as editCombiningRateNote from "./editCombiningRateNote";
+import * as editHaulingRateNote from "./editHaulingRateNote";
 import * as getCustomers from "./get";
 import * as getCustomerById from "./getById";
 import * as deleteCustomer from "./delete";
@@ -23,6 +25,11 @@ const httpTrigger: AzureFunction = async function (
 
     case "PUT":
       await updateCustomer.default(context, req);
+      break;
+
+    case "PATCH":
+      if (req.body.operation == 'editCombiningRateNote') await editCombiningRateNote.default(context, req);
+      else if (req.body.operation == 'editHaulingRateNote') await editHaulingRateNote.default(context, req);
       break;
 
     case "DELETE":

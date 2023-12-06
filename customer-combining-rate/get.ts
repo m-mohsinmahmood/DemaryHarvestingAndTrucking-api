@@ -25,13 +25,14 @@ const httpTrigger: AzureFunction = async function (
                 cr."customer_id", 
                 cr."combining_rate", 
                 cr."base_bushels", 
-                cr."premium_rate"
+                cr."premium_rate",
+                cus."combiningRateNote",
+								cus."haulingRateNote"
         FROM 
                 "Combining_Rates" cr 
-                INNER JOIN "Crops" c 
-                  ON cr."crop_id" = c."id" AND cr."is_deleted" = false
-                INNER JOIN "Customer_Farm" cf
-				          ON cr.farm_id = cf."id" AND cf."is_deleted" = FALSE
+                INNER JOIN "Crops" c ON cr."crop_id" = c."id" AND cr."is_deleted" = false
+                INNER JOIN "Customer_Farm" cf ON cr.farm_id = cf."id" AND cf."is_deleted" = FALSE
+                INNER JOIN "Customers" cus ON cr.customer_id = cus."id"
 
         ${whereClause}
         ORDER BY 
