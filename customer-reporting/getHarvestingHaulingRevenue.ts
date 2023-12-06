@@ -47,7 +47,31 @@ const httpTrigger: AzureFunction = async function (
                 where 
                     cjs.customer_id = '${customer_id}'
                     ${whereClause}
+        ),
+
+        Aggregated AS (
+            SELECT
+                farm_id,
+                crop_id,
+                ARRAY_AGG(job_name) AS job_name,
+                (ARRAY_AGG(customer_id))[1] AS customer_id,
+                (ARRAY_AGG(customer_name))[1] AS customer_name,
+                (ARRAY_AGG(farm_name))[1] AS farm_name,
+                (ARRAY_AGG(crop_name))[1] AS crop_name,
+                (ARRAY_AGG(rate_type))[1] AS rate_type,
+                MIN(quantity) AS quantity,
+                MIN(crop_acres) AS crop_acres,
+                MIN(rate) AS rate,
+                MIN(revenue) AS revenue,
+                MIN(revenue_per_acre) AS revenue_per_acre,
+                MIN(total_bushels) AS total_bushels
+            FROM
+                CTE_Harvesting_Service
+            GROUP BY
+                farm_id,
+                crop_id
         )
+        
         SELECT
             *,
             revenue::NUMERIC / crop_acres::NUMERIC AS revenue_per_acre,
