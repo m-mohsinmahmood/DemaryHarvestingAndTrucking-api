@@ -18,7 +18,7 @@ const httpTrigger: AzureFunction = async function (
     const country: string = req.query.country;
     const employment_period: string = req.query.employment_period;
     const year: string = req.query.year;
-    const employeeType: string = req.query.year;
+    const employeeType: string = req.query.employee_type;
 
     let whereClause: string = ` WHERE emp."is_deleted" = FALSE`;
 
