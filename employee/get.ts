@@ -18,6 +18,7 @@ const httpTrigger: AzureFunction = async function (
     const country: string = req.query.country;
     const employment_period: string = req.query.employment_period;
     const year: string = req.query.year;
+    const employeeType: string = req.query.year;
 
     let whereClause: string = ` WHERE emp."is_deleted" = FALSE`;
 
@@ -26,6 +27,20 @@ const httpTrigger: AzureFunction = async function (
     if (country) whereClause = ` ${whereClause} AND "country" = '${country}'`;
     if (employment_period) whereClause = ` ${whereClause} AND "employment_period" = '${employment_period}'`;
     if (year) whereClause = ` ${whereClause} AND EXTRACT(YEAR from emp.created_at) = '${year}'`;
+
+    if (employeeType) {
+      if (employeeType == 'Guest') {
+        whereClause = `${whereClause} AND emp.is_guest_user = TRUE`;
+      }
+      else {
+        if (employeeType == 'USA') {
+          whereClause = `${whereClause} AND emp.is_guest_user = FALSE AND (emp.country = 'United States of America' OR emp.country = 'USA')`;
+        }
+        else {
+          whereClause = `${whereClause} AND emp.is_guest_user = FALSE AND (emp.country <> 'United States of America' AND emp.country <> 'USA')`;
+        }
+      }
+    }
 
     if (role) {
       let types = role.split(",");
@@ -97,7 +112,7 @@ const httpTrigger: AzureFunction = async function (
       `;
 
     let query = `${employee_query} ${employee_count_query}`;
-   
+
     db.connect();
 
     let result = await db.query(query);
