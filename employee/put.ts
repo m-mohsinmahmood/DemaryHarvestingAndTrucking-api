@@ -99,7 +99,7 @@ const httpTrigger: AzureFunction = async function (
                 "modified_at"                           = 'now()',
                 "whatsapp_number"                       = $$${employee.whatsapp_number}$$,
                 "whatsapp_country_code"                 = $$${employee.whatsapp_country_code}$$,
-                "equipments_experience_description"     = $$${employee.work_experience_description}$$,
+                "equipments_experience_description"     = $$${employee.equipments_experience_description}$$,
                 "device_info"                           = $$${employee.device_info}$$
 
         WHERE 
