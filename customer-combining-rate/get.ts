@@ -26,7 +26,7 @@ const httpTrigger: AzureFunction = async function (
                 cr."combining_rate", 
                 cr."base_bushels", 
                 cr."premium_rate",
-                cr."combine_fuel_cost",
+                cr."combining_fuel_cost",
                 cr."tractor_fuel_cost",
                 cus."combiningRateNote",
 								cus."haulingRateNote"
