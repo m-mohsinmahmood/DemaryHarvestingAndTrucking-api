@@ -76,7 +76,11 @@ const httpTrigger: AzureFunction = async function (
                   "resume",
                   "employment_period",
                   "applied_job",
-                  "created_at"
+                  "created_at",
+                  "whatsapp_number",
+                  "whatsapp_country_code",
+                  "equipments_experience_description",
+                  "device_info"
                 )
       VALUES      
                 (
@@ -140,7 +144,11 @@ const httpTrigger: AzureFunction = async function (
                   '${employee.resume}',
                   '${employee.employment_period}',
                   '${employee.applied_job}',
-                  'now()'
+                  'now()',
+                  '${employee.whatsapp_number}',
+                  '${employee.whatsapp_country_code}',
+                  '${employee.equipments_experience_description}',
+                  '${employee.device_info}'
                 );
     `;
 

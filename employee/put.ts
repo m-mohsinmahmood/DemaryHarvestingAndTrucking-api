@@ -96,7 +96,12 @@ const httpTrigger: AzureFunction = async function (
                 "resume"                                = $$${employee.resume}$$,
                 "employment_period"                     = $$${employee.employment_period}$$,
                 "applied_job"                           = $$${employee.applied_job}$$,
-                "modified_at"                           = 'now()'
+                "modified_at"                           = 'now()',
+                "whatsapp_number"                       = $$${employee.whatsapp_number}$$,
+                "whatsapp_country_code"                 = $$${employee.whatsapp_country_code}$$,
+                "equipments_experience_description"     = $$${employee.work_experience_description}$$,
+                "device_info"                           = $$${employee.device_info}$$
+
         WHERE 
                 "id" = '${employee.id}'
                 
@@ -107,27 +112,27 @@ const httpTrigger: AzureFunction = async function (
     let result = await db.query(query);
     db.end();
 
-        //#region Update Firebase Email
-        if (employee.email){
-          if (!admin.apps.length) {
-            initializeFirebase();
-          }
-          try{
-           await admin.auth().updateUser(result.rows[0].fb_id, {
-              email: employee.email
-            });
-          }
-          catch(error){
-            context.res = {
-              status: 500,
-              body: {
-                message: "Error While updating Applicant Email",
-              },
-            };
-            return;
-          }
-    
-        }
+    //#region Update Firebase Email
+    if (employee.email) {
+      if (!admin.apps.length) {
+        initializeFirebase();
+      }
+      try {
+        await admin.auth().updateUser(result.rows[0].fb_id, {
+          email: employee.email
+        });
+      }
+      catch (error) {
+        context.res = {
+          status: 500,
+          body: {
+            message: "Error While updating Applicant Email",
+          },
+        };
+        return;
+      }
+
+    }
 
 
     if (files.length > 0) {
@@ -166,8 +171,8 @@ const httpTrigger: AzureFunction = async function (
         let update_query = `
       UPDATE      "Employees"
       SET `;
-        image && resume ? 
-        update_query = update_query + ` 
+        image && resume ?
+          update_query = update_query + ` 
         "avatar" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + image_file_url}', 
         "resume" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + resume_file_url}' ` : '';
         image && !resume ? update_query = update_query + ` "avatar" = '${'https://dhtstorageaccountdev.blob.core.windows.net/applicants/applicants/' + image_file_url}' ` : '';

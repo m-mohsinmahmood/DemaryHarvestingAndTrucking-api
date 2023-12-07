@@ -68,6 +68,10 @@ export interface employee {
   previous_supervisor_country_code: string,
   cell_phone_country_code: string,
   home_phone_country_code: string,
+  whatsapp_number:string,
+  whatsapp_country_code:string,
+  equipments_experience_description:string,
+  device_info:string
 }
 
 export interface guestEmployee {
@@ -77,5 +81,5 @@ export interface guestEmployee {
   employee_role: string,
   machinery: string,
   user_type: string,
-  trucking_company:string
+  trucking_company: string
 }
