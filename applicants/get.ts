@@ -43,18 +43,19 @@ const httpTrigger: AzureFunction = async function (
     
     let applicant_query = `
         SELECT 
-                "id",
-                "first_name",
-                "last_name",
-                "email",
-                "country",
-                "cell_phone_number",
-                "cell_phone_country_code",
-                "ranking",
-                "created_at",
-                "status_step",
-                "status_message",
-                "employment_period"
+         "id",
+         "first_name",
+         "last_name",
+         "email",
+         "country",
+         "cell_phone_number",
+         SUBSTRING("cell_phone_country_code", POSITION('+' IN "cell_phone_country_code")) as "cell_phone_country_code",
+         "ranking",
+         EXTRACT(YEAR FROM "created_at") AS created_at,
+         "status_step",
+         "status_message",
+         "employment_period"
+         
         FROM 
                 "Applicants"
         ${whereClause}
