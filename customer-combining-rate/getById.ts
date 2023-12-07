@@ -20,7 +20,10 @@ const httpTrigger: AzureFunction = async function (
                 cr."customer_id", 
                 cr."combining_rate", 
                 cr."base_bushels", 
-                cr."premium_rate"
+                cr."premium_rate",
+                cr."combine_fuel_cost",
+                cr."tractor_fuel_cost"
+                
         FROM 
                 "Combining_Rates" cr 
                 INNER JOIN "Crops" c 

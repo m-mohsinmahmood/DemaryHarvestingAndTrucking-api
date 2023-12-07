@@ -1,4 +1,4 @@
-export interface combining_rate{
+export interface combining_rate {
     id?: string;
     farm_id: string;
     customer_id: string;
@@ -7,4 +7,6 @@ export interface combining_rate{
     combining_rate: number;
     base_bushels: number;
     premium_rate: number;
+    combining_fuel_cost: number;
+    tractor_fuel_cost: number;
 }

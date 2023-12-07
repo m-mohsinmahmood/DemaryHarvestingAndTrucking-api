@@ -13,7 +13,7 @@ const httpTrigger: AzureFunction = async function (
     await db.connect();
 
     const combining_rate: combining_rate = req.body;
-    
+
     let query = `
       INSERT INTO "Combining_Rates" (
         "customer_id", 
@@ -21,20 +21,24 @@ const httpTrigger: AzureFunction = async function (
         "crop_id",
         "combining_rate",
         "base_bushels",
-        "premium_rate"
+        "premium_rate",
+        "combining_fuel_cost",
+        "tractor_fuel_cost"
       )
-      VALUES ($1, $2, $3, $4, $5, $6)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       ON CONFLICT (farm_id, crop_id)
       DO NOTHING;
     `;
-    
+
     const values = [
       combining_rate.customer_id,
       combining_rate.farm_id,
       combining_rate.crop_id,
       combining_rate.combining_rate,
       combining_rate.base_bushels,
-      combining_rate.premium_rate ? combining_rate.premium_rate : 0
+      combining_rate.premium_rate ? combining_rate.premium_rate : 0,
+      combining_rate.combining_fuel_cost,
+      combining_rate.tractor_fuel_cost
     ];
 
     const result = await db.query(query, values);

@@ -14,7 +14,7 @@ const httpTrigger: AzureFunction = async function (
     const sort: string = req.query.sort ? req.query.sort : `"created_at"`;
     const order: string = req.query.order ? req.query.order : `desc`;
     let whereClause: string = `WHERE hr."customer_id" = '${customer_id}' AND hr."is_deleted" = false`;
-    
+
     if (rate_type) {
       whereClause += ` AND "rate_type" = '${rate_type}'`;
     }
@@ -32,7 +32,10 @@ const httpTrigger: AzureFunction = async function (
           "premium_rate", 
           "base_bushels", 
           hr."customer_id", 
-          hr."created_at"
+          hr."created_at",
+          hr."hauling_fuel_cost",
+          hr."truck_fuel_cost"
+
     FROM
           "Hauling_Rates" AS hr
             INNER JOIN "Customer_Farm" AS cf 

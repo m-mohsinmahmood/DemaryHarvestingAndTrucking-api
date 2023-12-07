@@ -23,8 +23,11 @@ const httpTrigger: AzureFunction = async function (
                   "rate",
                   "base_rate",
                   "premium_rate",
-                  "base_bushels") 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                  "base_bushels",
+                  "hauling_fuel_cost",
+                  "truck_fuel_cost"
+                  ) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       ON CONFLICT (farm_id, crop_id)
       DO NOTHING;
     `;
@@ -37,7 +40,9 @@ const httpTrigger: AzureFunction = async function (
       hauling_rate.rate ? hauling_rate.rate : 0,
       hauling_rate.base_rate ? hauling_rate.base_rate : 0,
       hauling_rate.premium_rate ? hauling_rate.premium_rate : 0,
-      hauling_rate.base_bushels ? hauling_rate.base_bushels : 0
+      hauling_rate.base_bushels ? hauling_rate.base_bushels : 0,
+      hauling_rate.hauling_fuel_cost,
+      hauling_rate.truck_fuel_cost
     ];
 
     const result = await db.query(query, values);
