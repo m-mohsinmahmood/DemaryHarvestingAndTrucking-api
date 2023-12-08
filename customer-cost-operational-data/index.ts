@@ -1,5 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as addData from "./post";
+import * as getData from "./get";
 
 
 const httpTrigger: AzureFunction = async function (
@@ -8,10 +9,11 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
     try {
         switch (req.method) {
-            //   case "GET":
-            //     if (req.query.id) await getCropById.default(context, req);
-            //     else await getCrops.default(context, req);
-            //     break;
+            case "GET":
+                // if (req.query.id) await getCropById.default(context, req);
+                // else await getCrops.default(context, req);
+                await getData.default(context, req);
+                break;
 
             case "POST":
                 await addData.default(context, req);
