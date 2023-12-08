@@ -31,7 +31,7 @@ const httpTrigger: AzureFunction = async function (
               "zip_code"        = '${customer.zip_code}',
               "website"         = '${customer.website}',
               "linkedin"        = '${customer.linkedin}',
-              "notes"           = '${customer.notes}'
+              "notes"           = $$${customer.notes}$$
         WHERE 
               "id" = '${customer.id}';`
 

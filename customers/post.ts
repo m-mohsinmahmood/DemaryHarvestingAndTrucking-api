@@ -48,7 +48,7 @@ const httpTrigger: AzureFunction = async function (
                   '${customer.zip_code}',
                   '${customer.website}',
                   '${customer.linkedin}',
-                  '${customer.notes}');
+                  $$${customer.notes}$$);
     `;
 
     db.connect();
