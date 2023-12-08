@@ -2,6 +2,7 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as addData from "./post";
 import * as getData from "./get";
 import * as getDataById from "./getById";
+import * as editData from "./put";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -18,13 +19,14 @@ const httpTrigger: AzureFunction = async function (
                 await addData.default(context, req);
                 break;
 
-            //   case "PUT":
-            //     await updateCrop.default(context, req);
-            //     break;
+            case "PUT":
+                await editData.default(context, req);
+                break;
 
-            //   case "DELETE":
+            // case "DELETE":
             //     await deleteCrop.default(context, req);
             //     break;
+
 
             default:
                 context.res = {
