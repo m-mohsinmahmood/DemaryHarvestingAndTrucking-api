@@ -46,6 +46,7 @@ const httpTrigger: AzureFunction = async function (
          "id",
          "first_name",
          "last_name",
+         concat(whatsapp_country_code, '', whatsapp_number) AS whatsapp_number,
          "email",
          "country",
          "cell_phone_number",
