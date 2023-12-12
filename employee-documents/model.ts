@@ -57,6 +57,7 @@ export interface employee_docs {
     i9_sign: string,
     i94_date: string,
     i94_doc: string,
+    i94_number:string,
     i94_sign: string,
     cert_arrival_date: string,
     cert_first_day: string,

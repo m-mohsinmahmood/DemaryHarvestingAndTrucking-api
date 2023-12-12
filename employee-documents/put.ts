@@ -71,6 +71,7 @@ const httpTrigger: AzureFunction = async function (
                 "i9_sign"                               ='${employee_docs.i9_sign}
                 "i94_date"                              ='${employee_docs.i94_date}
                 "i94_doc"                               ='${employee_docs.i94_doc}
+                "i94_number"                            ='${employee_docs.i94_number}
                 "i94_sign"                              ='${employee_docs.i94_sign}
                 "cert_arrival_date"                     ='${employee_docs.cert_arrival_date}
                 "cert_first_day"                        ='${employee_docs.cert_first_day}

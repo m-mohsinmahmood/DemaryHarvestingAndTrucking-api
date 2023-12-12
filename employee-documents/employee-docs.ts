@@ -102,8 +102,9 @@ let documents = {
   i94: {
     "field1": "i94_date",
     "field2": "i94_doc",
-    "field3": "i94_sign",
-    "field4": "i94_disclaimer",
+    "field3": "i94_number",
+    "field4": "i94_sign",
+    "field5": "i94_disclaimer",
 
   },
   cert: {
@@ -655,8 +656,9 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         query = query + `
         "${documents['i94'].field1}" = '${employee_doc.i94_date}',
         "${documents['i94'].field2}" = '',
-        "${documents['i94'].field3}" = $$${employee_doc.i94_sign}$$,
-        "${documents['i94'].field4}" = '${employee_doc.i94_disclaimer}'
+        "${documents['i94'].field3}" = '${employee_doc.i94_number}',
+        "${documents['i94'].field4}" = $$${employee_doc.i94_sign}$$,
+        "${documents['i94'].field5}" = '${employee_doc.i94_disclaimer}'
 
         `;
         break;

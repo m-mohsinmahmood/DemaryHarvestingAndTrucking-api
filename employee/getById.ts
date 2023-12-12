@@ -231,6 +231,7 @@ const httpTrigger: AzureFunction = async function (
                 e2."i9_disclaimer",	
                 e2."i94_date",	
                 e2."i94_doc",	
+                e2."i94_number",	
                 e2."i94_sign",	
                 e2."i94_disclaimer",	
                 e2."cert_arrival_date",	
