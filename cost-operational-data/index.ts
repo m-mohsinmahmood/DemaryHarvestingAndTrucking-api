@@ -4,6 +4,7 @@ import * as getData from "./get";
 import * as getDataById from "./getById";
 import * as editData from "./put";
 import * as deleteData from "./delete";
+import * as getCostOperationalDataByInvoicedJob from "./cost-operational-data-invoiced-job";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -13,6 +14,7 @@ const httpTrigger: AzureFunction = async function (
         switch (req.method) {
             case "GET":
                 if (req.query.id) await getDataById.default(context, req);
+                else if (req.query.operation == 'byInvoicedJob') await getCostOperationalDataByInvoicedJob.default(context, req);
                 else await getData.default(context, req);
                 break;
 
