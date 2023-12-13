@@ -113,7 +113,8 @@ const httpTrigger: AzureFunction = async function (
               a."whatsapp_country_code",
               a."whatsapp_number",
               a."equipments_experience_description",
-              a."device_info"        
+              a."device_info",
+              a."employee_type"      
 
         FROM                   
               "Applicants" a 

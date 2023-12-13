@@ -54,7 +54,8 @@ const httpTrigger: AzureFunction = async function (
          "ranking",
          EXTRACT(YEAR FROM "created_at") AS created_at,
          "status_message",
-         "employment_period"
+         "employment_period",
+         "employee_type"
          
         FROM 
                 "Applicants"

@@ -80,7 +80,8 @@ const httpTrigger: AzureFunction = async function (
                   "whatsapp_number",
                   "whatsapp_country_code",
                   "equipments_experience_description",
-                  "device_info"
+                  "device_info",
+                  "employee_type"
                 )
       VALUES      
                 (
@@ -148,7 +149,8 @@ const httpTrigger: AzureFunction = async function (
                   '${employee.whatsapp_number}',
                   '${employee.whatsapp_country_code}',
                   '${employee.equipments_experience_description}',
-                  '${employee.device_info}'
+                  '${employee.device_info}',
+                  '${employee.employee_type}'
                 );
     `;
 

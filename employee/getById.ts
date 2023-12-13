@@ -101,6 +101,7 @@ const httpTrigger: AzureFunction = async function (
                 e1."whatsapp_country_code",	
                 e1."equipments_experience_description",	
                 e1."device_info",	
+                e1."employee_type",
                 e1."languages",	
                 e1."rank_speaking_english",	
                 e1."address_1",	

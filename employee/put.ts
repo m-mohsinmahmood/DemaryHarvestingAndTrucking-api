@@ -100,7 +100,8 @@ const httpTrigger: AzureFunction = async function (
                 "whatsapp_number"                       = $$${employee.whatsapp_number}$$,
                 "whatsapp_country_code"                 = $$${employee.whatsapp_country_code}$$,
                 "equipments_experience_description"     = $$${employee.equipments_experience_description}$$,
-                "device_info"                           = $$${employee.device_info}$$
+                "device_info"                           = $$${employee.device_info}$$,
+                "employee_type"                         = '${employee.employee_type}'
 
         WHERE 
                 "id" = '${employee.id}'

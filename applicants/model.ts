@@ -94,5 +94,6 @@ export interface applicant {
   whatsapp_number: string,
   whatsapp_country_code: string,
   equipments_experience_description: string,
-  device_info: string
+  device_info: string,
+  employee_type:string
 }
