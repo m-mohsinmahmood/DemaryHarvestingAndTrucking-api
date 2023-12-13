@@ -88,7 +88,8 @@ const httpTrigger: AzureFunction = async function (
         emp."created_at",
         "is_guest_user",
         emp_docs.cert_arrival_date,
-        emp."employee_type"
+        emp."employee_type",
+        emp_docs.i94_number
 
         FROM 
                 
