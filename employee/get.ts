@@ -27,20 +27,21 @@ const httpTrigger: AzureFunction = async function (
     if (country) whereClause = ` ${whereClause} AND "country" = '${country}'`;
     if (employment_period) whereClause = ` ${whereClause} AND "employment_period" = '${employment_period}'`;
     if (year) whereClause = ` ${whereClause} AND EXTRACT(YEAR from emp.created_at) = '${year}'`;
+    if (employeeType) whereClause = ` ${whereClause} AND "employeeType" = '${employeeType}'`;
 
-    if (employeeType) {
-      if (employeeType == 'Guest') {
-        whereClause = `${whereClause} AND emp.is_guest_user = TRUE`;
-      }
-      else {
-        if (employeeType == 'USA') {
-          whereClause = `${whereClause} AND emp.is_guest_user = FALSE AND (emp.country = 'United States of America' OR emp.country = 'USA')`;
-        }
-        else {
-          whereClause = `${whereClause} AND emp.is_guest_user = FALSE AND (emp.country <> 'United States of America' AND emp.country <> 'USA')`;
-        }
-      }
-    }
+    // if (employeeType) {
+    //   if (employeeType == 'Guest') {
+    //     whereClause = `${whereClause} AND emp.is_guest_user = TRUE`;
+    //   }
+    //   else {
+    //     if (employeeType == 'USA') {
+    //       whereClause = `${whereClause} AND emp.is_guest_user = FALSE AND (emp.country = 'United States of America' OR emp.country = 'USA')`;
+    //     }
+    //     else {
+    //       whereClause = `${whereClause} AND emp.is_guest_user = FALSE AND (emp.country <> 'United States of America' AND emp.country <> 'USA')`;
+    //     }
+    //   }
+    // }
 
     if (role) {
       let types = role.split(",");
