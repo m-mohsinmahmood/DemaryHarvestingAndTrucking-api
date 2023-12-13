@@ -27,7 +27,7 @@ const httpTrigger: AzureFunction = async function (
     if (country) whereClause = ` ${whereClause} AND "country" = '${country}'`;
     if (employment_period) whereClause = ` ${whereClause} AND "employment_period" = '${employment_period}'`;
     if (year) whereClause = ` ${whereClause} AND EXTRACT(YEAR from emp.created_at) = '${year}'`;
-    if (employeeType) whereClause = ` ${whereClause} AND "employeeType" = '${employeeType}'`;
+    if (employeeType) whereClause = ` ${whereClause} AND "employee_type" = '${employeeType}'`;
 
     // if (employeeType) {
     //   if (employeeType == 'Guest') {
