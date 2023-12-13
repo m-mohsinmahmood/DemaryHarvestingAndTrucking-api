@@ -5,6 +5,7 @@ import * as _ from "lodash";
 import { config } from "../services/database/database.config";
 const admin = require('firebase-admin');
 import { initializeFirebase } from "../utilities/initialize-firebase";
+import { EmailClient, EmailMessage } from '@azure/communication-email';
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -58,6 +59,33 @@ const httpTrigger: AzureFunction = async function (
                 SET truck_id = EXCLUDED.truck_id;
                 `
                 }
+
+                const connectionString = process.env["EMAIL_CONNECTION_STRING"];
+                const client = new EmailClient(connectionString);
+            
+                const emailMessage: EmailMessage = {
+                  senderAddress: "recruiter@dht-usa.com",
+                  content: {
+                    subject: "DHT System Access Link",
+                    html: `
+                             Dear ${emp.first_name} ${emp.last_name},
+                             <br> <br>Thank you for Register in DHT’s system. To explore the system please click on the the below link to Sign in with your provided email. 
+                             <br> <br> <a href="https://employee.dht-usa.com/sign-in">https://employee.dht-usa.com/sign-in</a>
+                             <br> <br>Password : dht@123
+                             <br> <br>Thanks
+                             `
+                  },
+                  recipients: {
+                    to: [
+                      {
+                        address: `${emp.email}`,
+                        displayName: `${emp.first_name} ${emp.last_name}`,
+                      },
+                    ],
+                  },
+                };
+            
+                await client.beginSend(emailMessage);
 
                 admin.auth().setCustomUserClaims(userRecord.uid, customClaims);
             } catch (error) {
