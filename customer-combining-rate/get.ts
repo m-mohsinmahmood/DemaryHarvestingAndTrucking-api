@@ -27,9 +27,8 @@ const httpTrigger: AzureFunction = async function (
                 cr."base_bushels", 
                 cr."premium_rate",
                 cr."combining_fuel_cost",
-                cr."tractor_fuel_cost",
-                cus."combiningRateNote",
-								cus."haulingRateNote"
+                cr."tractor_fuel_cost"
+               
         FROM 
                 "Combining_Rates" cr 
                 INNER JOIN "Crops" c ON cr."crop_id" = c."id" AND cr."is_deleted" = false
@@ -39,16 +38,31 @@ const httpTrigger: AzureFunction = async function (
         ${whereClause}
         ORDER BY 
               ${sort} ${order}
-      `;
+      ;`;
 
-    let query = `${combining_rates_query}`;
+      let notes = ` SELECT 
+      cus."combiningRateNote",
+      cus."haulingRateNote"
+      
+      FROM 
+      "Combining_Rates" cr 
+      INNER JOIN "Crops" c ON cr."crop_id" = c."id" AND cr."is_deleted" = false
+      INNER JOIN "Customer_Farm" cf ON cr.farm_id = cf."id" AND cf."is_deleted" = FALSE
+      INNER JOIN "Customers" cus ON cr.customer_id = cus."id"
+
+      ${whereClause}
+      ;`;
+
+
+    let query = `${combining_rates_query} ${notes}`;
 
     db.connect();
 
     let result = await db.query(query);
 
     let resp = {
-      combining_rates: result.rows
+      combining_rates: result[0].rows,
+      notes:result[1].rows
     };
 
     db.end();
