@@ -1,5 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as getExpenses from "./get";
+import * as getExpensesByCategory from "./getExpensesByCategory";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -8,7 +9,10 @@ const httpTrigger: AzureFunction = async function (
     try {
         switch (req.method) {
             case "GET":
-                await getExpenses.default(context, req);
+                if (req.query.operation == 'getExpensesByCategory')
+                    await getExpensesByCategory.default(context, req);
+                else
+                    await getExpenses.default(context, req);
                 break;
 
             default:
