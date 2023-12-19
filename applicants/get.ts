@@ -52,7 +52,7 @@ const httpTrigger: AzureFunction = async function (
          "cell_phone_number",
          SUBSTRING("cell_phone_country_code", POSITION('+' IN "cell_phone_country_code")) as "cell_phone_country_code",
          "ranking",
-         EXTRACT(YEAR FROM "created_at") AS created_at,
+         "created_at",
          "status_message",
          "employment_period",
          "employee_type"
