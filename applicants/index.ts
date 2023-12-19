@@ -5,6 +5,7 @@ import * as getApplicantById from "./getById";
 import * as updateApplicant from "./put";
 import * as patchApplicant from "./patch";
 import * as deleteApplicant from "./delete";
+import * as getApplicantByEmail from "./getByEmail";
 
 
 const httpTrigger: AzureFunction = async function (
@@ -14,6 +15,7 @@ const httpTrigger: AzureFunction = async function (
   switch (req.method) {
     case "GET":
       if (req.query.id) await getApplicantById.default(context, req);
+      else if (req.query.email) await getApplicantByEmail.default(context, req);
       else await getApplicants.default(context, req);
       break;
 
