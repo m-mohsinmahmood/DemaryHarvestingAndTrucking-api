@@ -6,7 +6,8 @@ import * as updateApplicant from "./put";
 import * as patchApplicant from "./patch";
 import * as deleteApplicant from "./delete";
 import * as getApplicantByEmail from "./getByEmail";
-
+import * as sendOTP from "./sendOTP";
+import * as verifyOTP from "./verifyOTP";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -15,6 +16,7 @@ const httpTrigger: AzureFunction = async function (
   switch (req.method) {
     case "GET":
       if (req.query.id) await getApplicantById.default(context, req);
+      else if (req.query.operation == 'verifyOTP' && req.query.email) await verifyOTP.default(context, req);
       else if (req.query.email) await getApplicantByEmail.default(context, req);
       else await getApplicants.default(context, req);
       break;
@@ -28,7 +30,10 @@ const httpTrigger: AzureFunction = async function (
       break;
 
     case "PATCH":
-      await patchApplicant.default(context, req);
+      if (req.body.operation == 'sendOTP')
+        await sendOTP.default(context, req);
+      else
+        await patchApplicant.default(context, req);
       break;
 
     case "DELETE":
