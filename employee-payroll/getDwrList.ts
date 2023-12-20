@@ -1,47 +1,37 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-const fs = require('fs');
 
 const httpTrigger: AzureFunction = async function (
-  context: Context,
-  req: HttpRequest
+    context: Context,
+    req: HttpRequest
 ): Promise<void> {
-  const db = new Client(config);
+    const db = new Client(config);
 
-  try {
-    const supervisor_name: string = req.query.supervisor_name;
-    const supervisor_id: string = req.query.supervisor_id;
-    const employee_wages_id: string = req.query.employee_id;
-    const category: string = req.query.category;
-    const start_date: string = req.query.beginning_date;
-    const end_date: string = req.query.ending_date;
-    const status: string = req.query.status ? req.query.status : '';
-    const state: string = req.query.state;
-    const name: string = req.query.name;
-    const page: number = +req.query.page ? +req.query.page : 1;
-    const limit: number = +req.query.limit ? +req.query.limit : 200;
-    // const sort: string = req.query.sort ? req.query.sort : `hw.employee_name` ;
-    const order: string = req.query.order ? req.query.order : `desc`;
-    const sort: string = req.query.sort ? req.query.sort : `dwr_emp.created_at` ;
+    try {
+        const supervisor_name: string = req.query.supervisor_name;
+        const supervisor_id: string = req.query.supervisor_id;
+        const employee_wages_id: string = req.query.employee_id;
+        const category: string = req.query.category;
+        const start_date: string = req.query.beginning_date;
+        const end_date: string = req.query.ending_date;
+        const status: string = req.query.status ? req.query.status : '';
+        const state: string = req.query.state;
+        const name: string = req.query.name;
+        const page: number = +req.query.page ? +req.query.page : 0;
+        const limit: number = +req.query.limit ? +req.query.limit : 20;
+        const order: string = req.query.order ? req.query.order : `desc`;
+        const sort: string = req.query.sort ? req.query.sort : `dwr_emp.created_at`;
 
-
-
-    const employee_id: string = req.query.id;
-    let whereClause: string = ` WHERE dwr_emp."is_deleted" = FALSE`;
-    let singleWhereClause: string = ` WHERE dwr_emp."is_deleted" = FALSE`;
-    let nameWhereClause: string = '';
-    let stateWhereClause :string='';
-    let supervisorGroupByClause :string= supervisor_id? `supervisor_names,` : '';
-    let supervisorSelectClause :string= supervisor_name? `
-    CONCAT(supervisor.first_name, ' ', supervisor.last_name)) AS supervisor_names,` : '';
-
-    let supervisorWhereClause :string='';
-    let statusClause1 :string='';
-    let statusClause2 :string='';
-    let supervisorJoinClause : string = '';
-    let supervisorWhereClauseHours : string = '';
-    let periodRangeClause :string=`pay_periods AS (
+        let whereClause: string = ` WHERE dwr_emp."is_deleted" = FALSE`;
+        let singleWhereClause: string = ` WHERE dwr_emp."is_deleted" = FALSE`;
+        let nameWhereClause: string = '';
+        let stateWhereClause: string = '';
+        let supervisorWhereClause: string = '';
+        let statusClause1: string = '';
+        let statusClause2: string = '';
+        let supervisorWhereClauseHours: string = '';
+        let periodRangeClause: string = `pay_periods AS (
         SELECT 
             generate_series(
                 '2023-01-01'::date,  
@@ -55,62 +45,58 @@ const httpTrigger: AzureFunction = async function (
             ) as end_date
     )`;
 
-    if (start_date && end_date) nameWhereClause = `WHERE
+        if (start_date && end_date) nameWhereClause = `WHERE
     dwr_emp.begining_day >= '${start_date}'
     AND dwr_emp.ending_day <= '${end_date}'`;
 
-    if(status=='verified')
-    {
-        if (status && !(employee_wages_id || start_date || end_date)) statusClause1 = ` ${statusClause1} WHERE dwr_emp.dwr_status = '${status}'`;
-        if (status && (employee_wages_id || start_date || end_date)) statusClause1 = ` ${statusClause1} AND dwr_emp.dwr_status = '${status}'`;
+        if (status == 'verified') {
+            if (status && !(employee_wages_id || start_date || end_date)) statusClause1 = ` ${statusClause1} WHERE dwr_emp.dwr_status = '${status}'`;
+            if (status && (employee_wages_id || start_date || end_date)) statusClause1 = ` ${statusClause1} AND dwr_emp.dwr_status = '${status}'`;
 
-    } else if(status=='unverified')
-    {
-        if (status && !(employee_wages_id || start_date || end_date)) statusClause1 = ` ${statusClause1} WHERE dwr_emp.dwr_status = 'pendingVerification'`;
-        if (status && (employee_wages_id || start_date || end_date)) statusClause1 = ` ${statusClause1} AND dwr_emp.dwr_status = 'pendingVerification'`;
-    }
+        } else if (status == 'unverified') {
+            if (status && !(employee_wages_id || start_date || end_date)) statusClause1 = ` ${statusClause1} WHERE dwr_emp.dwr_status = 'pendingVerification'`;
+            if (status && (employee_wages_id || start_date || end_date)) statusClause1 = ` ${statusClause1} AND dwr_emp.dwr_status = 'pendingVerification'`;
+        }
 
 
-    if(status=='verified')
-    {
-        if (status && !(supervisor_id)) statusClause2 = ` ${statusClause2} WHERE dwr_emp.dwr_status = '${status}'`;
-        if (status && (supervisor_id)) statusClause2 = ` ${statusClause2} AND dwr_emp.dwr_status = '${status}'`;
+        if (status == 'verified') {
+            if (status && !(supervisor_id)) statusClause2 = ` ${statusClause2} WHERE dwr_emp.dwr_status = '${status}'`;
+            if (status && (supervisor_id)) statusClause2 = ` ${statusClause2} AND dwr_emp.dwr_status = '${status}'`;
 
-    } else if(status=='unverified')
-    {
-        if (status && !(supervisor_id)) statusClause2 = ` ${statusClause2} WHERE dwr_emp.dwr_status = 'pendingVerification'`;
-        if (status && (supervisor_id)) statusClause2 = ` ${statusClause2} AND dwr_emp.dwr_status = 'pendingVerification'`;
-    }
+        } else if (status == 'unverified') {
+            if (status && !(supervisor_id)) statusClause2 = ` ${statusClause2} WHERE dwr_emp.dwr_status = 'pendingVerification'`;
+            if (status && (supervisor_id)) statusClause2 = ` ${statusClause2} AND dwr_emp.dwr_status = 'pendingVerification'`;
+        }
 
 
 
-    if (employee_wages_id && (start_date || end_date || status)) nameWhereClause = ` ${nameWhereClause} AND dwr_emp.employee_id = '${employee_wages_id}'`;
-    if (employee_wages_id && !(start_date || end_date || status)) nameWhereClause = ` ${nameWhereClause} WHERE dwr_emp.employee_id = '${employee_wages_id}'`;
+        if (employee_wages_id && (start_date || end_date || status)) nameWhereClause = ` ${nameWhereClause} AND dwr_emp.employee_id = '${employee_wages_id}'`;
+        if (employee_wages_id && !(start_date || end_date || status)) nameWhereClause = ` ${nameWhereClause} WHERE dwr_emp.employee_id = '${employee_wages_id}'`;
 
-    if (supervisor_id  ) supervisorWhereClauseHours = ` ${supervisorWhereClauseHours} WHERE dwr_emp.supervisor_id = '${supervisor_id}'`;
-    if (supervisor_id  && !(employee_wages_id && start_date &&  end_date) ) supervisorWhereClause = ` ${supervisorWhereClause} WHERE dwr_emp.supervisor_id = '${supervisor_id}'`;
-    // if(supervisor_id) supervisorJoinClause = ` ${supervisorJoinClause}     INNER JOIN "Employees" supervisor ON dwr_emp.supervisor_id = supervisor."id" :: VARCHAR`;
-    if (supervisor_id && (employee_wages_id || start_date || end_date) ) supervisorWhereClause = ` AND dwr_emp.supervisor_id = '${supervisor_id}'`;
+        if (supervisor_id) supervisorWhereClauseHours = ` ${supervisorWhereClauseHours} WHERE dwr_emp.supervisor_id = '${supervisor_id}'`;
+        if (supervisor_id && !(employee_wages_id && start_date && end_date)) supervisorWhereClause = ` ${supervisorWhereClause} WHERE dwr_emp.supervisor_id = '${supervisor_id}'`;
+        // if(supervisor_id) supervisorJoinClause = ` ${supervisorJoinClause}     INNER JOIN "Employees" supervisor ON dwr_emp.supervisor_id = supervisor."id" :: VARCHAR`;
+        if (supervisor_id && (employee_wages_id || start_date || end_date)) supervisorWhereClause = ` AND dwr_emp.supervisor_id = '${supervisor_id}'`;
 
 
-    if (state) stateWhereClause = ` ${stateWhereClause} WHERE  LOWER(state) LIKE LOWER('%${state}%')`;
-    if (category) whereClause = ` ${whereClause} AND LOWER(dwr_emp."module") LIKE LOWER('%${category}%')`;
-    if (supervisor_name) whereClause = ` ${whereClause} AND LOWER(sup.first_name) LIKE LOWER('%${supervisor_name}%')`;
-    if (start_date) whereClause = `${whereClause} AND dwr_emp.begining_day > '${start_date}'::timestamp AND dwr_emp.begining_day < '${end_date}'::timestamp`;
-    if (state) whereClause = ` ${whereClause} AND LOWER(dwr_emp."state") LIKE LOWER('%${state}%')`;
-    if (name) whereClause = ` ${whereClause} AND LOWER(emp.first_name) LIKE LOWER('%${name}%')`;
+        if (state) stateWhereClause = ` ${stateWhereClause} WHERE  LOWER(state) LIKE LOWER('%${state}%')`;
+        if (category) whereClause = ` ${whereClause} AND LOWER(dwr_emp."module") LIKE LOWER('%${category}%')`;
+        if (supervisor_name) whereClause = ` ${whereClause} AND LOWER(sup.first_name) LIKE LOWER('%${supervisor_name}%')`;
+        if (start_date) whereClause = `${whereClause} AND dwr_emp.begining_day > '${start_date}'::timestamp AND dwr_emp.begining_day < '${end_date}'::timestamp`;
+        if (state) whereClause = ` ${whereClause} AND LOWER(dwr_emp."state") LIKE LOWER('%${state}%')`;
+        if (name) whereClause = ` ${whereClause} AND LOWER(emp.first_name) LIKE LOWER('%${name}%')`;
 
-    //New filters for all DWRs individual
+        //New filters for all DWRs individual
 
-    if (state) singleWhereClause = ` ${singleWhereClause} AND  LOWER(dwr_emp."state") LIKE LOWER('%${state}%')`;
-    if (category) singleWhereClause = ` ${singleWhereClause} AND LOWER(dwr_emp."module") LIKE LOWER('%${category}%')`;
-    if (supervisor_id) singleWhereClause = ` ${singleWhereClause} AND dwr_emp.supervisor_id = '${supervisor_id}'`;
-    if (employee_wages_id) singleWhereClause = ` ${singleWhereClause} AND dwr_emp.employee_id = '${employee_wages_id}'`;
-    if(status=='verified') singleWhereClause = ` ${singleWhereClause} AND dwr_emp.dwr_status = '${status}'`;
-    if(status=='unverified') singleWhereClause = ` ${singleWhereClause} AND dwr_emp.dwr_status = 'pendingVerification'`;
-    if (start_date && end_date) singleWhereClause = `${singleWhereClause} AND dwr_emp.begining_day > '${start_date}'::timestamp AND dwr_emp.begining_day < '${end_date}'::timestamp`;
+        if (state) singleWhereClause = ` ${singleWhereClause} AND  LOWER(dwr_emp."state") LIKE LOWER('%${state}%')`;
+        if (category) singleWhereClause = ` ${singleWhereClause} AND LOWER(dwr_emp."module") LIKE LOWER('%${category}%')`;
+        if (supervisor_id) singleWhereClause = ` ${singleWhereClause} AND dwr_emp.supervisor_id = '${supervisor_id}'`;
+        if (employee_wages_id) singleWhereClause = ` ${singleWhereClause} AND dwr_emp.employee_id = '${employee_wages_id}'`;
+        if (status == 'verified') singleWhereClause = ` ${singleWhereClause} AND dwr_emp.dwr_status = '${status}'`;
+        if (status == 'unverified') singleWhereClause = ` ${singleWhereClause} AND dwr_emp.dwr_status = 'pendingVerification'`;
+        if (start_date && end_date) singleWhereClause = `${singleWhereClause} AND dwr_emp.begining_day > '${start_date}'::timestamp AND dwr_emp.begining_day < '${end_date}'::timestamp`;
 
-    let dwr_info_query1 = `
+        let dwr_info_query1 = `
     SELECT DISTINCT
     CASE WHEN dwr_emp."state" = 'Arizona' THEN hr.hourly_rate::numeric
          ELSE (SELECT MAX(hourly_rate) FROM "H2a_Hourly_Rate")::numeric
@@ -147,17 +133,15 @@ const httpTrigger: AzureFunction = async function (
     ORDER BY
     ${sort} ${order}    
     
-    OFFSET 
-          ${((page - 1) * limit)}
     LIMIT 
-          ${limit};
-
-  
+    ${limit}
+    
+    OFFSET ${page};
     `;
 
 
 
-    let hours_count_query = `
+        let hours_count_query = `
     SELECT 
     SUM(total_hours_worked) AS hours_worked,
     emp.id,
@@ -186,14 +170,14 @@ GROUP BY
       `;
 
 
-    let hourly_rate_finder = `
+        let hourly_rate_finder = `
       SELECT 
       MAX(hourly_rate) AS max_hourly_rate,
       (SELECT hourly_rate FROM "H2a_Hourly_Rate" WHERE state = 'Arizona') AS arizona_rate
     FROM "H2a_Hourly_Rate";
       `;
 
-      let total_hours_dwrs = `SELECT 
+        let total_hours_dwrs = `SELECT 
       SUM(total_hours_worked) AS total_hours_worked
   FROM (
       SELECT 
@@ -210,9 +194,9 @@ GROUP BY
   ) AS subquery;
   `;
 
- 
-  let top_ten_wages =
-  `WITH 
+
+        let top_ten_wages =
+            `WITH 
   pay_periods AS (
       SELECT 
           generate_series(
@@ -299,48 +283,40 @@ GROUP BY
   ORDER BY
       ss.total_wages DESC
   LIMIT 10;`
-;
+            ;
 
-    let query = `${dwr_info_query1} ${hours_count_query} ${hourly_rate_finder} ${total_hours_dwrs} ${top_ten_wages}`;
-    
-    db.connect();
-    // const filePath = 'query_test.txt';
-    // try {
-    //     await fs.promises.writeFile(filePath, query);
-    //     context.log(`Data written to file`);
-    // }
-    // catch (err) {
-    //     context.log.error(`Error writing data to file: ${err}`);
-    // }
+        let query = `${dwr_info_query1} ${hours_count_query} ${hourly_rate_finder} ${total_hours_dwrs} ${top_ten_wages}`;
 
-    let result = await db.query(query);
-    
-    let resp = {
-      dwrTasks: result[0].rows,
-      total_hours: result[1].rows,
-      hourly_rate: result[2].rows,
-      total_hours_sum: result[3].rows,
-      top_ten_wages: result[4].rows,
-    };
+        db.connect();
+   
+        let result = await db.query(query);
 
-    db.end();
+        let resp = {
+            dwrTasks: result[0].rows,
+            total_hours: result[1].rows,
+            hourly_rate: result[2].rows,
+            total_hours_sum: result[3].rows,
+            top_ten_wages: result[4].rows,
+        };
 
-    context.res = {
-      status: 200,
-      body: resp,
-    };
+        db.end();
 
-    context.done();
-    return;
-  } catch (err) {
-    db.end();
-    context.res = {
-      status: 500,
-      body: err,
-    };
-    context.done();
-    return;
-  }
+        context.res = {
+            status: 200,
+            body: resp,
+        };
+
+        context.done();
+        return;
+    } catch (err) {
+        db.end();
+        context.res = {
+            status: 500,
+            body: err,
+        };
+        context.done();
+        return;
+    }
 };
 
 export default httpTrigger;
