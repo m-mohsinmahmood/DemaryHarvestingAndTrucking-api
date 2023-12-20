@@ -117,7 +117,9 @@ const httpTrigger: AzureFunction = async function (
     dwr_emp.created_at,
     dwr_emp.dwr_status,
     dwr_emp.id as ticket_id,
-    dwr_emp.employee_notes
+    dwr_emp.employee_notes,
+    dwr_emp.employee_id AS employeeId,
+    dwr_emp.supervisor_id AS supervisorId
     
     FROM
 
