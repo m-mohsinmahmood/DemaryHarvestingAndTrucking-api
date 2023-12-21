@@ -8,30 +8,40 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
 
     try {
+        const data = req.body
+        console.log("check this data", data)
         const connectionString = process.env["EMAIL_CONNECTION_STRING"];
         const client = new EmailClient(connectionString);
 
         const emailMessage: EmailMessage = {
             senderAddress: "recruiter@dht-usa.com",
             content: {
-                subject: "DHT Employment Application Received!",
-                html: `
-                 Dear,
-                 <br> <br>Thank you for completing DHT’s online application. We are currently reviewing your application and will be reaching out soon with further instructions on next steps. 
-                 <br> <br>Thanks
-                 `
+                subject: data?.inquiry_type,
+                html:  `
+               <b>Name : </b> ${data?.name}
+               <br><br> <b>Email: </b> ${data?.email}
+               <br><br> <b>Iquiry Type : </b> ${data?.inquiry_type}
+               <br><br> <b>Message : </b> ${data?.message}
+                `
             },
             recipients: {
                 to: [
                     {
-                        address: ``,
-                        displayName: ``,
+                        address: 'waqarhafeez@mailinator.com',
                     },
                 ],
             },
         };
 
         await client.beginSend(emailMessage);
+        context.res = {
+            status: 200,
+            body: {
+                message: "Contact Us form has been submitted successfully.",
+            },
+        };
+        context.done();
+        return;
     }
     catch (error) {
         context.res = {
@@ -43,13 +53,6 @@ const httpTrigger: AzureFunction = async function (
         context.done();
         return;
     }
-    context.res = {
-        status: 200,
-        body: {
-            message: "Contact Us form has been submitted successfully.",
-        },
-    };
-    context.done();
-    return;
+    
 };
 export default httpTrigger;
