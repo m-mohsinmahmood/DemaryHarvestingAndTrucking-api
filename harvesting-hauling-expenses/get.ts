@@ -9,16 +9,17 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
     const db = new Client(config);
     const operation = req.query.operation;
+    const customer_id = req.query.customer_id;
 
     try {
 
         let query = '';
 
         if (operation == 'getHarvestingExpenses')
-            query = getHarvestingExpenses();
+            query = getHarvestingExpenses(customer_id);
 
         else if (operation == 'getHaulingExpenses')
-            query = getHaulingExpenses();
+            query = getHaulingExpenses(customer_id);
 
         db.connect();
 
