@@ -8,10 +8,11 @@ const httpTrigger: AzureFunction = async function (
     req: HttpRequest
 ): Promise<void> {
     const db = new Client(config);
+    const customer_id = req.query.customer_id;
 
     try {
-        let harvestingExpenses = getHarvestingExpenses();
-        let haulingExpenses = getHaulingExpenses();
+        let harvestingExpenses = getHarvestingExpenses(customer_id);
+        let haulingExpenses = getHaulingExpenses(customer_id);
         let query = `${harvestingExpenses} ${haulingExpenses}`;
 
         db.connect();
