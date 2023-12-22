@@ -3,13 +3,15 @@ import { Client } from "pg";
 import { config } from "../services/database/database.config";
 
 const httpTrigger: AzureFunction = async function (
-    context: Context,
-    req: HttpRequest
+	context: Context,
+	req: HttpRequest
 ): Promise<void> {
-    const db = new Client(config);
+	const db = new Client(config);
 
-    try {
-        let info_query = `
+	const customer_id = req.query.customer_id;
+
+	try {
+		let info_query = `
         SELECT 
         
         invoiced_job_number,
@@ -174,11 +176,13 @@ FROM (
         "Customer_Job_Setup" cjs
 		INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE
 
+		WHERE cjs.customer_id = '${customer_id}'
+
 ) AS subquery ORDER BY created_at ASC;
 
       `;
 
-      let subTotals = `
+		let subTotals = `
       SELECT 
 
 		SUM(combine_sh) AS combine_sh,
@@ -338,38 +342,40 @@ FROM (
     FROM 
         "Customer_Job_Setup" cjs
 		INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE
+
+		WHERE cjs.customer_id = '${customer_id}'
 ) AS subquery;
       `;
 
-        let query = `${info_query} ${subTotals}`;
+		let query = `${info_query} ${subTotals}`;
 
-        db.connect();
+		db.connect();
 
-        let result = await db.query(query);
+		let result = await db.query(query);
 
-        let resp = {
-            data: result[0].rows,
-            subTotals: result[1].rows
-        };
+		let resp = {
+			data: result[0].rows,
+			subTotals: result[1].rows
+		};
 
-        db.end();
+		db.end();
 
-        context.res = {
-            status: 200,
-            body: resp,
-        };
+		context.res = {
+			status: 200,
+			body: resp,
+		};
 
-        context.done();
-        return;
-    } catch (err) {
-        db.end();
-        context.res = {
-            status: 500,
-            body: err,
-        };
-        context.done();
-        return;
-    }
+		context.done();
+		return;
+	} catch (err) {
+		db.end();
+		context.res = {
+			status: 500,
+			body: err,
+		};
+		context.done();
+		return;
+	}
 };
 
 export default httpTrigger;
