@@ -27,7 +27,7 @@ const httpTrigger: AzureFunction = async function (
             recipients: {
                 to: [
                     {
-                        address: 'waqarhafeez@mailinator.com',
+                        address: 'matt@dht-usa.com',
                     },
                 ],
             },
