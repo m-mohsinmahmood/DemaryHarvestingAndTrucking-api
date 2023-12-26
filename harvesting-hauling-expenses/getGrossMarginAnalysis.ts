@@ -85,19 +85,15 @@ const httpTrigger: AzureFunction = async function (
     else if (req.query.operation == 'getByTotalJobs') {
         try {
 
-            // if (operation == 'getHarvestingGrossMargin') {
             let grossMarginHarvesting = getHarvestingGrossMargin(customer_id);
 
             let harvestingExpense = getHarvestingExpenses(customer_id);
             query = `${grossMarginHarvesting} ${harvestingExpense}`
-            // }
 
-            // else if (operation == 'getHaulingGrossMargin') {
             let grossMarginHauling = getHaulingGrossMargin(customer_id);
 
             let haulingExpense = getHaulingExpenses(customer_id);
             query = `${grossMarginHarvesting} ${harvestingExpense} ${grossMarginHauling} ${haulingExpense}`
-            // }
 
             db.connect();
 
@@ -114,16 +110,16 @@ const httpTrigger: AzureFunction = async function (
             });
 
             let dataHarvesting = result[0].rows;
-            let subTotalsHarvesting = dataHarvesting.reduce(
-                (totals, item) => {
-                    totals.revenue += item.revenue || 0;
-                    totals.expenses += item.expenses || 0;
-                    totals.grossProfits += item.grossProfits || 0;
-                    totals.grossMargin = totals.grossProfits / totals.revenue;
-                    return totals;
-                },
-                { revenue: 0, expenses: 0, grossProfits: 0 }
-            );
+            // let subTotalsHarvesting = dataHarvesting.reduce(
+            //     (totals, item) => {
+            //         totals.revenue += item.revenue || 0;
+            //         totals.expenses += item.expenses || 0;
+            //         totals.grossProfits += item.grossProfits || 0;
+            //         totals.grossMargin = totals.grossProfits / totals.revenue;
+            //         return totals;
+            //     },
+            //     { revenue: 0, expenses: 0, grossProfits: 0 }
+            // );
 
             // To get Hauling Data
             result[3].rows.forEach((marginItem) => {
@@ -136,17 +132,16 @@ const httpTrigger: AzureFunction = async function (
             });
 
             let dataHauling = result[3].rows;
-            let subTotalsHauling = dataHarvesting.reduce(
-                (totals, item) => {
-                    totals.revenue += item.revenue || 0;
-                    totals.expenses += item.expenses || 0;
-                    totals.grossProfits += item.grossProfits || 0;
-                    totals.grossMargin = totals.grossProfits / totals.revenue;
-                    return totals;
-                },
-                { revenue: 0, expenses: 0, grossProfits: 0 }
-            );
-
+            // let subTotalsHauling = dataHauling.reduce(
+            //     (totals, item) => {
+            //         totals.revenue += item.revenue || 0;
+            //         totals.expenses += item.expenses || 0;
+            //         totals.grossProfits += item.grossProfits || 0;
+            //         totals.grossMargin = totals.grossProfits / totals.revenue;
+            //         return totals;
+            //     },
+            //     { revenue: 0, expenses: 0, grossProfits: 0 }
+            // );
 
             const combinedMap = new Map();
 
@@ -191,16 +186,114 @@ const httpTrigger: AzureFunction = async function (
                 revenue: totalByJob.totalRevenue,
                 expenses: totalByJob.totalExpenses,
                 grossProfits: totalByJob.totalGrossProfits,
-                grossMargin : totalByJob.totalGrossMargin
+                grossMargin: totalByJob.totalGrossMargin
             }
 
             let resp = {
-                // harvestingGrossMargin: dataHarvesting,
-                // harvestingSubTotal: subTotalsHarvesting,
-                // haulingGrossMargin: dataHauling,
-                // haulingSubTotal: subTotalsHauling,
                 totalByJob: combinedGrossMargin,
                 subTotal: totalByJob
+            };
+
+            db.end();
+
+            context.res = {
+                status: 200,
+                body: resp,
+            };
+
+            context.done();
+            return;
+        } catch (err) {
+            db.end();
+            context.res = {
+                status: 500,
+                body: err,
+            };
+            context.done();
+            return;
+        }
+    }
+
+    else if (req.query.operation == 'totalAcrossJobs') {
+        try {
+
+            let grossMarginHarvesting = getHarvestingGrossMargin(customer_id);
+
+            let harvestingExpense = getHarvestingExpenses(customer_id);
+            query = `${grossMarginHarvesting} ${harvestingExpense}`
+
+            let grossMarginHauling = getHaulingGrossMargin(customer_id);
+
+            let haulingExpense = getHaulingExpenses(customer_id);
+            query = `${grossMarginHarvesting} ${harvestingExpense} ${grossMarginHauling} ${haulingExpense}`
+
+            db.connect();
+
+            let result = await db.query(query);
+
+            // To Get Harvesting Data
+            result[0].rows.forEach((marginItem) => {
+                const correspondingExpense = result[1].rows.find((expenseItem) => expenseItem.invoiced_job_number === marginItem.invoiced_job_number);
+                if (correspondingExpense) {
+                    marginItem.expenses = correspondingExpense.total;
+                    marginItem.grossProfits = marginItem.revenue - marginItem.expenses;
+                    marginItem.grossMargin = (marginItem.revenue - marginItem.expenses) / marginItem.revenue;
+                }
+            });
+
+            let dataHarvesting = result[0].rows;
+            let subTotalsHarvesting = dataHarvesting.reduce(
+                (totals, item) => {
+                    totals.revenue += item.revenue || 0;
+                    totals.expenses += item.expenses || 0;
+                    totals.grossProfits += item.grossProfits || 0;
+                    totals.grossMargin = totals.grossProfits / totals.revenue;
+                    return totals;
+                },
+                { revenue: 0, expenses: 0, grossProfits: 0 }
+            );
+
+            // To get Hauling Data
+            result[3].rows.forEach((marginItem) => {
+                const correspondingExpense = result[4].rows.find((expenseItem) => expenseItem.invoiced_job_number === marginItem.invoiced_job_number);
+                if (correspondingExpense) {
+                    marginItem.expenses = correspondingExpense.total;
+                    marginItem.grossProfits = marginItem.revenue - marginItem.expenses;
+                    marginItem.grossMargin = (marginItem.revenue - marginItem.expenses) / marginItem.revenue;
+                }
+            });
+
+            let dataHauling = result[3].rows;
+            let subTotalsHauling = dataHauling.reduce(
+                (totals, item) => {
+                    totals.revenue += item.revenue || 0;
+                    totals.expenses += item.expenses || 0;
+                    totals.grossProfits += item.grossProfits || 0;
+                    totals.grossMargin = totals.grossProfits / totals.revenue;
+                    return totals;
+                },
+                { revenue: 0, expenses: 0, grossProfits: 0 }
+            );
+
+            const mergedTotals = {
+                totalHarvesting: subTotalsHarvesting,
+                totalHauling: subTotalsHauling
+            }
+            const totals = Object.values(mergedTotals).reduce(
+                (acc, item) => {
+                    acc.revenue += item.revenue;
+                    acc.expenses += item.expenses;
+                    acc.grossProfits += item.grossProfits;
+                    return acc;
+                },
+                { revenue: 0, expenses: 0, grossProfits: 0 }
+            );
+
+            totals.grossMargin = totals.grossProfits / totals.revenue;
+
+
+            let resp = {
+                totalAcrossJobs: totals,
             };
 
             db.end();

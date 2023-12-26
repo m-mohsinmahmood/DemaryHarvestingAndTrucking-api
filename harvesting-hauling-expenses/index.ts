@@ -12,7 +12,7 @@ const httpTrigger: AzureFunction = async function (
             case "GET":
                 if (req.query.operation == 'getExpensesByCategory')
                     await getExpensesByCategory.default(context, req);
-                else if (req.query.operation == 'getHarvestingGrossMargin' || req.query.operation == 'getHaulingGrossMargin' || req.query.operation == 'getByTotalJobs')
+                else if (req.query.operation == 'getHarvestingGrossMargin' || req.query.operation == 'getHaulingGrossMargin' || req.query.operation == 'getByTotalJobs' || req.query.operation == 'totalAcrossJobs')
                     await getGrossMarginAnalysis.default(context, req);
                 else
                     await getExpenses.default(context, req);
