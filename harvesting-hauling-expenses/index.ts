@@ -1,8 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as getExpenses from "./get";
 import * as getExpensesByCategory from "./getExpensesByCategory";
-import * as getHarvestingGrossMargin from "./getHarvestingGrossMargin";
-import * as getHaulingGrossMargin from "./getHaulingGrossMargin";
+import * as getGrossMarginAnalysis from "./getGrossMarginAnalysis";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -13,10 +12,8 @@ const httpTrigger: AzureFunction = async function (
             case "GET":
                 if (req.query.operation == 'getExpensesByCategory')
                     await getExpensesByCategory.default(context, req);
-                else if (req.query.operation == 'getHarvestingGrossMargin')
-                    await getHarvestingGrossMargin.default(context, req);
-                else if (req.query.operation == 'getHaulingGrossMargin')
-                    await getHaulingGrossMargin.default(context, req);
+                else if (req.query.operation == 'getHarvestingGrossMargin' || req.query.operation == 'getHaulingGrossMargin' || req.query.operation == 'getByTotalJobs')
+                    await getGrossMarginAnalysis.default(context, req);
                 else
                     await getExpenses.default(context, req);
                 break;
