@@ -110,16 +110,6 @@ const httpTrigger: AzureFunction = async function (
             });
 
             let dataHarvesting = result[0].rows;
-            // let subTotalsHarvesting = dataHarvesting.reduce(
-            //     (totals, item) => {
-            //         totals.revenue += item.revenue || 0;
-            //         totals.expenses += item.expenses || 0;
-            //         totals.grossProfits += item.grossProfits || 0;
-            //         totals.grossMargin = totals.grossProfits / totals.revenue;
-            //         return totals;
-            //     },
-            //     { revenue: 0, expenses: 0, grossProfits: 0 }
-            // );
 
             // To get Hauling Data
             result[3].rows.forEach((marginItem) => {
@@ -132,17 +122,7 @@ const httpTrigger: AzureFunction = async function (
             });
 
             let dataHauling = result[3].rows;
-            // let subTotalsHauling = dataHauling.reduce(
-            //     (totals, item) => {
-            //         totals.revenue += item.revenue || 0;
-            //         totals.expenses += item.expenses || 0;
-            //         totals.grossProfits += item.grossProfits || 0;
-            //         totals.grossMargin = totals.grossProfits / totals.revenue;
-            //         return totals;
-            //     },
-            //     { revenue: 0, expenses: 0, grossProfits: 0 }
-            // );
-
+           
             const combinedMap = new Map();
 
             dataHarvesting.forEach(item => {
@@ -171,7 +151,7 @@ const httpTrigger: AzureFunction = async function (
 
             const combinedGrossMargin = Array.from(combinedMap.values());
 
-            let totalByJob = combinedGrossMargin.reduce(
+            let subtotalByJob = combinedGrossMargin.reduce(
                 (acc, item) => {
                     acc.totalRevenue += item.revenue;
                     acc.totalExpenses += item.expenses;
@@ -180,18 +160,18 @@ const httpTrigger: AzureFunction = async function (
                 },
                 { totalRevenue: 0, totalExpenses: 0, totalGrossProfits: 0 }
             );
-            totalByJob.totalGrossMargin = totalByJob.totalGrossProfits / totalByJob.totalRevenue;
+            subtotalByJob.totalGrossMargin = subtotalByJob.totalGrossProfits / subtotalByJob.totalRevenue;
 
-            totalByJob = {
-                revenue: totalByJob.totalRevenue,
-                expenses: totalByJob.totalExpenses,
-                grossProfits: totalByJob.totalGrossProfits,
-                grossMargin: totalByJob.totalGrossMargin
+            subtotalByJob = {
+                revenue: subtotalByJob.totalRevenue,
+                expenses: subtotalByJob.totalExpenses,
+                grossProfits: subtotalByJob.totalGrossProfits,
+                grossMargin: subtotalByJob.totalGrossMargin
             }
 
             let resp = {
                 totalByJob: combinedGrossMargin,
-                subTotal: totalByJob
+                subTotal: subtotalByJob
             };
 
             db.end();
