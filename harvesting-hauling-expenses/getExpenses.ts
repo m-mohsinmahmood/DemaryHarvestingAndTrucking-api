@@ -149,15 +149,16 @@ FROM (
     combine_equip + combine_fuel + combine_labor + cart_operator_labor + tractor_equip + tractor_fuel + header_equipment + grain_cart_equipment + employee_lodging_estimate AS "total"
     FROM (
         SELECT 
-            SUM(combine_sh * combine_equipment_cost) AS combine_equip,
-            SUM(combine_labor) AS combine_labor,
-            SUM((combine_sh * combine_fuel_rate) * combine_fuel_cost) AS combine_fuel,
-            SUM(tractor_engine_hours * tractor_equipment_cost) AS tractor_equip,
-            SUM(cart_operator_labor) AS cart_operator_labor,
-            SUM((tractor_engine_hours * tractor_fuel_rate) * tractor_fuel_cost) AS tractor_fuel,
-            SUM(acres::FLOAT * header_cost) AS header_equipment,
-            SUM(tractor_engine_hours * grain_cart_equipment_cost) AS grain_cart_equipment,
-            SUM(employee_lodging_days::FLOAT * customer_lodging_rate::FLOAT) AS employee_lodging_estimate
+        COALESCE( SUM(combine_sh * combine_equipment_cost),0) AS combine_equip,
+        COALESCE( SUM(combine_labor), 0) AS combine_labor,
+        COALESCE( SUM((combine_sh * combine_fuel_rate) * combine_fuel_cost),0) AS combine_fuel,
+        COALESCE( SUM(tractor_engine_hours * tractor_equipment_cost), 0) AS tractor_equip,
+        COALESCE( SUM(cart_operator_labor), 0) AS cart_operator_labor,
+        COALESCE( SUM((tractor_engine_hours * tractor_fuel_rate) * tractor_fuel_cost), 0) AS tractor_fuel,
+        COALESCE( SUM(acres::FLOAT * header_cost), 0) AS header_equipment,
+        COALESCE( SUM(tractor_engine_hours * grain_cart_equipment_cost), 0) AS grain_cart_equipment,
+        COALESCE( SUM(employee_lodging_days::FLOAT * customer_lodging_rate::FLOAT), 0) AS employee_lodging_estimate
+
         FROM (
             SELECT 
                 job_setup_name AS invoiced_job_number,
@@ -275,10 +276,10 @@ export function getHaulingExpenses(customer_id) {
     truck_driver_labor * 17.33 AS truck_labor,
     truck_driver_lodging_days::FLOAT * customer_lodging_rate::FLOAT AS truck_driver_lodging_estimate,
 		
-    ((total_loaded_dht_miles * 2) * truck_equipment_cost) +
-    truck_driver_labor * 17.33 + 
-    (((total_loaded_dht_miles * 2)/ hauling_fuel_cost) * truck_fuel_cost) +
-    (truck_driver_lodging_days::FLOAT * customer_lodging_rate::FLOAT ) AS total
+    COALESCE( ((total_loaded_dht_miles * 2) * truck_equipment_cost) , 0) +
+    COALESCE( truck_driver_labor * 17.33 ,0) + 
+    COALESCE( (((total_loaded_dht_miles * 2)/ hauling_fuel_cost) * truck_fuel_cost), 0) +
+    COALESCE( (truck_driver_lodging_days::FLOAT * customer_lodging_rate::FLOAT ), 0) AS total
 
     FROM (
         SELECT 
@@ -355,11 +356,12 @@ export function getHaulingExpenses(customer_id) {
 
      FROM (
      
-         SELECT 
-                SUM((total_loaded_dht_miles * 2) * truck_equipment_cost) AS truck_equip,
-                SUM(((total_loaded_dht_miles * 2)/ hauling_fuel_cost) * truck_fuel_cost) AS truck_fuel,
-                SUM(truck_driver_labor) AS truck_labor,
-                SUM(truck_driver_lodging_days::FLOAT * customer_lodging_rate::FLOAT) AS truck_driver_lodging_estimate
+         SELECT
+
+                COALESCE( SUM((total_loaded_dht_miles * 2) * truck_equipment_cost), 0) AS truck_equip,
+                COALESCE( SUM(((total_loaded_dht_miles * 2)/ hauling_fuel_cost) * truck_fuel_cost), 0) AS truck_fuel,
+                COALESCE( SUM(truck_driver_labor), 0) AS truck_labor,
+                COALESCE( SUM(truck_driver_lodging_days::FLOAT * customer_lodging_rate::FLOAT), 0) AS truck_driver_lodging_estimate
              
              FROM(
              Select
