@@ -14,6 +14,7 @@ const httpTrigger: AzureFunction = async function (
     const truckDriverId: string = req.query.truckDriverId;
     const ticketStatus = req.query.ticketStatus;
     const ticket_name = req.query.ticket_name;
+
     let limit = null;
 
     let whereClause: string = `ht.is_deleted = false`;
@@ -46,7 +47,7 @@ const httpTrigger: AzureFunction = async function (
       whereClause = `${whereClause} AND ht.ticket_status = '${ticketStatus}'`
     }
 
-   
+
 
     let ticket_query = `
     Select 
@@ -82,6 +83,7 @@ const httpTrigger: AzureFunction = async function (
     ht.scale_ticket_number,
 		ht.machinery_id as machinery_id,
     ht.trucking_company,
+    ht.job_id AS job_id,
 		
 		CASE truck_driver.is_guest_user
 	      WHEN true THEN
