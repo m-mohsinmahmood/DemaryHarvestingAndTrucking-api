@@ -11,9 +11,7 @@ const httpTrigger: AzureFunction = async function (
   try {
     const applicant_id: string = req.query.id;
     let query = `
-        UPDATE "Applicants" 
-        SET "is_deleted"  = TRUE, 
-            "modified_at" = 'now()'
+        DELETE FROM "Applicants" 
         WHERE 
             "id" = '${applicant_id}';
         `;

@@ -24,11 +24,14 @@ const httpTrigger: AzureFunction = async function (
     ROUND(CAST(EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600 AS NUMERIC), 2) AS hours_worked,
     dwr_emp."state" 
 FROM
-    "DWR_Employees" dwr_emp
+
+    "Bridge_DailyTasks_DWR" bridge
+    JOIN "DWR_Employees" dwr_emp ON dwr_emp."id" = bridge.dwr_id 
+    INNER JOIN "DWR" dwr ON dwr."id" = bridge.task_id
     INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
     INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_emp.employee_id
     INNER JOIN "Employees" sup ON sup."id"::VARCHAR = dwr_emp.supervisor_id
-    INNER JOIN "DWR" dwr ON dwr.employee_id::VARCHAR = dwr_emp.employee_id::VARCHAR 
+    
 WHERE
     dwr.employee_id = '${employee_id}' 
     AND dwr_emp.begining_day >= now() - INTERVAL '10 DAYS' 
@@ -39,7 +42,10 @@ GROUP BY
     emp."id",
     dwr.crew_chief,
     dwr_emp.ending_day,
-    dwr_emp."state"; `;
+    dwr_emp."state"
+    
+    order By begining_day DESC
+    ; `;
 
 
 

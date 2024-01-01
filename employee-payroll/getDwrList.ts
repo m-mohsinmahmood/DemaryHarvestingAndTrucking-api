@@ -46,8 +46,8 @@ const httpTrigger: AzureFunction = async function (
     )`;
 
         if (start_date && end_date) nameWhereClause = `WHERE
-    dwr_emp.begining_day > '${start_date}'
-    AND dwr_emp.begining_day < '${end_date}'`;
+    dwr_emp.begining_day >= '${start_date}'
+    AND dwr_emp.begining_day <= '${end_date}'`;
 
         if (status == 'verified') {
             if (status && !(employee_wages_id || start_date || end_date)) statusClause1 = ` ${statusClause1} WHERE dwr_emp.dwr_status = '${status}'`;
