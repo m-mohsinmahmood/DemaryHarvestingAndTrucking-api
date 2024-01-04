@@ -1,6 +1,8 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
+import { getHarvestingExpenses, getHaulingExpenses } from "../harvesting-hauling-expenses/getExpenses";
+import { getHarvestingGrossMargin, getHaulingGrossMargin } from "../harvesting-hauling-expenses/grossMarginsFunctions";
 
 const httpTrigger: AzureFunction = async function (
     context: Context,
@@ -35,7 +37,13 @@ const httpTrigger: AzureFunction = async function (
 		total_net_pounds / bushel_weight AS bushels,
 		combining_rate::FLOAT * crop_acres::FLOAT AS harvesting_revenue,
 		hauling_rate::FLOAT * crop_acres::FLOAT AS hauling_revenue,
-		(combining_rate::FLOAT * crop_acres::FLOAT) + (hauling_rate::FLOAT * crop_acres::FLOAT) AS total_revenue
+		(combining_rate::FLOAT * crop_acres::FLOAT) + (hauling_rate::FLOAT * crop_acres::FLOAT) AS total_revenue,
+		(combining_rate::FLOAT * crop_acres::FLOAT)/combine_sh AS har_rev_sh,
+		(hauling_rate::FLOAT * crop_acres::FLOAT)/total_loaded_dht_miles AS haul_rev_mmile,
+		(combining_rate::FLOAT * crop_acres::FLOAT)/combine_labor AS har_rev_combine_labor_hour,
+		(hauling_rate::FLOAT * crop_acres::FLOAT)/truck_driver_labor AS haul_rev_td_hour,
+		crop_acres::FLOAT/combine_sh::FLOAT AS acres_sh,
+	  (total_bushels::FLOAT) + (total_bushels::FLOAT - (crop_acres::FLOAT * base_rate)) AS quantity
 		
 FROM (
     SELECT 
@@ -51,6 +59,8 @@ FROM (
 				hr.rate AS hauling_rate,
 				hr.rate_type,
 				crop.bushel_weight,
+				calculate_weight(cjs.id) / crop.bushel_weight AS total_bushels,
+				hr.base_rate,
 
  				(
 					Select customer_name from "Customers" 
@@ -97,7 +107,44 @@ FROM (
 					AND ht.scale_ticket_weight IS NOT NULL
 					AND ht.scale_ticket_weight <> '' 
 					AND ht.job_id = cjs."id"
-				) AS total_net_pounds
+				) AS total_net_pounds,
+				
+				(
+					Select SUM((dwr.ending_separator_hours::FLOAT)-(dwr.beginning_separator_hours::FLOAT)) from 
+					"DWR" dwr
+					INNER JOIN "Machinery" machinery ON dwr.machinery_id = machinery."id" AND machinery."type" = 'Combine'
+					
+					where dwr.job_id = cjs.id 
+				) AS combine_sh,
+				
+				(
+					Select SUM(hdt.loaded_miles::FLOAT) AS dht_total_loaded_miles 
+					from "Harvesting_Delivery_Ticket" hdt
+					LEFT JOIN "Employees" td ON td.id = hdt.truck_driver_id AND hdt.is_deleted != TRUE AND hdt.field_id IS NOT NULL 
+					AND hdt.loaded_miles <> '' AND hdt.loaded_miles IS NOT NULL AND td.is_guest_user = FALSE
+					WHERE hdt.job_id = cjs.id
+				) AS total_loaded_dht_miles,
+				
+				(
+					Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600) as "hours_difference" from 
+					"DWR_Employees" dwr_employee	
+					INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
+					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id 
+					AND dwr_employee.role LIKE '%Combine Operator%'
+					INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
+					
+					where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
+				) AS combine_labor,
+				
+				(
+					Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600) as "hours_difference" from 
+				    "DWR_Employees" dwr_employee
+					INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
+					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role LIKE '%Truck Driver%'
+					INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
+					
+					where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
+				) AS truck_driver_labor
 		
 			
     FROM 
@@ -117,9 +164,70 @@ FROM (
         db.connect();
 
         let result = await db.query(query);
+        let data = result.rows;
+
+        let customer_id = '460d26b1-4eca-4579-94a5-b18d728f4199';
+
+        let grossMarginHarvesting = getHarvestingGrossMargin(customer_id);
+        let harvestingExpense = getHarvestingExpenses(customer_id);
+        let grossMarginHauling = getHaulingGrossMargin(customer_id);
+        let haulingExpense = getHaulingExpenses(customer_id);
+
+        query = `${grossMarginHarvesting} ${harvestingExpense} ${grossMarginHauling} ${haulingExpense}`
+
+
+        result = await db.query(query);
+        // To Get Harvesting Data to fetch Expenses from query
+        result[0].rows.forEach((marginItem) => {
+            const correspondingExpense = result[1].rows.find((expenseItem) => expenseItem.invoiced_job_number === marginItem.invoiced_job_number);
+            if (correspondingExpense) {
+                marginItem.expenses = correspondingExpense.total;
+            }
+        });
+
+        let dataHarvesting = result[0].rows;
+
+        // To get Hauling Data to fetch Expenses from query
+        result[3].rows.forEach((marginItem) => {
+            const correspondingExpense = result[4].rows.find((expenseItem) => expenseItem.invoiced_job_number === marginItem.invoiced_job_number);
+            if (correspondingExpense) {
+                marginItem.expenses = correspondingExpense.total;
+            }
+        });
+
+        let dataHauling = result[3].rows;
+
+        addExpenses(dataHarvesting);
+        addExpenses(dataHauling);
+        const combinedData = Array.from(expensesMap.values());
+
+        const newExpensesMap = new Map();
+        combinedData.forEach(entry => {
+            const jobNumber = entry.invoiced_job_number;
+            const total_expenses = entry.expenses;
+
+            expensesMap.set(jobNumber, total_expenses);
+        });
+
+        // Add expenses from expensesMap to data
+        data.forEach(entry => {
+            const jobNumber = entry.invoiced_job_number;
+
+            if (expensesMap.has(jobNumber)) {
+                entry.total_expenses = expensesMap.get(jobNumber);
+            }
+        });
+
+        data.forEach(entry => {
+            // Calculate gross profit (revenue - expenses)
+            entry.gross_profit = entry.total_revenue - entry.total_expenses;
+          
+            // Calculate gross margin (gross profit / revenue)
+            entry.gross_margin = entry.gross_profit / entry.total_revenue;
+          });
 
         let resp = {
-            data: result.rows
+            data: data
         };
 
         db.end();
@@ -143,3 +251,21 @@ FROM (
 };
 
 export default httpTrigger;
+
+const expensesMap = new Map();
+
+const addExpenses = (data) => {
+    // Function to add harvesting and hauling expenses on basis of job to get total expense
+    data.forEach(entry => {
+        const jobNumber = entry.invoiced_job_number;
+        const currentExpenses = entry.expenses;
+
+        if (expensesMap.has(jobNumber)) {
+            // Add expenses to existing entry
+            expensesMap.get(jobNumber).expenses += currentExpenses;
+        } else {
+            // Create a new entry if it doesn't exist
+            expensesMap.set(jobNumber, { ...entry });
+        }
+    });
+}
