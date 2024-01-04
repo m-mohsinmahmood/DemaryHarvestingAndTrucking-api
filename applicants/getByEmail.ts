@@ -27,11 +27,12 @@ const httpTrigger: AzureFunction = async function (
                 emailExisted: true
             }
         }
-        else
+        else {
             resp = {
                 data: "No applicant found with this email.",
                 emailExisted: false
             };
+        }
 
         db.end();
 

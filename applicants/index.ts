@@ -8,6 +8,7 @@ import * as deleteApplicant from "./delete";
 import * as getApplicantByEmail from "./getByEmail";
 import * as sendOTP from "./sendOTP";
 import * as verifyOTP from "./verifyOTP";
+import * as rehireExEmployee from "./rehireExEmployee";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -32,6 +33,8 @@ const httpTrigger: AzureFunction = async function (
     case "PATCH":
       if (req.body.operation == 'sendOTP')
         await sendOTP.default(context, req);
+      else if (req.body.operation == 'rehire')
+        await rehireExEmployee.default(context, req);
       else
         await patchApplicant.default(context, req);
       break;
