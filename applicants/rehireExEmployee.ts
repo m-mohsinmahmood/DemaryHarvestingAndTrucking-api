@@ -9,7 +9,7 @@ const httpTrigger: AzureFunction = async function (
     const db = new Client(config);
 
     try {
-        const email: string = req.query.email;
+        const email: string = req.body.email;
 
         db.connect();
 
@@ -25,7 +25,7 @@ const httpTrigger: AzureFunction = async function (
 
         // Existing Applicant and also existing Employee
         // So update old details of employee and remove employee Previous data to proceed with employee onboarding process again
-        const applicant_info: any = req.body?.applicantInfo;
+        const applicant_info: any = req.body;
 
         if (result[0].rows[0].length > 0 && result[1].rows[0].length > 0) {
             query = `
