@@ -17,10 +17,11 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
   const db1 = new Client(config);
   const db2 = new Client(config);
-  let make_employee_query;
+  let make_employee_query = ``;
   let result;
   let employee_id;
   let firebase_id;
+  let checkResult;
 
   try {
     const applicant: any = req.body.applicant_data;
@@ -28,26 +29,39 @@ const httpTrigger: AzureFunction = async function (
     const email: any = req.body.email_data;
     const type = req.query.type;
     const skip_email = req.body.skipEmail
+    const emailTo: string = (email?.to) ? (email?.to).toString() : '';
 
     // Create employee if applicant accepts offer
     if (applicant.status_message == 'Results' && applicant.status_step == '12.1') {
-      if (!admin.apps.length) {
-        initializeFirebase();
-      }
       // Define the custom claims object
       try {
-        // Create a new user
-        const userRecord = await admin.auth().createUser({
-          email: applicant_info.email,
-          password: 'dht@123',
-        });
-        firebase_id = userRecord.uid;
-        const customClaims = {
-          country: applicant_info.country,
-          fb_id: userRecord.uid,
-        };
 
-        make_employee_query = `
+        let checkQuery = `
+        Select id, Concat(first_name, ' ' , last_name) AS name, email
+        from "Employees" where email = '${emailTo}';
+      `;
+
+        db.connect();
+        checkResult = await db.query(checkQuery);
+
+        if (checkResult.rows.length == 0) {
+
+          if (!admin.apps.length) {
+            initializeFirebase();
+          }
+
+          // Create a new user
+          const userRecord = await admin.auth().createUser({
+            email: applicant_info.email,
+            password: 'dht@123',
+          });
+          firebase_id = userRecord.uid;
+          const customClaims = {
+            country: applicant_info.country,
+            fb_id: userRecord.uid,
+          };
+
+          make_employee_query = `
             INSERT INTO 
                     "Employees" 
                 (
@@ -185,7 +199,8 @@ const httpTrigger: AzureFunction = async function (
               )
             RETURNING id as employee_id
             `;
-        admin.auth().setCustomUserClaims(userRecord.uid, customClaims);
+          admin.auth().setCustomUserClaims(userRecord.uid, customClaims);
+        }
       } catch (error) {
         context.res = {
           status: 500,
@@ -211,7 +226,11 @@ const httpTrigger: AzureFunction = async function (
 
     //#region create employee in employee status bar and employee documents if applicant accepts offer
     if (applicant.status_message == 'Results' && applicant.status_step == '12.1') {
-      employee_id = result[1].rows[0].employee_id
+      if (checkResult.rows.length == 0)
+        employee_id = result[1].rows[0].employee_id;
+      else
+        employee_id = checkResult.rows[0].id;
+
       let employee_status_bar_query
       try {
         if (applicant_info.country == 'United States of America') {
@@ -346,6 +365,3 @@ const httpTrigger: AzureFunction = async function (
 };
 
 export default httpTrigger;
-
-
-
