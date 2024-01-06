@@ -224,6 +224,7 @@ const httpTrigger: AzureFunction = async function (
       db.end();
     }
 
+    
     //#region create employee in employee status bar and employee documents if applicant accepts offer
     if (applicant.status_message == 'Results' && applicant.status_step == '12.1') {
       if (checkResult.rows.length == 0)
