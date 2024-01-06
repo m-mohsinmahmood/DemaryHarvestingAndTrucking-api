@@ -17,6 +17,8 @@ const httpTrigger: AzureFunction = async function (
   const db = new Client(config);
   const db1 = new Client(config);
   const db2 = new Client(config);
+  const db3 = new Client(config);
+  const db4 = new Client(config);
   let make_employee_query = ``;
   let result;
   let employee_id;
@@ -42,7 +44,6 @@ const httpTrigger: AzureFunction = async function (
       `;
 
         db.connect();
-        context.log("Line 45");
         checkResult = await db.query(checkQuery);
 
         if (checkResult.rows.length == 0) {
@@ -52,7 +53,6 @@ const httpTrigger: AzureFunction = async function (
           }
 
           // Create a new user
-          context.log("Line 55");
           const userRecord = await admin.auth().createUser({
             email: applicant_info.email,
             password: 'dht@123',
@@ -204,8 +204,6 @@ const httpTrigger: AzureFunction = async function (
           admin.auth().setCustomUserClaims(userRecord.uid, customClaims);
         }
       } catch (error) {
-        context.log("Catch 1");
-        context.log(error);
         context.res = {
           status: 500,
           body: {
@@ -214,25 +212,25 @@ const httpTrigger: AzureFunction = async function (
         };
         return;
       }
+
       let update_query = updateQuery(applicant, email, type, applicant_info);
       let query = `${update_query} ${make_employee_query}`;
-      db.connect();
-      context.log("Line 219");
-      result = await db.query(query);
-      db.end();
+
+      db3.connect();
+      result = await db3.query(query);
+      db3.end();
     }
     else {
       let update_query = updateQuery(applicant, email, type, applicant_info);
       let query = `${update_query}`;
-      db.connect();
-      context.log("Line 227");
-      result = await db.query(query);
-      db.end();
+      db4.connect();
+      result = await db4.query(query);
+      db4.end();
     }
 
 
     //#region create employee in employee status bar and employee documents if applicant accepts offer
-    if (applicant.status_message == 'Results' && applicant.status_step == '12.1') {
+    if (applicant.status_message == 'Results' && applicant.status_step == '12.1' && checkResult.rows.length == 0) {
       if (checkResult.rows.length == 0)
         employee_id = result[1].rows[0].employee_id;
       else
@@ -283,7 +281,6 @@ const httpTrigger: AzureFunction = async function (
           `;
         }
         db1.connect();
-        context.log("Line 286");
         let result2 = await db1.query(employee_status_bar_query);
         db1.end()
       } catch (error) {
@@ -313,7 +310,6 @@ const httpTrigger: AzureFunction = async function (
                     )
         `;
         db2.connect();
-        context.log("Line 316");
         let result2 = await db2.query(employee_document_query);
         db2.end()
       } catch (error) {
@@ -349,7 +345,6 @@ const httpTrigger: AzureFunction = async function (
         },
       };
 
-      context.log("Line 352");
       await client.beginSend(emailMessage);
     }
 
@@ -364,9 +359,6 @@ const httpTrigger: AzureFunction = async function (
     return;
   } catch (error) {
     db.end();
-    context.log("Catch 2");
-    context.log(error);
-
     context.res = {
       status: 500,
       body: {
