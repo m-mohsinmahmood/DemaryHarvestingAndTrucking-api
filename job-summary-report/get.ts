@@ -168,10 +168,10 @@ FROM (
 
         let customer_id = '460d26b1-4eca-4579-94a5-b18d728f4199';
 
-        let grossMarginHarvesting = getHarvestingGrossMargin(customer_id);
-        let harvestingExpense = getHarvestingExpenses(customer_id);
-        let grossMarginHauling = getHaulingGrossMargin(customer_id);
-        let haulingExpense = getHaulingExpenses(customer_id);
+        let grossMarginHarvesting = getHarvestingGrossMargin('');
+        let harvestingExpense = getHarvestingExpenses('');
+        let grossMarginHauling = getHaulingGrossMargin('');
+        let haulingExpense = getHaulingExpenses('');
 
         query = `${grossMarginHarvesting} ${harvestingExpense} ${grossMarginHauling} ${haulingExpense}`
 
@@ -221,10 +221,10 @@ FROM (
         data.forEach(entry => {
             // Calculate gross profit (revenue - expenses)
             entry.gross_profit = entry.total_revenue - entry.total_expenses;
-          
+
             // Calculate gross margin (gross profit / revenue)
             entry.gross_margin = entry.gross_profit / entry.total_revenue;
-          });
+        });
 
         let resp = {
             data: data

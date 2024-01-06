@@ -1,6 +1,11 @@
 
 export function getHarvestingGrossMargin(customer_id) {
-    let grossMargin = `
+
+	let where = ``;
+	if (customer_id != '')
+		where = `cjs.customer_id = '${customer_id}'`
+
+	let grossMargin = `
         SELECT 
         
 		invoiced_job_number,
@@ -32,17 +37,19 @@ export function getHarvestingGrossMargin(customer_id) {
         "Customer_Job_Setup" cjs
 		INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE
 
-		WHERE cjs.customer_id = '${customer_id}'
-
+		${where}
             ) AS subquery ORDER BY created_at ASC;
         `;
 
-    return grossMargin;
+	return grossMargin;
 }
 
 export function getHaulingGrossMargin(customer_id) {
+	let where = ``;
+	if (customer_id != '')
+		where = `cjs.customer_id = '${customer_id}'`
 
-    let grossMargin = `
+	let grossMargin = `
         SELECT 
         
 		invoiced_job_number,
@@ -90,10 +97,10 @@ export function getHaulingGrossMargin(customer_id) {
 		INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE
 		INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id AND cjs.farm_id = hr.farm_id AND cjs.crop_id = hr.crop_id AND hr.is_deleted = FALSE
 
-		WHERE cjs.customer_id = '${customer_id}'
+		${where}
 
 ) AS subquery ORDER BY created_at ASC;
         `;
 
-    return grossMargin;
+	return grossMargin;
 }

@@ -1,6 +1,9 @@
 import * as _ from "lodash";
 
 export function getHarvestingExpenses(customer_id) {
+    let where = ``;
+	if (customer_id != '')
+		where = `cjs.customer_id = '${customer_id}'`
 
     let query = `
        SELECT 
@@ -131,7 +134,7 @@ FROM (
            "Customer_Job_Setup" cjs
            INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE
    
-           WHERE cjs.customer_id = '${customer_id}'
+          ${where}
    ) AS subquery ORDER BY created_at ASC;
       `;
 
@@ -254,7 +257,7 @@ FROM (
         FROM 
             "Customer_Job_Setup" cjs
             INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE
-        WHERE cjs.customer_id = '${customer_id}'
+        ${where}
     ) AS subquery
 ) AS totals;
       `
@@ -264,6 +267,9 @@ FROM (
 }
 
 export function getHaulingExpenses(customer_id) {
+    let where = ``;
+	if (customer_id != '')
+		where = `cjs.customer_id = '${customer_id}'`
 
     let query = `
     SELECT 
@@ -342,7 +348,7 @@ export function getHaulingExpenses(customer_id) {
         "Customer_Job_Setup" cjs
         INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE
 
-        WHERE cjs.customer_id = '${customer_id}'
+        ${where}
 ) AS subquery ORDER BY created_at ASC;
       `;
 
@@ -416,7 +422,7 @@ export function getHaulingExpenses(customer_id) {
      FROM 
      "Customer_Job_Setup" cjs
      INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE
-     WHERE cjs.customer_id = '${customer_id}'
+     ${where}
 ) AS subquery 
 )
 AS totals

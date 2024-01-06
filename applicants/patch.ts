@@ -202,10 +202,11 @@ const httpTrigger: AzureFunction = async function (
           admin.auth().setCustomUserClaims(userRecord.uid, customClaims);
         }
       } catch (error) {
+        context.log(error);
         context.res = {
           status: 500,
           body: {
-            message: error.message,
+            message: "Catch 1",
           },
         };
         return;
@@ -224,7 +225,7 @@ const httpTrigger: AzureFunction = async function (
       db.end();
     }
 
-    
+
     //#region create employee in employee status bar and employee documents if applicant accepts offer
     if (applicant.status_message == 'Results' && applicant.status_step == '12.1') {
       if (checkResult.rows.length == 0)
@@ -355,10 +356,11 @@ const httpTrigger: AzureFunction = async function (
     return;
   } catch (error) {
     db.end();
+    context.log(error);
     context.res = {
       status: 500,
       body: {
-        message: error.message,
+        message: "Catch 2",
       },
     };
     return;
