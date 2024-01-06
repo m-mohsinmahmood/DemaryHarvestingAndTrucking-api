@@ -202,6 +202,7 @@ const httpTrigger: AzureFunction = async function (
           admin.auth().setCustomUserClaims(userRecord.uid, customClaims);
         }
       } catch (error) {
+        context.log("Catch 1");
         context.log(error);
         context.res = {
           status: 500,
@@ -356,7 +357,9 @@ const httpTrigger: AzureFunction = async function (
     return;
   } catch (error) {
     db.end();
+    context.log("Catch 2");
     context.log(error);
+
     context.res = {
       status: 500,
       body: {
