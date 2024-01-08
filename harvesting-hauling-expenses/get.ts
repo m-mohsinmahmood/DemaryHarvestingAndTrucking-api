@@ -2,7 +2,6 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
 import { getHarvestingExpenses, getHaulingExpenses } from "./getExpenses";
-
 const httpTrigger: AzureFunction = async function (
     context: Context,
     req: HttpRequest

@@ -60,9 +60,8 @@ const httpTrigger: AzureFunction = async function (
             WHEN rate_type = 'Hundred Weight' 
                 THEN (calculate_weight(job_id) / 100) * rate
             WHEN rate_type = 'Miles' 
-                THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = job_id) * rate
-            WHEN rate_type = 'Ton Miles' 
-                THEN (SELECT (premium_rate * (SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0))::FLOAT / COUNT(hdt.id)) + base_rate) * (calculate_weight(job_id) / 2000) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = job_id AND hdt.is_deleted = FALSE GROUP BY hdt.job_id)
+                THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::FLOAT, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = job_id) * rate
+            
             WHEN rate_type = 'Tons' 
                 THEN (calculate_weight(job_id) / 2000) * rate
             WHEN rate_type = 'Load Count' 

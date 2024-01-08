@@ -79,7 +79,7 @@ const httpTrigger: AzureFunction = async function (
             
         FROM
             CTE_Harvesting_Service;
-        ;`;
+        `;
 
         let getHaulingServices = `
         WITH CTE_Hauling_Service AS (
@@ -98,11 +98,11 @@ const httpTrigger: AzureFunction = async function (
                 CASE
                     WHEN hr.rate_type = 'Bushels' THEN calculate_weight(cjs.id) / crop.bushel_weight
                     WHEN hr.rate_type = 'Bushels + Excess Yield' THEN ( calculate_weight(cjs.id) / crop.bushel_weight) + ((calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_bushels))
-                    WHEN hr.rate_type = 'Hundred Weight' THEN calculate_weight(cjs.id) / 100
-                    WHEN hr.rate_type = 'Miles' THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id)
-                    WHEN hr.rate_type = 'Ton Miles' THEN calculate_weight(cjs.id) / 2000
-                    WHEN hr.rate_type = 'Tons' THEN calculate_weight(cjs.id) / 2000
-                    WHEN hr.rate_type = 'Load Count' THEN (SELECT COUNT(hdt.id) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id)
+                     WHEN hr.rate_type = 'Hundred Weight' THEN calculate_weight(cjs.id) / 100
+                     WHEN hr.rate_type = 'Miles' THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id)
+                     WHEN hr.rate_type = 'Ton Miles' THEN calculate_weight(cjs.id) / 2000
+                     WHEN hr.rate_type = 'Tons' THEN calculate_weight(cjs.id) / 2000
+                     WHEN hr.rate_type = 'Load Count' THEN (SELECT COUNT(hdt.id) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id)
                     ELSE 0
                 END AS quantity,
                 hr.rate AS rate,
@@ -113,10 +113,10 @@ const httpTrigger: AzureFunction = async function (
                     WHEN hr.rate_type = 'Bushels' THEN ( calculate_weight(cjs.id) / crop.bushel_weight) * hr.rate
                     WHEN hr.rate_type = 'Bushels + Excess Yield' THEN ( ( calculate_weight(cjs.id) / crop.bushel_weight) * hr.premium_rate ) + ( ( ( calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_bushels) ) * hr.premium_rate )
                     WHEN hr.rate_type = 'Hundred Weight' THEN (calculate_weight(cjs.id) / 100) * hr.rate
-                    WHEN hr.rate_type = 'Miles' THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id) * hr.rate
-                    WHEN hr.rate_type = 'Ton Miles' THEN (SELECT (hr.premium_rate * (SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0))::FLOAT / COUNT(hdt.id)) + hr.base_rate) * (calculate_weight(cjs.id) / 2000) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id AND hdt.is_deleted = FALSE)
-                    WHEN hr.rate_type = 'Tons' THEN (calculate_weight(cjs.id) / 2000) * hr.rate
-                    WHEN hr.rate_type = 'Load Count' THEN (SELECT COUNT(hdt.id) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id) * hr.rate
+                     WHEN hr.rate_type = 'Miles' THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id) * hr.rate
+                     WHEN hr.rate_type = 'Ton Miles' THEN (SELECT (hr.premium_rate * (SUM(COALESCE(NULLIF(loaded_miles, '')::FLOAT, 0))::FLOAT / COUNT(hdt.id)) + hr.base_rate) * (calculate_weight(cjs.id) / 2000) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id AND hdt.is_deleted = FALSE)
+                     when hr.rate_type = 'Tons' then (calculate_weight(cjs.id) / 2000) * hr.rate
+                    when hr.rate_type = 'Load count' then (select count(hdt.id) from "Harvesting_Delivery_Ticket" hdt where hdt.job_id = cjs.id) * hr.rate
                     ELSE 0
                 END AS revenue
 
@@ -130,14 +130,14 @@ const httpTrigger: AzureFunction = async function (
             WHERE
                 cjs.customer_id = '${customer_id}'
                 ${whereClause}
-        )
-        SELECT
-            *,
-            revenue::NUMERIC / crop_acres::NUMERIC AS revenue_per_acre,
-            revenue::NUMERIC / total_bushels::NUMERIC AS revenue_per_bushel
-            
-        FROM
-            CTE_Hauling_Service;
+                )
+                SELECT
+                    *,
+                    revenue::NUMERIC / crop_acres::NUMERIC AS revenue_per_acre,
+                    revenue::NUMERIC / total_bushels::NUMERIC AS revenue_per_bushel
+                    
+                FROM
+                    CTE_Hauling_Service;
         `;
 
         let query = `${getHarvestingServices} ${getHaulingServices}`;

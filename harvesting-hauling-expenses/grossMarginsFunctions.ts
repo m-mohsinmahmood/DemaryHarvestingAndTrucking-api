@@ -3,7 +3,7 @@ export function getHarvestingGrossMargin(customer_id) {
 
 	let where = ``;
 	if (customer_id != '')
-		where = `cjs.customer_id = '${customer_id}'`
+		where = `WHERE cjs.customer_id = '${customer_id}'`
 
 	let grossMargin = `
         SELECT 
@@ -35,7 +35,7 @@ export function getHarvestingGrossMargin(customer_id) {
 			
         FROM 
         "Customer_Job_Setup" cjs
-		INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE
+		INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE AND cjs.crop_acres IS NOT NULL AND cjs.crop_acres != '' AND cjs.crop_acres != 'null'
 
 		${where}
             ) AS subquery ORDER BY created_at ASC;
@@ -47,7 +47,7 @@ export function getHarvestingGrossMargin(customer_id) {
 export function getHaulingGrossMargin(customer_id) {
 	let where = ``;
 	if (customer_id != '')
-		where = `cjs.customer_id = '${customer_id}'`
+		where = `WHERE cjs.customer_id = '${customer_id}'`
 
 	let grossMargin = `
         SELECT 
@@ -63,9 +63,8 @@ export function getHaulingGrossMargin(customer_id) {
             WHEN rate_type = 'Hundred Weight' 
                 THEN (calculate_weight(job_id) / 100) * rate
             WHEN rate_type = 'Miles' 
-                THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = job_id) * rate
-            WHEN rate_type = 'Ton Miles' 
-                THEN (SELECT (premium_rate * (SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0))::FLOAT / COUNT(hdt.id)) + base_rate) * (calculate_weight(job_id) / 2000) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = job_id AND hdt.is_deleted = FALSE GROUP BY hdt.job_id)
+                THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::FLOAT, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = job_id) * rate
+            
             WHEN rate_type = 'Tons' 
                 THEN (calculate_weight(job_id) / 2000) * rate
             WHEN rate_type = 'Load Count' 
@@ -94,7 +93,7 @@ export function getHaulingGrossMargin(customer_id) {
 				
     FROM 
 		"Customer_Job_Setup" cjs
-		INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE
+		INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE AND cjs.crop_acres IS NOT NULL AND cjs.crop_acres != '' AND cjs.crop_acres != 'null'
 		INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id AND cjs.farm_id = hr.farm_id AND cjs.crop_id = hr.crop_id AND hr.is_deleted = FALSE
 
 		${where}

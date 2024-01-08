@@ -166,15 +166,12 @@ FROM (
         let result = await db.query(query);
         let data = result.rows;
 
-        let customer_id = '460d26b1-4eca-4579-94a5-b18d728f4199';
-
         let grossMarginHarvesting = getHarvestingGrossMargin('');
         let harvestingExpense = getHarvestingExpenses('');
         let grossMarginHauling = getHaulingGrossMargin('');
         let haulingExpense = getHaulingExpenses('');
 
         query = `${grossMarginHarvesting} ${harvestingExpense} ${grossMarginHauling} ${haulingExpense}`
-
 
         result = await db.query(query);
         // To Get Harvesting Data to fetch Expenses from query
