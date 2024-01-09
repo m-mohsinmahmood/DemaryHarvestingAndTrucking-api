@@ -5,14 +5,16 @@ import { getHarvestingExpenses, getHaulingExpenses } from "../harvesting-hauling
 import { getHarvestingGrossMargin, getHaulingGrossMargin } from "../harvesting-hauling-expenses/grossMarginsFunctions";
 
 const httpTrigger: AzureFunction = async function (
-    context: Context,
-    req: HttpRequest
+	context: Context,
+	req: HttpRequest
 ): Promise<void> {
-    const db = new Client(config);
+	const db = new Client(config);
+	const db2 = new Client(config);
+	const expensesMap = new Map();
 
-    try {
+	try {
 
-        let query = `
+		let query = `
         SELECT 
         
 		invoiced_job_number,
@@ -155,114 +157,112 @@ FROM (
 				INNER JOIN "Combining_Rates" cr ON cjs.crop_id = cr.crop_id AND cjs.customer_id = cr.customer_id AND cr.is_deleted = FALSE
 				INNER JOIN "Hauling_Rates" hr ON cjs.crop_id = hr.crop_id AND cjs.customer_id = hr.customer_id
 
-		WHERE cjs.customer_id = '460d26b1-4eca-4579-94a5-b18d728f4199'
-
 ) AS subquery ORDER BY created_at ASC;
 
         `;
 
-        db.connect();
+		db.connect();
+		db2.connect();
 
-        let result = await db.query(query);
-        let data = result.rows;
+		let result = await db.query(query);
+		let data = result.rows;
 
-        let grossMarginHarvesting = getHarvestingGrossMargin('');
-        let harvestingExpense = getHarvestingExpenses('');
-        let grossMarginHauling = getHaulingGrossMargin('');
-        let haulingExpense = getHaulingExpenses('');
+		let grossMarginHarvesting = getHarvestingGrossMargin('');
+		let harvestingExpense = getHarvestingExpenses('');
+		let grossMarginHauling = getHaulingGrossMargin('');
+		let haulingExpense = getHaulingExpenses('');
 
-        query = `${grossMarginHarvesting} ${harvestingExpense} ${grossMarginHauling} ${haulingExpense}`
+		query = `${grossMarginHarvesting} ${harvestingExpense} ${grossMarginHauling} ${haulingExpense}`
 
-        result = await db.query(query);
-        // To Get Harvesting Data to fetch Expenses from query
-        result[0].rows.forEach((marginItem) => {
-            const correspondingExpense = result[1].rows.find((expenseItem) => expenseItem.invoiced_job_number === marginItem.invoiced_job_number);
-            if (correspondingExpense) {
-                marginItem.expenses = correspondingExpense.total;
-            }
-        });
+		result = await db2.query(query);
+		// To Get Harvesting Data to fetch Expenses from query
+		result[0].rows.forEach((marginItem) => {
+			const correspondingExpense = result[1].rows.find((expenseItem) => expenseItem.invoiced_job_number === marginItem.invoiced_job_number);
+			if (correspondingExpense) {
+				marginItem.expenses = correspondingExpense.total;
+			}
+		});
 
-        let dataHarvesting = result[0].rows;
+		let dataHarvesting = result[0].rows;
 
-        // To get Hauling Data to fetch Expenses from query
-        result[3].rows.forEach((marginItem) => {
-            const correspondingExpense = result[4].rows.find((expenseItem) => expenseItem.invoiced_job_number === marginItem.invoiced_job_number);
-            if (correspondingExpense) {
-                marginItem.expenses = correspondingExpense.total;
-            }
-        });
+		// To get Hauling Data to fetch Expenses from query
+		result[3].rows.forEach((marginItem) => {
+			const correspondingExpense = result[4].rows.find((expenseItem) => expenseItem.invoiced_job_number === marginItem.invoiced_job_number);
+			if (correspondingExpense) {
+				marginItem.expenses = correspondingExpense.total;
+			}
+		});
 
-        let dataHauling = result[3].rows;
+		let dataHauling = result[3].rows;
 
-        addExpenses(dataHarvesting);
-        addExpenses(dataHauling);
-        const combinedData = Array.from(expensesMap.values());
+		addExpenses(dataHarvesting, expensesMap);
+		addExpenses(dataHauling, expensesMap);
+		const combinedData = Array.from(expensesMap.values());
 
-        const newExpensesMap = new Map();
-        combinedData.forEach(entry => {
-            const jobNumber = entry.invoiced_job_number;
-            const total_expenses = entry.expenses;
+		const newExpensesMap = new Map();
+		combinedData.forEach(entry => {
+			const jobNumber = entry.invoiced_job_number;
+			const total_expenses = entry.expenses;
 
-            expensesMap.set(jobNumber, total_expenses);
-        });
+			expensesMap.set(jobNumber, total_expenses);
+		});
 
-        // Add expenses from expensesMap to data
-        data.forEach(entry => {
-            const jobNumber = entry.invoiced_job_number;
+		// Add expenses from expensesMap to data
+		data.forEach(entry => {
+			const jobNumber = entry.invoiced_job_number;
 
-            if (expensesMap.has(jobNumber)) {
-                entry.total_expenses = expensesMap.get(jobNumber);
-            }
-        });
+			if (expensesMap.has(jobNumber)) {
+				entry.total_expenses = expensesMap.get(jobNumber);
+			}
+		});
 
-        data.forEach(entry => {
-            // Calculate gross profit (revenue - expenses)
-            entry.gross_profit = entry.total_revenue - entry.total_expenses;
+		data.forEach(entry => {
+			// Calculate gross profit (revenue - expenses)
+			entry.gross_profit = entry.total_revenue - entry.total_expenses;
 
-            // Calculate gross margin (gross profit / revenue)
-            entry.gross_margin = entry.gross_profit / entry.total_revenue;
-        });
+			// Calculate gross margin (gross profit / revenue)
+			entry.gross_margin = entry.gross_profit / entry.total_revenue;
+		});
 
-        let resp = {
-            data: data
-        };
+		let resp = {
+			data: data
+		};
 
-        db.end();
+		db.end();
+		db2.end();
 
-        context.res = {
-            status: 200,
-            body: resp,
-        };
+		context.res = {
+			status: 200,
+			body: resp,
+		};
 
-        context.done();
-        return;
-    } catch (err) {
-        db.end();
-        context.res = {
-            status: 500,
-            body: err,
-        };
-        context.done();
-        return;
-    }
+		context.done();
+		return;
+	} catch (err) {
+		db.end();
+		context.res = {
+			status: 500,
+			body: err,
+		};
+		context.done();
+		return;
+	}
 };
 
 export default httpTrigger;
 
-const expensesMap = new Map();
+const addExpenses = (data, expensesMap) => {
+	// Function to add harvesting and hauling expenses on basis of job to get total expense
+	data.forEach(entry => {
+		const jobNumber = entry.invoiced_job_number;
+		let currentExpenses = entry.expenses || 0;
 
-const addExpenses = (data) => {
-    // Function to add harvesting and hauling expenses on basis of job to get total expense
-    data.forEach(entry => {
-        const jobNumber = entry.invoiced_job_number;
-        const currentExpenses = entry.expenses;
-
-        if (expensesMap.has(jobNumber)) {
-            // Add expenses to existing entry
-            expensesMap.get(jobNumber).expenses += currentExpenses;
-        } else {
-            // Create a new entry if it doesn't exist
-            expensesMap.set(jobNumber, { ...entry });
-        }
-    });
+		if (expensesMap.has(jobNumber)) {
+			// Add expenses to existing entry
+			expensesMap.get(jobNumber).expenses += currentExpenses;
+		} else {
+			// Create a new entry if it doesn't exist
+			expensesMap.set(jobNumber, { ...entry, expenses: currentExpenses });
+		}
+	});
 }

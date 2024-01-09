@@ -78,7 +78,7 @@ const httpTrigger: AzureFunction = async function (
             revenue::NUMERIC / total_bushels::NUMERIC AS revenue_per_bushel
             
         FROM
-            CTE_Harvesting_Service;
+        Aggregated a;
         `;
 
         let getHaulingServices = `

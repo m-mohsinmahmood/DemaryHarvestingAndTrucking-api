@@ -64,7 +64,9 @@ export function getHaulingGrossMargin(customer_id) {
                 THEN (calculate_weight(job_id) / 100) * rate
             WHEN rate_type = 'Miles' 
                 THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::FLOAT, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = job_id) * rate
-            
+			WHEN rate_type = 'Ton Miles'
+                THEN (SELECT (premium_rate * (SUM(COALESCE(NULLIF(loaded_miles, '')::FLOAT, 0))::FLOAT / COUNT(hdt.id)) + base_rate) * (calculate_weight(job_id) / 2000) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = job_id AND hdt.is_deleted = FALSE
+				AND job_customer_id::VARCHAR = hr_customer::VARCHAR AND farm = hr_farm::VARCHAR AND crop = hr_crop::VARCHAR GROUP BY hdt.job_id)
             WHEN rate_type = 'Tons' 
                 THEN (calculate_weight(job_id) / 2000) * rate
             WHEN rate_type = 'Load Count' 
@@ -81,9 +83,13 @@ export function getHaulingGrossMargin(customer_id) {
 				crop.bushel_weight,
 				hr.rate_type,
 				hr.rate,
+				hr.base_rate,
 				hr.premium_rate,
 				hr.base_bushels,
-				hr.base_rate,
+				hr.customer_id AS hr_customer,
+				hr.farm_id hr_farm,
+				hr.crop_id AS hr_crop,
+				cjs.customer_id AS job_customer_id,
 				cjs.id AS job_id,
 				(
 					Select name from "Customer_Farm"

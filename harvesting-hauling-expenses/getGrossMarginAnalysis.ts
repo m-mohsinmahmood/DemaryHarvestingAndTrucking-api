@@ -3,7 +3,6 @@ import { Client } from "pg";
 import { config } from "../services/database/database.config";
 import { getHarvestingExpenses, getHaulingExpenses } from "./getExpenses";
 import { getHarvestingGrossMargin, getHaulingGrossMargin } from "./grossMarginsFunctions";
-
 const httpTrigger: AzureFunction = async function (
     context: Context,
     req: HttpRequest
@@ -122,7 +121,7 @@ const httpTrigger: AzureFunction = async function (
             });
 
             let dataHauling = result[3].rows;
-           
+
             const combinedMap = new Map();
 
             dataHarvesting.forEach(item => {
