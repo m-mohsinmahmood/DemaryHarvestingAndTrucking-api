@@ -22,6 +22,7 @@ const httpTrigger: AzureFunction = async function (
                <br><br> <b>Email: </b> ${data?.email}
                <br><br> <b>Iquiry Type : </b> ${data?.inquiry_type}
                <br><br> <b>Message : </b> ${data?.message}
+               <br><br> <b>Phone no. : </b> ${data?.cell_phone_country_code + data.cell_phone_number}
                 `
             },
             recipients: {
