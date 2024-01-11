@@ -155,7 +155,7 @@ FROM (
 				INNER JOIN "Employees" director ON director."id" = cjs.director_id AND director.is_deleted = FALSE
 				INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE
 				INNER JOIN "Combining_Rates" cr ON cjs.crop_id = cr.crop_id AND cjs.customer_id = cr.customer_id AND cr.is_deleted = FALSE
-				INNER JOIN "Hauling_Rates" hr ON cjs.crop_id = hr.crop_id AND cjs.customer_id = hr.customer_id
+				INNER JOIN "Hauling_Rates" hr ON cjs.crop_id = hr.crop_id AND cjs.customer_id = hr.customer_id AND hr.is_deleted = FALSE
 
 ) AS subquery ORDER BY created_at ASC;
 

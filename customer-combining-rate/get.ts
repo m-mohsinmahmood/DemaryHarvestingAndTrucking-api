@@ -20,7 +20,7 @@ const httpTrigger: AzureFunction = async function (
                 cf."id" AS "farm_id",
 			          cf."name" AS "farm_name",
                 c."id" as "crop_id",
-                CONCAT (c."name", ' (', c."variety", ')') AS "crop_name",
+                c."name" as "crop_name",
                 c."bushel_weight", 
                 cr."customer_id", 
                 cr."combining_rate", 

@@ -8,12 +8,30 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest
 ): Promise<void> {
   const db = new Client(config);
+  const db2 = new Client(config);
+
 
   try {
     await db.connect();
+    await db2.connect();
 
     const hauling_rate: hauling_rate = req.body;
-    
+
+    let duplicationCheck = `
+    SELECT farm_id, crop_id
+    FROM "public"."Hauling_Rates"
+
+    WHERE customer_id = '${req.body.customer_id}' AND farm_id = '${req.body.farm_id}' AND crop_id = '${req.body.crop_id}'
+    AND is_deleted = FALSE
+   ;
+  `;
+
+    const resultDuplicationCheck = await db2.query(duplicationCheck);
+
+    if (resultDuplicationCheck.rowCount >= 1) {
+      throw new Error("A record with the same farm and crop already exists.");
+    }
+
     let query = `
       INSERT INTO "Hauling_Rates" 
                   ("customer_id",
@@ -28,8 +46,7 @@ const httpTrigger: AzureFunction = async function (
                   "truck_fuel_cost"
                   ) 
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-      ON CONFLICT (farm_id, crop_id)
-      DO NOTHING;
+     ;
     `;
 
     const values = [
@@ -47,10 +64,6 @@ const httpTrigger: AzureFunction = async function (
 
     const result = await db.query(query, values);
 
-    if (result.rowCount === 0) {
-      throw new Error("A record with the same farm and crop already exists.");
-    }
-
     context.res = {
       status: 200,
       body: {
@@ -66,6 +79,7 @@ const httpTrigger: AzureFunction = async function (
     };
   } finally {
     await db.end();
+    await db2.end();
     context.done();
   }
 };

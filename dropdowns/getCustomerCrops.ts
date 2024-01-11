@@ -21,9 +21,9 @@ const httpTrigger: AzureFunction = async function (
 
     let customer_crop_dropdown_query = `
         SELECT 
-                c."id"                                AS "crop_id",
-                CONCAT ("name", ' (', "variety", ')') AS "name",
-                cc."id"                               AS "customer_crop_id"
+                c."id"  AS "crop_id",
+                c."name"  AS "name",
+                cc."id" AS "customer_crop_id"
         FROM 
                 "Crops" c
                 INNER JOIN "Customer_Crop" cc 

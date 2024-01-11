@@ -157,7 +157,7 @@ FROM (
 				
 				(
 					SELECT hauling_fuel_cost from "Hauling_Rates" 
-					where customer_id = cjs.customer_id AND farm_id = cjs.farm_id AND crop_id = cjs.crop_id
+					where customer_id = cjs.customer_id AND farm_id = cjs.farm_id AND crop_id = cjs.crop_id AND is_deleted = FALSE
 				) AS hauling_fuel_cost,
 				
 				(
@@ -324,7 +324,7 @@ FROM (
 				
 				(
 					SELECT hauling_fuel_cost from "Hauling_Rates" 
-					where customer_id = cjs.customer_id AND farm_id = cjs.farm_id AND crop_id = cjs.crop_id
+					where customer_id = cjs.customer_id AND farm_id = cjs.farm_id AND crop_id = cjs.crop_id AND is_deleted = FALSE
 				) AS hauling_fuel_cost,
 				
 				(
@@ -348,7 +348,7 @@ FROM (
       `;
 
 		let query = `${info_query} ${subTotals}`;
-
+	
 		db.connect();
 
 		let result = await db.query(query);

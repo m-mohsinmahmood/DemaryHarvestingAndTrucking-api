@@ -8,8 +8,26 @@ const httpTrigger: AzureFunction = async function (
   req: HttpRequest
 ): Promise<void> {
   const db = new Client(config);
+  const db2 = new Client(config);
 
   try {
+    await db2.connect();
+
+    let duplicationCheck = `
+    SELECT farm_id, crop_id
+    FROM "public"."Combining_Rates"
+
+    WHERE customer_id = '${req.body.customer_id}' AND farm_id = '${req.body.farm_id}' AND crop_id = '${req.body.crop_id}'
+    AND is_deleted = FALSE
+   ;
+  `;
+
+    const resultDuplicationCheck = await db2.query(duplicationCheck);
+
+    if (resultDuplicationCheck.rowCount >= 1) {
+      throw new Error("A record with the same farm and crop already exists.");
+    }
+
     await db.connect();
 
     const combining_rate: combining_rate = req.body;
@@ -26,8 +44,7 @@ const httpTrigger: AzureFunction = async function (
         "tractor_fuel_cost"
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      ON CONFLICT (farm_id, crop_id)
-      DO NOTHING;
+     ;
     `;
 
     const values = [
@@ -62,6 +79,7 @@ const httpTrigger: AzureFunction = async function (
     };
   } finally {
     await db.end();
+    await db2.end();
     context.done();
   }
 };
