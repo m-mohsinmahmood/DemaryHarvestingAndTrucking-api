@@ -114,7 +114,10 @@ const httpTrigger: AzureFunction = async function (
               a."whatsapp_number",
               a."equipments_experience_description",
               a."device_info",
-              a."employee_type"      
+              a."employee_type",
+              a."second_evaluation_link",
+              a."reference_evaluation_link",
+              a."third_evaluation_link"      
 
         FROM                   
               "Applicants" a 
@@ -145,21 +148,21 @@ const httpTrigger: AzureFunction = async function (
       status_bar = [
         { step: `Application Submitted`, date: resp.created_at, status: true, show: true, active: true },
         {
-          step: `Preliminary Review`, 
+          step: `Preliminary Review`,
           date: resp.step_three_status_date,
           status: +resp.status_step >= 2 ? true : false,
           show: true, active: true,
           click: +resp.status_step == 2 ? true : false
         },
         {
-          step: `1st Interview Scheduled`, 
+          step: `1st Interview Scheduled`,
           date: resp.step_three_status_date,
           status: resp.first_interviewer_id ? true : false,
           show: +resp.status_step >= 3 && resp.first_interviewer_id ? true : false,
           active: +resp.status_step >= 3 ? true : false,
         },
         {
-          step: `1st Interview Completed`, 
+          step: `1st Interview Completed`,
           date: resp.step_four_status_date,
           status: resp.first_interviewer_id && resp.first_call_ranking && resp.first_call_remarks ? true : false,
           show: +resp.status_step >= 4 && resp.first_interviewer_id ? true : false,
@@ -168,22 +171,23 @@ const httpTrigger: AzureFunction = async function (
 
         },
         {
-          step: `2nd Interview Scheduled`, 
+          step: `2nd Interview Scheduled`,
           date: resp.step_five_status_date,
           status: resp.second_interviewer_id ? true : false,
           show: +resp.status_step >= 5 && resp.second_interviewer_id ? true : false,
           active: +resp.status_step >= 5 ? true : false,
         },
         {
-          step: `2nd Interview Completed`, 
+          step: `2nd Interview Completed`,
           date: resp.step_six_status_date,
           status: resp.second_interviewer_id && resp.second_call_ranking && resp.second_call_remarks ? true : false,
           show: +resp.status_step >= 6 && resp.second_interviewer_id ? true : false,
           active: +resp.status_step >= 6 ? true : false,
-          click: +resp.status_step == 6 && resp.second_call_ranking && resp.second_call_remarks ? true : false
+          click: +resp.status_step == 6 && resp.second_call_ranking && resp.second_call_remarks ? true : false,
+          second_evaluation_link: resp.second_evaluation_link
         },
         {
-          step: `Scheduled Reference Call`, 
+          step: `Scheduled Reference Call`,
           date: resp.step_seven_status_date,
           status: resp.reference_interviewer_id ? true : false,
           show: +resp.status_step >= 7 && resp.reference_interviewer_id ? true : false,
@@ -191,29 +195,31 @@ const httpTrigger: AzureFunction = async function (
           click: +resp.status_step == 7 && resp.reference_call_ranking && resp.reference_call_remarks ? true : false
         },
         {
-          step: `Reference Call Completed`, 
+          step: `Reference Call Completed`,
           date: resp.step_eight_status_date,
           status: resp.reference_interviewer_id && resp.reference_call_ranking && resp.reference_call_remarks ? true : false,
           show: +resp.status_step >= 8 && resp.reference_interviewer_id ? true : false,
           active: +resp.status_step >= 8 ? true : false,
-          click: +resp.status_step == 8 && resp.reference_call_ranking && resp.reference_call_remarks ? true : false
+          click: +resp.status_step == 8 && resp.reference_call_ranking && resp.reference_call_remarks ? true : false,
+          reference_evaluation_link: resp.reference_evaluation_link
         },
         {
-          step: `3rd Interview Scheduled`, 
+          step: `3rd Interview Scheduled`,
           date: resp.step_nine_status_date,
           status: resp.third_interviewer_id ? true : false,
           show: +resp.status_step >= 9 && resp.third_interviewer_id ? true : false,
           active: +resp.status_step >= 9 ? true : false,
-          },
+        },
         {
-          step: `3rd Interview Completed`, 
+          step: `3rd Interview Completed`,
           date: resp.step_ten_status_date,
           status: resp.third_interviewer_id && resp.third_call_ranking && resp.third_call_remarks ? true : false,
           show: +resp.status_step >= 10 && resp.third_interviewer_id ? true : false,
           active: +resp.status_step >= 10 ? true : false,
+          third_evaluation_link: resp.third_evaluation_link
         },
         {
-          step: `Recruiter Decision Made`, 
+          step: `Recruiter Decision Made`,
           date: resp.step_eleven_status_date,
           status: resp.third_interviewer_id && resp.third_call_ranking && resp.third_call_remarks ? true : false,
           show: +resp.status_step >= 10 && resp.third_interviewer_id ? true : false,
@@ -221,22 +227,22 @@ const httpTrigger: AzureFunction = async function (
           click: +resp.status_step == 10 && resp.third_call_ranking && resp.third_call_remarks ? true : false
         },
         {
-          step: `Offer Made`, 
-          date: resp.step_eleven_status_date, 
+          step: `Offer Made`,
+          date: resp.step_eleven_status_date,
           status: +resp.status_step >= 11 ? true : false,
-          show: +resp.status_step >= 11  && resp.step_eleven_status_date ? true : false,
+          show: +resp.status_step >= 11 && resp.step_eleven_status_date ? true : false,
           active: +resp.status_step >= 11 ? true : false
         },
         {
-          step: `Offer Accepted`, 
-          date: resp.step_twelve_status_date, 
+          step: `Offer Accepted`,
+          date: resp.step_twelve_status_date,
           status: +resp.status_step >= 11 ? true : false,
           show: +resp.status_step >= 11 && resp.step_eleven_status_date ? true : false,
           active: +resp.status_step >= 11 ? true : false,
           click: +resp.status_step == 11 ? true : false,
         },
         {
-          step: `Results ${results_status[resp.status_step] ? '(' + results_status[resp.status_step] + ')' : ''}`, 
+          step: `Results ${results_status[resp.status_step] ? '(' + results_status[resp.status_step] + ')' : ''}`,
           date: resp.step_thirteen_status_date, status: +resp.status_step >= 12 ? true : false,
           show: +resp.status_step >= 12 ? true : false,
           active: +resp.status_step >= 12 ? true : false

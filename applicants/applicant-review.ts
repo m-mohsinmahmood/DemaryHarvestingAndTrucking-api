@@ -74,6 +74,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                         "previous_status_message" = '${applicant.prev_status_message}',
                         "status_step" = '${applicant.status_step}',
                         "ranking" = '${applicant.ranking}',
+                        "second_evaluation_link" = '${applicant.second_evaluation_link}',
                         "step_six_status_date" = now()
                 `;
                 break;
@@ -86,6 +87,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                         "previous_status_message" = '${applicant.prev_status_message}',
                         "status_step" = '${applicant.status_step}',
                         "ranking" = '${applicant.ranking}',
+                        "third_evaluation_link" = '${applicant.third_evaluation_link}',
                         "step_ten_status_date" = now()
                 `;
                 break;
@@ -98,6 +100,7 @@ export function updateQuery(applicant, email, type, applicant_info) {
                         "previous_status_message" = '${applicant.prev_status_message}',
                         "status_step" = '${applicant.status_step}',
                         "ranking" = '${applicant.ranking}',
+                        "reference_evaluation_link" = '${applicant.reference_evaluation_link}',
                         "step_eight_status_date" = now()
                         
                 `;
