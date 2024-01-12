@@ -62,7 +62,7 @@ FROM (
                
                (
                    SELECT combining_fuel_cost from "Combining_Rates"
-                   where customer_id = cjs.customer_id AND farm_id = cjs.farm_id AND crop_id = cjs.crop_id
+                   where customer_id = cjs.customer_id AND farm_id = cjs.farm_id AND crop_id = cjs.crop_id AND is_deleted = FALSE
                ) AS combine_fuel_cost,
                
                (
@@ -83,7 +83,7 @@ FROM (
                
                (
                    SELECT tractor_fuel_cost from "Combining_Rates"
-                   where customer_id = cjs.customer_id AND farm_id = cjs.farm_id AND crop_id = cjs.crop_id
+                   where customer_id = cjs.customer_id AND farm_id = cjs.farm_id AND crop_id = cjs.crop_id AND is_deleted = FALSE
                ) AS tractor_fuel_cost,
                
                (
@@ -186,7 +186,7 @@ FROM (
                 (
                     SELECT combining_fuel_cost 
                     FROM "Combining_Rates"
-                    WHERE customer_id = cjs.customer_id AND farm_id = cjs.farm_id AND crop_id = cjs.crop_id
+                    WHERE customer_id = cjs.customer_id AND farm_id = cjs.farm_id AND crop_id = cjs.crop_id AND is_deleted = FALSE
                 ) AS combine_fuel_cost,
                 (
                     Select SUM((dwr.ending_engine_hours::FLOAT)-(dwr.beginning_engine_hours)::FLOAT) 
@@ -207,7 +207,7 @@ FROM (
                 (
                     SELECT tractor_fuel_cost 
                     FROM "Combining_Rates"
-                    WHERE customer_id = cjs.customer_id AND farm_id = cjs.farm_id AND crop_id = cjs.crop_id
+                    WHERE customer_id = cjs.customer_id AND farm_id = cjs.farm_id AND crop_id = cjs.crop_id AND is_deleted = FALSE
                 ) AS tractor_fuel_cost,
                 (
                     Select header_cost 
