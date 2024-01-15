@@ -73,7 +73,7 @@ FROM (
 				) AS combine_eh,
 				
 				(
-					Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600) as "hours_difference" from 
+					Select SUM(EXTRACT(EPOCH FROM (dwr_employee."ending_day" - dwr_employee."begining_day")) / 3600) as "hours_difference" from 
 					"DWR_Employees" dwr_employee	
 					INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
 					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id 
@@ -100,10 +100,10 @@ FROM (
 				) AS tractor_engine_hours,
 
 				(
-					Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600) as "hours_difference" from 
+					Select SUM(EXTRACT(EPOCH FROM (dwr_employee.ending_day - dwr_employee.begining_day)) / 3600) as "hours_difference" from 
 					"DWR_Employees" dwr_employee
 					INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
-					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role NOT LIKE '%Cart Operator%'
+					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role LIKE '%Cart Operator%'
 					INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
 					
 					where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
@@ -120,7 +120,9 @@ FROM (
 				) AS truck_driver_labor,
 				
 				(
-					Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600 / 24) as "days" from 
+					SELECT
+						CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END as "result"
+					FROM
 					"DWR_Employees" dwr_employee
 					INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
 					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role NOT LIKE '%Truck Driver%'
@@ -130,7 +132,9 @@ FROM (
 				) AS employee_lodging_days,
 				
 				(
-					Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600 / 24) as "days" from 
+					SELECT
+						CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END as "result"
+					FROM
 					"DWR_Employees" dwr_employee
 					INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
 					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role LIKE '%Truck Driver%'
@@ -267,10 +271,10 @@ FROM (
 				) AS tractor_engine_hours,
 
 				(
-					Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600) as "hours_difference" from 
+					Select SUM(EXTRACT(EPOCH FROM (dwr_employee.ending_day - dwr_employee.begining_day)) / 3600) as "hours_difference" from 
 					"DWR_Employees" dwr_employee
 					INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
-					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role NOT LIKE '%Cart Operator%'
+					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role LIKE '%Cart Operator%'
 					INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
 					
 					where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
@@ -278,7 +282,7 @@ FROM (
 				
 				(
 					Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600) as "hours_difference" from 
-				"DWR_Employees" dwr_employee
+				    "DWR_Employees" dwr_employee
 					INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
 					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role LIKE '%Truck Driver%'
 					INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
@@ -287,7 +291,9 @@ FROM (
 				) AS truck_driver_labor,
 				
 				(
-					Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600 / 24) as "days" from 
+					SELECT
+						CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END as "result"
+					FROM
 					"DWR_Employees" dwr_employee
 					INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
 					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role NOT LIKE '%Truck Driver%'
@@ -297,7 +303,9 @@ FROM (
 				) AS employee_lodging_days,
 				
 				(
-					Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600 / 24) as "days" from 
+					SELECT
+						CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END as "result"
+					FROM
 					"DWR_Employees" dwr_employee
 					INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
 					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role LIKE '%Truck Driver%'

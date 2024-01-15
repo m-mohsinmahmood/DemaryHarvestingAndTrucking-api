@@ -95,13 +95,15 @@ FROM (
                ),
                
                (
-                   Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600 / 24) as "days" from 
-                   "DWR_Employees" dwr_employee
-                   INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
-                   INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role NOT LIKE '%Truck Driver%'
-                   INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
-                   
-                   where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
+                SELECT
+                CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END as "result"
+                    FROM
+                "DWR_Employees" dwr_employee
+                INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
+                INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role NOT LIKE '%Truck Driver%'
+                INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
+            
+                where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
                ) AS employee_lodging_days,
 
                (
@@ -109,7 +111,7 @@ FROM (
                ),
                                  
                 (
-                    Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600) as "hours_difference" from 
+                    Select SUM(EXTRACT(EPOCH FROM (dwr_employee."ending_day" - dwr_employee."begining_day")) / 3600) as "hours_difference" from 
                     "DWR_Employees" dwr_employee	
                     INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
                     INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id 
@@ -120,13 +122,13 @@ FROM (
                 ) AS combine_labor,
             
                 (
-                    Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600) as "hours_difference" from 
-                    "DWR_Employees" dwr_employee
-                    INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
-                    INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role NOT LIKE '%Cart Operator%'
-                    INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
-                
-                    where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
+                    Select SUM(EXTRACT(EPOCH FROM (dwr_employee.ending_day - dwr_employee.begining_day)) / 3600) as "hours_difference" from 
+					"DWR_Employees" dwr_employee
+					INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
+					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role LIKE '%Cart Operator%'
+					INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
+					
+					where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
             ) AS cart_operator_labor
    
                
@@ -153,10 +155,10 @@ FROM (
     FROM (
         SELECT 
         COALESCE( SUM(combine_sh * combine_equipment_cost),0) AS combine_equip,
-        COALESCE( SUM(combine_labor), 0) AS combine_labor,
+        COALESCE( SUM(combine_labor * 17.33 ), 0) AS combine_labor,
         COALESCE( SUM((combine_sh * combine_fuel_rate) * combine_fuel_cost),0) AS combine_fuel,
         COALESCE( SUM(tractor_engine_hours * tractor_equipment_cost), 0) AS tractor_equip,
-        COALESCE( SUM(cart_operator_labor), 0) AS cart_operator_labor,
+        COALESCE( SUM(cart_operator_labor * 17.33), 0) AS cart_operator_labor,
         COALESCE( SUM((tractor_engine_hours * tractor_fuel_rate) * tractor_fuel_cost), 0) AS tractor_fuel,
         COALESCE( SUM(acres::FLOAT * header_cost), 0) AS header_equipment,
         COALESCE( SUM(tractor_engine_hours * grain_cart_equipment_cost), 0) AS grain_cart_equipment,
@@ -220,12 +222,15 @@ FROM (
                     LIMIT 1
                 ),
                 (
-                    Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600 / 24) AS "days" 
-                    FROM "DWR_Employees" dwr_employee
-                    INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
-                    INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role NOT LIKE '%Truck Driver%'
-                    INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
-                    WHERE dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
+                    SELECT
+						CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END as "result"
+					FROM
+					"DWR_Employees" dwr_employee
+					INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
+					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role NOT LIKE '%Truck Driver%'
+					INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
+					
+					where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
                 ) AS employee_lodging_days,
                 (
                     Select customer_lodging_rate 
@@ -234,24 +239,24 @@ FROM (
                 ) AS customer_lodging_rate,
                             
                 (
-                    Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600) as "hours_difference" from 
+                    Select SUM(EXTRACT(EPOCH FROM (dwr_employee."ending_day" - dwr_employee."begining_day")) / 3600) as "hours_difference" from 
                     "DWR_Employees" dwr_employee	
                     INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
                     INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id 
                     AND dwr_employee.role LIKE '%Combine Operator%'
                     INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
-                    
+                
                     where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
                 ) AS combine_labor,
                 
                 (
-                    Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600) as "hours_difference" from 
-                    "DWR_Employees" dwr_employee
-                    INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
-                    INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role NOT LIKE '%Cart Operator%'
-                    INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
-                    
-                    where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
+                    Select SUM(EXTRACT(EPOCH FROM (dwr_employee.ending_day - dwr_employee.begining_day)) / 3600) as "hours_difference" from 
+					"DWR_Employees" dwr_employee
+					INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
+					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role LIKE '%Cart Operator%'
+					INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
+					
+					where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
                 ) AS cart_operator_labor
 
         FROM 
@@ -321,13 +326,15 @@ export function getHaulingExpenses(customer_id) {
             ) AS truck_fuel_cost,
                                  
             (
-                Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600 / 24) as "days" from 
-                "DWR_Employees" dwr_employee
-                INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
-                INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role LIKE '%Truck Driver%'
-                INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
-                                     
-                where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
+                SELECT
+						CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END as "result"
+					FROM
+					"DWR_Employees" dwr_employee
+					INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
+					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role LIKE '%Truck Driver%'
+					INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
+					
+					where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
             ) AS truck_driver_lodging_days,
                                  
             (
@@ -336,12 +343,12 @@ export function getHaulingExpenses(customer_id) {
 
             (
                 Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600) as "hours_difference" from 
-                "DWR_Employees" dwr_employee
-                INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
-                INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role LIKE '%Truck Driver%'
-                INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
-                
-                where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
+				    "DWR_Employees" dwr_employee
+					INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
+					INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role LIKE '%Truck Driver%'
+					INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
+					
+					where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
             ) AS truck_driver_labor
            
     FROM 
@@ -366,7 +373,7 @@ export function getHaulingExpenses(customer_id) {
 
                 COALESCE( SUM((total_loaded_dht_miles * 2) * truck_equipment_cost), 0) AS truck_equip,
                 COALESCE( SUM(((total_loaded_dht_miles * 2)/ hauling_fuel_cost) * truck_fuel_cost), 0) AS truck_fuel,
-                COALESCE( SUM(truck_driver_labor), 0) AS truck_labor,
+                COALESCE( SUM(truck_driver_labor * 17.33), 0) AS truck_labor,
                 COALESCE( SUM(truck_driver_lodging_days::FLOAT * customer_lodging_rate::FLOAT), 0) AS truck_driver_lodging_estimate
              
              FROM(
@@ -396,26 +403,28 @@ export function getHaulingExpenses(customer_id) {
              ) AS truck_fuel_cost,
                     
              (
-                 Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600 / 24) as "days" from 
-                 "DWR_Employees" dwr_employee
-                 INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
-                 INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role LIKE '%Truck Driver%'
-                 INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
-                        
-                 where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
+                SELECT
+                CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END as "result"
+                FROM
+                "DWR_Employees" dwr_employee
+                INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
+                INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role LIKE '%Truck Driver%'
+                INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
+            
+            where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
              ) AS truck_driver_lodging_days,
                     
              (
                  Select customer_lodging_rate from "Customer_Cost_Operational_Data" LIMIT 1
              ),
 						 
-						 (
+            (
                 Select SUM(EXTRACT(EPOCH FROM (dwr_employee."modified_at" - dwr_employee."created_at")) / 3600) as "hours_difference" from 
                 "DWR_Employees" dwr_employee
                 INNER JOIN "Bridge_DailyTasks_DWR" bridge ON dwr_employee.id = bridge.dwr_id
                 INNER JOIN "DWR" dwr ON dwr.id = bridge.task_id AND dwr.role LIKE '%Truck Driver%'
                 INNER JOIN "Employees" emp ON emp.id = dwr_employee.employee_id::UUID 
-                
+                            
                 where dwr.job_id = cjs.id AND dwr_employee.module = 'harvesting'
             ) AS truck_driver_labor
 

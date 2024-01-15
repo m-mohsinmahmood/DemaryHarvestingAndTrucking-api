@@ -30,11 +30,11 @@ const httpTrigger: AzureFunction = async function (
 
         // Indivisual Expenses
         let expenses = {
-            totalEquipment: harvesting?.combine_equip + harvesting?.tractor_equip + harvesting?.header_equipment + harvesting?.grain_cart_equipment + hauling?.truck_equip,
-            totalLabor: harvesting?.combine_labor + harvesting?.cart_operator_labor + hauling?.truck_labor,
-            totalFuel: harvesting?.combine_fuel + harvesting?.tractor_fuel + hauling?.truck_fuel,
-            totalLodging: harvesting?.employee_lodging_estimate + hauling?.truck_driver_lodging_estimate,
-            totalMiscellaneous: result?.rows[0]?.customer_miscellaneous_expense
+            totalEquipment: Number(harvesting?.combine_equip) + Number(harvesting?.tractor_equip) + Number(harvesting?.header_equipment) + Number(harvesting?.grain_cart_equipment) + Number(hauling?.truck_equip),
+            totalLabor: Number(harvesting?.combine_labor) + Number(harvesting?.cart_operator_labor) + Number(hauling?.truck_labor),
+            totalFuel: Number(harvesting?.combine_fuel) + Number(harvesting?.tractor_fuel) + Number(hauling?.truck_fuel),
+            totalLodging: Number(harvesting?.employee_lodging_estimate) + Number(hauling?.truck_driver_lodging_estimate),
+            totalMiscellaneous: Number(result?.rows[0]?.customer_miscellaneous_expense)
         }
 
         // Total of all expenses by Category
