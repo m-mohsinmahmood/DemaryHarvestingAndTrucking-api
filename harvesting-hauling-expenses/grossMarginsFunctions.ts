@@ -50,57 +50,52 @@ export function getHaulingGrossMargin(customer_id) {
 		where = `WHERE cjs.customer_id = '${customer_id}'`
 
 	let grossMargin = `
-        SELECT 
+	SELECT 
         
-		invoiced_job_number,
-		farm,
-		crop,
-		 CASE
-            WHEN rate_type = 'Bushels' 
-                THEN ( calculate_weight(job_id) / bushel_weight) * rate
-            WHEN rate_type = 'Bushels + Excess Yield' 
-                THEN ( ( calculate_weight(job_id) / bushel_weight) * premium_rate ) + ( ( ( calculate_weight(job_id) /bushel_weight) - (crop_acres::NUMERIC * base_bushels) ) * premium_rate )
-            WHEN rate_type = 'Hundred Weight' 
-                THEN (calculate_weight(job_id) / 100) * rate
-            WHEN rate_type = 'Miles' 
-                THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::FLOAT, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = job_id) * rate
-			WHEN rate_type = 'Ton Miles'
-                THEN (SELECT (premium_rate * (SUM(COALESCE(NULLIF(loaded_miles, '')::FLOAT, 0))::FLOAT / COUNT(hdt.id)) + base_rate) * (calculate_weight(job_id) / 2000) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = job_id AND hdt.is_deleted = FALSE
-				AND job_customer_id::VARCHAR = hr_customer::VARCHAR AND farm = hr_farm::VARCHAR AND crop = hr_crop::VARCHAR GROUP BY hdt.job_id)
-            WHEN rate_type = 'Tons' 
-                THEN (calculate_weight(job_id) / 2000) * rate
-            WHEN rate_type = 'Load Count' 
-                THEN (SELECT COUNT(hdt.id) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = job_id) * rate
-        ELSE 0
-            END AS revenue
-		
-    FROM (
-        SELECT 
-				job_setup_name AS invoiced_job_number,
-				cjs.created_at,
-				cjs.crop_acres AS crop_acres,
-				crop.name AS crop,
-				crop.bushel_weight,
-				hr.rate_type,
-				hr.rate,
-				hr.base_rate,
-				hr.premium_rate,
-				hr.base_bushels,
-				hr.customer_id AS hr_customer,
-				hr.farm_id hr_farm,
-				hr.crop_id AS hr_crop,
-				cjs.customer_id AS job_customer_id,
-				cjs.id AS job_id,
-				(
-					Select name from "Customer_Farm"
- 				
-					where id = cjs.farm_id AND is_deleted = FALSE
- 				) AS farm
-				
-    FROM 
-		"Customer_Job_Setup" cjs
-		INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE AND cjs.crop_acres IS NOT NULL AND cjs.crop_acres != '' AND cjs.crop_acres != 'null'
-		INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id AND cjs.farm_id = hr.farm_id AND cjs.crop_id = hr.crop_id AND hr.is_deleted = FALSE
+	invoiced_job_number,
+	farm,
+	crop,
+	quantity * rate AS revenue
+	
+FROM (
+	SELECT 
+			job_setup_name AS invoiced_job_number,
+			cjs.created_at,
+			cjs.crop_acres AS crop_acres,
+			crop.name AS crop,
+			crop.bushel_weight,
+			hr.rate_type,
+			hr.rate,
+			hr.base_rate,
+			hr.premium_rate,
+			hr.base_bushels,
+			hr.customer_id AS hr_customer,
+			hr.farm_id hr_farm,
+			hr.crop_id AS hr_crop,
+			cjs.customer_id AS job_customer_id,
+			cjs.id AS job_id,
+			(
+				Select name from "Customer_Farm"
+			 
+				where id = cjs.farm_id AND is_deleted = FALSE
+			 ) AS farm,
+			
+			CASE
+				WHEN rate_type = 'Bushels' THEN calculate_weight(cjs.id) / bushel_weight
+				WHEN rate_type = 'Bushels + Excess Yield' THEN ( calculate_weight(cjs.id) / bushel_weight) + ((calculate_weight(cjs.id) / bushel_weight) - (crop_acres::NUMERIC * base_bushels))
+				 WHEN rate_type = 'Hundred Weight' THEN calculate_weight(cjs.id) / 100
+				 WHEN rate_type = 'Miles' THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id)
+				 WHEN rate_type = 'Ton Miles' THEN calculate_weight(cjs.id) / 2000
+				 WHEN rate_type = 'Tons' THEN calculate_weight(cjs.id) / 2000
+				 WHEN rate_type = 'Load Count' THEN (SELECT COUNT(hdt.id) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id)
+				ELSE 0
+			END AS quantity
+			
+
+			FROM 
+			"Customer_Job_Setup" cjs
+			INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE AND cjs.crop_acres IS NOT NULL AND cjs.crop_acres != '' AND cjs.crop_acres != 'null'
+			INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id AND cjs.farm_id = hr.farm_id AND cjs.crop_id = hr.crop_id AND hr.is_deleted = FALSE
 
 		${where}
 
