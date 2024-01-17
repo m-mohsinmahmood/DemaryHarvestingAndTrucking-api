@@ -9,7 +9,6 @@ const httpTrigger: AzureFunction = async function (
 
     try {
         const data = req.body
-        console.log("check this data", data)
         const connectionString = process.env["EMAIL_CONNECTION_STRING"];
         const client = new EmailClient(connectionString);
 

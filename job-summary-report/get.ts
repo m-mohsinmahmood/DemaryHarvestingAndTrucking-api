@@ -11,6 +11,13 @@ const httpTrigger: AzureFunction = async function (
 	const db = new Client(config);
 	const db2 = new Client(config);
 	const expensesMap = new Map();
+	const year: string = req.query.year;
+
+	let whereClause: string = ``;
+
+	if (year) {
+		whereClause = ` AND EXTRACT(YEAR from cjs.created_at) = '${year}'`;
+	}
 
 	try {
 
@@ -149,17 +156,18 @@ FROM (
 				) AS truck_driver_labor
 		
 			
-    FROM 
-        "Customer_Job_Setup" cjs
-				INNER JOIN "Employees" crew ON crew.id = cjs.crew_chief_id AND crew.is_deleted = FALSE
-				INNER JOIN "Employees" director ON director."id" = cjs.director_id AND director.is_deleted = FALSE
-				INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE
-				INNER JOIN "Combining_Rates" cr ON cjs.crop_id = cr.crop_id AND cjs.customer_id = cr.customer_id AND cr.is_deleted = FALSE
-				INNER JOIN "Hauling_Rates" hr ON cjs.crop_id = hr.crop_id AND cjs.customer_id = hr.customer_id AND hr.is_deleted = FALSE
+				FROM 
+                "Customer_Job_Setup" cjs
+                INNER JOIN "Employees" crew ON crew.id = cjs.crew_chief_id AND crew.is_deleted = FALSE
+                INNER JOIN "Employees" director ON director."id" = cjs.director_id AND director.is_deleted = FALSE
+                INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE
+                INNER JOIN "Combining_Rates" cr ON cjs.crop_id = cr.crop_id AND cjs.customer_id = cr.customer_id AND cr.is_deleted = FALSE
+                INNER JOIN "Hauling_Rates" hr ON cjs.crop_id = hr.crop_id AND cjs.customer_id = hr.customer_id AND hr.is_deleted = FALSE
 
-) AS subquery ORDER BY created_at ASC;
+                ${whereClause}
 
-        `;
+        ) subquery ORDER BY created_at ASC;
+    `;
 
 		db.connect();
 		db2.connect();
