@@ -40,7 +40,7 @@ const httpTrigger: AzureFunction = async function (
                 if (correspondingExpense) {
                     marginItem.expenses = correspondingExpense.total;
                     marginItem.grossProfits = marginItem.revenue - marginItem.expenses;
-                    marginItem.grossMargin = (marginItem.revenue - marginItem.expenses) / marginItem.revenue;
+                    marginItem.grossMargin = ((marginItem.revenue - marginItem.expenses) / marginItem.revenue) * 100;
                 }
             });
 
@@ -50,7 +50,7 @@ const httpTrigger: AzureFunction = async function (
                     totals.revenue += item.revenue || 0;
                     totals.expenses += item.expenses || 0;
                     totals.grossProfits += item.grossProfits || 0;
-                    totals.grossMargin = totals.grossProfits / totals.revenue;
+                    totals.grossMargin = (totals.grossProfits / totals.revenue) * 100;
                     return totals;
                 },
                 { revenue: 0, expenses: 0, grossProfits: 0 }
@@ -104,7 +104,7 @@ const httpTrigger: AzureFunction = async function (
                 if (correspondingExpense) {
                     marginItem.expenses = correspondingExpense.total;
                     marginItem.grossProfits = marginItem.revenue - marginItem.expenses;
-                    marginItem.grossMargin = (marginItem.revenue - marginItem.expenses) / marginItem.revenue;
+                    marginItem.grossMargin = ((marginItem.revenue - marginItem.expenses) / marginItem.revenue) * 100;
                 }
             });
 
@@ -116,7 +116,7 @@ const httpTrigger: AzureFunction = async function (
                 if (correspondingExpense) {
                     marginItem.expenses = correspondingExpense.total;
                     marginItem.grossProfits = marginItem.revenue - marginItem.expenses;
-                    marginItem.grossMargin = (marginItem.revenue - marginItem.expenses) / marginItem.revenue;
+                    marginItem.grossMargin = ((marginItem.revenue - marginItem.expenses) / marginItem.revenue) * 100;
                 }
             });
 
@@ -144,7 +144,7 @@ const httpTrigger: AzureFunction = async function (
                     combinedItem.revenue += item.revenue;
                     combinedItem.expenses += item.expenses;
                     combinedItem.grossProfits = combinedItem.revenue - combinedItem.expenses;
-                    combinedItem.grossMargin = combinedItem.grossProfits / combinedItem.revenue;
+                    combinedItem.grossMargin = (combinedItem.grossProfits / combinedItem.revenue) * 100;
                 }
             });
 
@@ -159,7 +159,7 @@ const httpTrigger: AzureFunction = async function (
                 },
                 { totalRevenue: 0, totalExpenses: 0, totalGrossProfits: 0 }
             );
-            subtotalByJob.totalGrossMargin = subtotalByJob.totalGrossProfits / subtotalByJob.totalRevenue;
+            subtotalByJob.totalGrossMargin = (subtotalByJob.totalGrossProfits / subtotalByJob.totalRevenue) * 100;
 
             subtotalByJob = {
                 revenue: subtotalByJob.totalRevenue,
@@ -216,7 +216,7 @@ const httpTrigger: AzureFunction = async function (
                 if (correspondingExpense) {
                     marginItem.expenses = correspondingExpense.total;
                     marginItem.grossProfits = marginItem.revenue - marginItem.expenses;
-                    marginItem.grossMargin = (marginItem.revenue - marginItem.expenses) / marginItem.revenue;
+                    marginItem.grossMargin = ((marginItem.revenue - marginItem.expenses) / marginItem.revenue) * 100;
                 }
             });
 
@@ -226,7 +226,7 @@ const httpTrigger: AzureFunction = async function (
                     totals.revenue += item.revenue || 0;
                     totals.expenses += item.expenses || 0;
                     totals.grossProfits += item.grossProfits || 0;
-                    totals.grossMargin = totals.grossProfits / totals.revenue;
+                    totals.grossMargin = (totals.grossProfits / totals.revenue) * 100;
                     return totals;
                 },
                 { revenue: 0, expenses: 0, grossProfits: 0 }
@@ -238,7 +238,7 @@ const httpTrigger: AzureFunction = async function (
                 if (correspondingExpense) {
                     marginItem.expenses = correspondingExpense.total;
                     marginItem.grossProfits = marginItem.revenue - marginItem.expenses;
-                    marginItem.grossMargin = (marginItem.revenue - marginItem.expenses) / marginItem.revenue;
+                    marginItem.grossMargin = ((marginItem.revenue - marginItem.expenses) / marginItem.revenue) * 100;
                 }
             });
 
@@ -248,7 +248,7 @@ const httpTrigger: AzureFunction = async function (
                     totals.revenue += item.revenue || 0;
                     totals.expenses += item.expenses || 0;
                     totals.grossProfits += item.grossProfits || 0;
-                    totals.grossMargin = totals.grossProfits / totals.revenue;
+                    totals.grossMargin = (totals.grossProfits / totals.revenue) * 100;
                     return totals;
                 },
                 { revenue: 0, expenses: 0, grossProfits: 0 }
@@ -268,7 +268,7 @@ const httpTrigger: AzureFunction = async function (
                 { revenue: 0, expenses: 0, grossProfits: 0 }
             );
 
-            totals.grossMargin = totals.grossProfits / totals.revenue;
+            totals.grossMargin = (totals.grossProfits / totals.revenue) * 100;
 
 
             let resp = {

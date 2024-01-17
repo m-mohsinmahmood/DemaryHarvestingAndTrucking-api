@@ -19,7 +19,6 @@ const httpTrigger: AzureFunction = async function (
         let getHarvestingServices = `
         WITH CTE_Harvesting_Service AS (
             Select 
-            
                 customer.id AS customer_id,
                 customer.customer_name AS customer_name,
                 cjs.job_setup_name AS job_name,
@@ -73,10 +72,22 @@ const httpTrigger: AzureFunction = async function (
         )
         
         SELECT
-            *,
-            revenue::NUMERIC / crop_acres::NUMERIC AS revenue_per_acre,
-            revenue::NUMERIC / total_bushels::NUMERIC AS revenue_per_bushel
-            
+            a.customer_id,
+            a.customer_name,
+            a.job_name,
+            a.farm_id,
+            a.farm_name,
+            a.crop_id,
+            a.crop_name,
+            a.rate_type,
+            a.quantity,
+            a.crop_acres,
+            a.rate,
+            a.revenue,
+            a.revenue_per_acre,
+            a.total_bushels,
+            a.revenue::NUMERIC / NULLIF(a.crop_acres::NUMERIC,0)::NUMERIC AS revenue_per_acre,
+            a.revenue::NUMERIC / NULLIF(a.total_bushels::NUMERIC,0)::NUMERIC AS revenue_per_bushel
         FROM
         Aggregated a;
         `;
@@ -114,7 +125,7 @@ const httpTrigger: AzureFunction = async function (
                     WHEN hr.rate_type = 'Bushels + Excess Yield' THEN ( ( calculate_weight(cjs.id) / crop.bushel_weight) * hr.premium_rate ) + ( ( ( calculate_weight(cjs.id) / crop.bushel_weight) - (cjs.crop_acres::NUMERIC * hr.base_bushels) ) * hr.premium_rate )
                     WHEN hr.rate_type = 'Hundred Weight' THEN (calculate_weight(cjs.id) / 100) * hr.rate
                      WHEN hr.rate_type = 'Miles' THEN (SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id) * hr.rate
-                     WHEN hr.rate_type = 'Ton Miles' THEN (SELECT (hr.premium_rate * (SUM(COALESCE(NULLIF(loaded_miles, '')::FLOAT, 0))::FLOAT / COUNT(hdt.id)) + hr.base_rate) * (calculate_weight(cjs.id) / 2000) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id AND hdt.is_deleted = FALSE)
+                     WHEN hr.rate_type = 'Ton Miles' THEN (SELECT ((hr.premium_rate * (SUM(COALESCE(NULLIF(loaded_miles, '')::FLOAT, 0))::FLOAT / COUNT(hdt.id))) + hr.base_rate) * (calculate_weight(cjs.id) / 2000) FROM "Harvesting_Delivery_Ticket" hdt WHERE hdt.job_id = cjs.id AND hdt.is_deleted = FALSE)
                      when hr.rate_type = 'Tons' then (calculate_weight(cjs.id) / 2000) * hr.rate
                     when hr.rate_type = 'Load count' then (select count(hdt.id) from "Harvesting_Delivery_Ticket" hdt where hdt.job_id = cjs.id) * hr.rate
                     ELSE 0
@@ -140,7 +151,48 @@ const httpTrigger: AzureFunction = async function (
                     CTE_Hauling_Service;
         `;
 
-        let query = `${getHarvestingServices} ${getHaulingServices}`;
+        let total_bushels_query = `
+        SELECT 
+            SUM(net_pounds / NULLIF(bushel_weight, 0)) AS total_net_bushels
+        FROM 
+        (
+            SELECT
+                CAST ( COALESCE ( NULLIF ( ht.farmers_bin_weight, '' ), NULLIF ( ht.scale_ticket_weight, '' ) ) AS NUMERIC ) AS net_pounds,
+                C.bushel_weight
+            FROM "Customer_Job_Setup" cj, "Harvesting_Delivery_Ticket" ht, "Crops" C
+            WHERE 
+                ht.job_id = cj."id" 
+                AND cj.crop_id = C."id" 
+                AND cj.customer_id = '${customer_id}' 
+                AND cj.is_deleted = FALSE 
+                AND ht.is_deleted != TRUE
+            UNION ALL
+            SELECT
+                CAST ( COALESCE ( NULLIF ( ht.scale_ticket_weight, '' ), '0' ) AS NUMERIC ) - CAST ( COALESCE ( NULLIF ( ht.split_cart_scale_weight, '' ), '0' ) AS NUMERIC ) AS net_pounds,
+                C.bushel_weight
+            FROM "Customer_Job_Setup" cj, "Harvesting_Delivery_Ticket" ht, "Crops" C
+            WHERE 
+                ht.job_id = cj."id" 
+                AND cj.crop_id = C."id" 
+                AND cj.customer_id = '${customer_id}' 
+                AND cj.is_deleted = FALSE 
+                AND ht.is_deleted != TRUE 
+                AND ht.split_load_check = TRUE
+        ) AS CombinedResults;`
+
+        let total_acres_query = `
+        SELECT SUM(crop_acres) AS total_acres
+        FROM (
+            SELECT DISTINCT ON (cj."id")
+                CASE 
+                    WHEN TRIM(cj.crop_acres) = '' THEN 0
+                    ELSE CAST(cj.crop_acres AS NUMERIC)
+                END as crop_acres
+            FROM "Customer_Job_Setup" cj 
+                WHERE cj.is_deleted = FALSE AND cj.customer_id = '${customer_id}'
+        ) sub;`;
+
+        let query = `${getHarvestingServices} ${getHaulingServices} ${total_bushels_query} ${total_acres_query}`;
 
         db.connect();
 
@@ -148,7 +200,9 @@ const httpTrigger: AzureFunction = async function (
 
         let queryResp = {
             harvestingServices: result[0].rows,
-            haulingServices: result[1].rows
+            haulingServices: result[1].rows,
+            totalBushels: result[2].rows[0].total_net_bushels,
+            totalAcres: result[3].rows[0].total_acres
         };
 
         db.end();
@@ -265,7 +319,9 @@ const httpTrigger: AzureFunction = async function (
             harvestingServices: queryResp.harvestingServices,
             haulingServices: queryResp.haulingServices,
             totalByCrop: sumByCropArray,
-            totalByJob: sumByJobArray
+            totalByJob: sumByJobArray,
+            totalBushels: queryResp.totalBushels,
+            totalAcres: queryResp.totalAcres
         }
 
         context.res = {
