@@ -224,7 +224,7 @@ export function updateDWR(closingOfDay: any) {
         "modified_at"   = 'now()'
          ${optionalReq}
     WHERE 
-        ${ticket} AND is_day_closed = 'false' 
+        ${ticket} AND is_day_closed = 'false' AND id ='${closingOfDay.taskId}'
         returning id;`
 
     console.log(query);

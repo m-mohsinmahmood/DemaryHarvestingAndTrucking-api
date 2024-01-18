@@ -32,4 +32,5 @@ export interface beginningOfDay {
     dwr_id?: string;
     employee_id: string;
     initialyCreated?: boolean;
+    taskId?:string;
 }
