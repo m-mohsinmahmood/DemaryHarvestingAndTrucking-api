@@ -90,7 +90,7 @@ const httpTrigger: AzureFunction = async function (
             calculate_weight(cjs.id) AS weight,
 				
             (
-                SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::INTEGER, 0)) FROM "Harvesting_Delivery_Ticket" hdt 
+                SELECT SUM(COALESCE(NULLIF(loaded_miles, '')::FLOAT, 0)) FROM "Harvesting_Delivery_Ticket" hdt 
                 WHERE hdt.job_id = cjs.id
             ) AS loaded_miles,
 				
