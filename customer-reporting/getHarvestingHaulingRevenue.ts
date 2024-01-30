@@ -27,7 +27,7 @@ const httpTrigger: AzureFunction = async function (
                 crop.id AS crop_id,
                 crop."name" AS crop_name,
                 'acre' AS rate_type,
-                cjs.crop_acres AS quantity,
+                cjs.crop_acres::FLOAT AS quantity,
                 cjs.crop_acres AS crop_acres,
                 cr.combining_rate AS rate,
                 (cjs.crop_acres::float * cr.combining_rate::float) AS revenue,
@@ -63,12 +63,14 @@ const httpTrigger: AzureFunction = async function (
                 MIN(rate) AS rate,
                 MIN(revenue) AS revenue,
                 MIN(revenue_per_acre) AS revenue_per_acre,
-                MIN(total_bushels) AS total_bushels
+                MIN(total_bushels) AS total_bushels,
+                created_at
             FROM
                 CTE_Harvesting_Service
             GROUP BY
                 farm_id,
-                crop_id
+                crop_id,
+                created_at
         )
         
         SELECT
@@ -89,7 +91,7 @@ const httpTrigger: AzureFunction = async function (
             a.revenue::NUMERIC / NULLIF(a.crop_acres::NUMERIC,0)::NUMERIC AS revenue_per_acre,
             a.revenue::NUMERIC / NULLIF(a.total_bushels::NUMERIC,0)::NUMERIC AS revenue_per_bushel
         FROM
-        Aggregated a;
+        Aggregated a ORDER BY a.created_at ASC;
         `;
 
         let getHaulingServices = `
