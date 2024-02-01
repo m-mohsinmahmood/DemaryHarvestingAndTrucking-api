@@ -482,7 +482,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         query = query + `
         "${documents['american_license'].field1}" = $$${employee_doc.american_license_state}$$,
         "${documents['american_license'].field2}" = $$${employee_doc.american_license_number}$$,
-        "${documents['american_license'].field3}" = $$${employee_doc.american_license_issue_date}$$,
+        "${documents['american_license'].field3}" = $$${employee_doc.american_license_issue_date}$$ :: date,
         "${documents['american_license'].field4}" = $$${employee_doc.american_license_doc}$$,
         "${documents['american_license'].field5}" = $$${employee_doc.american_license_sign}$$,
         "${documents['american_license'].field6}" = $$${employee_doc.american_license_type}$$,
@@ -492,7 +492,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "visa_interview_doc":
         query = query + `
-        "${documents['visa_interview'].field1}" = $$${employee_doc.visa_interview_date}$$,
+        "${documents['visa_interview'].field1}" = $$${employee_doc.visa_interview_date}$$ :: date,
         "${documents['visa_interview'].field2}" = $$${employee_doc.visa_interview_embassy}$$,
         "${documents['visa_interview'].field3}" = $$${employee_doc.visa_interview_street}$$,
         "${documents['visa_interview'].field4}" = $$${employee_doc.visa_interview_city}$$,
@@ -508,7 +508,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         query = query + `
         "${documents['passport'].field1}" = '${employee_doc.passport_country}',
         "${documents['passport'].field2}" = '${employee_doc.passport_number}',
-        "${documents['passport'].field3}" = '${employee_doc.passport_expiration_date}',
+        "${documents['passport'].field3}" = '${employee_doc.passport_expiration_date}' ::date,
         "${documents['passport'].field4}" = '',
         "${documents['passport'].field5}" = $$${employee_doc.passport_sign}$$,
         "${documents['passport'].field6}" = '${employee_doc.passport_disclaimer}'
@@ -520,7 +520,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         query = query + `
           "${documents['foreign_driver_license'].field1}" = $$${employee_doc.foreign_driver_license_state}$$,
           "${documents['foreign_driver_license'].field2}" = '${employee_doc.foreign_driver_license_number}',
-          "${documents['foreign_driver_license'].field3}" = '${employee_doc.foreign_driver_license_issue_date}',
+          "${documents['foreign_driver_license'].field3}" = '${employee_doc.foreign_driver_license_issue_date}'::date,
           "${documents['foreign_driver_license'].field4}" = '',
           "${documents['foreign_driver_license'].field5}" = $$${employee_doc.foreign_driver_license_sign}$$,
           "${documents['foreign_driver_license'].field6}" = '${employee_doc.foreign_driver_license_disclaimer}'
@@ -529,7 +529,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "approval_letter_doc":
         query = query + `
-        "${documents['approval_letter'].field1}" = '${employee_doc.approval_letter_date}',
+        "${documents['approval_letter'].field1}" = '${employee_doc.approval_letter_date}'::date,
         "${documents['approval_letter'].field2}" = '',
         "${documents['approval_letter'].field3}" = $$${employee_doc.approval_letter_sign}$$,
         "${documents['approval_letter'].field4}" = '${employee_doc.approval_letter_disclaimer}'
@@ -539,7 +539,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "contract_doc":
         query = query + `
-        "${documents['contract'].field1}" = '${employee_doc.contract_date}',
+        "${documents['contract'].field1}" = '${employee_doc.contract_date}' :: date,
         "${documents['contract'].field2}" = '',
         "${documents['contract'].field3}" = $$${employee_doc.contract_sign}$$,
         "${documents['contract'].field4}" = '${employee_doc.contract_disclaimer}'
@@ -550,7 +550,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
       case "b797_doc":
         query = query + `
         "${documents['b797'].field1}" = '${employee_doc.b797_number}',
-        "${documents['b797'].field2}" = '${employee_doc.b797_expiration_date}',
+        "${documents['b797'].field2}" = '${employee_doc.b797_expiration_date}' :: date,
         "${documents['b797'].field3}" = '',
         "${documents['b797'].field4}" = $$${employee_doc.b797_sign}$$,
         "${documents['b797'].field5}" = '${employee_doc.b797_disclaimer}'
@@ -561,8 +561,8 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
       case "dot_physical_doc":
         query = query + `
         "${documents['dot_physical'].field1}" = $$${employee_doc.dot_physical_name}$$,
-        "${documents['dot_physical'].field2}" = '${employee_doc.dot_physical_expiration_date}',
-        "${documents['dot_physical'].field3}" = '${employee_doc.dot_physical_issue_date}',
+        "${documents['dot_physical'].field2}" = '${employee_doc.dot_physical_expiration_date}' :: date,
+        "${documents['dot_physical'].field3}" = '${employee_doc.dot_physical_issue_date}' :: date,
         "${documents['dot_physical'].field4}" = '',
         "${documents['dot_physical'].field5}" = $$${employee_doc.dot_physical_sign}$$,
         "${documents['dot_physical'].field6}" = '${employee_doc.dot_physical_disclaimer}'
@@ -573,8 +573,8 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
       case "drug_test_doc":
         query = query + `
         "${documents['drug_test'].field1}" = $$${employee_doc.drug_test_name}$$,
-        "${documents['drug_test'].field2}" = '${employee_doc.drug_test_expiration_date}',
-        "${documents['drug_test'].field3}" = '${employee_doc.drug_test_issue_date}',
+        "${documents['drug_test'].field2}" = '${employee_doc.drug_test_expiration_date}' :: date,
+        "${documents['drug_test'].field3}" = '${employee_doc.drug_test_issue_date}' :: date,
         "${documents['drug_test'].field4}" = '',
         "${documents['drug_test'].field5}" = $$${employee_doc.drug_test_sign}$$,
         "${documents['drug_test'].field6}" = '${employee_doc.drug_test_disclaimer}'
@@ -586,8 +586,8 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         query = query + `
         "${documents['auto_license'].field1}" = $$${employee_doc.auto_license_state}$$',
         "${documents['auto_license'].field2}" = '${employee_doc.auto_license_number}',
-        "${documents['auto_license'].field3}" = '${employee_doc.auto_license_expiration_date}',
-        "${documents['auto_license'].field4}" = '${employee_doc.auto_license_issue_date}',
+        "${documents['auto_license'].field3}" = '${employee_doc.auto_license_expiration_date}' :: date,
+        "${documents['auto_license'].field4}" = '${employee_doc.auto_license_issue_date}' :: date,
         "${documents['auto_license'].field5}" = '',
         "${documents['auto_license'].field6}" = $$${employee_doc.auto_license_sign}$$,
         "${documents['auto_license'].field7}" = '${employee_doc.auto_license_disclaimer}'
@@ -599,7 +599,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         query = query + `
         "${documents['cdl_license'].field1}" = $$${employee_doc.cdl_license_state}$$,
         "${documents['cdl_license'].field2}" = '${employee_doc.cdl_license_number}',
-        "${documents['cdl_license'].field3}" = '${employee_doc.cdl_license_issue_date}',
+        "${documents['cdl_license'].field3}" = '${employee_doc.cdl_license_issue_date}' :: date,
         "${documents['cdl_license'].field4}" = $$${employee_doc.cdl_license_doc}$$,
         "${documents['cdl_license'].field5}" = $$${employee_doc.cdl_license_sign}$$,
         "${documents['cdl_license'].field6}" = '${employee_doc.cdl_license_disclaimer}',
@@ -609,7 +609,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "work_agreement_doc":
         query = query + `
-        "${documents['work_agreement'].field1}" = '${employee_doc.work_agreement_date}',
+        "${documents['work_agreement'].field1}" = '${employee_doc.work_agreement_date}' :: date,
         "${documents['work_agreement'].field2}" = '',
         "${documents['work_agreement'].field3}" = $$${employee_doc.work_agreement_sign}$$,
         "${documents['work_agreement'].field4}" = '${employee_doc.work_agreement_disclaimer}'
@@ -619,7 +619,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "itinerary_doc":
         query = query + `
-        "${documents['itinerary'].field1}" = '${employee_doc.itinerary_date}',
+        "${documents['itinerary'].field1}" = '${employee_doc.itinerary_date}' :: date,
         "${documents['itinerary'].field2}" = '',
         "${documents['itinerary'].field3}" = $$${employee_doc.itinerary_sign}$$,
         "${documents['itinerary'].field4}" = '${employee_doc.itinerary_disclaimer}'
@@ -631,8 +631,8 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
       case "visa_doc":
         query = query + `
         "${documents['visa'].field1}" = $$${employee_doc.visa_control_number}$$,
-        "${documents['visa'].field2}" = '${employee_doc.visa_issue_date}',
-        "${documents['visa'].field3}" = '${employee_doc.visa_expiration_date}',
+        "${documents['visa'].field2}" = '${employee_doc.visa_issue_date}' :: date,
+        "${documents['visa'].field3}" = '${employee_doc.visa_expiration_date}' :: date,
         "${documents['visa'].field4}" = $$${employee_doc.visa_nationality}$$,
         "${documents['visa'].field5}" = $$${employee_doc.visa_red_stamped_no}$$,
         "${documents['visa'].field6}" = $$${employee_doc.visa_issue_post}$$,
@@ -645,7 +645,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "i9_doc":
         query = query + `
-        "${documents['i9'].field1}" = '${employee_doc.i9_date}',
+        "${documents['i9'].field1}" = '${employee_doc.i9_date}' :: date,
         "${documents['i9'].field2}" = '',
         "${documents['i9'].field3}" = $$${employee_doc.i9_sign}$$,
         "${documents['i9'].field4}" = '${employee_doc.i9_disclaimer}'
@@ -654,7 +654,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "i94_doc":
         query = query + `
-        "${documents['i94'].field1}" = '${employee_doc.i94_date}',
+        "${documents['i94'].field1}" = '${employee_doc.i94_date}' :: date,
         "${documents['i94'].field2}" = '',
         "${documents['i94'].field3}" = '${employee_doc.i94_number}',
         "${documents['i94'].field4}" = $$${employee_doc.i94_sign}$$,
@@ -665,7 +665,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "cert_doc":
         query = query + `
-        "${documents['cert'].field1}" = '${employee_doc.cert_arrival_date}',
+        "${documents['cert'].field1}" = '${employee_doc.cert_arrival_date}' :: date,
         "${documents['cert'].field2}" = $$${employee_doc.cert_first_day}$$,
         "${documents['cert'].field3}" = '',
         "${documents['cert'].field4}" = $$${employee_doc.cert_sign}$$,
@@ -677,7 +677,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
       case "department_doc":
         query = query + `
         "${documents['department'].field1}" = '${employee_doc.department_last_day}',
-        "${documents['department'].field2}" = '${employee_doc.department_departure_date}',
+        "${documents['department'].field2}" = '${employee_doc.department_departure_date}':: date,
         "${documents['department'].field3}" = '',
         "${documents['department'].field4}" = $$${employee_doc.department_sign}$$,
         "${documents['department'].field5}" = '${employee_doc.department_disclaimer}'
@@ -687,7 +687,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "handbook_doc":
         query = query + `
-        "${documents['handbook'].field1}" = '${employee_doc.handbook_date}',
+        "${documents['handbook'].field1}" = '${employee_doc.handbook_date}' :: date,
         "${documents['handbook'].field2}" = '',
         "${documents['handbook'].field3}" = $$${employee_doc.handbook_sign}$$,
         "${documents['handbook'].field4}" = '${employee_doc.handbook_disclaimer}'
@@ -697,7 +697,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "rules_doc":
         query = query + `
-        "${documents['rules'].field1}" = '${employee_doc.rules_date}',
+        "${documents['rules'].field1}" = '${employee_doc.rules_date}' :: date,
         "${documents['rules'].field2}" = '',
         "${documents['rules'].field3}" = $$${employee_doc.rules_sign}$$,
         "${documents['rules'].field4}" = '${employee_doc.rules_disclaimer}'
@@ -707,7 +707,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "drug_policy_doc":
         query = query + `
-        "${documents['drug_policy'].field1}" = '${employee_doc.drug_policy_date}',
+        "${documents['drug_policy'].field1}" = '${employee_doc.drug_policy_date}' :: date,
         "${documents['drug_policy'].field2}" = '',
         "${documents['drug_policy'].field3}" = $$${employee_doc.drug_policy_sign}$$,
         "${documents['drug_policy'].field4}" = '${employee_doc.drug_policy_disclaimer}'
@@ -717,7 +717,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "reprimand_policy_doc":
         query = query + `
-        "${documents['reprimand_policy'].field1}" = '${employee_doc.reprimand_policy_date}',
+        "${documents['reprimand_policy'].field1}" = '${employee_doc.reprimand_policy_date}' :: date,
         "${documents['reprimand_policy'].field2}" = '',
         "${documents['reprimand_policy'].field3}" = $$${employee_doc.reprimand_policy_sign}$$,
         "${documents['reprimand_policy'].field4}" = '${employee_doc.reprimand_policy_disclaimer}'
@@ -727,7 +727,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "equipment_policy_doc":
         query = query + `
-        "${documents['equipment_policy'].field1}" = '${employee_doc.equipment_policy_date}',
+        "${documents['equipment_policy'].field1}" = '${employee_doc.equipment_policy_date}' :: date,
         "${documents['equipment_policy'].field2}" = '',
         "${documents['equipment_policy'].field3}" = $$${employee_doc.equipment_policy_sign}$$,
         "${documents['equipment_policy'].field4}" = '${employee_doc.equipment_policy_disclaimer}'
@@ -737,7 +737,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "departure_doc":
         query = query + `
-        "${documents['departure'].field1}" = '${employee_doc.departure_date}',
+        "${documents['departure'].field1}" = '${employee_doc.departure_date}' :: date,
         "${documents['departure'].field2}" = '',
         "${documents['departure'].field3}" = $$${employee_doc.departure_sign}$$,
         "${documents['departure'].field4}" = '${employee_doc.departure_disclaimer}'
@@ -779,7 +779,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
 
       case "cdl_training":
         query = query + `
-        "${documents['cdl_training'].field1}" = '${employee_doc.cdl_training_date}',
+        "${documents['cdl_training'].field1}" = '${employee_doc.cdl_training_date}' :: date,
         "${documents['cdl_training'].field2}" = $$${employee_doc.cdl_training_sign}$$,
         "${documents['cdl_training'].field3}" = '${employee_doc.cdl_training_disclaimer}'
         `;
