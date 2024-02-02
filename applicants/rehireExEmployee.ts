@@ -96,8 +96,9 @@ const httpTrigger: AzureFunction = async function (
                 "employment_period"                         = '${applicant_info.employment_period}',
                 "applied_job"                               = '${applicant_info.applied_job}',
                 "action_required"                           = '${true}',
-                "created_at"                    = 'now()',
-                "modified_at"                               = NULL               
+                "created_at"                                = 'now()',
+                "modified_at"                               = NULL,
+                "is_deleted"                                = TRUE   
 
              where email = '${email}'
              RETURNING id as employee_id

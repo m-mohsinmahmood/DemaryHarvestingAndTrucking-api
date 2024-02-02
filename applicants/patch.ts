@@ -203,6 +203,14 @@ const httpTrigger: AzureFunction = async function (
             `;
           admin.auth().setCustomUserClaims(userRecord.uid, customClaims);
         }
+        else {
+          make_employee_query = `
+          UPDATE 
+              "Employees"
+          SET 
+              "is_deleted" = FALSE where email = '${emailTo}';
+              `;
+        }
       } catch (error) {
         context.res = {
           status: 500,
