@@ -471,7 +471,7 @@ const httpTrigger: AzureFunction = async function (
             status: +resp.status_step >= 5 && resp.compliance_docs == 'Verified' ? true : false,
             show: +resp.status_step >= 5 ? true : false,
             active: +resp.status_step >= 5 ? true : false,
-            showIcons: resp.work_agreement_disclaimer == true && resp.itinerary_disclaimer == true && resp.rules_disclaimer == true && resp.handbook_disclaimer == true ? true : false,
+            showIcons: resp.rules_disclaimer == true && resp.handbook_disclaimer == true ? true : false,
             click: +resp.status_step == 5 ? true : false,
             statusBar: 'compliance_docs',
           },
@@ -543,13 +543,13 @@ const httpTrigger: AzureFunction = async function (
             click: +resp.status_step == 10 ? true : false,
             statusBar: 'additional_compliance_docs',
           },
-          { 
+          {
             step: `DHT Company docs verified`,
             date: resp.step_eleven_date,
             status: +resp.status_step >= 11 && resp.additional_compliance_docs == 'Verified' ? true : false,
             show: +resp.status_step >= 11 ? true : false,
             active: +resp.status_step >= 11 ? true : false,
-            showIcons: resp.reprimand_policy_disclaimer == true && resp.drug_policy_disclaimer == true && resp.departure_disclaimer == true && resp.equipment_policy_disclaimer == true ? true : false,
+            showIcons: true,
             click: +resp.status_step == 11 ? true : false,
             statusBar: 'additional_compliance_docs',
           },
@@ -667,13 +667,13 @@ const httpTrigger: AzureFunction = async function (
             status: +resp.status_step >= 7 && resp.compliance_docs == 'Verified' ? true : false,
             show: +resp.status_step >= 7 ? true : false,
             active: +resp.status_step >= 7 ? true : false,
-            showIcons: 
-              resp.work_agreement_disclaimer == true && resp.itinerary_disclaimer == true && resp.rules_disclaimer == true && 
-              resp.handbook_disclaimer == true && 
-              resp.reprimand_policy_disclaimer == true && 
-              resp.drug_policy_disclaimer == true && 
-              resp.equipment_policy_disclaimer == true && 
-              resp.departure_disclaimer == true ? true : false,
+            showIcons:
+              resp.rules_disclaimer == true &&
+              resp.handbook_disclaimer == true,
+            // resp.reprimand_policy_disclaimer == true && 
+            // resp.drug_policy_disclaimer == true && 
+            // resp.equipment_policy_disclaimer == true && 
+            // resp.departure_disclaimer == true ? true : false,
             click: +resp.status_step == 7 ? true : false,
             statusBar: 'compliance_docs',
           },
@@ -818,7 +818,7 @@ const httpTrigger: AzureFunction = async function (
             status: +resp.status_step >= 21 && resp.social_security == 'Verified' ? true : false,
             show: +resp.status_step >= 21 ? true : false,
             active: +resp.status_step >= 21 ? true : false,
-            showIcons: resp.social_sec_disclaimer == true  ? true : false,
+            showIcons: resp.social_sec_disclaimer == true ? true : false,
             click: +resp.status_step == 21 ? true : false,
             statusBar: 'social_security',
           },
@@ -858,7 +858,7 @@ const httpTrigger: AzureFunction = async function (
             status: +resp.status_step >= 23 && resp.american_license == 'Verified' ? true : false,
             show: +resp.status_step >= 23 ? true : false,
             active: +resp.status_step >= 23 ? true : false,
-            showIcons: resp.american_license_disclaimer == true  ? true : false,
+            showIcons: resp.american_license_disclaimer == true ? true : false,
             click: +resp.status_step == 23 ? true : false,
             statusBar: 'american_license',
           },
