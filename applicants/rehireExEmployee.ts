@@ -98,13 +98,25 @@ const httpTrigger: AzureFunction = async function (
                 "action_required"                           = '${true}',
                 "created_at"                                = 'now()',
                 "modified_at"                               = NULL,
-                "is_deleted"                                = TRUE   
+                "is_deleted"                                = TRUE,
+                "employee_type"                             = '${applicant_info.employee_type}',
+                "equipments_experience_description"         = $$${applicant_info.equipments_experience_description}$$
 
              where email = '${email}'
              RETURNING id as employee_id
              ;
           `
             updateEmployee = await db.query(query);
+
+            const filePath = 'query_test.txt';
+            try {
+                await fs.promises.writeFile(filePath, query);
+                context.log(`Data written to file`);
+            }
+            catch (err) {
+                context.log.error(`Error writing data to file: ${err}`);
+            }
+            
             let employee_id = updateEmployee.rows[0].employee_id
 
             let employeeDocuments = `
