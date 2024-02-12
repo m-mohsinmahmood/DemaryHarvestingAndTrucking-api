@@ -1,7 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-const fs = require('fs');
 const httpTrigger: AzureFunction = async function (
     context: Context,
     req: HttpRequest
@@ -108,15 +107,6 @@ const httpTrigger: AzureFunction = async function (
           `
             updateEmployee = await db.query(query);
 
-            const filePath = 'query_test.txt';
-            try {
-                await fs.promises.writeFile(filePath, query);
-                context.log(`Data written to file`);
-            }
-            catch (err) {
-                context.log.error(`Error writing data to file: ${err}`);
-            }
-            
             let employee_id = updateEmployee.rows[0].employee_id
 
             let employeeDocuments = `
