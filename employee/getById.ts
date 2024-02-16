@@ -22,6 +22,7 @@ const httpTrigger: AzureFunction = async function (
       emp.first_name,
       emp.last_name,
       emp.email,
+      emp.country,
       emp.cell_phone_number,
       emp.home_phone_number,
       up."state",
