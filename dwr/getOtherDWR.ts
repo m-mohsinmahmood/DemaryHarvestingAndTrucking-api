@@ -120,7 +120,8 @@ export function GetOtherDwr(employee_id: any, startDate: string, endDate: string
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
         'state', ot."state",
         'supervisor_id', ot.supervisor_id,
-        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
+        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name),
+        'description', ot.description
         )) as tickets
         
         from "DWR_Employees" dwr_employees
