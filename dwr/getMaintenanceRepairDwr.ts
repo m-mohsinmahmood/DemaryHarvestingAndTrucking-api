@@ -35,7 +35,12 @@ export function GetMaintenanceRepairDwr(employee_id: any, startDate: string, end
         dwr_employees."module" AS module,
         dwr_employees.begining_day :: DATE,
         (SELECT
-        supervisor_id as last_supervisor_id
+        supervisor_id as last_supervisor_id,
+        dwr_employees.supervisor_id as last_supervisor_id,
+        dwr_employees.supervisor_notes,
+        dwr_employees.employee_notes,
+        dwr_employees.begining_day AS checkin_time,
+        dwr_employees.ending_day AS checkout_time
 
         FROM
         "DWR_Employees"

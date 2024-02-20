@@ -33,6 +33,11 @@ export function GetHarvestingDwr(employee_id: any, startDate: string, endDate: s
         ABS(EXTRACT(EPOCH FROM dwr_employees.ending_day - dwr_employees.begining_day)/3600) as total_hours,
         dwr_employees."module" AS module,
         dwr_employees.begining_day :: DATE,
+        dwr_employees.supervisor_id as last_supervisor_id,
+        dwr_employees.supervisor_notes,
+        dwr_employees.employee_notes,
+        dwr_employees.begining_day AS checkin_time,
+        dwr_employees.ending_day AS checkout_time,
        (SELECT
         supervisor_id as last_supervisor_id
 
