@@ -16,6 +16,7 @@ import * as getEmployeesWithMultRoles from "./getEmployeesMultRoles";
 import * as getCustomerDestination from "./getCustomerDestination";
 import * as getTruckingCompany from "./getTruckingCompany";
 import * as getDeliveryTickets from "./getDeliveryTickets";
+import * as getScaleTickets from "./getScaleTickets";
 
 const httpTrigger: AzureFunction = async function (
   context: Context,
@@ -58,6 +59,8 @@ const httpTrigger: AzureFunction = async function (
           await getTruckingCompany.default(context, req);
         else if (req.query.entity === "getDeliveryTickets")
           await getDeliveryTickets.default(context, req);
+        else if (req.query.entity === "getScaleTickets")
+          await getScaleTickets.default(context, req);
 
         break;
 
