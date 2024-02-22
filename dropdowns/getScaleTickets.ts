@@ -11,14 +11,14 @@ const httpTrigger: AzureFunction = async function (
     try {
         const search: string = req.query.search;
 
-        let whereClause: string = ` WHERE "is_deleted" = FALSE`;
+        let whereClause: string = ` WHERE "is_deleted" = FALSE  AND "scale_ticket_number" NOTNULL`;
 
-        if (search) whereClause = ` ${whereClause} AND delivery_ticket_name::text LIKE '%${search}%'`;
+        if (search) whereClause = ` ${whereClause} AND scale_ticket_number::text LIKE '%${search}%'`;
 
         let machinery_query = `
-        SELECT delivery_ticket_name from "Harvesting_Delivery_Ticket"  ${whereClause} ORDER BY delivery_ticket_name;`;
+        SELECT scale_ticket_number from "Harvesting_Delivery_Ticket"  ${whereClause} ORDER BY scale_ticket_number;`;
 
-        let machinery_count_query = `SELECT COUNT("delivery_ticket_name") FROM "Harvesting_Delivery_Ticket" ${whereClause};`;
+        let machinery_count_query = `SELECT COUNT("scale_ticket_number") FROM "Harvesting_Delivery_Ticket" ${whereClause};`;
 
         let query = `${machinery_query} ${machinery_count_query}`;
 
@@ -27,7 +27,7 @@ const httpTrigger: AzureFunction = async function (
         let result = await db.query(query);
 
         let resp = {
-            delivery_tickets: result[0].rows,
+            scale_tickets: result[0].rows,
             count: +result[1].rows[0].count
         };
 

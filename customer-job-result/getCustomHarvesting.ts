@@ -23,6 +23,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     const portalType: any = req.query.portal_type;
     const employee_id: any = req.query.employee_id;
     const trucking_company: any = req.query.trucking_company;
+    const delivery_ticket_name: string = req.query.delivery_ticket_name;
+    const scale_ticket_number: string = req.query.scale_ticket_number;
 
     let subQueryWhereClause: string = ` WHERE
     cj.is_deleted = FALSE 
@@ -106,6 +108,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     if (from_date && to_date) whereClauseJobs = ` ${whereClauseJobs} AND ht.created_at > '${from_date}' AND ht.created_at < '${to_date}'`;
     if (status) whereClauseJobs = ` ${whereClauseJobs} AND ht.ticket_status = '${status}'`;
     if (trucking_company) whereClauseJobs = ` ${whereClauseJobs} AND ht.trucking_company = '${trucking_company}'`;
+    if(delivery_ticket_name) whereClauseJobs = `${whereClauseJobs} AND ht.delivery_ticket_name = '${delivery_ticket_name}'`;
+    if(scale_ticket_number) whereClauseJobs = `${whereClauseJobs} AND ht.scale_ticket_number = '${scale_ticket_number}'`;
 
     if (portalType == 'employee-portal') {
       whereClauseJobs = `${whereClauseJobs}
