@@ -10,6 +10,14 @@ const httpTrigger: AzureFunction = async function (
     const db = new Client(config);
     const customer_id = req.query.customer_id;
     const operation = req.query.operation;
+    let job_results: any = req.query.job_results;
+    let jobSetupNames: string = '';
+
+    // Extracting job setup names from the array
+    if (job_results && job_results.length > 0) {
+        job_results = JSON.parse(req.query.job_results);
+        jobSetupNames = job_results.map(job => `'${job.job_setup_name}'`).join(',');
+    }
 
     let query;
 
@@ -17,16 +25,16 @@ const httpTrigger: AzureFunction = async function (
         try {
 
             if (operation == 'getHarvestingGrossMargin') {
-                let grossMargin = getHarvestingGrossMargin(customer_id);
+                let grossMargin = getHarvestingGrossMargin(customer_id, jobSetupNames);
 
-                let harvestingExpense = getHarvestingExpenses(customer_id);
+                let harvestingExpense = getHarvestingExpenses(customer_id, jobSetupNames);
                 query = `${grossMargin} ${harvestingExpense}`
             }
 
             else if (operation == 'getHaulingGrossMargin') {
-                let grossMargin = getHaulingGrossMargin(customer_id);
+                let grossMargin = getHaulingGrossMargin(customer_id, jobSetupNames);
 
-                let haulingExpense = getHaulingExpenses(customer_id);
+                let haulingExpense = getHaulingExpenses(customer_id, jobSetupNames);
                 query = `${grossMargin} ${haulingExpense}`
             }
 
@@ -84,14 +92,14 @@ const httpTrigger: AzureFunction = async function (
     else if (req.query.operation == 'getByTotalJobs') {
         try {
 
-            let grossMarginHarvesting = getHarvestingGrossMargin(customer_id);
+            let grossMarginHarvesting = getHarvestingGrossMargin(customer_id, jobSetupNames);
 
-            let harvestingExpense = getHarvestingExpenses(customer_id);
+            let harvestingExpense = getHarvestingExpenses(customer_id, jobSetupNames);
             query = `${grossMarginHarvesting} ${harvestingExpense}`
 
-            let grossMarginHauling = getHaulingGrossMargin(customer_id);
+            let grossMarginHauling = getHaulingGrossMargin(customer_id, jobSetupNames);
 
-            let haulingExpense = getHaulingExpenses(customer_id);
+            let haulingExpense = getHaulingExpenses(customer_id, jobSetupNames);
             query = `${grossMarginHarvesting} ${harvestingExpense} ${grossMarginHauling} ${haulingExpense}`
 
             db.connect();
@@ -196,14 +204,14 @@ const httpTrigger: AzureFunction = async function (
     else if (req.query.operation == 'totalAcrossJobs') {
         try {
 
-            let grossMarginHarvesting = getHarvestingGrossMargin(customer_id);
+            let grossMarginHarvesting = getHarvestingGrossMargin(customer_id, jobSetupNames);
 
-            let harvestingExpense = getHarvestingExpenses(customer_id);
+            let harvestingExpense = getHarvestingExpenses(customer_id, jobSetupNames);
             query = `${grossMarginHarvesting} ${harvestingExpense}`
 
-            let grossMarginHauling = getHaulingGrossMargin(customer_id);
+            let grossMarginHauling = getHaulingGrossMargin(customer_id, jobSetupNames);
 
-            let haulingExpense = getHaulingExpenses(customer_id);
+            let haulingExpense = getHaulingExpenses(customer_id, jobSetupNames);
             query = `${grossMarginHarvesting} ${harvestingExpense} ${grossMarginHauling} ${haulingExpense}`
 
             db.connect();

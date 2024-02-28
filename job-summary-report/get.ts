@@ -12,12 +12,22 @@ const httpTrigger: AzureFunction = async function (
 	const db2 = new Client(config);
 	const expensesMap = new Map();
 	const year: string = req.query.year;
+	let job_results: any = req.query.job_results;
+	let jobSetupNames: string = '';
+
+	// Extracting job setup names from the array
+	if (job_results && job_results.length > 0) {
+		job_results = JSON.parse(req.query.job_results);
+		jobSetupNames = job_results.map(job => `'${job.job_setup_name}'`).join(',');
+	}
 
 	let whereClause: string = ``;
 
 	if (year) {
 		whereClause = ` AND EXTRACT(YEAR from cjs.created_at) = '${year}'`;
 	}
+
+	if (job_results) whereClause = ` ${whereClause} AND cjs.job_setup_name IN (${jobSetupNames})`;
 
 	try {
 
@@ -47,11 +57,11 @@ const httpTrigger: AzureFunction = async function (
 		combining_rate::FLOAT * crop_acres::FLOAT AS harvesting_revenue,
 		hauling_rate::FLOAT * crop_acres::FLOAT AS hauling_revenue,
 		(combining_rate::FLOAT * crop_acres::FLOAT) + (hauling_rate::FLOAT * crop_acres::FLOAT) AS total_revenue,
-		(combining_rate::FLOAT * crop_acres::FLOAT)/combine_sh AS har_rev_sh,
+		(combining_rate::FLOAT * crop_acres::FLOAT)/NULLIF(combine_sh, 0) AS har_rev_sh,
 		(hauling_rate::FLOAT * crop_acres::FLOAT)/total_loaded_dht_miles AS haul_rev_mmile,
 		(combining_rate::FLOAT * crop_acres::FLOAT)/combine_labor AS har_rev_combine_labor_hour,
 		(hauling_rate::FLOAT * crop_acres::FLOAT)/truck_driver_labor AS haul_rev_td_hour,
-		crop_acres::FLOAT/combine_sh::FLOAT AS acres_sh,
+		crop_acres::FLOAT/NULLIF(combine_sh, 0)::FLOAT AS acres_sh,
 	  (total_bushels::FLOAT) + (total_bushels::FLOAT - (crop_acres::FLOAT * base_rate)) AS quantity
 		
 FROM (
@@ -175,10 +185,10 @@ FROM (
 		let result = await db.query(query);
 		let data = result.rows;
 
-		let grossMarginHarvesting = getHarvestingGrossMargin('');
-		let harvestingExpense = getHarvestingExpenses('');
-		let grossMarginHauling = getHaulingGrossMargin('');
-		let haulingExpense = getHaulingExpenses('');
+		let grossMarginHarvesting = getHarvestingGrossMargin('', jobSetupNames);
+		let harvestingExpense = getHarvestingExpenses('', jobSetupNames);
+		let grossMarginHauling = getHaulingGrossMargin('', jobSetupNames);
+		let haulingExpense = getHaulingExpenses('', jobSetupNames);
 
 		query = `${grossMarginHarvesting} ${harvestingExpense} ${grossMarginHauling} ${haulingExpense}`
 

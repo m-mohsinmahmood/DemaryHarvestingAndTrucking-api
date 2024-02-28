@@ -2,13 +2,24 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
 import { getHarvestingGrossMargin, getHaulingGrossMargin } from "./grossMarginsFunctions";
-
 const httpTrigger: AzureFunction = async function (
     context: Context,
     req: HttpRequest
 ): Promise<void> {
     const db = new Client(config);
     const customer_id = req.query.customer_id;
+    let job_results: any = req.query.job_results;
+    let jobSetupNames: string = '';
+
+    // Extracting job setup names from the array
+    if (job_results && job_results.length > 0) {
+        job_results = JSON.parse(req.query.job_results);
+        jobSetupNames = job_results.map(job => `'${job.job_setup_name}'`).join(',');
+    }
+
+    let whereClause: string = ``;
+
+    if (job_results) whereClause = ` ${whereClause} AND cjs.job_setup_name IN (${jobSetupNames})`;
 
     try {
 
@@ -20,11 +31,11 @@ const httpTrigger: AzureFunction = async function (
             (net_pounds/2000)::FLOAT/crop_acres::FLOAT AS tons_per_acre,
             bushel_weight AS bu_weight,
             (net_pounds/bushel_weight)::FLOAT/crop_acres::FLOAT AS bushels_per_acre,
-            (crop_acres:: FLOAT * combining_rate:: FLOAT) / combine_sh AS harvesting_rev_per_separate_hour,
+            (crop_acres:: FLOAT * combining_rate:: FLOAT) / NULLIF(combine_sh, 0) AS harvesting_rev_per_separate_hour,
             hauling_revenue/total_loaded_dht_miles AS hauling_rev_loaded_mile,
             ((crop_acres:: FLOAT * combining_rate:: FLOAT)) / combine_labor AS harvesting_rev_combine_labor,
             hauling_revenue/truck_driver_labor AS hauling_rev_truck_driver_labor,
-            crop_acres::FLOAT/combine_sh::FLOAT AS acres_per_seperator_hour,
+            crop_acres::FLOAT/NULLIF(combine_sh, 0)::FLOAT AS acres_per_seperator_hour,
             combine_labor,
             cart_operator_labor,
             truck_driver_labor
@@ -180,6 +191,8 @@ const httpTrigger: AzureFunction = async function (
    		INNER JOIN "Hauling_Rates" hr ON cjs.customer_id = hr.customer_id AND cjs.farm_id = hr.farm_id AND cjs.crop_id = hr.crop_id AND hr.is_deleted = FALSE
 
            WHERE cjs.customer_id = '${customer_id}'
+           ${whereClause}
+
    ) AS subquery
 		) AS total ORDER BY created_at ASC;
         `;
@@ -188,8 +201,8 @@ const httpTrigger: AzureFunction = async function (
 
         let result = await db.query(query);
 
-        let grossMarginHarvesting = getHarvestingGrossMargin(customer_id);
-        let grossMarginHauling = getHaulingGrossMargin(customer_id);
+        let grossMarginHarvesting = getHarvestingGrossMargin(customer_id, jobSetupNames);
+        let grossMarginHauling = getHaulingGrossMargin(customer_id, jobSetupNames);
 
         let query2 = `${grossMarginHarvesting} ${grossMarginHauling}`
         let result2 = await db.query(query2);
@@ -239,7 +252,7 @@ const httpTrigger: AzureFunction = async function (
             const revenueItem = data.revenue.find(rev => rev.invoiced_job_number === item.invoiced_job_number);
             if (revenueItem) {
                 const totalLaborHours = (Number(item.combine_labor) || 0) + (Number(item.cart_operator_labor) || 0) + (Number(item.truck_driver_labor) || 0);
-                  const totalRevenuePerTotalLaborHours = totalLaborHours !== 0 ? Number(revenueItem.revenue) / Number(totalLaborHours) : 0;
+                const totalRevenuePerTotalLaborHours = totalLaborHours !== 0 ? Number(revenueItem.revenue) / Number(totalLaborHours) : 0;
 
                 return {
                     "invoiced_job_number": item.invoiced_job_number,

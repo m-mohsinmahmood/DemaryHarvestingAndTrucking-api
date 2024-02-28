@@ -6,10 +6,22 @@ const httpTrigger: AzureFunction = async function (
 	context: Context,
 	req: HttpRequest
 ): Promise<void> {
-	const db = new Client(config);
 
+	let job_results: any = req.query.job_results;
 	const customer_id = req.query.customer_id;
+	let jobSetupNames: string = '';
 
+	// Extracting job setup names from the array
+	if (job_results && job_results.length > 0) {
+		job_results = JSON.parse(req.query.job_results);
+		jobSetupNames = job_results.map(job => `'${job.job_setup_name}'`).join(',');
+	}
+
+	let whereClause: string = ``;
+
+	if (job_results) whereClause = ` ${whereClause} AND cjs.job_setup_name IN (${jobSetupNames})`;
+
+	const db = new Client(config);
 	try {
 		let info_query = `
         SELECT 
@@ -181,6 +193,7 @@ FROM (
 		INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE
 
 		WHERE cjs.customer_id = '${customer_id}'
+		${whereClause}
 
 ) AS subquery ORDER BY created_at ASC;
 
@@ -352,11 +365,13 @@ FROM (
 		INNER JOIN "Crops" crop ON crop.id = cjs.crop_id AND crop.is_deleted = FALSE
 
 		WHERE cjs.customer_id = '${customer_id}'
+		${whereClause}
+
 ) AS subquery;
       `;
 
 		let query = `${info_query} ${subTotals}`;
-	
+
 		db.connect();
 
 		let result = await db.query(query);

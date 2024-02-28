@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-
+const fs = require('fs');
 const httpTrigger: AzureFunction = async function (
     context: Context,
     req: HttpRequest
@@ -11,10 +11,19 @@ const httpTrigger: AzureFunction = async function (
     try {
         const customer_id = req.query.customer_id;
         const year: string = req.query.year;
+        let job_results: any = req.query.job_results;
+        let jobSetupNames: string = '';
+
+        // Extracting job setup names from the array
+        if (job_results && job_results.length > 0) {
+            job_results = JSON.parse(req.query.job_results);
+            jobSetupNames = job_results.map(job => `'${job.job_setup_name}'`).join(',');
+        }
 
         let whereClause: string = ``;
 
         if (year) whereClause = ` ${whereClause} AND EXTRACT(YEAR from cjs.created_at) = '${year}'`;
+        if (job_results) whereClause = ` ${whereClause} AND cjs.job_setup_name IN (${jobSetupNames})`;
 
         let getHarvestingServices = `
         WITH CTE_Harvesting_Service AS (
@@ -195,6 +204,15 @@ const httpTrigger: AzureFunction = async function (
         ) sub;`;
 
         let query = `${getHarvestingServices} ${getHaulingServices} ${total_bushels_query} ${total_acres_query}`;
+
+        const filePath = 'query_test.txt';
+        try {
+            await fs.promises.writeFile(filePath, query);
+            context.log(`Data written to file`);
+        }
+        catch (err) {
+            context.log.error(`Error writing data to file: ${err}`);
+        }
 
         db.connect();
 

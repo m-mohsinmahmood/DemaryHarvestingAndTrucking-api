@@ -9,10 +9,18 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
     const db = new Client(config);
     const customer_id = req.query.customer_id;
+    let job_results: any = req.query.job_results;
+    let jobSetupNames: string = '';
+
+    // Extracting job setup names from the array
+    if (job_results && job_results.length > 0) {
+        job_results = JSON.parse(req.query.job_results);
+        jobSetupNames = job_results.map(job => `'${job.job_setup_name}'`).join(',');
+    }
 
     try {
-        let harvestingExpenses = getHarvestingExpenses(customer_id);
-        let haulingExpenses = getHaulingExpenses(customer_id);
+        let harvestingExpenses = getHarvestingExpenses(customer_id, jobSetupNames);
+        let haulingExpenses = getHaulingExpenses(customer_id, jobSetupNames);
         let query = `${harvestingExpenses} ${haulingExpenses}`;
 
         db.connect();

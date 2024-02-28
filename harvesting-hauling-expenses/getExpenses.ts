@@ -1,9 +1,12 @@
 import * as _ from "lodash";
 
-export function getHarvestingExpenses(customer_id) {
+export function getHarvestingExpenses(customer_id, jobSetupNames) {
     let where = ``;
-	if (customer_id != '')
-		where = `WHERE cjs.customer_id = '${customer_id}'`
+    if (customer_id != '')
+        where = `WHERE cjs.customer_id = '${customer_id}'`
+
+    if (jobSetupNames) where = `${where} AND cjs.job_setup_name IN (${jobSetupNames})`;
+
 
     let query = `
        SELECT 
@@ -271,10 +274,12 @@ FROM (
     return mergedQuery;
 }
 
-export function getHaulingExpenses(customer_id) {
+export function getHaulingExpenses(customer_id, jobSetupNames) {
     let where = ``;
-	if (customer_id != '')
-		where = `WHERE cjs.customer_id = '${customer_id}'`
+    if (customer_id != '')
+        where = `WHERE cjs.customer_id = '${customer_id}'`
+
+    if (jobSetupNames) where = `${where} AND cjs.job_setup_name IN (${jobSetupNames})`;
 
     let query = `
     SELECT 
