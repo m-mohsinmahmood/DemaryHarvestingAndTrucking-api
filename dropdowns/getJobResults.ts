@@ -10,8 +10,9 @@ const httpTrigger: AzureFunction = async function (
 
     try {
         const search: string = req.query.search;
+        const customer_id: string = req.query.customer_id;
 
-        let whereClause: string = ` WHERE "is_deleted" = FALSE  AND "job_setup_name" NOTNULL`;
+        let whereClause: string = ` WHERE "is_deleted" = FALSE  AND "job_setup_name" NOTNULL AND "customer_id" = '${customer_id}'`;
 
         if (search) whereClause = ` ${whereClause} AND job_setup_name::text LIKE '%${search}%'`;
 
