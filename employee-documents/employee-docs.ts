@@ -461,15 +461,15 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         break;
 
 
-        case "social_security":
-          query = query + `
+      case "social_security":
+        query = query + `
           "${documents['social_sec'].field1}" = '',
           "${documents['social_sec'].field2}" = '',
           "${documents['social_sec'].field3}" = '',
           "${documents['social_sec'].field4}" = '',
           "${documents['social_sec'].field5}" = false
             `;
-          break;
+        break;
       default:
         break;
     }
@@ -491,8 +491,12 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         break;
 
       case "visa_interview_doc":
+        if (employee_doc.visa_interview_date)
+          query = query + `"${documents['visa_interview'].field1}" = $$${employee_doc.visa_interview_date}$$ :: date,`
+        else
+          query = query + `"${documents['visa_interview'].field1}" = 'Interview Waived Off' :: varchar,`
+
         query = query + `
-        "${documents['visa_interview'].field1}" = $$${employee_doc.visa_interview_date}$$ :: date,
         "${documents['visa_interview'].field2}" = $$${employee_doc.visa_interview_embassy}$$,
         "${documents['visa_interview'].field3}" = $$${employee_doc.visa_interview_street}$$,
         "${documents['visa_interview'].field4}" = $$${employee_doc.visa_interview_city}$$,

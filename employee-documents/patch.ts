@@ -9,7 +9,6 @@ import { BlobServiceClient } from '@azure/storage-blob';
 import { EmailClient, EmailMessage } from "@azure/communication-email";
 import parseMultipartFormData from "@anzp/azure-function-multipart";
 
-
 const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
