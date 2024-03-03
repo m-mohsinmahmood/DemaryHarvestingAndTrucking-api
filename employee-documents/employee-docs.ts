@@ -494,7 +494,7 @@ export function updateQuery(employee_doc, doc_status, employee_id, docName) {
         if (employee_doc.visa_interview_date)
           query = query + `"${documents['visa_interview'].field1}" = $$${employee_doc.visa_interview_date}$$ :: date,`
         else
-          query = query + `"${documents['visa_interview'].field1}" = 'Interview Waived Off' :: varchar,`
+          query = query + `"${documents['visa_interview'].field1}" = 'Interview Not Required' :: varchar,`
 
         query = query + `
         "${documents['visa_interview'].field2}" = $$${employee_doc.visa_interview_embassy}$$,
