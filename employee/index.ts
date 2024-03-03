@@ -31,10 +31,10 @@ const httpTrigger: AzureFunction = async function (
       break;
 
     case "PATCH":
-      const {fields} = await parseMultipartFormData(req);
-      if(fields[2].value == 'updateOnboardingInfo')
-        await updateOnboardingInfo.default(context, req);
-      else
+      // const {fields} = await parseMultipartFormData(req);
+      // if(fields[2].value == 'updateOnboardingInfo')
+      //   await updateOnboardingInfo.default(context, req);
+      // else
         await patchEmployee.default(context, req);
       break;
 
