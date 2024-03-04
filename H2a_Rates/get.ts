@@ -22,7 +22,8 @@ const httpTrigger: AzureFunction = async function (
         SELECT 
               "id", 
               "state", 
-              "hourly_rate"
+              "hourly_rate",
+              "year"
         FROM 
               "H2a_Hourly_Rate" 
         ${whereClause}
