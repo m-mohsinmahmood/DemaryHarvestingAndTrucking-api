@@ -20,7 +20,7 @@ const httpTrigger: AzureFunction = async function (
 
     const data = JSON.parse(fields[0].value);
     const field = JSON.parse(fields[1].value);
-    const id = fields[4].value;
+    const id = fields[3].value;
     let doc = "";
 
     //#region Upload Employee Doc to blob and update employee in DB
