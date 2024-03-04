@@ -10,6 +10,7 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     const search: string = req.query.search;
+    const year: string = req.query.year;
     const page: number = +req.query.page ? +req.query.page : 1;
     const limit: number = +req.query.limit ? +req.query.limit : 50;
     const sort: string = req.query.sort ? req.query.sort : `state`;
@@ -17,6 +18,7 @@ const httpTrigger: AzureFunction = async function (
     let whereClause: string = ` WHERE "is_deleted" = false`;
 
     if (search) whereClause = ` ${whereClause} AND LOWER(state) LIKE LOWER('%${search}%')`;
+    if (year) whereClause = ` ${whereClause} AND EXTRACT(YEAR from year)= '${year}'`;
 
     let h2a_rates_info_query = `
         SELECT 
