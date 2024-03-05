@@ -2,20 +2,20 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
 import { h2aRate } from "./model";
-
 const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
 ): Promise<void> {
   const db = new Client(config);
-
   try {
     const h2aRate: h2aRate = req.body;
     let query = `
         UPDATE "H2a_Hourly_Rate" 
         SET  
             "hourly_rate"       = '${h2aRate.hourly_rate}',
-            "modified_at"   = 'now()'
+            "modified_at"   = 'now()',
+            "year"          = '${h2aRate.year}'
+
         WHERE 
             "id" = '${h2aRate.id}';
         `;
