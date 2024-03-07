@@ -21,11 +21,9 @@ const httpTrigger: AzureFunction = async function (
         INSERT INTO 
                   "Crops" 
                   ("name", 
-                  "variety", 
                   "bushel_weight")
         VALUES 
                   ('${crop.name}', 
-                  '${crop.variety}', 
                   '${crop.bushel_weight}');
     `;
     db.connect();

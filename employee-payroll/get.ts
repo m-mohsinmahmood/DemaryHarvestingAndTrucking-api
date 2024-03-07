@@ -28,7 +28,7 @@ FROM
     "Bridge_DailyTasks_DWR" bridge
     JOIN "DWR_Employees" dwr_emp ON dwr_emp."id" = bridge.dwr_id 
     INNER JOIN "DWR" dwr ON dwr."id" = bridge.task_id
-    INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
+    INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state" AND Extract(YEAR from year) = '2024' 
     INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_emp.employee_id
     INNER JOIN "Employees" sup ON sup."id"::VARCHAR = dwr_emp.supervisor_id
     
@@ -46,11 +46,6 @@ GROUP BY
     
     order By begining_day DESC
     ; `;
-
-
-
-
-
 
     let hours_count_query = `
     SELECT 
@@ -77,16 +72,10 @@ GROUP BY
     emp."role";
       `;
 
-
-      let hourly_rate_finder = `
+    let hourly_rate_finder = `
       SELECT 
-      MAX(hourly_rate) AS max_hourly_rate,
-      (SELECT hourly_rate FROM "H2a_Hourly_Rate" WHERE state = 'Arizona') AS arizona_rate
-    FROM "H2a_Hourly_Rate";
+       hourly_rate FROM "H2a_Hourly_Rate" WHERE state = 'Arizona' AND Extract(YEAR from year) = '2024';
       `;
-
-
-
 
     let query = `${dwr_info_query1} ${hours_count_query} ${hourly_rate_finder}`;
 
