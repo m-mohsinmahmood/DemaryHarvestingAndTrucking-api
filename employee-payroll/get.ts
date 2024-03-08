@@ -1,7 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-
 const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
@@ -10,6 +9,16 @@ const httpTrigger: AzureFunction = async function (
 
   try {
     const employee_id: string = req.query.id;
+    let year = req.query.year;
+    let state = req.query.state;
+
+    let whereClause = `Where`;
+    if (state) whereClause = ` ${whereClause}LOWER("state") LIKE LOWER('%${state}%') AND`;
+    else
+      whereClause = ` ${whereClause} state = 'Arizona' AND`;
+
+    if (!year)
+      year = `(SELECT EXTRACT(YEAR from now()))`
 
     let dwr_info_query1 = `
     SELECT
@@ -28,7 +37,7 @@ FROM
     "Bridge_DailyTasks_DWR" bridge
     JOIN "DWR_Employees" dwr_emp ON dwr_emp."id" = bridge.dwr_id 
     INNER JOIN "DWR" dwr ON dwr."id" = bridge.task_id
-    INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state" AND Extract(YEAR from year) = '2024' 
+    INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state" AND Extract(YEAR from hr.year) = ${year} 
     INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_emp.employee_id
     INNER JOIN "Employees" sup ON sup."id"::VARCHAR = dwr_emp.supervisor_id
     
@@ -74,7 +83,9 @@ GROUP BY
 
     let hourly_rate_finder = `
       SELECT 
-       hourly_rate FROM "H2a_Hourly_Rate" WHERE state = 'Arizona' AND Extract(YEAR from year) = '2024';
+       hourly_rate FROM "H2a_Hourly_Rate"  
+       ${whereClause}
+        Extract(YEAR from year) = ${year};
       `;
 
     let query = `${dwr_info_query1} ${hours_count_query} ${hourly_rate_finder}`;
