@@ -13,7 +13,7 @@ const httpTrigger: AzureFunction = async function (
     let state = req.query.state;
 
     let whereClause = `Where`;
-    if (state) whereClause = ` ${whereClause}LOWER("state") LIKE LOWER('%${state}%') AND`;
+    if (state) whereClause = ` ${whereClause} LOWER("state") LIKE LOWER('%${state}%') AND`;
     else
       whereClause = ` ${whereClause} state = 'Arizona' AND`;
 
