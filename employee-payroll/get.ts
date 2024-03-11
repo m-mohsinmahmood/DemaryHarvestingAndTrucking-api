@@ -12,13 +12,9 @@ const httpTrigger: AzureFunction = async function (
     let year = req.query.year;
     let state = req.query.state;
 
-    let whereClause = `Where`;
-    if (state) whereClause = ` ${whereClause} LOWER("state") LIKE LOWER('%${state}%') AND`;
-    else
-      whereClause = ` ${whereClause} state = 'Arizona' AND`;
-
-    if (!year)
-      year = `(SELECT EXTRACT(YEAR from now()))`
+    let whereClause = `Where hr.is_deleted = FALSE`;
+    if (state) whereClause = ` ${whereClause} AND LOWER("state") LIKE LOWER('%${state}%')`;
+    if (year) whereClause =  ` ${whereClause} AND Extract(YEAR from year) = ${year}`
 
     let dwr_info_query1 = `
     SELECT
@@ -37,13 +33,14 @@ FROM
     "Bridge_DailyTasks_DWR" bridge
     JOIN "DWR_Employees" dwr_emp ON dwr_emp."id" = bridge.dwr_id 
     INNER JOIN "DWR" dwr ON dwr."id" = bridge.task_id
-    INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state" AND Extract(YEAR from hr.year) = ${year} 
+    INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
     INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_emp.employee_id
     INNER JOIN "Employees" sup ON sup."id"::VARCHAR = dwr_emp.supervisor_id
     
-WHERE
-    dwr.employee_id = '${employee_id}' 
+    ${whereClause}
+    AND dwr.employee_id = '${employee_id}' 
     AND dwr_emp.begining_day >= now() - INTERVAL '10 DAYS' 
+    
 GROUP BY
     hr.hourly_rate,
     CONCAT(sup.first_name, ' ', sup.last_name),
@@ -83,9 +80,8 @@ GROUP BY
 
     let hourly_rate_finder = `
       SELECT 
-       hourly_rate FROM "H2a_Hourly_Rate"  
+       hourly_rate FROM "H2a_Hourly_Rate" AS hr
        ${whereClause}
-        Extract(YEAR from year) = ${year};
       `;
 
     let query = `${dwr_info_query1} ${hours_count_query} ${hourly_rate_finder}`;

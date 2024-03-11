@@ -22,6 +22,12 @@ const httpTrigger: AzureFunction = async function (
         const limit: number = +req.query.limit ? +req.query.limit : 20;
         const order: string = req.query.order ? req.query.order : `desc`;
         const sort: string = req.query.sort ? req.query.sort : `dwr_emp.created_at`;
+        let year = req.query.year;
+
+        let whereClauseRates = `Where hr.is_deleted = FALSE`;
+
+        if (name) whereClauseRates = ` ${whereClauseRates} AND LOWER(emp.first_name) LIKE LOWER('%${name}%')`;
+        if (year) whereClauseRates = ` ${whereClauseRates} AND Extract(YEAR from hr.year) = ${year}`
 
         let whereClause: string = ` WHERE dwr_emp."is_deleted" = FALSE`;
         let singleWhereClause: string = ` WHERE dwr_emp."is_deleted" = FALSE`;
@@ -68,14 +74,11 @@ const httpTrigger: AzureFunction = async function (
             if (status && (supervisor_id)) statusClause2 = ` ${statusClause2} AND dwr_emp.dwr_status = 'pendingVerification'`;
         }
 
-
-
         if (employee_wages_id && (start_date || end_date || status)) nameWhereClause = ` ${nameWhereClause} AND dwr_emp.employee_id = '${employee_wages_id}'`;
         if (employee_wages_id && !(start_date || end_date || status)) nameWhereClause = ` ${nameWhereClause} WHERE dwr_emp.employee_id = '${employee_wages_id}'`;
 
         if (supervisor_id) supervisorWhereClauseHours = ` ${supervisorWhereClauseHours} WHERE dwr_emp.supervisor_id = '${supervisor_id}'`;
         if (supervisor_id && !(employee_wages_id && start_date && end_date)) supervisorWhereClause = ` ${supervisorWhereClause} WHERE dwr_emp.supervisor_id = '${supervisor_id}'`;
-        // if(supervisor_id) supervisorJoinClause = ` ${supervisorJoinClause}     INNER JOIN "Employees" supervisor ON dwr_emp.supervisor_id = supervisor."id" :: VARCHAR`;
         if (supervisor_id && (employee_wages_id || start_date || end_date)) supervisorWhereClause = ` AND dwr_emp.supervisor_id = '${supervisor_id}'`;
 
 
@@ -85,10 +88,11 @@ const httpTrigger: AzureFunction = async function (
         if (start_date) whereClause = `${whereClause} AND dwr_emp.begining_day > '${start_date}'::timestamp AND dwr_emp.begining_day < '${end_date}'::timestamp`;
         if (state) whereClause = ` ${whereClause} AND LOWER(dwr_emp."state") LIKE LOWER('%${state}%')`;
         if (name) whereClause = ` ${whereClause} AND LOWER(emp.first_name) LIKE LOWER('%${name}%')`;
+        if (year) whereClause = ` ${whereClause} AND Extract(YEAR from hr.year) = ${year}`
 
         //New filters for all DWRs individual
-
         if (state) singleWhereClause = ` ${singleWhereClause} AND  LOWER(dwr_emp."state") LIKE LOWER('%${state}%')`;
+        if (year) singleWhereClause = ` ${singleWhereClause} AND Extract(YEAR from hr.year) = ${year}`
         if (category) singleWhereClause = ` ${singleWhereClause} AND LOWER(dwr_emp."module") LIKE LOWER('%${category}%')`;
         if (supervisor_id) singleWhereClause = ` ${singleWhereClause} AND dwr_emp.supervisor_id = '${supervisor_id}'`;
         if (employee_wages_id) singleWhereClause = ` ${singleWhereClause} AND dwr_emp.employee_id = '${employee_wages_id}'`;
@@ -98,9 +102,7 @@ const httpTrigger: AzureFunction = async function (
 
         let dwr_info_query1 = `
     SELECT DISTINCT
-    CASE WHEN dwr_emp."state" = 'Arizona' THEN hr.hourly_rate::numeric
-         ELSE (SELECT MAX(hourly_rate) FROM "H2a_Hourly_Rate")::numeric
-    END AS hourly_rate,
+    hr.hourly_rate::numeric AS hourly_rate,
     CONCAT(sup.first_name, ' ', sup.last_name) AS supervisor,
     dwr_emp."module" AS category,
     emp."id",
@@ -109,9 +111,7 @@ const httpTrigger: AzureFunction = async function (
     emp."role",
     CAST(EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600 AS NUMERIC(10, 2)) AS hours_worked,
     dwr_emp."state",
-    CAST(EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600 AS NUMERIC(10, 2)) * CASE WHEN dwr_emp."state" = 'Arizona' THEN hr.hourly_rate::numeric
-         ELSE (SELECT MAX(hourly_rate) FROM "H2a_Hourly_Rate")::numeric
-    END AS wage,
+    CAST(EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600 AS NUMERIC(10, 2)) *  hr.hourly_rate::numeric AS wage,
     dwr_emp.begining_day,
     dwr_emp.ending_day,
     dwr_emp.created_at,
@@ -141,8 +141,6 @@ const httpTrigger: AzureFunction = async function (
     OFFSET ${page};
     `;
 
-
-
         let hours_count_query = `
     SELECT 
     SUM(total_hours_worked) AS hours_worked,
@@ -171,13 +169,11 @@ GROUP BY
     emp."role";
       `;
 
-
         let hourly_rate_finder = `
       SELECT 
-      MAX(hourly_rate) AS max_hourly_rate,
-      (SELECT hourly_rate FROM "H2a_Hourly_Rate" WHERE state = 'Arizona') AS arizona_rate
-    FROM "H2a_Hourly_Rate";
-      `;
+       hourly_rate FROM "H2a_Hourly_Rate" AS hr
+       ${whereClauseRates}
+      ;`;
 
         let total_hours_dwrs = `SELECT 
       SUM(total_hours_worked) AS total_hours_worked
@@ -195,7 +191,6 @@ GROUP BY
   
   ) AS subquery;
   `;
-
 
         let top_ten_wages =
             `WITH 
@@ -245,11 +240,7 @@ GROUP BY
               ROUND(CAST((EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600) AS NUMERIC), 2)
           ) AS hours_worked,
           SUM(
-              ROUND(CAST((EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600) AS NUMERIC), 2) *
-              (CASE 
-                  WHEN dwr_emp."state" = 'Arizona' THEN hr.hourly_rate::numeric
-                  ELSE (SELECT MAX(hourly_rate) FROM "H2a_Hourly_Rate" WHERE "state" != 'Arizona')::numeric
-              END)
+              ROUND(CAST((EXTRACT(EPOCH FROM (dwr_emp.ending_day - dwr_emp.begining_day)) / 3600) AS NUMERIC), 2) * hr.hourly_rate::numeric
           ) AS wage
       FROM
           "DWR_Employees" dwr_emp
@@ -290,7 +281,7 @@ GROUP BY
         let query = `${dwr_info_query1} ${hours_count_query} ${hourly_rate_finder} ${total_hours_dwrs} ${top_ten_wages}`;
 
         db.connect();
-   
+
         let result = await db.query(query);
 
         let resp = {
