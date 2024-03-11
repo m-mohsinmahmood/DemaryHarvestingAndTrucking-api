@@ -13,7 +13,7 @@ const httpTrigger: AzureFunction = async function (
     let state = req.query.state;
 
     let whereClause = `Where hr.is_deleted = FALSE`;
-    if (state) whereClause = ` ${whereClause} AND LOWER("state") LIKE LOWER('%${state}%')`;
+    if (state) whereClause = ` ${whereClause} AND LOWER(hr."state") LIKE LOWER('%${state}%')`;
     if (year) whereClause =  ` ${whereClause} AND Extract(YEAR from year) = ${year}`
 
     let dwr_info_query1 = `

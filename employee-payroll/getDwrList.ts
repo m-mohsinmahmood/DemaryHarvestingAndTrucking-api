@@ -1,7 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-
 const httpTrigger: AzureFunction = async function (
     context: Context,
     req: HttpRequest
@@ -88,7 +87,6 @@ const httpTrigger: AzureFunction = async function (
         if (start_date) whereClause = `${whereClause} AND dwr_emp.begining_day > '${start_date}'::timestamp AND dwr_emp.begining_day < '${end_date}'::timestamp`;
         if (state) whereClause = ` ${whereClause} AND LOWER(dwr_emp."state") LIKE LOWER('%${state}%')`;
         if (name) whereClause = ` ${whereClause} AND LOWER(emp.first_name) LIKE LOWER('%${name}%')`;
-        if (year) whereClause = ` ${whereClause} AND Extract(YEAR from hr.year) = ${year}`
 
         //New filters for all DWRs individual
         if (state) singleWhereClause = ` ${singleWhereClause} AND  LOWER(dwr_emp."state") LIKE LOWER('%${state}%')`;

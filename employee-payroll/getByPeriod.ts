@@ -11,6 +11,10 @@ const httpTrigger: AzureFunction = async function (
   let year = req.query.year;
   let state = req.query.state;
 
+  let whereClause = `Where hhr.is_deleted = FALSE`;
+  if (state) whereClause = ` ${whereClause} AND LOWER("state") LIKE LOWER('%${state}%')`;
+  if (year) whereClause = ` ${whereClause} AND Extract(YEAR from year) = ${year}`
+
   let dateRangeFrom = `'2023-01-07'`;
   let dateRangeTo = `now()`;
 
@@ -36,24 +40,14 @@ FROM (
         i.i::DATE AS PayPeriodStart,
         (i.i + '13 days'::INTERVAL)::DATE AS PayPeriodEnd,
         CAST ( EXTRACT ( EPOCH FROM ( dwr.ending_day - dwr.begining_day ) ) / 3600 AS NUMERIC ( 10, 2 ) ) AS total_hours_worked,
-        CASE
-            WHEN dwr."state" = 'arizona' THEN COALESCE(hhr."hourly_rate"::NUMERIC, 0)
-            ELSE COALESCE(max_hr.max_hourly_rate, 0)
-        END AS "hourly_wage_rate",
-        (CAST ( EXTRACT ( EPOCH FROM ( dwr.ending_day - dwr.begining_day ) ) / 3600 AS NUMERIC ( 10, 2 ) )) * 
-        CASE
-            WHEN dwr."state" = 'arizona' THEN COALESCE(hhr."hourly_rate"::NUMERIC, 0)
-            ELSE COALESCE(max_hr.max_hourly_rate, 0)
-        END AS wage
+        hhr."hourly_rate"::NUMERIC AS "hourly_wage_rate",
+        (CAST ( EXTRACT ( EPOCH FROM ( dwr.ending_day - dwr.begining_day ) ) / 3600 AS NUMERIC ( 10, 2 ) )) * hhr."hourly_rate"::NUMERIC AS wage
     FROM
         generate_series(${dateRangeFrom}::DATE, ${dateRangeTo}::DATE, '14 days'::INTERVAL) AS i(i)
     LEFT JOIN "DWR_Employees" dwr ON dwr.created_at::DATE >= i.i::DATE AND dwr.created_at::DATE <= (i.i + '13 days'::INTERVAL)::DATE AND dwr."state" IS NOT NULL AND dwr.employee_id = '${employee_id}'
-    LEFT JOIN "H2a_Hourly_Rate" hhr ON dwr."state" = hhr."state" AND dwr."state" = 'arizona'
-    CROSS JOIN (
-        SELECT MAX("hourly_rate"::NUMERIC) AS max_hourly_rate
-        FROM "H2a_Hourly_Rate"
-        WHERE "state" != 'arizona'
-    ) AS max_hr
+    LEFT JOIN "H2a_Hourly_Rate" hhr ON dwr."state" = hhr."state"
+
+    ${whereClause}
 ) AS subquery
 GROUP BY PayPeriodStart, PayPeriodEnd
 ORDER BY PayPeriodStart;
