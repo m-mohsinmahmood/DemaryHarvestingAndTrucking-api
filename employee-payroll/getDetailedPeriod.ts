@@ -11,16 +11,27 @@ const httpTrigger: AzureFunction = async function (
   const to: string = req.query.to;
   const from: string = req.query.from;
 
+  let year = req.query.year;
+  let state = req.query.state;
+
+  let whereClause = `Where`;
+  if (state) whereClause = ` ${whereClause}LOWER("state") LIKE LOWER('%${state}%') AND`;
+  else
+    whereClause = ` ${whereClause} state = 'Arizona' AND`;
+
+  if (!year)
+    year = `(SELECT EXTRACT(YEAR from now()))`
+
   let dateRangeFrom = `''`;
-    let dateRangeTo = `now()`;
+  let dateRangeTo = `now()`;
 
-    if (from!='' && from != undefined) {
-      dateRangeFrom = ` '${from}'`;
-    }
+  if (from != '' && from != undefined) {
+    dateRangeFrom = ` '${from}'`;
+  }
 
-    if (to!='' && to != undefined) {
-      dateRangeTo = ` '${to}' `;
-    }
+  if (to != '' && to != undefined) {
+    dateRangeTo = ` '${to}' `;
+  }
 
   try {
     const employee_id: string = req.query.id;
@@ -39,7 +50,6 @@ const httpTrigger: AzureFunction = async function (
         dwr_emp.ID AS ticket_id,
         dwr_emp.created_at
 
-        
     FROM
         "DWR_Employees" dwr_emp
         INNER JOIN "DWR" dwr ON dwr.employee_id :: VARCHAR = dwr_emp.employee_id :: VARCHAR 
@@ -51,12 +61,12 @@ const httpTrigger: AzureFunction = async function (
         AND dwr_emp.begining_day :: timestamp > '${from}' :: timestamp 
         AND dwr_emp.begining_day :: timestamp < '${to}' :: timestamp 
         AND dwr_emp.supervisor_id != 'null'
-ORDER BY
+    ORDER BY
     dwr_emp.begining_day DESC; `;
 
 
-    let dwr_info_query1 = `
-    SELECT
+  let dwr_info_query1 = `
+  SELECT
 	hr.hourly_rate,
 	CONCAT ( sup.first_name, ' ', sup.last_name ) AS supervisor,
 	dwr_emp.created_at as date,
@@ -69,7 +79,7 @@ ORDER BY
 	
 FROM
 	"DWR_Employees" dwr_emp
-	INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state"
+	INNER JOIN "H2a_Hourly_Rate" hr ON hr."state" = dwr_emp."state" AND Extract(YEAR from hr.year) = ${year} 
 	INNER JOIN "Employees" emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
 	INNER JOIN "Employees" sup ON sup."id" :: VARCHAR = dwr_emp.supervisor_id
 	INNER JOIN "DWR" dwr on dwr.employee_id:: VARCHAR  = dwr_emp.employee_id:: VARCHAR 
@@ -98,7 +108,7 @@ SELECT
   FROM
     "DWR" dwr
     INNER JOIN "Farming_Work_Order" fwo ON dwr.work_order_id = fwo."id"
-    INNER JOIN "H2a_Hourly_Rate" hr ON fwo."state" = hr."state"
+    INNER JOIN "H2a_Hourly_Rate" hr ON fwo."state" = hr."state" AND Extract(YEAR from hr.year) = ${year} 
     INNER JOIN "Employees" emp ON dwr.employee_id = emp."id"
     INNER JOIN "Employees" disp ON fwo.dispatcher_id = disp."id"
   WHERE dwr.employee_id = '${employee_id}' 
@@ -106,7 +116,7 @@ SELECT
   AND fwo.created_at :: DATE <= '${to}' :: DATE; `;
 
 
-let dwr_info_query3 = `
+    let dwr_info_query3 = `
 SELECT
 	hr.hourly_rate,
 	CONCAT ( crew.first_name , crew.last_name) as supervisor,
@@ -120,7 +130,7 @@ SELECT
 FROM
 	"DWR" dwr
 	INNER JOIN "Customer_Job_Setup" cjs ON dwr.job_id = cjs."id"
-	INNER JOIN "H2a_Hourly_Rate" hr ON cjs."state" = hr."state"
+	INNER JOIN "H2a_Hourly_Rate" hr ON cjs."state" = hr."state" AND Extract(YEAR from hr.year) = ${year} 
 	INNER JOIN "Employees" emp ON dwr.employee_id = emp."id"
 	INNER JOIN "Employees" crew ON cjs.crew_chief_id = emp."id"
 WHERE
@@ -128,11 +138,11 @@ WHERE
 	AND dwr.created_at :: DATE >= '${from}' :: DATE
   AND dwr.created_at :: DATE <= '${to}' :: DATE; `;
 
-  let hourly_rate_finder = `
-      SELECT 
-      MAX(hourly_rate) AS max_hourly_rate,
-      (SELECT hourly_rate FROM "H2a_Hourly_Rate" WHERE state = 'Arizona') AS arizona_rate
-    FROM "H2a_Hourly_Rate";
+    let hourly_rate_finder = `
+    SELECT 
+    hourly_rate FROM "H2a_Hourly_Rate"  
+    ${whereClause}
+     Extract(YEAR from year) = ${year};
       `;
 
 
