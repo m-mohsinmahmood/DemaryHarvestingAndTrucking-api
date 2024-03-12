@@ -42,10 +42,12 @@ const httpTrigger: AzureFunction = async function (
         dwr_emp.begining_day,
         dwr_emp.dwr_status,
         dwr_emp.ID AS ticket_id,
-        dwr_emp.created_at
+        dwr_emp.created_at,
+        hr.hourly_rate
 
     FROM
         "DWR_Employees" dwr_emp
+        INNER JOIN "H2a_Hourly_Rate" hr ON hr.state = dwr_emp.state
         INNER JOIN "DWR" dwr ON dwr.employee_id :: VARCHAR = dwr_emp.employee_id :: VARCHAR 
         INNER JOIN "Employees" emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
         INNER JOIN "Employees" sup ON sup."id" :: VARCHAR = dwr_emp.supervisor_id
@@ -57,7 +59,6 @@ const httpTrigger: AzureFunction = async function (
         AND dwr_emp.supervisor_id != 'null'
     ORDER BY
     dwr_emp.begining_day DESC; `;
-
 
   let dwr_info_query1 = `
   SELECT
