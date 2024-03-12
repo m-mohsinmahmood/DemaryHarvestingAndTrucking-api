@@ -1,7 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
-
 const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
@@ -14,8 +13,8 @@ const httpTrigger: AzureFunction = async function (
   let state = req.query.state;
 
   let whereClause = `Where hr.is_deleted = FALSE`;
-  if (state) whereClause = ` ${whereClause} AND LOWER("state") LIKE LOWER('%${state}%')`;
-  if (year) whereClause =  ` ${whereClause} AND Extract(YEAR from year) = ${year}`
+  if (state) whereClause = ` ${whereClause} AND LOWER(hr."state") LIKE LOWER('%${state}%')`;
+  if (year) whereClause =  ` ${whereClause} AND Extract(YEAR from hr.year) = ${year}`
 
   let dateRangeFrom = `''`;
   let dateRangeTo = `now()`;

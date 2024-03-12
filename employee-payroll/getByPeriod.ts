@@ -12,8 +12,8 @@ const httpTrigger: AzureFunction = async function (
   let state = req.query.state;
 
   let whereClause = `Where hhr.is_deleted = FALSE`;
-  if (state) whereClause = ` ${whereClause} AND LOWER("state") LIKE LOWER('%${state}%')`;
-  if (year) whereClause = ` ${whereClause} AND Extract(YEAR from year) = ${year}`
+  if (state) whereClause = ` ${whereClause} AND LOWER(hhr."state") LIKE LOWER('%${state}%')`;
+  if (year) whereClause = ` ${whereClause} AND Extract(YEAR from hhr.year) = ${year}`
 
   let dateRangeFrom = `'2023-01-07'`;
   let dateRangeTo = `now()`;
