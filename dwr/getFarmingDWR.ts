@@ -84,7 +84,6 @@ export function GetFarmingDwr(employee_id: any, startDate: string, endDate: stri
         'state', fwo."state",
         'supervisor_id', fwo."dispatcher_id",
         'supervisor_name', concat(dispatcher.first_name, ' ', dispatcher.last_name),
-        'ticket_id', cjs.job_setup_name,
         'beginning_engine_hours', dwr.beginning_engine_hours,
         'ending_engine_hours', dwr.ending_engine_hours,
         'beginning_separator_hours', dwr.beginning_separator_hours,
