@@ -104,7 +104,13 @@ export function GetMaintenanceRepairDwr(employee_id: any, startDate: string, end
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
         'state', mr."state",
         'supervisor_id', mr."assignedById",
-        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
+        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name),
+        'beginning_engine_hours', dwr.beginning_engine_hours,
+        'ending_engine_hours', dwr.ending_engine_hours,
+        'beginning_separator_hours', dwr.beginning_separator_hours,
+        'ending_separator_hours', dwr.ending_separator_hours,
+        'begining_odometer_miles', dwr.begining_odometer_miles,
+        'ending_odometer_miles', dwr.ending_odometer_miles
         )) as tickets
         
         from "DWR_Employees" dwr_employees
@@ -114,6 +120,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, startDate: string, end
         INNER JOIN "Maintenance_Repair" mr ON dwr.main_repair_ticket_id = mr."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
         INNER JOIN "Employees" supervisor ON mr."assignedById" = supervisor."id"
+        INNER JOIN "Machinery" machinery ON dwr.machinery_id = machinery.id
 
         WHERE dwr_employees.employee_id = '${employee_id}'
         AND dwr."taskType" = 'work done'
@@ -146,7 +153,13 @@ export function GetMaintenanceRepairDwr(employee_id: any, startDate: string, end
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
         'state', mr."state",
         'supervisor_id', mr."assignedById",
-        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name)
+        'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name),
+        'beginning_engine_hours', dwr.beginning_engine_hours,
+        'ending_engine_hours', dwr.ending_engine_hours,
+        'beginning_separator_hours', dwr.beginning_separator_hours,
+        'ending_separator_hours', dwr.ending_separator_hours,
+        'begining_odometer_miles', dwr.begining_odometer_miles,
+        'ending_odometer_miles', dwr.ending_odometer_miles
         )) as tickets
         
         from "DWR_Employees" dwr_employees
@@ -156,6 +169,7 @@ export function GetMaintenanceRepairDwr(employee_id: any, startDate: string, end
         INNER JOIN "Maintenance_Repair" mr ON dwr.main_repair_ticket_id = mr."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
         INNER JOIN "Employees" supervisor ON mr."assignedById" = supervisor."id"
+        INNER JOIN "Machinery" machinery ON dwr.machinery_id = machinery.id
 
         WHERE dwr_employees.employee_id = '${employee_id}'
         AND dwr."taskType" = 'work done'

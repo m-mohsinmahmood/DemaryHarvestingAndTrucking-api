@@ -85,7 +85,13 @@ export function GetOtherDwr(employee_id: any, startDate: string, endDate: string
         'state', ot."state",
         'supervisor_id', ot.supervisor_id,
         'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name),
-        'description', ot.description
+        'description', ot.description,
+        'beginning_engine_hours', dwr.beginning_engine_hours,
+        'ending_engine_hours', dwr.ending_engine_hours,
+        'beginning_separator_hours', dwr.beginning_separator_hours,
+        'ending_separator_hours', dwr.ending_separator_hours,
+        'begining_odometer_miles', dwr.begining_odometer_miles,
+        'ending_odometer_miles', dwr.ending_odometer_miles
         )) as tickets
         
         from "DWR_Employees" dwr_employees
@@ -95,6 +101,7 @@ export function GetOtherDwr(employee_id: any, startDate: string, endDate: string
         INNER JOIN "Other" ot ON dwr.other_record_id = ot."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
         INNER JOIN "Employees" supervisor ON ot.supervisor_id = supervisor."id"::VARCHAR
+        INNER JOIN "Machinery" machinery ON dwr.machinery_id = machinery.id
 
         WHERE dwr_employees.employee_id = '${employee_id}'
        ${where}
@@ -127,7 +134,13 @@ export function GetOtherDwr(employee_id: any, startDate: string, endDate: string
         'state', ot."state",
         'supervisor_id', ot.supervisor_id,
         'supervisor_name', concat(supervisor.first_name, ' ', supervisor.last_name),
-        'description', ot.description
+        'description', ot.description,
+        'beginning_engine_hours', dwr.beginning_engine_hours,
+        'ending_engine_hours', dwr.ending_engine_hours,
+        'beginning_separator_hours', dwr.beginning_separator_hours,
+        'ending_separator_hours', dwr.ending_separator_hours,
+        'begining_odometer_miles', dwr.begining_odometer_miles,
+        'ending_odometer_miles', dwr.ending_odometer_miles
         )) as tickets
         
         from "DWR_Employees" dwr_employees
@@ -137,6 +150,7 @@ export function GetOtherDwr(employee_id: any, startDate: string, endDate: string
         INNER JOIN "Other" ot ON dwr.other_record_id = ot."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
         INNER JOIN "Employees" supervisor ON ot.supervisor_id = supervisor."id"::VARCHAR
+        INNER JOIN "Machinery" machinery ON dwr.machinery_id = machinery.id
 
         WHERE dwr_employees.employee_id = '${employee_id}'
         ${where}

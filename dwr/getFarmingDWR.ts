@@ -83,7 +83,14 @@ export function GetFarmingDwr(employee_id: any, startDate: string, endDate: stri
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
         'state', fwo."state",
         'supervisor_id', fwo."dispatcher_id",
-        'supervisor_name', concat(dispatcher.first_name, ' ', dispatcher.last_name)
+        'supervisor_name', concat(dispatcher.first_name, ' ', dispatcher.last_name),
+        'ticket_id', cjs.job_setup_name,
+        'beginning_engine_hours', dwr.beginning_engine_hours,
+        'ending_engine_hours', dwr.ending_engine_hours,
+        'beginning_separator_hours', dwr.beginning_separator_hours,
+        'ending_separator_hours', dwr.ending_separator_hours,
+        'begining_odometer_miles', dwr.begining_odometer_miles,
+        'ending_odometer_miles', dwr.ending_odometer_miles
         )) as tickets
         
         from "DWR_Employees" dwr_employees
@@ -93,6 +100,7 @@ export function GetFarmingDwr(employee_id: any, startDate: string, endDate: stri
         INNER JOIN "Farming_Work_Order" fwo ON dwr.work_order_id = fwo."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
         INNER JOIN "Employees" dispatcher ON fwo.dispatcher_id = dispatcher."id" 
+        INNER JOIN "Machinery" machinery ON dwr.machinery_id = machinery.id
 
         WHERE dwr_employees.employee_id = '${employee_id}'
         ${where}
@@ -124,7 +132,13 @@ export function GetFarmingDwr(employee_id: any, startDate: string, endDate: stri
         'employee_name', concat(emp.first_name, ' ', emp.last_name),
         'state', fwo."state",
         'supervisor_id', fwo."dispatcher_id",
-        'supervisor_name', concat(dispatcher.first_name, ' ', dispatcher.last_name)
+        'supervisor_name', concat(dispatcher.first_name, ' ', dispatcher.last_name),
+        'beginning_engine_hours', dwr.beginning_engine_hours,
+        'ending_engine_hours', dwr.ending_engine_hours,
+        'beginning_separator_hours', dwr.beginning_separator_hours,
+        'ending_separator_hours', dwr.ending_separator_hours,
+        'begining_odometer_miles', dwr.begining_odometer_miles,
+        'ending_odometer_miles', dwr.ending_odometer_miles
         )) as tickets
         
         from "DWR_Employees" dwr_employees
@@ -134,7 +148,8 @@ export function GetFarmingDwr(employee_id: any, startDate: string, endDate: stri
         INNER JOIN "Farming_Work_Order" fwo ON dwr.work_order_id = fwo."id"
         INNER JOIN "Employees" emp ON emp."id"::VARCHAR = dwr_employees.employee_id
         INNER JOIN "Employees" dispatcher ON fwo.dispatcher_id = dispatcher."id" 
-        
+        INNER JOIN "Machinery" machinery ON dwr.machinery_id = machinery.id
+
         WHERE dwr_employees.employee_id = '${employee_id}'
         ${where}
         AND dwr_employees.is_active = FALSE
