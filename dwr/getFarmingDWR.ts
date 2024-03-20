@@ -33,7 +33,8 @@ export function GetFarmingDwr(employee_id: any, startDate: string, endDate: stri
         dwr_employees.begining_day :: DATE,
 		dwr_employees.supervisor_id as last_supervisor_id,
         dwr_employees.begining_day AS checkin_time,
-        dwr_employees.ending_day AS checkout_time
+        dwr_employees.ending_day AS checkout_time,
+        dwr_employees.dwr_notes
 
         FROM
         "Bridge_DailyTasks_DWR" bridge

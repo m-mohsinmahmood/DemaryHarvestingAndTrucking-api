@@ -35,6 +35,7 @@ export function GetTrainingDwr(employee_id: any, startDate: string, endDate: str
         dwr_employees.supervisor_id as supervisor_id,
         dwr_employees.begining_day AS checkin_time,
         dwr_employees.ending_day AS checkout_time,
+        dwr_employees.dwr_notes,
         (SELECT
             supervisor_id as last_supervisor_id
      
