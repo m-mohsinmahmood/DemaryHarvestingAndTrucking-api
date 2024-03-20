@@ -11,6 +11,7 @@ const httpTrigger: AzureFunction = async function (
   const customer_id = req.query.customer_id;
   const farm_id = req.query.farm_id;
   const crop_id = req.query.crop_id;
+  const year = req.query.year;
 
   try {
 
@@ -26,6 +27,7 @@ const httpTrigger: AzureFunction = async function (
     customer_id = '${customer_id}'
     AND farm_id = '${farm_id}'
     AND crop_id = '${crop_id}'
+    AND EXTRACT(YEAR FROM "created_at") = '${year}'
     ;
       `;
       
