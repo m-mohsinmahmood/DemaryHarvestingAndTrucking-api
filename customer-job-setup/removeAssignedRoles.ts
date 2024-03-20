@@ -8,18 +8,26 @@ const httpTrigger: AzureFunction = async function (
 ): Promise<void> {
     const db = new Client(config);
     const employeeId = req.body.id;
+    const operation = req.body.operation;
 
     try {
-        let query = `
-        Update 
-
-        "Employees"
-    
-        SET
-        dht_supervisor_id = ''
-
-        Where id = '${employeeId}'
-      ;`;
+        let query = '';
+        if(operation == 'removeAllAssignedRoles'){
+            let updateQueries = employeeId.map(id => `UPDATE "Employees" SET dht_supervisor_id = '' WHERE id = '${id}';`);
+            query = updateQueries.join('\n');
+        }
+        else {
+            query = `
+           Update 
+   
+           "Employees"
+       
+           SET
+           dht_supervisor_id = ''
+   
+           Where id = '${employeeId}'
+         ;`;
+        }
 
         console.log(query);
 

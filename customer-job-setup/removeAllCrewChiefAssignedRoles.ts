@@ -12,22 +12,17 @@ const httpTrigger: AzureFunction = async function (
 
   const crew_chief_id: string = req.query.crew_chief_id;
   const role: string = req.query.role;
-  const employee_id: string = req.query.employee_id;
+  const employee_id: string[] = req.query.employee_id.split(',');
 
   try {
 
     let query = `
-    Delete
-
-    FROM
-    "Harvesting_Assigned_Roles" 
-       
+    DELETE FROM "Harvesting_Assigned_Roles"
     WHERE
-          
-    employee_id = '${employee_id}'
-    AND crew_chief_id = '${crew_chief_id}'
-    AND role = '${role}'
-      ;`;
+        employee_id IN ('${employee_id.join("','")}')
+        AND crew_chief_id = '${crew_chief_id}'
+        AND role = '${role}';
+`;
 
     console.log(query);
 

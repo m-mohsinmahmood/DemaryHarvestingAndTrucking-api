@@ -47,7 +47,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         await endingofDay.default(context, req);
       else if (req.body.operation === 'startingOfDay')
         await startingOfDay.default(context, req);
-      else if (req.body.operation === 'removeAssignedRole')
+      else if (req.body.operation === 'removeAssignedRole' || req.body.operation === 'removeAllAssignedRoles')
         await removeRole.default(context, req);
       else
         await updateJob.default(context, req);
