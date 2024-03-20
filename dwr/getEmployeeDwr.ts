@@ -30,7 +30,7 @@ const httpTrigger: AzureFunction = async function (
         const maintenanceDwr = GetMaintenanceRepairDwr(employee_id, startDate, endDate, dateType, month, year, operation, status);
         const otherDwr = GetOtherDwr(employee_id, startDate, endDate, dateType, month, year, operation, status);
         const trainingDwr = GetTrainingDwr(employee_id, startDate, endDate, dateType, month, year, operation, status);
-        const harvestingDwr = GetHarvestingDwr(employee_id, startDate, endDate, dateType, month, year, operation, status,role);
+        const harvestingDwr = GetHarvestingDwr(employee_id, startDate, endDate, dateType, month, year, operation, status, role);
 
         let query = ``;
         let result;
@@ -60,12 +60,18 @@ const httpTrigger: AzureFunction = async function (
                         employee_Id: key,
                         total_hours: 0,
                         employee_name: curr.employee_name,
-                        last_supervisor_id: curr.last_supervisor_id
+                        last_supervisor_id: curr.last_supervisor_id,
+                        checkin_time: curr.checkin_time,
+                        checkout_time: curr.checkout_time,
+                        dwr_notes: curr.dwr_notes
                     }
                 }
                 else {
                     acc[key].employee_name = curr.employee_name;
                     acc[key].last_supervisor_id = curr.last_supervisor_id;
+                    acc[key].checkin_time = curr.checkin_time;
+                    acc[key].checkout_time = curr.checkout_time;
+                    acc[key].dwr_notes = curr.dwr_notes;
                 }
                 acc[key].total_hours += +curr.total_hours
                 return acc

@@ -57,7 +57,8 @@ export function GetFarmingDwr(employee_id: any, startDate: string, endDate: stri
         dwr_employees.supervisor_notes,
         dwr_employees.employee_notes,
         dwr_employees.begining_day,
-        dwr_employees.ending_day
+        dwr_employees.ending_day,
+        dwr_employees.dwr_notes
         
         ORDER BY
         begining_day DESC
