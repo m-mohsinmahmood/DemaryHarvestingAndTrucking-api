@@ -1,6 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { Client } from "pg";
 import { config } from "../services/database/database.config";
+
 const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
@@ -52,8 +53,8 @@ const httpTrigger: AzureFunction = async function (
         INNER JOIN "Employees" emp ON emp."id" :: VARCHAR = dwr_emp.employee_id
         INNER JOIN "Employees" sup ON sup."id" :: VARCHAR = dwr_emp.supervisor_id
         
-    WHERE
-        dwr_emp.employee_id = '${employee_id}' 
+        ${whereClause}
+        AND dwr_emp.employee_id = '${employee_id}' 
         AND dwr_emp.begining_day :: timestamp > '${from}' :: timestamp 
         AND dwr_emp.begining_day :: timestamp < '${to}' :: timestamp 
         AND dwr_emp.supervisor_id != 'null'
