@@ -12,7 +12,8 @@ const httpTrigger: AzureFunction = async function (
     let query = `
         UPDATE "H2a_Hourly_Rate" 
         SET  
-            "hourly_rate"       = '${h2aRate.hourly_rate}',
+            "hourly_rate"   = '${h2aRate.hourly_rate}',
+            "rate_type"     = '${h2aRate.rate_type}',  
             "modified_at"   = 'now()',
             "year"          = '${h2aRate.year}'
 

@@ -17,6 +17,7 @@ const httpTrigger: AzureFunction = async function (
               "id", 
               "state", 
               "hourly_rate",
+              "rate_type",
               "year" 
         FROM 
             "H2a_Hourly_Rate"
