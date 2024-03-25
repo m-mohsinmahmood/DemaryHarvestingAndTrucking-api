@@ -18,11 +18,11 @@ const httpTrigger: AzureFunction = async function (
   let dateRangeFrom = `'2023-01-07'`;
   let dateRangeTo = `now()`;
 
-  if (from != '' && from != undefined) {
+  if (from != '') {
     dateRangeFrom = ` '${from}'`;
   }
 
-  if (to != '' && to != undefined) {
+  if (to != '') {
     dateRangeTo = ` '${to}' `;
   }
 
