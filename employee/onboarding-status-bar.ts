@@ -149,6 +149,18 @@ export function updateQuery(employee, h2a) {
         return query;
 
     }
+    else if (employee?.rate_type){
+        let query = `
+        UPDATE 
+                "Employees"
+        SET 
+                "rate_type" = '${employee.rate_type}',
+                "actual_rate" = '${employee.actual_rate}',
+                "ag_operator" = '${employee.ag_operator}'
+        WHERE 
+                "id" = '${employee.id}';`
+        return query;
+    }
     else if (h2a == 'false') {
         let query
         query = `
