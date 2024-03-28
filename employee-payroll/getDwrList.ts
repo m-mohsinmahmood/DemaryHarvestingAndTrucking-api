@@ -101,6 +101,8 @@ const httpTrigger: AzureFunction = async function (
         let dwr_info_query1 = `
     SELECT DISTINCT
     hr.hourly_rate::numeric AS hourly_rate,
+    hr.rate_type,
+    extract(YEAR from year) AS year,
     CONCAT(sup.first_name, ' ', sup.last_name) AS supervisor,
     dwr_emp."module" AS category,
     emp."id",
